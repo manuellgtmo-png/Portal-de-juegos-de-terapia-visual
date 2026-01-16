@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Terapia Visual - Clínica Digital</title>
+    <style>
+        :root { --primary: #3498db; --secondary: #2ecc71; --dark: #2c3e50; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        header { background: var(--dark); color: white; width: 100%; padding: 40px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { margin: 0; font-size: 2.2em; letter-spacing: 1px; }
+        p { margin: 10px 0 0; opacity: 0.8; font-weight: 300; }
+
+        .container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 90%; max-width: 1000px; padding: 40px 0; }
+
+        .card { background: white; border-radius: 20px; padding: 30px; text-align: center; text-decoration: none; color: var(--dark); box-shadow: 0 10px 25px rgba(0,0,0,0.05); transition: all 0.3s ease; display: flex; flex-direction: column; justify-content: space-between; border-bottom: 5px solid transparent; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        
+        /* Colores dinámicos para cada tarjeta */
+        .card-memoria { border-color: var(--primary); }
+        .card-trazado { border-color: var(--secondary); }
+        .card-next { border-color: #bdc3c7; opacity: 0.7; pointer-events: none; }
+
+        .icon { font-size: 60px; margin-bottom: 20px; }
+        h2 { margin: 10px 0; font-size: 1.5em; }
+        .desc { font-size: 0.95em; color: #7f8c8d; line-height: 1.5; margin-bottom: 25px; flex-grow: 1; }
+        
+        .btn { background: var(--dark); color: white; padding: 12px 25px; border-radius: 10px; font-weight: bold; text-transform: uppercase; font-size: 0.85em; transition: 0.3s; }
+        .card:hover .btn { background: var(--primary); }
+        .card-trazado:hover .btn { background: var(--secondary); }
+
+        footer { margin-top: auto; padding: 30px; color: #bdc3c7; font-size: 0.8em; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Mi Clínica Visual</h1>
+        <p>Software de Rehabilitación y Entrenamiento Óculo-Motor</p>
+    </header>
+
+    <div class="container">
+        <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="card card-memoria">
+            <div class="icon">🧠</div>
+            <h2>Memoria Secuencial</h2>
+            <p class="desc">Entrenamiento de memoria de trabajo, atención y control inhibitorio con dificultad progresiva y distractores.</p>
+            <span class="btn">Iniciar Ejercicio</span>
+        </a>
+
+        <a href="https://manuellgtmo-png.github.io/terapia-visual/" class="card card-trazado">
+            <div class="icon">🎨</div>
+            <h2>Trazado y Laberintos</h2>
+            <p class="desc">Mejora la coordinación ojo-mano y el seguimiento sacádico fino mediante el trazado de figuras complejas.</p>
+            <span class="btn">Iniciar Ejercicio</span>
+        </a>
+
+        <div class="card card-next">
+            <div class="icon">🎯</div>
+            <h2>Nuevos Ejercicios</h2>
+            <p class="desc">Estamos desarrollando herramientas de entrenamiento de sacádicos y visión periférica.</p>
+            <span style="color: #bdc3c7; font-size: 0.8em; font-weight: bold;">PRÓXIMAMENTE</span>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Desarrollado para Consulta de Optometría y Terapia Visual
+    </footer>
+
+</body>
+</html>
