@@ -3,112 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cerebro Visual - Clínica de Terapia</title>
+    <title>Centro Perceptum - Portal de Terapia</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --bg: #0f172a; --card: #1e293b; --primary: #f8fafc; 
             --accent: #38bdf8; --pink: #ff2e63; --success: #10b981; --yellow: #facc15;
+            --grad-1: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
+            --grad-2: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
+            --grad-3: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
         }
-        body { margin: 0; font-family: 'Montserrat'; background: var(--bg); color: var(--primary); min-height: 100vh; padding-bottom: 50px; }
-        .container { max-width: 850px; margin: 0 auto; padding: 40px 20px; }
+
+        body { 
+            margin: 0; font-family: 'Montserrat', sans-serif; 
+            background: var(--bg); color: var(--primary); 
+            min-height: 100vh; padding-bottom: 60px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
         
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { margin: 0; font-size: 2.8rem; letter-spacing: -1px; }
+        /* Encabezado */
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { margin: 0; font-size: 3.2rem; letter-spacing: -2px; text-transform: uppercase; }
         .header h1 span { color: var(--accent); }
+        .header p { opacity: 0.8; font-size: 1.1rem; letter-spacing: 1px; margin-top: 5px; color: var(--yellow); }
 
+        /* Panel de Usuario */
         .user-panel { 
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 25px; border-radius: 30px; border: 1px solid #334155;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 25px 35px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1);
             display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 50px; backdrop-filter: blur(10px);
         }
-        .user-info b { color: var(--accent); font-size: 0.75rem; text-transform: uppercase; }
-        .user-info div { font-size: 1.4rem; font-weight: 900; }
-        
-        .btn-change { background: #334155; color: white; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; }
+        .user-info b { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; }
+        .user-info div { font-size: 1.6rem; font-weight: 900; color: white; }
+        .btn-change { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.3s; box-shadow: 0 4px 0 #9f1239; }
+        .btn-change:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #9f1239; }
 
-        .category-card { background: var(--card); border-radius: 25px; border: 1px solid #334155; overflow: hidden; margin-bottom: 15px; }
-        .category-btn { width: 100%; padding: 20px; background: none; border: none; color: white; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
-        .category-title { display: flex; align-items: center; gap: 15px; font-size: 1.1rem; font-weight: 900; }
+        /* Cuadrícula de Secciones */
+        .section-title { font-size: 1.5rem; margin: 40px 0 20px; display: flex; align-items: center; gap: 15px; border-left: 5px solid var(--accent); padding-left: 15px; }
         
-        .submenu { display: none; padding: 20px; background: rgba(15, 23, 42, 0.5); grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid #334155; }
-        
-        .game-link { 
-            background: #2d3a4f; color: white; padding: 18px; border-radius: 18px;
-            text-decoration: none; text-align: center; font-weight: 700; font-size: 0.85rem;
-            transition: 0.3s; display: flex; flex-direction: column; 
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+
+        /* Tarjetas de Juego */
+        .game-card { 
+            background: var(--card); border-radius: 35px; padding: 30px;
+            text-decoration: none; color: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column; align-items: flex-start;
+            border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;
         }
-        .game-link:hover { background: var(--accent); color: var(--bg); transform: translateY(-3px); }
-        .game-link span { font-size: 0.65rem; opacity: 0.7; margin-top: 5px; }
-        
-        .locked { opacity: 0.4; cursor: not-allowed; border: 1px dashed #475569; }
 
+        .game-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
+            background: var(--grad-1);
+        }
+
+        .game-card:hover { transform: translateY(-10px); background: #24334d; box-shadow: 0 20px 40px rgba(0,0,0,0.4); border-color: var(--accent); }
+
+        .game-card.pink::before { background: var(--grad-2); }
+        .game-card.purple::before { background: var(--grad-3); }
+
+        .game-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .game-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 8px; }
+        .game-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.4; }
+        
+        .badge { 
+            margin-top: 15px; padding: 6px 15px; border-radius: 12px; font-size: 0.7rem; 
+            font-weight: 900; text-transform: uppercase; background: rgba(255,255,255,0.1);
+        }
+
+        .locked { opacity: 0.6; pointer-events: none; filter: grayscale(0.5); border: 1px dashed rgba(255,255,255,0.2); }
+        .locked .badge { background: #475569; color: #cbd5e1; }
+
+        /* Modal */
         .modal { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-content { background: var(--card); padding: 40px; border-radius: 40px; width: 90%; max-width: 400px; text-align: center; }
-        input { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #334155; background: #0f172a; color: white; margin: 20px 0; font-family: 'Montserrat'; text-align: center; }
+        .modal-content { background: var(--card); padding: 50px; border-radius: 50px; width: 90%; max-width: 450px; text-align: center; border: 2px solid var(--accent); }
+        input { width: 100%; padding: 20px; border-radius: 20px; border: 2px solid #334155; background: #0f172a; color: white; margin: 25px 0; font-family: 'Montserrat'; text-align: center; font-size: 1.2rem; }
+        .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 0 #065f46; font-size: 1.1rem; }
+        
         .active { display: flex; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.2rem; }
+            .user-panel { flex-direction: column; gap: 20px; text-align: center; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>CEREBRO <span>VISUAL</span></h1>
-        <p style="opacity: 0.6;">Portal Terapéutico Profesional</p>
+        <h1>Centro <span>Perceptum</span></h1>
+        <p>Portal de terapia visual online</p>
     </div>
 
     <div class="user-panel">
         <div class="user-info">
-            <b>Paciente:</b>
+            <b>Paciente en Entrenamiento:</b>
             <div id="paciente-nombre">CARGANDO...</div>
         </div>
-        <button class="btn-change" onclick="mostrarModal()">CAMBIAR</button>
+        <button class="btn-change" onclick="mostrarModal()">CAMBIAR PACIENTE</button>
     </div>
 
-    <div class="category-card">
-        <button class="category-btn" onclick="toggleSubmenu('sub1')">
-            <div class="category-title"><span>👓</span> Integración y Binocularidad</div>
-            <span id="arrow-sub1">▶</span>
-        </button>
-        <div id="sub1" class="submenu">
-            <a href="https://manuellgtmo-png.github.io/integracion-binocular/" class="game-link">Integración Dinámica<span>Anaglifos PRO</span></a>
-            <a href="#" class="game-link locked">Trabajo de Convergencia<span>Próximamente</span></a>
-            <a href="#" class="game-link locked">Trabajo de Divergencia<span>Próximamente</span></a>
+    <div class="section-title"><span>👓</span> Integración y Binocularidad</div>
+    <div class="card-grid">
+        <a href="https://manuellgtmo-png.github.io/integracion-binocular/" class="game-card">
+            <div class="game-icon">🎯</div>
+            <div class="game-name">Integración Dinámica</div>
+            <div class="game-desc">Entrenamiento con gafas anaglifo para eliminar supresión y mejorar fusión.</div>
+            <div class="badge" style="color:var(--accent)">Activo</div>
+        </a>
+        <div class="game-card locked">
+            <div class="game-icon">🤝</div>
+            <div class="game-name">Convergencia</div>
+            <div class="game-desc">Ejercicios coordinados para fortalecer la visión de cerca.</div>
+            <div class="badge">Próximamente</div>
+        </div>
+        <div class="game-card locked">
+            <div class="game-icon">👐</div>
+            <div class="game-name">Divergencia</div>
+            <div class="game-desc">Entrenamiento para mejorar la flexibilidad visual de lejos.</div>
+            <div class="badge">Próximamente</div>
         </div>
     </div>
 
-    <div class="category-card">
-        <button class="category-btn" onclick="toggleSubmenu('sub2')">
-            <div class="category-title"><span>👁️</span> Agudeza y Percepción</div>
-            <span id="arrow-sub2">▶</span>
-        </button>
-        <div id="sub2" class="submenu">
-            <a href="#" class="game-link locked">Agudeza Visual Estática<span>Próximamente</span></a>
-            <a href="#" class="game-link locked">Agudeza Visual Dinámica<span>Próximamente</span></a>
-            <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="game-link">Memoria Secuencial<span>Atención Visual</span></a>
+    <div class="section-title"><span>🧠</span> Agudeza y Percepción</div>
+    <div class="card-grid">
+        <div class="game-card purple locked">
+            <div class="game-icon">🖼️</div>
+            <div class="game-name">Agudeza Estática</div>
+            <div class="game-desc">Test de discriminación visual de precisión en punto fijo.</div>
+            <div class="badge">Próximamente</div>
         </div>
+        <div class="game-card purple locked">
+            <div class="game-icon">🏃</div>
+            <div class="game-name">Agudeza Dinámica</div>
+            <div class="game-desc">Identificación de símbolos en movimiento a alta velocidad.</div>
+            <div class="badge">Próximamente</div>
+        </div>
+        <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="game-card purple">
+            <div class="game-icon">🧩</div>
+            <div class="game-name">Memoria Secuencial</div>
+            <div class="game-desc">Mejora la retención de patrones y el procesamiento de información.</div>
+            <div class="badge" style="color:var(--pink)">Activo</div>
+        </a>
     </div>
 
-    <div class="category-card">
-        <button class="category-btn" onclick="toggleSubmenu('sub3')">
-            <div class="category-title"><span>⚡</span> Motilidad y Reacción</div>
-            <span id="arrow-sub3">▶</span>
-        </button>
-        <div id="sub3" class="submenu">
-            <a href="https://manuellgtmo-png.github.io/Tiempo-de-reaccion/" class="game-link">Tiempo de Reacción<span>Velocidad Visual</span></a>
-            <a href="#" class="game-link locked">Rastreo y Motilidad<span>Próximamente</span></a>
-            <a href="#" class="game-link locked">Visión Periférica<span>Próximamente</span></a>
+    <div class="section-title"><span>⚡</span> Motilidad y Reacción</div>
+    <div class="card-grid">
+        <a href="https://manuellgtmo-png.github.io/Tiempo-de-reaccion/" class="game-card pink">
+            <div class="game-icon">🚀</div>
+            <div class="game-name">Tiempo de Reacción</div>
+            <div class="game-desc">Mide y mejora la velocidad de respuesta ojo-cerebro-mano.</div>
+            <div class="badge" style="color:var(--yellow)">Activo</div>
+        </a>
+        <div class="game-card pink locked">
+            <div class="game-icon">🛰️</div>
+            <div class="game-name">Visión Periférica</div>
+            <div class="game-desc">Amplía el campo de atención visual mientras mantienes la fijación.</div>
+            <div class="badge">Próximamente</div>
         </div>
     </div>
 </div>
 
 <div id="modal-user" class="modal">
     <div class="modal-content">
-        <h2 style="color:var(--accent)">BIENVENIDO</h2>
-        <p style="font-size: 0.8rem; opacity: 0.7;">Ingresa el nombre del paciente para iniciar la sesión clínica.</p>
-        <input type="text" id="input-nombre" placeholder="Nombre completo">
-        <button onclick="guardarUsuario()" style="background:var(--success); color:white; border:none; width:100%; padding:18px; border-radius:15px; font-weight:900; cursor:pointer; box-shadow: 0 5px 0 #065f46;">INICIAR ENTRENAMIENTO</button>
+        <h2 style="color:var(--accent); margin:0;">¡BIENVENIDO!</h2>
+        <p style="opacity: 0.7; font-size: 0.9rem; margin-top: 10px;">Ingresa tu nombre para comenzar la sesión en <b>Centro Perceptum</b>.</p>
+        <input type="text" id="input-nombre" placeholder="Nombre del Paciente">
+        <button onclick="guardarUsuario()" class="btn-start">INICIAR ENTRENAMIENTO</button>
     </div>
 </div>
 
@@ -129,18 +192,10 @@
             document.getElementById('modal-user').classList.remove('active');
         }
     }
-
-    function toggleSubmenu(id) {
-        const sub = document.getElementById(id);
-        const arrow = document.getElementById('arrow-' + id);
-        const isOpen = sub.style.display === 'grid';
-        document.querySelectorAll('.submenu').forEach(s => s.style.display = 'none');
-        document.querySelectorAll('[id^="arrow-"]').forEach(a => a.innerText = '▶');
-        if (!isOpen) { sub.style.display = 'grid'; arrow.innerText = '▼'; }
-    }
 </script>
 </body>
 </html>
+
 
 
 
