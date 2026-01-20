@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centro Perceptum - Portal Profesional</title>
+    <title>Centro Perceptum - Portal Clínico</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -18,6 +18,7 @@
             --grad-black: linear-gradient(135deg, #000000 0%, #434343 100%);
         }
 
+        /* MODO CLARO SUAVE */
         body.light-mode {
             --bg-color: #f1f5f9;
             --card-bg: #ffffff;
@@ -27,59 +28,62 @@
 
         * { box-sizing: border-box; transition: 0.3s ease; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background-color: var(--bg-color); color: var(--text-color); padding: 40px 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1300px; margin: 0 auto; }
 
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
         .theme-toggle {
             background: var(--card-bg); border: 2px solid var(--accent-color);
-            padding: 10px 20px; border-radius: 50px; cursor: pointer;
+            padding: 10px 25px; border-radius: 50px; cursor: pointer;
             color: var(--text-color); font-weight: 900; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .header { text-align: center; margin-bottom: 50px; }
-        .header h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .header h1 { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; margin: 0; letter-spacing: -1px; }
         .header h1 span { color: var(--accent-color); }
 
         .patient-box {
             background: var(--card-bg); padding: 25px; border-radius: 30px;
             margin-bottom: 40px; border: 2px solid var(--accent-color); text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .patient-box input {
-            background: rgba(0,0,0,0.05); border: 2px solid #334155;
+            background: rgba(0,0,0,0.05); border: 2px solid #cbd5e1;
             padding: 15px; border-radius: 15px; color: inherit; width: 100%;
-            max-width: 450px; text-align: center; font-family: inherit; font-size: 1.2rem;
+            max-width: 500px; text-align: center; font-family: inherit; font-size: 1.2rem;
         }
 
         .section-title {
-            font-size: 1.6rem; margin: 50px 0 25px; border-left: 8px solid var(--accent-color);
-            padding-left: 20px; text-transform: uppercase;
+            font-size: 1.8rem; margin: 60px 0 30px; border-left: 10px solid var(--accent-color);
+            padding-left: 20px; text-transform: uppercase; font-weight: 900;
         }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
 
         .card {
-            background: var(--card-bg); border-radius: 35px; padding: 35px;
+            background: var(--card-bg); border-radius: 40px; padding: 35px;
             text-decoration: none; color: inherit; position: relative; overflow: hidden;
-            display: flex; flex-direction: column; min-height: 280px;
-            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column; min-height: 300px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
         }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); border-color: var(--accent-color); }
-        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: var(--grad-blue); }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-color: var(--accent-color); }
+        .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: var(--grad-blue); }
         
         .card.black::before { background: var(--grad-black); }
         .card.pink::before { background: var(--grad-pink); }
         .card.purple::before { background: var(--grad-purple); }
 
-        .icon { font-size: 3rem; margin-bottom: 15px; }
-        .name { font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
-        .desc { font-size: 0.95rem; opacity: 0.8; line-height: 1.4; flex-grow: 1; }
+        .icon { font-size: 3.5rem; margin-bottom: 20px; }
+        .name { font-size: 1.6rem; font-weight: 900; margin-bottom: 12px; }
+        .desc { font-size: 1rem; opacity: 0.8; line-height: 1.5; flex-grow: 1; }
 
         .badge {
-            margin-top: 15px; padding: 8px 15px; border-radius: 10px;
-            font-weight: 900; font-size: 0.75rem; background: rgba(0,0,0,0.1); width: fit-content;
+            margin-top: 20px; padding: 10px 20px; border-radius: 12px;
+            font-weight: 900; font-size: 0.8rem; background: rgba(0,0,0,0.05); width: fit-content;
         }
-        .active { color: var(--success); }
-        .locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+        .active { color: var(--success); border: 1px solid var(--success); }
+        .locked { opacity: 0.6; filter: grayscale(1); pointer-events: none; }
     </style>
 </head>
 <body>
@@ -94,12 +98,12 @@
 
     <header class="header">
         <h1>Centro <span>Perceptum</span></h1>
-        <p>Portal de Evaluación y Terapia Visual Pediátrica</p>
+        <p>Portal Avanzado de Entrenamiento y Evaluación Visual</p>
     </header>
 
     <div class="patient-box">
-        <label style="display:block; margin-bottom:10px; font-weight:900;">ID PACIENTE:</label>
-        <input type="text" id="p-name" placeholder="Nombre del niño/a" oninput="saveP()">
+        <label style="display:block; margin-bottom:15px; font-weight:900; letter-spacing:1px;">IDENTIFICACIÓN DEL PACIENTE:</label>
+        <input type="text" id="p-name" placeholder="Escriba nombre y apellido" oninput="saveP()">
     </div>
 
     <div class="section-title">👶 Estimulación Visual Temprana</div>
@@ -107,13 +111,29 @@
         <a href="https://manuellgtmo-png.github.io/estimulacion-de-contraste/" class="card black">
             <div class="icon">🏁</div>
             <div class="name">Alto Contraste</div>
-            <div class="desc">Fijación central y atención mediante estímulos B/N. Ideal para etapas iniciales.</div>
+            <div class="desc">Fijación foveal y atención visual mediante estímulos B/N de alta frecuencia.</div>
             <div class="badge active">SISTEMA ACTIVO</div>
         </a>
         <div class="card black locked">
             <div class="icon">🌈</div>
             <div class="name">Seguimiento de Color</div>
-            <div class="desc">Estimulación retinal y motilidad suave mediante colores saturados.</div>
+            <div class="desc">Estimulación retinal y motilidad mediante cromatismo saturado.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
+        </div>
+    </div>
+
+    <div class="section-title">🖼️ Agudeza Visual</div>
+    <div class="grid">
+        <div class="card pink locked">
+            <div class="icon">🔍</div>
+            <div class="name">Agudeza Estática</div>
+            <div class="desc">Test de discriminación visual de precisión en punto fijo.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
+        </div>
+        <div class="card pink locked">
+            <div class="icon">🏃</div>
+            <div class="name">Agudeza Dinámica</div>
+            <div class="desc">Identificación de optotipos en movimiento lineal y circular.</div>
             <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
@@ -123,29 +143,13 @@
         <a href="https://manuellgtmo-png.github.io/Integracion-binocular-anaglifo/" class="card">
             <div class="icon">🎯</div>
             <div class="name">Integración Dinámica</div>
-            <div class="desc">Entrenamiento con gafas anaglifo para control de supresión.</div>
+            <div class="desc">Entrenamiento con gafas anaglifo para el control de supresión visual.</div>
             <div class="badge active">ACTIVO</div>
         </a>
         <div class="card locked">
             <div class="icon">🤝</div>
-            <div class="name">Convergencia</div>
-            <div class="desc">Fortalecimiento de la visión binocular de cerca.</div>
-            <div class="badge">PRÓXIMAMENTE</div>
-        </div>
-    </div>
-
-    <div class="section-title">🧠 Percepción y Memoria</div>
-    <div class="grid">
-        <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="card pink">
-            <div class="icon">🧩</div>
-            <div class="name">Memoria Secuencial</div>
-            <div class="desc">Mejora el procesamiento de información y retención de patrones.</div>
-            <div class="badge active">ACTIVO</div>
-        </a>
-        <div class="card pink locked">
-            <div class="icon">🔍</div>
-            <div class="name">Integración Visual</div>
-            <div class="desc">Capacidad de cierre visual y discriminación de formas.</div>
+            <div class="name">Convergencia / Divergencia</div>
+            <div class="desc">Flexibilidad binocular y reservas fusionales en distancias variables.</div>
             <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
@@ -155,13 +159,35 @@
         <a href="https://manuellgtmo-png.github.io/Tiempo-de-reaccion/" class="card purple">
             <div class="icon">🚀</div>
             <div class="name">Tiempo de Reacción</div>
-            <div class="desc">Coordinación ojo-mano y velocidad de respuesta cerebral.</div>
+            <div class="desc">Velocidad de procesamiento ojo-cerebro-mano con registro en milisegundos.</div>
             <div class="badge active">ACTIVO</div>
         </a>
         <div class="card purple locked">
             <div class="icon">👁️</div>
-            <div class="name">Visión Periférica</div>
-            <div class="desc">Ampliación del campo de atención visual activa.</div>
+            <div class="name">Sacádicos</div>
+            <div class="desc">Precisión y velocidad en los saltos de mirada programados.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
+        </div>
+        <div class="card purple locked">
+            <div class="icon">🔄</div>
+            <div class="name">Antisacádicos</div>
+            <div class="desc">Control inhibitorio y atención ejecutiva visual avanzada.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
+        </div>
+    </div>
+
+    <div class="section-title">🧠 Percepción y Memoria</div>
+    <div class="grid">
+        <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="card pink">
+            <div class="icon">🧩</div>
+            <div class="name">Memoria Secuencial</div>
+            <div class="desc">Retención de patrones visuales complejos y secuencias lógicas.</div>
+            <div class="badge active">ACTIVO</div>
+        </a>
+        <div class="card pink locked">
+            <div class="icon">🎨</div>
+            <div class="name">Integración Visual</div>
+            <div class="desc">Cierre visual y síntesis de formas incompletas.</div>
             <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
@@ -179,6 +205,7 @@
 </script>
 </body>
 </html>
+
 
 
 
