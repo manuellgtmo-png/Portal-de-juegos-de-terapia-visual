@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centro Perceptum - Portal de Entrenamiento Visual</title>
+    <title>Centro Perceptum - Portal Profesional</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,221 +13,220 @@
             --accent-color: #38bdf8;
             --pink-accent: #ff2e63;
             --green-accent: #10b981;
-            --yellow-accent: #facc15;
+            --purple-accent: #8b5cf6;
             --gradient-1: linear-gradient(135deg, #3b82f6 0%, #2dd4bf 100%);
             --gradient-2: linear-gradient(135deg, #f472b6 0%, #fb923c 100%);
             --gradient-3: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
             --gradient-black: linear-gradient(135deg, #000000 0%, #434343 100%);
         }
 
-        * { box-sizing: border-box; }
+        /* MODO ALTO CONTRASTE (SOL/LUNA) */
+        body.high-contrast {
+            --bg-color: #ffffff;
+            --card-bg: #f1f5f9;
+            --text-color: #0f172a;
+            --accent-color: #0369a1;
+        }
+
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        
         body {
             margin: 0;
             font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            min-height: 100vh;
             padding: 40px 20px;
         }
 
         .container { max-width: 1200px; margin: 0 auto; }
 
-        .header { text-align: center; margin-bottom: 60px; }
-        .header h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -2px;
-            text-transform: uppercase;
-        }
-        .header h1 span { color: var(--accent-color); }
-        .header p { font-size: 1.2rem; opacity: 0.7; margin-top: 10px; }
-
-        .patient-section {
+        /* HEADER Y CONTROLES */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .contrast-toggle {
             background: var(--card-bg);
-            padding: 30px;
-            border-radius: 30px;
-            margin-bottom: 50px;
             border: 2px solid var(--accent-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 900;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
-        .patient-section label { font-weight: 900; font-size: 1.1rem; }
-        .patient-section input {
-            background: rgba(0,0,0,0.2);
+
+        .header { text-align: center; margin-bottom: 50px; }
+        .header h1 { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .header h1 span { color: var(--accent-color); }
+
+        /* REGISTRO PACIENTE */
+        .patient-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 40px;
+            border: 2px solid var(--accent-color);
+            text-align: center;
+        }
+        .patient-box input {
+            background: rgba(0,0,0,0.1);
             border: 2px solid #334155;
-            padding: 15px 25px;
-            border-radius: 15px;
-            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            color: inherit;
             font-size: 1.2rem;
             width: 100%;
             max-width: 400px;
             text-align: center;
             font-family: inherit;
         }
-        .patient-section input:focus { border-color: var(--accent-color); outline: none; }
 
+        /* SECCIONES Y TARJETAS */
         .section-title {
             font-size: 1.8rem;
-            font-weight: 900;
-            margin: 40px 0 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            margin: 40px 0 20px;
             border-left: 8px solid var(--accent-color);
             padding-left: 20px;
+            text-transform: uppercase;
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
 
         .game-card {
             background: var(--card-bg);
-            border-radius: 40px;
-            padding: 40px;
+            border-radius: 35px;
+            padding: 35px;
             text-decoration: none;
             color: inherit;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.05);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.05);
             min-height: 280px;
         }
 
-        .game-card:hover {
-            transform: translateY(-12px);
-            border-color: var(--accent-color);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
+        .game-card:hover { transform: translateY(-10px); border-color: var(--accent-color); }
 
         .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px;
             background: var(--gradient-1);
         }
-
         .game-card.pink::before { background: var(--gradient-2); }
         .game-card.purple::before { background: var(--gradient-3); }
         .game-card.black::before { background: var(--gradient-black); }
 
-        .game-icon { font-size: 3.5rem; margin-bottom: 20px; }
-        .game-name { font-size: 1.6rem; font-weight: 900; margin-bottom: 12px; }
-        .game-desc { font-size: 1rem; opacity: 0.8; line-height: 1.5; flex-grow: 1; }
+        .game-icon { font-size: 3rem; margin-bottom: 15px; }
+        .game-name { font-size: 1.5rem; font-weight: 900; margin-bottom: 10px; }
+        .game-desc { font-size: 0.95rem; opacity: 0.8; line-height: 1.4; flex-grow: 1; }
 
         .badge {
-            margin-top: 20px;
-            padding: 10px 20px;
-            border-radius: 15px;
-            font-weight: 900;
-            font-size: 0.85rem;
-            background: rgba(0,0,0,0.3);
-            width: fit-content;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-top: 20px; padding: 8px 15px; border-radius: 12px;
+            font-weight: 900; font-size: 0.8rem; background: rgba(0,0,0,0.2); width: fit-content;
         }
-
-        .status-active { color: var(--green-accent); }
-        .status-locked { color: #64748b; }
-        .locked { opacity: 0.6; pointer-events: none; filter: grayscale(0.8); }
-
-        @media (max-width: 768px) {
-            .header h1 { font-size: 2.5rem; }
-            .grid { grid-template-columns: 1fr; }
-        }
+        .active { color: var(--green-accent); }
+        .locked { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="top-nav">
+        <div></div> <button class="contrast-toggle" onclick="toggleContrast()">
+            <span id="contrast-icon">🌙</span> <span id="contrast-text">MODO OSCURO</span>
+        </button>
+    </div>
+
     <header class="header">
         <h1>Centro <span>Perceptum</span></h1>
-        <p>Portal Avanzado de Entrenamiento y Terapia Visual</p>
+        <p>Portal Terapéutico de Entrenamiento Visual Avanzado</p>
     </header>
 
-    <section class="patient-section">
-        <label for="p-name">DATOS DEL PACIENTE</label>
-        <input type="text" id="p-name" placeholder="Ingrese nombre completo" oninput="updatePatient()">
-    </section>
+    <div class="patient-box">
+        <label style="display:block; margin-bottom:10px; font-weight:900;">ID PACIENTE:</label>
+        <input type="text" id="p-name" placeholder="Nombre del Paciente" oninput="savePatient()">
+    </div>
 
-    <div class="section-title">👶 ESTIMULACIÓN VISUAL TEMPRANA</div>
+    <div class="section-title">👶 Estimulación Temprana</div>
     <div class="grid">
         <a href="https://manuellgtmo-png.github.io/estimulacion-de-contraste/" class="game-card black">
             <div class="game-icon">🏁</div>
             <div class="game-name">Alto Contraste</div>
-            <div class="game-desc">Desarrollo de fijación foveal y atención mediante estímulos B/N de alta densidad.</div>
-            <div class="badge status-active">¡SISTEMA ACTIVO!</div>
+            <div class="game-desc">Fijación central y atención visual con estímulos de alta densidad.</div>
+            <div class="badge active">¡SISTEMA ACTIVO!</div>
         </a>
-
         <div class="game-card black locked">
             <div class="game-icon">🌈</div>
             <div class="game-name">Seguimiento de Color</div>
-            <div class="game-desc">Estimulación de fotorreceptores mediante cromatismo saturado en movimiento.</div>
-            <div class="badge status-locked">PRÓXIMAMENTE</div>
+            <div class="game-desc">Estimulación retinal mediante seguimiento de colores saturados.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
 
-    <div class="section-title">⚡ MOTILIDAD Y REACCIÓN</div>
+    <div class="section-title">⚡ Motilidad y Reacción</div>
     <div class="grid">
         <a href="https://manuellgtmo-png.github.io/Tiempo-de-reaccion/" class="game-card">
             <div class="game-icon">🚀</div>
             <div class="game-name">Tiempo de Reacción</div>
-            <div class="game-desc">Evaluación y mejora de la velocidad de procesamiento y respuesta óculo-motora.</div>
-            <div class="badge status-active">¡SISTEMA ACTIVO!</div>
+            <div class="game-desc">Mide la velocidad de respuesta óculo-motora.</div>
+            <div class="badge active">¡SISTEMA ACTIVO!</div>
         </a>
-
         <div class="game-card purple locked">
             <div class="game-icon">🛰️</div>
             <div class="game-name">Sacádicos / Rastreo</div>
-            <div class="game-desc">Entrenamiento de la precisión en saltos oculares y seguimiento de objetivos móviles.</div>
-            <div class="badge status-locked">PRÓXIMAMENTE</div>
+            <div class="game-desc">Precisión en saltos oculares y seguimientos dinámicos.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
 
-    <div class="section-title">🧠 PERCEPCIÓN Y MEMORIA</div>
+    <div class="section-title">🧠 Percepción y Memoria</div>
     <div class="grid">
         <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="game-card pink">
             <div class="game-icon">🧩</div>
             <div class="game-name">Memoria Secuencial</div>
-            <div class="game-desc">Fortalecimiento de la retención de patrones y secuencias lógicas visuales.</div>
-            <div class="badge status-active">¡SISTEMA ACTIVO!</div>
+            <div class="game-desc">Retención de patrones y secuencias lógicas.</div>
+            <div class="badge active">¡SISTEMA ACTIVO!</div>
         </a>
-
         <div class="game-card pink locked">
             <div class="game-icon">🔍</div>
             <div class="game-name">Integración Visual</div>
-            <div class="game-desc">Capacidad de sintetizar partes de un estímulo en un todo coherente.</div>
-            <div class="badge status-locked">PRÓXIMAMENTE</div>
+            <div class="game-desc">Sustentación de la imagen y cierre visual.</div>
+            <div class="badge">PRÓXIMAMENTE</div>
         </div>
     </div>
 </div>
 
 <script>
-    function updatePatient() {
-        const name = document.getElementById('p-name').value;
-        localStorage.setItem('paciente', name);
+    function toggleContrast() {
+        const body = document.body;
+        const icon = document.getElementById('contrast-icon');
+        const text = document.getElementById('contrast-text');
+        
+        body.classList.toggle('high-contrast');
+        
+        if(body.classList.contains('high-contrast')) {
+            icon.innerText = '☀️';
+            text.innerText = 'MODO CLARO';
+        } else {
+            icon.innerText = '🌙';
+            text.innerText = 'MODO OSCURO';
+        }
+    }
+
+    function savePatient() {
+        localStorage.setItem('paciente', document.getElementById('p-name').value);
     }
 
     window.onload = () => {
-        const savedName = localStorage.getItem('paciente');
-        if (savedName) {
-            document.getElementById('p-name').value = savedName;
+        if(localStorage.getItem('paciente')) {
+            document.getElementById('p-name').value = localStorage.getItem('paciente');
         }
     }
 </script>
 
 </body>
 </html>
+
 
 
 
