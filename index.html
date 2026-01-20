@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centro Perceptum - Portal Profesional</title>
+    <title>Centro Perceptum - Portal Terapéutico</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -16,8 +16,8 @@
         }
 
         body.light-mode {
-            --bg: #f1f5f9; --card: #ffffff; --primary: #1e293b;
-            --accent: #0284c7; --pink: #e11d48;
+            --bg: #f8fafc; --card: #ffffff; --primary: #0f172a;
+            --accent: #0284c7; --pink: #be123c;
         }
 
         body { 
@@ -29,6 +29,7 @@
 
         .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; }
         
+        /* Botón de Contraste */
         .theme-toggle {
             position: absolute; top: 10px; right: 20px;
             background: var(--card); border: 2px solid var(--accent);
@@ -41,47 +42,47 @@
         .header { text-align: center; margin-bottom: 40px; }
         .header h1 { margin: 0; font-size: 3.5rem; letter-spacing: -2px; text-transform: uppercase; }
         .header h1 span { color: var(--accent); }
-        .header p { opacity: 0.8; font-size: 1.2rem; letter-spacing: 1px; margin-top: 5px; color: var(--yellow); font-weight: 700; }
+        .header p { opacity: 0.9; font-size: 1.2rem; margin-top: 5px; color: var(--yellow); font-weight: 700; }
 
         .user-panel { 
             background: var(--card); padding: 25px 35px; border-radius: 40px; 
-            border: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; 
+            border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; 
             justify-content: space-between; margin-bottom: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .user-info b { color: var(--accent); font-size: 0.8rem; text-transform: uppercase; }
         .user-info div { font-size: 1.8rem; font-weight: 900; }
-        .btn-change { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 20px; cursor: pointer; font-weight: 900; box-shadow: 0 4px 0 #9f1239; transition: 0.2s; }
-        .btn-change:hover { transform: translateY(-2px); }
+        .btn-change { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 20px; cursor: pointer; font-weight: 900; box-shadow: 0 4px 0 #9f1239; }
 
-        .section-title { font-size: 1.7rem; margin: 50px 0 25px; display: flex; align-items: center; gap: 15px; border-left: 6px solid var(--accent); padding-left: 20px; }
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .section-title { font-size: 1.6rem; margin: 45px 0 20px; display: flex; align-items: center; gap: 15px; border-left: 6px solid var(--accent); padding-left: 15px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
 
+        /* Tarjetas */
         .game-card { 
-            background: var(--card); border-radius: 35px; padding: 35px;
-            text-decoration: none; color: var(--primary); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--card); border-radius: 35px; padding: 30px;
+            text-decoration: none; color: var(--primary); transition: all 0.4s;
             display: flex; flex-direction: column; align-items: flex-start;
             border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        .game-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: var(--grad-1); }
-        .game-card:hover { transform: translateY(-12px); box-shadow: 0 25px 50px rgba(0,0,0,0.15); border-color: var(--accent); }
+        .game-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 8px; background: var(--grad-1); }
+        .game-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); border-color: var(--accent); }
         
         .game-card.pink::before { background: var(--grad-2); }
         .game-card.purple::before { background: var(--grad-3); }
         .game-card.black::before { background: var(--grad-dark); }
 
-        .game-icon { font-size: 3rem; margin-bottom: 20px; }
-        .game-name { font-size: 1.3rem; font-weight: 900; margin-bottom: 10px; }
-        .game-desc { font-size: 0.9rem; opacity: 0.7; line-height: 1.5; flex-grow: 1; }
-        .badge { margin-top: 20px; padding: 8px 18px; border-radius: 15px; font-size: 0.75rem; font-weight: 900; background: rgba(0,0,0,0.05); letter-spacing: 0.5px; }
+        .game-icon { font-size: 2.8rem; margin-bottom: 15px; }
+        .game-name { font-size: 1.2rem; font-weight: 900; margin-bottom: 8px; }
+        .game-desc { font-size: 0.85rem; opacity: 0.7; line-height: 1.4; }
+        .badge { margin-top: 15px; padding: 6px 15px; border-radius: 12px; font-size: 0.7rem; font-weight: 900; background: rgba(0,0,0,0.1); }
 
-        .locked { opacity: 0.6; pointer-events: none; filter: grayscale(0.8); border: 2px dashed rgba(0,0,0,0.1); }
+        .locked { opacity: 0.6; pointer-events: none; filter: grayscale(0.7); }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--card); padding: 50px; border-radius: 50px; width: 90%; max-width: 480px; text-align: center; border: 2px solid var(--accent); }
-        input { width: 100%; padding: 22px; border-radius: 20px; border: 2px solid #334155; background: var(--bg); color: var(--primary); margin: 30px 0; text-align: center; font-size: 1.3rem; font-family: inherit; }
-        .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 22px; border-radius: 20px; font-weight: 900; cursor: pointer; font-size: 1.2rem; box-shadow: 0 6px 0 #065f46; transition: 0.2s; }
-        .btn-start:active { transform: translateY(4px); box-shadow: 0 2px 0 #065f46; }
+        /* Modal */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: var(--card); padding: 50px; border-radius: 50px; width: 90%; max-width: 450px; text-align: center; }
+        input { width: 100%; padding: 20px; border-radius: 20px; border: 2px solid #334155; background: var(--bg); color: var(--primary); margin: 25px 0; text-align: center; font-size: 1.2rem; font-family: 'Montserrat'; }
+        .btn-start { background: var(--success); color: white; border: none; width: 100%; padding: 20px; border-radius: 20px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 0 #065f46; }
         .active { display: flex; }
     </style>
 </head>
@@ -95,7 +96,7 @@
         <p>Portal de terapia visual online</p>
     </div>
 
-    <div class="user-panel" id="userPanel">
+    <div class="user-panel">
         <div class="user-info">
             <b>Paciente en Entrenamiento:</b>
             <div id="paciente-nombre">CARGANDO...</div>
@@ -108,35 +109,35 @@
         <div class="game-card black locked">
             <div class="game-icon">🏁</div>
             <div class="game-name">Alto Contraste</div>
-            <div class="game-desc">Patrones en blanco y negro (Tableros, franjas) para desarrollo de fijación inicial.</div>
+            <div class="game-desc">Patrones B/N para desarrollo de fijación básica.</div>
             <div class="badge">Próximamente</div>
         </div>
         <div class="game-card black locked">
             <div class="game-icon">🌈</div>
-            <div class="game-name">Seguimiento de Color</div>
-            <div class="game-desc">Estimulación retinal mediante colores primarios saturados en movimiento.</div>
+            <div class="game-name">Seguimientos de Color</div>
+            <div class="game-desc">Estimulación retinal con colores primarios saturados.</div>
             <div class="badge">Próximamente</div>
         </div>
     </div>
 
-    <div class="section-title"><span>👓</span> Integración y Binocularidad</div>
+    <div class="section-title"><span>👓</span> Integración Binocular</div>
     <div class="card-grid">
         <a href="https://manuellgtmo-png.github.io/integracion-binocular/" class="game-card">
-            <div class="game-icon">🎯</div>
+            <div class="game-icon">🕶️</div>
             <div class="game-name">Integración Dinámica</div>
-            <div class="game-desc">Entrenamiento con gafas anaglifo para eliminar supresión y mejorar fusión.</div>
-            <div class="badge" style="color:var(--success)">¡ACTIVO!</div>
+            <div class="game-desc">Anaglifos para eliminar supresión y mejorar fusión.</div>
+            <div class="badge" style="color:var(--success)">Activo</div>
         </a>
         <div class="game-card locked">
             <div class="game-icon">🤝</div>
             <div class="game-name">Convergencia</div>
-            <div class="game-desc">Ejercicios de acercamiento de estímulos para fortalecer músculos mediales.</div>
+            <div class="game-desc">Ejercicios para fortalecer músculos mediales.</div>
             <div class="badge">Próximamente</div>
         </div>
         <div class="game-card locked">
             <div class="game-icon">👐</div>
             <div class="game-name">Divergencia</div>
-            <div class="game-desc">Técnicas de relajación visual para mejorar la flexibilidad acomodativa.</div>
+            <div class="game-desc">Entrenamiento para flexibilidad visual de lejos.</div>
             <div class="badge">Próximamente</div>
         </div>
     </div>
@@ -146,25 +147,25 @@
         <div class="game-card purple locked">
             <div class="game-icon">🖼️</div>
             <div class="game-name">Agudeza Estática</div>
-            <div class="game-desc">Test de discriminación visual fina en condiciones estables.</div>
+            <div class="game-desc">Test de discriminación visual fina en punto fijo.</div>
             <div class="badge">Próximamente</div>
         </div>
         <div class="game-card purple locked">
             <div class="game-icon">🏃</div>
             <div class="game-name">Agudeza Dinámica</div>
-            <div class="game-desc">Identificación de símbolos moviéndose a distintas velocidades.</div>
+            <div class="game-desc">Identificación de símbolos en movimiento rápido.</div>
             <div class="badge">Próximamente</div>
         </div>
         <a href="https://manuellgtmo-png.github.io/Memoria-visual-secuencial/" class="game-card purple">
             <div class="game-icon">🧩</div>
             <div class="game-name">Memoria Secuencial</div>
-            <div class="game-desc">Mejora la retención de patrones y el procesamiento de información.</div>
-            <div class="badge" style="color:var(--pink)">¡ACTIVO!</div>
+            <div class="game-desc">Mejora la retención de patrones y el procesamiento.</div>
+            <div class="badge" style="color:var(--pink)">Activo</div>
         </a>
         <div class="game-card purple locked">
             <div class="game-icon">🧭</div>
             <div class="game-name">Búsqueda y Laberintos</div>
-            <div class="game-desc">Trabajo de relaciones espaciales y planeamiento motor visual.</div>
+            <div class="game-desc">Relaciones espaciales y planeamiento motor visual.</div>
             <div class="badge">Próximamente</div>
         </div>
     </div>
@@ -174,25 +175,31 @@
         <a href="https://manuellgtmo-png.github.io/Tiempo-de-reaccion/" class="game-card pink">
             <div class="game-icon">🚀</div>
             <div class="game-name">Tiempo de Reacción</div>
-            <div class="game-desc">Velocidad de respuesta ojo-cerebro-mano con registro milimétrico.</div>
-            <div class="badge" style="color:var(--yellow)">¡ACTIVO!</div>
+            <div class="game-desc">Mide la velocidad de respuesta ojo-cerebro-mano.</div>
+            <div class="badge" style="color:var(--yellow)">Activo</div>
         </a>
         <div class="game-card pink locked">
-            <div class="game-icon">👁️</div>
+            <div class="game-icon">🎯</div>
             <div class="game-name">Sacádicos y Rastreo</div>
-            <div class="game-desc">Precisión en saltos de mirada y seguimientos suaves (pursuits).</div>
+            <div class="game-desc">Precisión en saltos de mirada y seguimiento suave.</div>
             <div class="badge">Próximamente</div>
         </div>
         <div class="game-card pink locked">
             <div class="game-icon">🔄</div>
             <div class="game-name">Antisacádicos</div>
-            <div class="game-desc">Entrenamiento de control inhibitorio y atención ejecutiva.</div>
+            <div class="game-desc">Entrenamiento de control inhibitorio y atención.</div>
             <div class="badge">Próximamente</div>
         </div>
         <div class="game-card pink locked">
             <div class="game-icon">🛰️</div>
             <div class="game-name">Visión Periférica</div>
-            <div class="game-desc">Detección de estímulos periféricos con fijación central estable.</div>
+            <div class="game-desc">Detección fuera de la fóvea con fijación central.</div>
+            <div class="badge">Próximamente</div>
+        </div>
+        <div class="game-card pink locked">
+            <div class="game-icon">✍️</div>
+            <div class="game-name">Coordinación Ojo-Mano</div>
+            <div class="game-desc">Sincronización precisa visual y motora.</div>
             <div class="badge">Próximamente</div>
         </div>
     </div>
@@ -200,10 +207,9 @@
 
 <div id="modal-user" class="modal">
     <div class="modal-content">
-        <h2 style="color:var(--accent); margin-bottom: 10px;">¡HOLA!</h2>
-        <p style="opacity: 0.8;">Introduce el nombre del paciente para iniciar la sesión en Centro Perceptum.</p>
-        <input type="text" id="input-nombre" placeholder="Nombre completo">
-        <button onclick="guardarUsuario()" class="btn-start">INICIAR ENTRENAMIENTO</button>
+        <h2 style="color:var(--accent)">¡BIENVENIDO!</h2>
+        <input type="text" id="input-nombre" placeholder="Nombre del Paciente">
+        <button onclick="guardarUsuario()" class="btn-start">INICIAR SESIÓN</button>
     </div>
 </div>
 
@@ -238,6 +244,7 @@
 </script>
 </body>
 </html>
+
 
 
 
