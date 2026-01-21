@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
-        #intro-screen, #result-screen { position: fixed; inset: 0; background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 200; }
+        #intro-screen, #result-screen, #sync-screen { position: fixed; inset: 0; background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 200; }
         .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .habilidades-box { background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; line-height: 1.4; }
         button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; }
@@ -18,6 +18,8 @@
         #goal-bar-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; }
         #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.2s; }
         canvas { display: block; }
+        .loader { border: 8px solid #f3f3f3; border-top: 8px solid #22c55e; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -30,8 +32,16 @@
                 Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
             </div>
             <p style="color: #64748b; font-weight: bold;">¡Instrucciones para valientes!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Mantén contacto con el círculo para que tus ojos se vuelvan súper fuertes. ¡A partir del nivel 2 el círculo puede teletransportarse!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Manten el contacto con el círculo de color. ¡A partir del nivel 2 el círculo puede saltar!</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
+        </div>
+    </div>
+
+    <div id="sync-screen" style="display: none;">
+        <div class="card">
+            <div class="loader"></div>
+            <h2 style="margin:0;">Sincronizando con Excel...</h2>
+            <p>Guardando progreso del paciente.</p>
         </div>
     </div>
 
@@ -40,7 +50,7 @@
             <h2 id="result-title">✨ ¡Logrado! ✨</h2>
             <p id="result-text" style="color: #64748b;"></p>
             <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            <a href="javascript:location.reload()" id="back-link" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold; font-size: 1.1rem;">VOLVER AL INICIO</a>
+            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">VOLVER AL INICIO</a>
         </div>
     </div>
 
@@ -58,7 +68,6 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // Configuración de Google Sheets (Entry IDs)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -81,8 +90,7 @@
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        // METODO DE ENVIO TRADICIONAL (EL QUE SIEMPRE HA SERVIDO)
-        function enviarAExcel() {
+        function enviarExcel(callback) {
             const nombre = localStorage.getItem('pacienteActual') || "Paciente de Prueba";
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
@@ -92,11 +100,10 @@
             data.append(ENTRIES.fallos, fallosNivel);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
 
-            fetch(FORM_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: data
-            });
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
+            
+            // Simular tiempo de carga para asegurar el envío
+            setTimeout(callback, 1500);
         }
 
         function ajustarDificultad() {
@@ -112,6 +119,7 @@
         function iniciarJuego() {
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('sync-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
             if(vidas <= 0) { nivelActual = 1; vidas = 3; segundosTotales = 0; }
@@ -141,22 +149,28 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
-            enviarAExcel(); // Enviamos los resultados aquí
-            document.getElementById('result-screen').style.display = 'flex';
-            const btn = document.getElementById('main-btn');
-            
-            if(exito) {
-                audioWin.play();
-                document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = "¡Tus ojos son cada vez más fuertes!";
-                btn.innerText = "Siguiente Nivel";
-                btn.style.display = "block";
-                btn.onclick = proximoNivel;
-            } else {
-                document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                document.getElementById('result-text').innerText = "¡Casi lo logras! Volvamos al inicio.";
-                btn.style.display = "none";
-            }
+            document.getElementById('ui-layer').style.display = 'none';
+            document.getElementById('goal-bar-container').style.display = 'none';
+            document.getElementById('sync-screen').style.display = 'flex';
+
+            enviarExcel(() => {
+                document.getElementById('sync-screen').style.display = 'none';
+                document.getElementById('result-screen').style.display = 'flex';
+                const btn = document.getElementById('main-btn');
+                
+                if(exito) {
+                    audioWin.play();
+                    document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
+                    document.getElementById('result-text').innerText = "¡Excelente fijación!";
+                    btn.innerText = "Siguiente Nivel";
+                    btn.style.display = "block";
+                    btn.onclick = proximoNivel;
+                } else {
+                    document.getElementById('result-title').innerText = "💔 Fin del Juego";
+                    document.getElementById('result-text').innerText = "Resultados sincronizados.";
+                    btn.style.display = "none";
+                }
+            });
         }
 
         function proximoNivel() { nivelActual++; iniciarJuego(); }
@@ -164,7 +178,6 @@
         function render() {
             if(!juegoActivo) return;
             ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             if (!enContacto) {
                 framesFuera++; ctx.globalAlpha = 0.2;
                 if(framesFuera > 90) { 
@@ -173,18 +186,14 @@
                 }
             } else { 
                 framesFuera = 0; ctx.globalAlpha = 1.0;
-                
-                // LÓGICA DE SALTOS ALEATORIOS (A partir del nivel 2)
-                if (nivelActual >= 2 && Math.random() < 0.005) { // 0.5% de probabilidad por frame
+                if (nivelActual >= 2 && Math.random() < 0.005) {
                     x = Math.random() * (canvas.width - radio * 2) + radio;
                     y = Math.random() * (canvas.height - radio * 2) + radio;
                 }
             }
-
             ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
             ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
             ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
-            
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
