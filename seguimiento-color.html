@@ -1,157 +1,60 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Centro Perceptum - Panel de Estimulación</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-
-<style>
-
-body {
-
-margin: 0; padding: 0;
-
-background: #1e293b; color: white;
-
-font-family: 'Montserrat', sans-serif;
-
-display: flex; flex-direction: column; align-items: center; justify-content: center;
-
-min-height: 100vh;
-
-}
-
-.container {
-
-background: white; color: #1e293b;
-
-padding: 40px; border-radius: 30px;
-
-box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-
-width: 90%; max-width: 500px; text-align: center;
-
-}
-
-h1 { margin: 0; font-size: 1.8rem; font-weight: 900; }
-
-p { color: #64748b; margin-bottom: 30px; }
-
-
-
-.menu-btn {
-
-display: block; width: 100%;
-
-padding: 20px; margin: 15px 0;
-
-border: none; border-radius: 15px;
-
-font-size: 1.1rem; font-weight: 700;
-
-cursor: pointer; text-decoration: none;
-
-transition: all 0.3s ease;
-
-text-transform: uppercase;
-
-}
-
-
-
-/* Estilo Botón 1 */
-
-.btn-contraste {
-
-background: #000; color: #fff;
-
-border: 2px solid #000;
-
-}
-
-.btn-contraste:hover { background: #333; }
-
-
-
-/* Estilo Botón 2 */
-
-.btn-color {
-
-background: linear-gradient(90deg, #ef4444, #22c55e, #3b82f6);
-
-color: white; border: none;
-
-}
-
-.btn-color:hover { opacity: 0.9; transform: scale(1.02); }
-
-
-
-.footer-logo { margin-top: 20px; font-weight: 900; color: #6366f1; font-size: 0.8rem; }
-
-</style>
-
+    <meta charset="UTF-8">
+    <title>Seguimiento de Color - Centro Perceptum</title>
+    <style>
+        body { margin: 0; background: black; overflow: hidden; font-family: sans-serif; }
+        /* Botón para regresar al portal */
+        .back-btn {
+            position: absolute; top: 20px; left: 20px;
+            padding: 10px 20px; background: rgba(255,255,255,0.2);
+            color: white; border: 1px solid white; border-radius: 20px;
+            text-decoration: none; font-size: 14px; z-index: 100;
+        }
+        .back-btn:hover { background: white; color: black; }
+        
+        #gameCanvas { display: block; }
+    </style>
 </head>
-
 <body>
 
+    <a href="index.html" class="back-btn">⬅ Volver al Menú</a>
+    <canvas id="gameCanvas"></canvas>
 
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-<div class="container">
+        let x = canvas.width / 2;
+        let y = canvas.height / 2;
+        let dx = 4; // Velocidad X
+        let dy = 4; // Velocidad Y
+        let radius = 50;
 
-<h1>Centro Perceptum</h1>
+        function draw() {
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-<p>Estimulación Visual Temprana</p>
+            // Dibujamos el círculo de color saturado
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#ff0000'; // Podemos hacer que cambie de color después
+            ctx.fill();
+            ctx.closePath();
 
+            // Rebote en los bordes
+            if(x + dx > canvas.width - radius || x + dx < radius) dx = -dx;
+            if(y + dy > canvas.height - radius || y + dy < radius) dy = -dy;
 
+            x += dx;
+            y += dy;
 
-<a href="alto-contraste.html" class="menu-btn btn-contraste">
-
-🎯 Alto Contraste
-
-</a>
-
-
-
-<a href="seguimiento-color.html" class="menu-btn btn-color">
-
-🌈 Seguimiento de Color
-
-</a>
-
-
-
-<div class="footer-logo">UNIDAD DE TERAPIA VISUAL</div>
-
-</div>
-
-
-
-<script>
-
-// Verificamos si hay un paciente en memoria, si no, lo pedimos (opcional)
-
-window.onload = () => {
-
-if (!localStorage.getItem('paciente')) {
-
-const nombre = prompt("Ingrese nombre del paciente:");
-
-if (nombre) localStorage.setItem('paciente', nombre);
-
-}
-
-};
-
-</script>
-
+            requestAnimationFrame(draw);
+        }
+        draw();
+    </script>
 </body>
-
 </html>
