@@ -30,7 +30,7 @@
                 Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
             </div>
             <p style="color: #64748b; font-weight: bold;">¡Instrucciones para valientes!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Manten tu dedo o mouse sobre el círculo mientras se mueve por la pantalla. ¡No lo dejes escapar para que tus ojos se vuelvan súper fuertes!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Mantén contacto con el círculo para que tus ojos se vuelvan súper fuertes. ¡A partir del nivel 2 el círculo puede teletransportarse!</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
@@ -58,7 +58,7 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // Configuración de Google Sheets
+        // Configuración de Google Sheets (Entry IDs)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -81,21 +81,21 @@
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        function enviarExcel() {
+        // METODO DE ENVIO TRADICIONAL (EL QUE SIEMPRE HA SERVIDO)
+        function enviarAExcel() {
             const nombre = localStorage.getItem('pacienteActual') || "Paciente de Prueba";
-            const formData = new URLSearchParams();
-            formData.append(ENTRIES.paciente, nombre);
-            formData.append(ENTRIES.juego, "Seguimiento Mágico");
-            formData.append(ENTRIES.nivel, nivelActual);
-            formData.append(ENTRIES.aciertos, segundosContacto);
-            formData.append(ENTRIES.fallos, fallosNivel);
-            formData.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
+            const data = new FormData();
+            data.append(ENTRIES.paciente, nombre);
+            data.append(ENTRIES.juego, "Seguimiento Mágico");
+            data.append(ENTRIES.nivel, nivelActual);
+            data.append(ENTRIES.aciertos, segundosContacto);
+            data.append(ENTRIES.fallos, fallosNivel);
+            data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
 
             fetch(FORM_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
+                body: data
             });
         }
 
@@ -141,7 +141,7 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
-            enviarExcel();
+            enviarAExcel(); // Enviamos los resultados aquí
             document.getElementById('result-screen').style.display = 'flex';
             const btn = document.getElementById('main-btn');
             
@@ -155,7 +155,7 @@
             } else {
                 document.getElementById('result-title').innerText = "💔 Fin del Juego";
                 document.getElementById('result-text').innerText = "¡Casi lo logras! Volvamos al inicio.";
-                btn.style.display = "none"; // Ocultamos siguiente nivel si pierde
+                btn.style.display = "none";
             }
         }
 
@@ -164,16 +164,27 @@
         function render() {
             if(!juegoActivo) return;
             ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
             if (!enContacto) {
                 framesFuera++; ctx.globalAlpha = 0.2;
                 if(framesFuera > 90) { 
                     vidas--; fallosNivel++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
-            } else { framesFuera = 0; ctx.globalAlpha = 1.0; }
+            } else { 
+                framesFuera = 0; ctx.globalAlpha = 1.0;
+                
+                // LÓGICA DE SALTOS ALEATORIOS (A partir del nivel 2)
+                if (nivelActual >= 2 && Math.random() < 0.005) { // 0.5% de probabilidad por frame
+                    x = Math.random() * (canvas.width - radio * 2) + radio;
+                    y = Math.random() * (canvas.height - radio * 2) + radio;
+                }
+            }
+
             ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
             ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
             ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
+            
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
