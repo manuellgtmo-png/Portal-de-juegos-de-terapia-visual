@@ -7,6 +7,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
+        
+        /* Pantallas de Mensajes */
         #intro-screen, #result-screen {
             position: fixed; inset: 0; background: #1e293b;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -14,12 +16,37 @@
         }
         .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .habilidades { background: #e0e7ff; color: #4338ca; padding: 15px; border-radius: 20px; font-size: 1rem; margin: 20px 0; font-weight: bold; }
-        button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; }
+        
+        button { 
+            background: #22c55e; color: white; border: none; padding: 20px 50px; 
+            border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; 
+        }
         button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
-        #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; pointer-events: none; z-index: 100; display: none; }
-        .stat-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 25px; font-weight: 900; font-size: 1.2rem; }
-        #goal-bar-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; }
+
+        /* Interfaz Superior (Stats) */
+        #ui-layer { 
+            position: absolute; top: 0; width: 100%; padding: 20px; 
+            display: flex; justify-content: space-between; box-sizing: border-box; 
+            pointer-events: none; z-index: 100; display: none; 
+        }
+        .stat-box { 
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); 
+            padding: 12px 20px; border-radius: 20px; font-weight: 900; font-size: 1.1rem;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 80px;
+        }
+        .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; margin-bottom: 2px; }
+
+        /* Barra de Progreso Inferior */
+        #goal-bar-container { 
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 70%; height: 20px; background: rgba(255,255,255,0.2); 
+            border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; 
+        }
         #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.2s; }
+        
         canvas { display: block; }
     </style>
 </head>
@@ -27,27 +54,26 @@
 
     <div id="intro-screen">
         <div class="card">
-            <h1 style="margin:0; font-size: 2.5rem;">🌈 Seguimiento Mágico</h1>
-            <div class="habilidades">🎯 Entrenamiento de Seguimiento, Fijación y Sacádicos.</div>
-            <p style="font-size: 1.1rem;">Mantén tu dedo sobre el círculo. ¡Si lo sueltas perderás vidas!</p>
-            <button onclick="iniciarJuego()">¡Jugar ahora!</button>
+            <h1 style="margin:0; font-size: 2.2rem;">🌈 Seguimiento Mágico</h1>
+            <div class="habilidades">🎯 Habilidades: Seguimiento Visual y Fijación Sostenida.</div>
+            <p>Mantén tu dedo sobre el círculo de color mientras se mueve.</p>
+            <button onclick="iniciarJuego()">¡Empezar!</button>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
-            <h2 id="result-title" style="font-size: 2rem;">¡Nivel Logrado!</h2>
-            <p id="result-text" style="font-size: 1.2rem;"></p>
-            <div id="btn-container">
-                <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            </div>
-            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">Reiniciar desde Nivel 1</a>
+            <h2 id="result-title">¡Excelente!</h2>
+            <p id="result-text"></p>
+            <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
+            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">Reiniciar Entrenamiento</a>
         </div>
     </div>
 
     <div id="ui-layer">
-        <div class="stat-box">Nivel: <span id="txt-nivel">1</span></div>
-        <div class="stat-box" id="txt-vidas">❤️❤️❤️</div>
+        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
+        <div class="stat-box"><span class="label">Cronómetro</span><span id="txt-cronometro">00:00</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
     </div>
     
     <div id="goal-bar-container"><div id="goal-bar-fill"></div></div>
@@ -57,11 +83,12 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); // Sonido aplausos/éxito
+        const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
         let nivelActual = 1;
         let vidas = 3;
-        let segundosContacto = 0;
+        let segundosTotales = 0; 
+        let segundosContacto = 0; 
         let tiempoMeta = 15; 
         let juegoActivo = false;
         let enContacto = false;
@@ -72,11 +99,11 @@
         function ajustarDificultad() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // Estímulos MUCHO más grandes para niños
-            radio = Math.max(50, 130 - (nivelActual * 5)); 
-            let velocidad = 1.5 + (nivelActual * 0.3);
+            // Estímulos gigantes para niños
+            radio = Math.max(50, 140 - (nivelActual * 5)); 
+            let velocidad = 1.4 + (nivelActual * 0.4);
             dx = velocidad; dy = velocidad;
-            tiempoMeta = 10 + (nivelActual * 3);
+            tiempoMeta = 10 + (nivelActual * 5); 
             x = canvas.width / 2;
             y = canvas.height / 2;
         }
@@ -87,7 +114,7 @@
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
             
-            if(vidas <= 0) { nivelActual = 1; vidas = 3; }
+            if(vidas <= 0) { nivelActual = 1; vidas = 3; segundosTotales = 0; }
             ajustarDificultad();
             segundosContacto = 0;
             actualizarUI();
@@ -98,7 +125,14 @@
         function actualizarUI() {
             document.getElementById('txt-nivel').innerText = nivelActual;
             document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+            
+            // Actualizar Barra de Progreso
             document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
+            
+            // Actualizar Cronómetro Digital
+            let min = Math.floor(segundosTotales / 60);
+            let seg = segundosTotales % 60;
+            document.getElementById('txt-cronometro').innerText = `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
         }
 
         const check = (ex, ey) => {
@@ -118,13 +152,13 @@
             if(exito) {
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = "¡Tus ojos son muy fuertes!";
+                document.getElementById('result-text').innerText = `Tiempo de fijación: ${segundosContacto} seg. Tiempo total: ${document.getElementById('txt-cronometro').innerText}`;
                 btn.innerText = "Siguiente Nivel";
                 btn.onclick = proximoNivel;
             } else {
                 document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                document.getElementById('result-text').innerText = "¡No te rindas! Inténtalo de nuevo.";
-                btn.innerText = "Ir a Instrucciones";
+                document.getElementById('result-text').innerText = "¡Ánimo! Inténtalo una vez más.";
+                btn.innerText = "Reiniciar";
                 btn.onclick = () => location.reload();
             }
         }
@@ -141,7 +175,7 @@
 
             if (!enContacto) {
                 framesFuera++;
-                ctx.globalAlpha = 0.2;
+                ctx.globalAlpha = 0.2; // Círculo pálido si no hay contacto
                 if(framesFuera > 90) { 
                     vidas--;
                     framesFuera = 0;
@@ -170,9 +204,13 @@
             requestAnimationFrame(render);
         }
 
+        // Lógica de tiempo cada 1 segundo
         setInterval(() => {
-            if(juegoActivo && enContacto) {
-                segundosContacto++;
+            if(juegoActivo) {
+                segundosTotales++; // El cronómetro siempre corre
+                if(enContacto) {
+                    segundosContacto++; // La barra solo avanza si lo toca
+                }
                 actualizarUI();
                 if(segundosContacto >= tiempoMeta) finalizarJuego(true);
             }
