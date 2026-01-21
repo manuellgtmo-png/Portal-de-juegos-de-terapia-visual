@@ -31,8 +31,8 @@
                 <strong>🎯 Habilidades a trabajar:</strong><br>
                 Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
             </div>
-            <p style="color: #64748b; font-weight: bold;">¡Instrucciones para valientes!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Manten el contacto con el círculo de color. ¡A partir del nivel 2 el círculo puede saltar!</p>
+            <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Manten el contacto con el círculo de color. ¡A partir del nivel 2 el círculo puede saltar de lugar!</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
@@ -41,7 +41,7 @@
         <div class="card">
             <div class="loader"></div>
             <h2 style="margin:0;">Sincronizando con Excel...</h2>
-            <p>Guardando progreso del paciente.</p>
+            <p>Guardando resultados finales del paciente.</p>
         </div>
     </div>
 
@@ -68,6 +68,7 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
+        // URL DE RESPUESTA DEL FORMULARIO
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -82,7 +83,7 @@
         let vidas = 3;
         let segundosTotales = 0; 
         let segundosContacto = 0; 
-        let fallosNivel = 0;
+        let fallosTotales = 0; // Acumulado de toda la sesión
         let tiempoMeta = 15; 
         let juegoActivo = false;
         let enContacto = false;
@@ -90,20 +91,18 @@
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        function enviarExcel(callback) {
+        function enviarExcelFinal(callback) {
             const nombre = localStorage.getItem('pacienteActual') || "Paciente de Prueba";
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
             data.append(ENTRIES.juego, "Seguimiento Mágico");
             data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, segundosContacto);
-            data.append(ENTRIES.fallos, fallosNivel);
+            data.append(ENTRIES.aciertos, "N/A"); // Podrías poner segundos totales si prefieres
+            data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
 
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            
-            // Simular tiempo de carga para asegurar el envío
-            setTimeout(callback, 1500);
+            setTimeout(callback, 2000); // 2 segundos de espera para sincronizar
         }
 
         function ajustarDificultad() {
@@ -122,9 +121,8 @@
             document.getElementById('sync-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
-            if(vidas <= 0) { nivelActual = 1; vidas = 3; segundosTotales = 0; }
             ajustarDificultad();
-            segundosContacto = 0; fallosNivel = 0;
+            segundosContacto = 0;
             actualizarUI();
             juegoActivo = true;
             render();
@@ -149,28 +147,31 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
-            document.getElementById('ui-layer').style.display = 'none';
-            document.getElementById('goal-bar-container').style.display = 'none';
-            document.getElementById('sync-screen').style.display = 'flex';
-
-            enviarExcel(() => {
-                document.getElementById('sync-screen').style.display = 'none';
+            
+            if(exito) {
+                // Si gana el nivel, NO sincroniza, solo muestra siguiente nivel
                 document.getElementById('result-screen').style.display = 'flex';
+                audioWin.play();
+                document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
+                document.getElementById('result-text').innerText = "¡Excelente fijación!";
                 const btn = document.getElementById('main-btn');
-                
-                if(exito) {
-                    audioWin.play();
-                    document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                    document.getElementById('result-text').innerText = "¡Excelente fijación!";
-                    btn.innerText = "Siguiente Nivel";
-                    btn.style.display = "block";
-                    btn.onclick = proximoNivel;
-                } else {
+                btn.innerText = "Siguiente Nivel";
+                btn.style.display = "block";
+                btn.onclick = proximoNivel;
+            } else {
+                // SI PIERDE LAS VIDAS: Sincroniza y termina
+                document.getElementById('ui-layer').style.display = 'none';
+                document.getElementById('goal-bar-container').style.display = 'none';
+                document.getElementById('sync-screen').style.display = 'flex';
+
+                enviarExcelFinal(() => {
+                    document.getElementById('sync-screen').style.display = 'none';
+                    document.getElementById('result-screen').style.display = 'flex';
                     document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                    document.getElementById('result-text').innerText = "Resultados sincronizados.";
-                    btn.style.display = "none";
-                }
-            });
+                    document.getElementById('result-text').innerText = "Resultados guardados en el historial.";
+                    document.getElementById('main-btn').style.display = "none";
+                });
+            }
         }
 
         function proximoNivel() { nivelActual++; iniciarJuego(); }
@@ -181,7 +182,7 @@
             if (!enContacto) {
                 framesFuera++; ctx.globalAlpha = 0.2;
                 if(framesFuera > 90) { 
-                    vidas--; fallosNivel++; framesFuera = 0; actualizarUI();
+                    vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
             } else { 
