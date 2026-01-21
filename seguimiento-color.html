@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguimiento Mágico - Perceptum</title>
+    <title>Seguimiento Mágico - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
@@ -12,38 +12,41 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             padding: 30px; text-align: center; z-index: 200;
         }
-        .card { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 500px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .habilidades { background: #e0e7ff; color: #4338ca; padding: 12px; border-radius: 15px; font-size: 0.9rem; margin: 15px 0; font-weight: bold; }
-        button { background: #22c55e; color: white; border: none; padding: 18px 40px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: 900; text-transform: uppercase; }
+        .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .habilidades { background: #e0e7ff; color: #4338ca; padding: 15px; border-radius: 20px; font-size: 1rem; margin: 20px 0; font-weight: bold; }
+        button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; }
+        button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
         #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; pointer-events: none; z-index: 100; display: none; }
-        .stat-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(5px); padding: 10px 20px; border-radius: 20px; }
-        canvas { display: block; cursor: crosshair; }
-        #goal-bar-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60%; height: 10px; background: rgba(255,255,255,0.2); border-radius: 10px; display:none; }
-        #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; border-radius: 10px; transition: width 0.3s; }
+        .stat-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 15px 25px; border-radius: 25px; font-weight: 900; font-size: 1.2rem; }
+        #goal-bar-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; }
+        #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.2s; }
+        canvas { display: block; }
     </style>
 </head>
 <body>
 
     <div id="intro-screen">
         <div class="card">
-            <h1 style="margin:0;">🌈 Seguimiento Mágico</h1>
-            <div class="habilidades">🎯 Habilidades: Seguimiento, Fijación y Sacádicos.</div>
-            <p>Mantén el contacto con el círculo. ¡Cuidado! A veces saltará de lugar para poner a prueba tus ojos.</p>
-            <button onclick="iniciarJuego()">¡Empezar Nivel 1!</button>
+            <h1 style="margin:0; font-size: 2.5rem;">🌈 Seguimiento Mágico</h1>
+            <div class="habilidades">🎯 Entrenamiento de Seguimiento, Fijación y Sacádicos.</div>
+            <p style="font-size: 1.1rem;">Mantén tu dedo sobre el círculo. ¡Si lo sueltas perderás vidas!</p>
+            <button onclick="iniciarJuego()">¡Jugar ahora!</button>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
-            <h2 id="result-title">¡Nivel Completado!</h2>
-            <p id="result-text"></p>
-            <button id="next-btn" onclick="proximoNivel()">Siguiente Nivel</button>
+            <h2 id="result-title" style="font-size: 2rem;">¡Nivel Logrado!</h2>
+            <p id="result-text" style="font-size: 1.2rem;"></p>
+            <div id="btn-container">
+                <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
+            </div>
+            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">Reiniciar desde Nivel 1</a>
         </div>
     </div>
 
     <div id="ui-layer">
         <div class="stat-box">Nivel: <span id="txt-nivel">1</span></div>
-        <div class="stat-box">Meta: <span id="txt-meta">0</span>s</div>
         <div class="stat-box" id="txt-vidas">❤️❤️❤️</div>
     </div>
     
@@ -54,7 +57,8 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
+        const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); // Sonido aplausos/éxito
+
         let nivelActual = 1;
         let vidas = 3;
         let segundosContacto = 0;
@@ -62,29 +66,19 @@
         let juegoActivo = false;
         let enContacto = false;
         let framesFuera = 0;
-        let ultimoSalto = 0;
-
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
         function ajustarDificultad() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            
-            // Estímulo mucho más grande al inicio
-            radio = Math.max(30, 110 - (nivelActual * 8)); 
-            let velocidad = 1.8 + (nivelActual * 0.4);
+            // Estímulos MUCHO más grandes para niños
+            radio = Math.max(50, 130 - (nivelActual * 5)); 
+            let velocidad = 1.5 + (nivelActual * 0.3);
             dx = velocidad; dy = velocidad;
-            tiempoMeta = 10 + (nivelActual * 5);
-            
-            x = Math.random() * (canvas.width - radio * 2) + radio;
-            y = Math.random() * (canvas.height - radio * 2) + radio;
-        }
-
-        function saltarEstimulo() {
-            x = Math.random() * (canvas.width - radio * 2) + radio;
-            y = Math.random() * (canvas.height - radio * 2) + radio;
-            enContacto = false; // Forzar a que lo busquen
+            tiempoMeta = 10 + (nivelActual * 3);
+            x = canvas.width / 2;
+            y = canvas.height / 2;
         }
 
         function iniciarJuego() {
@@ -93,10 +87,9 @@
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
             
+            if(vidas <= 0) { nivelActual = 1; vidas = 3; }
             ajustarDificultad();
             segundosContacto = 0;
-            if(nivelActual === 1) vidas = 3;
-            
             actualizarUI();
             juegoActivo = true;
             render();
@@ -104,29 +97,52 @@
 
         function actualizarUI() {
             document.getElementById('txt-nivel').innerText = nivelActual;
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(vidas);
-            document.getElementById('txt-meta').innerText = tiempoMeta - segundosContacto;
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
             document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
         }
 
-        // Detección táctil y mouse
         const check = (ex, ey) => {
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
             enContacto = dist < radio;
         };
+
         canvas.addEventListener('mousemove', (e) => check(e.clientX, e.clientY));
+        canvas.addEventListener('touchstart', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
         canvas.addEventListener('touchmove', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
+
+        function finalizarJuego(exito) {
+            juegoActivo = false;
+            document.getElementById('result-screen').style.display = 'flex';
+            const btn = document.getElementById('main-btn');
+            
+            if(exito) {
+                audioWin.play();
+                document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
+                document.getElementById('result-text').innerText = "¡Tus ojos son muy fuertes!";
+                btn.innerText = "Siguiente Nivel";
+                btn.onclick = proximoNivel;
+            } else {
+                document.getElementById('result-title').innerText = "💔 Fin del Juego";
+                document.getElementById('result-text').innerText = "¡No te rindas! Inténtalo de nuevo.";
+                btn.innerText = "Ir a Instrucciones";
+                btn.onclick = () => location.reload();
+            }
+        }
+
+        function proximoNivel() {
+            nivelActual++;
+            iniciarJuego();
+        }
 
         function render() {
             if(!juegoActivo) return;
-
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (!enContacto) {
                 framesFuera++;
-                ctx.globalAlpha = 0.3;
-                if(framesFuera > 100) { // Margen de error para niños
+                ctx.globalAlpha = 0.2;
+                if(framesFuera > 90) { 
                     vidas--;
                     framesFuera = 0;
                     actualizarUI();
@@ -135,25 +151,18 @@
             } else {
                 framesFuera = 0;
                 ctx.globalAlpha = 1.0;
-                
-                // Lógica de progreso y saltos
-                if(Math.random() < 0.016) { // Aproox cada segundo de contacto
-                   // Contador interno simple
-                }
             }
 
-            // Dibujar círculo
             ctx.beginPath();
             ctx.arc(x, y, radio, 0, Math.PI * 2);
             ctx.fillStyle = colores[(nivelActual - 1) % colores.length];
             ctx.fill();
             ctx.strokeStyle = "white";
-            ctx.lineWidth = 6;
+            ctx.lineWidth = 8;
             ctx.stroke();
             ctx.closePath();
             ctx.globalAlpha = 1.0;
 
-            // Movimiento
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
@@ -161,33 +170,13 @@
             requestAnimationFrame(render);
         }
 
-        // Cronómetro de contacto efectivo
         setInterval(() => {
             if(juegoActivo && enContacto) {
                 segundosContacto++;
                 actualizarUI();
-                
-                // Cada 5 segundos de contacto, el estímulo SALTA
-                if(segundosContacto % 5 === 0 && segundosContacto !== ultimoSalto) {
-                    ultimoSalto = segundosContacto;
-                    saltarEstimulo();
-                }
-
                 if(segundosContacto >= tiempoMeta) finalizarJuego(true);
             }
         }, 1000);
-
-        function finalizarJuego(exito) {
-            juegoActivo = false;
-            document.getElementById('result-screen').style.display = 'flex';
-            document.getElementById('result-title').innerText = exito ? "¡Nivel Logrado!" : "¡Inténtalo de nuevo!";
-            document.getElementById('next-btn').innerText = exito ? "Siguiente Nivel" : "Reintentar";
-        }
-
-        function proximoNivel() {
-            if(vidas > 0 && segundosContacto >= tiempoMeta) nivelActual++;
-            iniciarJuego();
-        }
     </script>
 </body>
 </html>
