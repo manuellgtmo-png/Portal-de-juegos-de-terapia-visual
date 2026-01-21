@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agudeza Estática - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background: #0f172a; color: white; font-family: 'Montserrat', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }
+        .header { padding: 40px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; }
+        .header p { opacity: 0.7; font-weight: bold; margin-top: 10px; color: #38bdf8; }
+
+        .menu-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; 
+            padding: 20px; 
+            max-width: 1200px; 
+            width: 90%; 
+        }
+
+        .game-card { 
+            background: white; 
+            border-radius: 35px; 
+            padding: 30px; 
+            text-align: center; 
+            color: #1e293b; 
+            transition: all 0.3s ease; 
+            cursor: pointer; 
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-bottom: 8px solid #cbd5e1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover { transform: translateY(-10px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .game-card:active { transform: scale(0.95); }
+
+        .icon { font-size: 3.5rem; margin-bottom: 15px; display: block; }
+        .game-card h2 { margin: 0; font-size: 1.3rem; color: #0f172a; font-weight: 900; }
+        .game-card p { font-size: 0.85rem; color: #64748b; margin: 15px 0; line-height: 1.4; flex-grow: 1; }
+        
+        .btn-play { 
+            background: #6366f1; color: white; padding: 12px; border-radius: 20px; 
+            font-weight: 900; text-transform: uppercase; font-size: 0.75rem; 
+        }
+
+        /* Colores temáticos para cada tarjeta */
+        .card-snellen { border-bottom-color: #22c55e; }
+        .card-snellen .btn-play { background: #22c55e; }
+        
+        .card-intruso { border-bottom-color: #f59e0b; }
+        .card-intruso .btn-play { background: #f59e0b; }
+        
+        .card-flash { border-bottom-color: #ec4899; }
+        .card-flash .btn-play { background: #ec4899; }
+
+        .card-contraste { border-bottom-color: #06b6d4; }
+        .card-contraste .btn-play { background: #06b6d4; }
+
+        .card-vernier { border-bottom-color: #8b5cf6; }
+        .card-vernier .btn-play { background: #8b5cf6; }
+
+        .back-btn { margin-top: 40px; color: white; text-decoration: none; font-weight: bold; opacity: 0.6; transition: 0.3s; border: 2px solid white; padding: 10px 25px; border-radius: 30px; }
+        .back-btn:hover { opacity: 1; background: white; color: #0f172a; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Agudeza Estática</h1>
+        <p>Entrenamiento de Resolución y Discriminación Foveal</p>
+    </div>
+
+    <div class="menu-grid">
+        <a href="enigma-snellen.html" class="game-card card-snellen">
+            <div>
+                <span class="icon">🔍</span>
+                <h2>Enigma de Snellen</h2>
+                <p>Identifica la dirección de los símbolos mientras se vuelven cada vez más pequeños.</p>
+            </div>
+            <div class="btn-play">Mínimo Ángulo de Resolución</div>
+        </a>
+
+        <a href="el-intruso.html" class="game-card card-intruso">
+            <div>
+                <span class="icon">🕵️‍♂️</span>
+                <h2>El Intruso</h2>
+                <p>Localiza el símbolo único oculto entre patrones repetitivos de alta densidad.</p>
+            </div>
+            <div class="btn-play">Discriminación de Detalles</div>
+        </a>
+
+        <a href="cazador-flash.html" class="game-card card-flash">
+            <div>
+                <span class="icon">⚡</span>
+                <h2>Cazador Flash</h2>
+                <p>Captura la información de estímulos que aparecen por breves milisegundos.</p>
+            </div>
+            <div class="btn-play">Velocidad de Procesamiento</div>
+        </a>
+
+        <a href="umbral-contraste.html" class="game-card card-contraste">
+            <div>
+                <span class="icon">🌓</span>
+                <h2>Umbral de Contraste</h2>
+                <p>Detecta figuras que pierden intensidad hasta mimetizarse con el fondo.</p>
+            </div>
+            <div class="btn-play">Rango de Contraste</div>
+        </a>
+
+        <a href="precision-vernier.html" class="game-card card-vernier">
+            <div>
+                <span class="icon">📏</span>
+                <h2>Precisión Vernier</h2>
+                <p>Alinea micrométricamente dos objetos para evaluar la hiperagudeza visual.</p>
+            </div>
+            <div class="btn-play">Agudeza de Alineación</div>
+        </a>
+    </div>
+
+    <a href="index.html" class="back-btn">← Volver al Menú Principal</a>
+
+</body>
+</html>
