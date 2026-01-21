@@ -2,59 +2,115 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Seguimiento de Color - Centro Perceptum</title>
+    <title>Seguimiento de Color - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: black; overflow: hidden; font-family: sans-serif; }
-        /* Botón para regresar al portal */
-        .back-btn {
-            position: absolute; top: 20px; left: 20px;
-            padding: 10px 20px; background: rgba(255,255,255,0.2);
-            color: white; border: 1px solid white; border-radius: 20px;
-            text-decoration: none; font-size: 14px; z-index: 100;
-        }
-        .back-btn:hover { background: white; color: black; }
+        body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; }
         
-        #gameCanvas { display: block; }
+        /* Pantalla de Introducción */
+        #intro-screen {
+            position: fixed; inset: 0; background: #1e293b;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 30px; text-align: center; z-index: 200;
+        }
+        .card { background: white; color: #1e293b; padding: 30px; border-radius: 25px; max-width: 500px; }
+        .habilidades { background: #f0fdf4; color: #166534; padding: 10px; border-radius: 10px; font-size: 0.9rem; margin: 15px 0; }
+        button { background: #6366f1; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+
+        /* UI del Juego */
+        #ui-layer { position: absolute; top: 20px; width: 100%; display: flex; justify-content: space-around; pointer-events: none; z-index: 100; display: none; }
+        .stat { background: rgba(255,255,255,0.2); padding: 10px 20px; border-radius: 15px; font-size: 1.2rem; }
+        
+        canvas { display: block; }
     </style>
 </head>
 <body>
 
-    <a href="index.html" class="back-btn">⬅ Volver al Menú</a>
+    <div id="intro-screen">
+        <div class="card">
+            <h1 style="margin:0">🌈 ¡Seguimiento Mágico!</h1>
+            <div class="habilidades">
+                <strong>Habilidades:</strong> Seguimiento Visual, Fijación Sostenida y Coordinación Ojo-Mano.
+            </div>
+            <p><strong>Instrucciones:</strong> El niño debe mantener el dedo o el mouse sobre el círculo de color mientras se mueve. ¡No lo dejes escapar o perderás una vida!</p>
+            <button onclick="iniciarJuego()">¡EMPEZAR ENTRENAMIENTO!</button>
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div class="stat">Vidas: <span id="vidas">❤️❤️❤️</span></div>
+        <div class="stat">Tiempo: <span id="cronometro">00:00</span></div>
+        <div class="stat">Nivel: <span id="nivel">1</span></div>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        let vidas = 3;
+        let segundos = 0;
+        let juegoActivo = false;
+        let mouseSobreCirculo = false;
+
+        // Configuración Nivel 1
+        let x = 100, y = 100, dx = 2, dy = 2, radio = 60; // Más grande y lento
+
+        function iniciarJuego() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            juegoActivo = true;
+            render();
+            iniciarCronometro();
+        }
+
+        function iniciarCronometro() {
+            setInterval(() => {
+                if(juegoActivo && mouseSobreCirculo) {
+                    segundos++;
+                    let min = Math.floor(segundos / 60);
+                    let seg = segundos % 60;
+                    document.getElementById('cronometro').innerText = 
+                        `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
+                }
+            }, 1000);
+        }
+
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        let x = canvas.width / 2;
-        let y = canvas.height / 2;
-        let dx = 4; // Velocidad X
-        let dy = 4; // Velocidad Y
-        let radius = 50;
+        // Detectar si el mouse está sobre el círculo
+        canvas.addEventListener('mousemove', (e) => {
+            let dist = Math.sqrt((e.clientX - x)**2 + (e.clientY - y)**2);
+            mouseSobreCirculo = dist < radio;
+        });
 
-        function draw() {
+        function render() {
+            if(!juegoActivo) return;
+            
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Dibujamos el círculo de color saturado
+            // Dibujar Estímulo (Rojo Primario Nivel 1)
             ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2);
-            ctx.fillStyle = '#ff0000'; // Podemos hacer que cambie de color después
+            ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fillStyle = mouseSobreCirculo ? '#ff0000' : '#550000'; // Brilla si lo tocas
             ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 3;
+            ctx.stroke();
             ctx.closePath();
 
-            // Rebote en los bordes
-            if(x + dx > canvas.width - radius || x + dx < radius) dx = -dx;
-            if(y + dy > canvas.height - radius || y + dy < radius) dy = -dy;
+            // Movimiento
+            x += dx; y += dy;
+            if(x + radio > canvas.width || x - radio < 0) dx = -dx;
+            if(y + radio > canvas.height || y - radio < 0) dy = -dy;
 
-            x += dx;
-            y += dy;
+            // Lógica de Vidas (Si no lo toca, podrías penalizar aquí)
+            // Por ahora, solo se mueve si está activo.
 
-            requestAnimationFrame(draw);
+            requestAnimationFrame(render);
         }
-        draw();
     </script>
 </body>
 </html>
