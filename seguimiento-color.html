@@ -28,11 +28,9 @@
         <div class="card">
             <h1 style="margin:0; font-size: 2.2rem;">🌈 Seguimiento Mágico</h1>
             <div class="habilidades-box">
-                <strong>🎯 Habilidades a trabajar:</strong><br>
-                Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
+                <strong>🎯 Habilidades:</strong> Seguimiento Visual, Fijación Sostenida y Motilidad Ocular.
             </div>
-            <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Manten el contacto con el círculo de color. ¡A partir del nivel 2 el círculo puede saltar de lugar!</p>
+            <p>Mantén contacto con el círculo de color para avanzar.</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
@@ -40,15 +38,15 @@
     <div id="sync-screen" style="display: none;">
         <div class="card">
             <div class="loader"></div>
-            <h2 style="margin:0;">Sincronizando con Excel...</h2>
-            <p>Guardando resultados finales del paciente.</p>
+            <h2>Sincronizando con Excel...</h2>
+            <p>Guardando resultados finales.</p>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
             <h2 id="result-title">✨ ¡Logrado! ✨</h2>
-            <p id="result-text" style="color: #64748b;"></p>
+            <p id="result-text"></p>
             <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
             <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">VOLVER AL INICIO</a>
         </div>
@@ -68,41 +66,40 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // URL DE RESPUESTA DEL FORMULARIO
+        // IDs vinculados a las columnas de tu Excel
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
-            paciente: "entry.369874016",
-            juego: "entry.1353470174",
-            nivel: "entry.721051298",
-            aciertos: "entry.873272199",
-            fallos: "entry.1030094511",
-            tiempo: "entry.1303309812"
+            paciente: "entry.369874016", // Columna B
+            juego: "entry.1353470174",    // Columna C
+            nivel: "entry.721051298",     // Columna D
+            aciertos: "entry.873272199",  // Columna E
+            fallos: "entry.1030094511",   // Columna F
+            tiempo: "entry.1303309812"    // Columna G
         };
 
         let nivelActual = 1;
         let vidas = 3;
         let segundosTotales = 0; 
         let segundosContacto = 0; 
-        let fallosTotales = 0; // Acumulado de toda la sesión
+        let fallosTotales = 0;
         let tiempoMeta = 15; 
         let juegoActivo = false;
         let enContacto = false;
-        let framesFuera = 0;
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        function enviarExcelFinal(callback) {
-            const nombre = localStorage.getItem('pacienteActual') || "Paciente de Prueba";
+        function enviarExcel(callback) {
+            const nombre = localStorage.getItem('pacienteActual') || "Prueba Seguimiento";
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
-            data.append(ENTRIES.juego, "Seguimiento Mágico");
+            data.append(ENTRIES.juego, "Seguimiento de Color");
             data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, "N/A"); // Podrías poner segundos totales si prefieres
+            data.append(ENTRIES.aciertos, segundosContacto);
             data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
 
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            setTimeout(callback, 2000); // 2 segundos de espera para sincronizar
+            setTimeout(callback, 2000); // Pausa de sincronización
         }
 
         function ajustarDificultad() {
@@ -147,28 +144,23 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
-            
             if(exito) {
-                // Si gana el nivel, NO sincroniza, solo muestra siguiente nivel
+                // Gana nivel: Sin sincronizar
                 document.getElementById('result-screen').style.display = 'flex';
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = "¡Excelente fijación!";
-                const btn = document.getElementById('main-btn');
-                btn.innerText = "Siguiente Nivel";
-                btn.style.display = "block";
-                btn.onclick = proximoNivel;
+                document.getElementById('result-text').innerText = "¡Sigue así!";
+                document.getElementById('main-btn').style.display = "block";
             } else {
-                // SI PIERDE LAS VIDAS: Sincroniza y termina
+                // Pierde vidas: Sincroniza con Excel
                 document.getElementById('ui-layer').style.display = 'none';
                 document.getElementById('goal-bar-container').style.display = 'none';
                 document.getElementById('sync-screen').style.display = 'flex';
-
-                enviarExcelFinal(() => {
+                enviarExcel(() => {
                     document.getElementById('sync-screen').style.display = 'none';
                     document.getElementById('result-screen').style.display = 'flex';
                     document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                    document.getElementById('result-text').innerText = "Resultados guardados en el historial.";
+                    document.getElementById('result-text').innerText = "Resultados enviados al reporte.";
                     document.getElementById('main-btn').style.display = "none";
                 });
             }
@@ -180,18 +172,19 @@
             if(!juegoActivo) return;
             ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
             if (!enContacto) {
-                framesFuera++; ctx.globalAlpha = 0.2;
-                if(framesFuera > 90) { 
+                if(++framesFuera > 90) { 
                     vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
-            } else { 
-                framesFuera = 0; ctx.globalAlpha = 1.0;
-                if (nivelActual >= 2 && Math.random() < 0.005) {
-                    x = Math.random() * (canvas.width - radio * 2) + radio;
-                    y = Math.random() * (canvas.height - radio * 2) + radio;
-                }
+                ctx.globalAlpha = 0.2;
+            } else { framesFuera = 0; ctx.globalAlpha = 1.0; }
+            
+            // Salto aleatorio nivel 2+
+            if (nivelActual >= 2 && Math.random() < 0.005) {
+                x = Math.random() * (canvas.width - radio * 2) + radio;
+                y = Math.random() * (canvas.height - radio * 2) + radio;
             }
+
             ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
             ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
             ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
@@ -201,6 +194,7 @@
             requestAnimationFrame(render);
         }
 
+        let framesFuera = 0;
         setInterval(() => {
             if(juegoActivo) {
                 segundosTotales++;
