@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguimiento Mágico - Centro Perceptum</title>
+    <title>Seguimiento Mágico - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
         #intro-screen, #result-screen { position: fixed; inset: 0; background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 200; }
         .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .habilidades { background: #e0e7ff; color: #4338ca; padding: 15px; border-radius: 20px; font-size: 1rem; margin: 20px 0; font-weight: bold; }
-        button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; }
+        .habilidades-box { background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; line-height: 1.4; }
+        button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; }
         button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
         #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; pointer-events: none; z-index: 100; display: none; }
         .stat-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 20px; font-weight: 900; border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; min-width: 80px; }
@@ -25,18 +25,22 @@
     <div id="intro-screen">
         <div class="card">
             <h1 style="margin:0; font-size: 2.2rem;">🌈 Seguimiento Mágico</h1>
-            <div class="habilidades">🎯 Entrenamiento de Seguimiento y Fijación.</div>
-            <p>Mantén contacto con el círculo para avanzar.</p>
-            <button onclick="iniciarJuego()">¡Empezar!</button>
+            <div class="habilidades-box">
+                <strong>🎯 Habilidades a trabajar:</strong><br>
+                Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
+            </div>
+            <p style="color: #64748b; font-weight: bold;">¡Instrucciones para valientes!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Manten tu dedo o mouse sobre el círculo mientras se mueve por la pantalla. ¡No lo dejes escapar para que tus ojos se vuelvan súper fuertes!</p>
+            <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
-            <h2 id="result-title">¡Excelente!</h2>
-            <p id="result-text"></p>
+            <h2 id="result-title">✨ ¡Logrado! ✨</h2>
+            <p id="result-text" style="color: #64748b;"></p>
             <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">Reiniciar Entrenamiento</a>
+            <a href="javascript:location.reload()" id="back-link" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold; font-size: 1.1rem;">VOLVER AL INICIO</a>
         </div>
     </div>
 
@@ -54,7 +58,7 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // Configuración de Google Sheets (Entry IDs extraídos de tu link)
+        // Configuración de Google Sheets
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -77,17 +81,22 @@
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        function enviarDatos() {
-            const nombrePaciente = localStorage.getItem('pacienteActual') || "Paciente Anónimo";
-            const datos = new FormData();
-            datos.append(ENTRIES.paciente, nombrePaciente);
-            datos.append(ENTRIES.juego, "Seguimiento de Color");
-            datos.append(ENTRIES.nivel, nivelActual);
-            datos.append(ENTRIES.aciertos, segundosContacto);
-            datos.append(ENTRIES.fallos, fallosNivel);
-            datos.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
+        function enviarExcel() {
+            const nombre = localStorage.getItem('pacienteActual') || "Paciente de Prueba";
+            const formData = new URLSearchParams();
+            formData.append(ENTRIES.paciente, nombre);
+            formData.append(ENTRIES.juego, "Seguimiento Mágico");
+            formData.append(ENTRIES.nivel, nivelActual);
+            formData.append(ENTRIES.aciertos, segundosContacto);
+            formData.append(ENTRIES.fallos, fallosNivel);
+            formData.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
 
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: datos });
+            fetch(FORM_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
         }
 
         function ajustarDificultad() {
@@ -132,20 +141,21 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
-            enviarDatos(); // Se envían los datos automáticamente aquí
+            enviarExcel();
             document.getElementById('result-screen').style.display = 'flex';
             const btn = document.getElementById('main-btn');
+            
             if(exito) {
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = `Progreso guardado en Excel.`;
+                document.getElementById('result-text').innerText = "¡Tus ojos son cada vez más fuertes!";
                 btn.innerText = "Siguiente Nivel";
+                btn.style.display = "block";
                 btn.onclick = proximoNivel;
             } else {
                 document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                document.getElementById('result-text').innerText = "Resultados enviados al reporte.";
-                btn.innerText = "Reiniciar";
-                btn.onclick = () => location.reload();
+                document.getElementById('result-text').innerText = "¡Casi lo logras! Volvamos al inicio.";
+                btn.style.display = "none"; // Ocultamos siguiente nivel si pierde
             }
         }
 
