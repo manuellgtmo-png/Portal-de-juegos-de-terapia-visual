@@ -7,19 +7,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
-        #intro-screen, #result-screen, #sync-screen { position: fixed; inset: 0; background: #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; z-index: 200; }
+        
+        /* Pantallas de Interfaz */
+        #intro-screen, #result-screen, #sync-screen { 
+            position: fixed; inset: 0; background: #1e293b; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 30px; text-align: center; z-index: 200; 
+        }
+        
         .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .habilidades-box { background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; line-height: 1.4; }
-        button { background: #22c55e; color: white; border: none; padding: 20px 50px; border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; }
+        
+        .habilidades-box { 
+            background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; 
+            padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; line-height: 1.4; 
+        }
+        
+        button { 
+            background: #22c55e; color: white; border: none; padding: 20px 50px; 
+            border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; 
+        }
         button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
-        #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; pointer-events: none; z-index: 100; display: none; }
-        .stat-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 12px 20px; border-radius: 20px; font-weight: 900; border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; min-width: 80px; }
+
+        /* HUD del Juego (Stats) */
+        #ui-layer { 
+            position: absolute; top: 0; width: 100%; padding: 20px; 
+            display: flex; justify-content: space-between; box-sizing: border-box; 
+            pointer-events: none; z-index: 100; display: none; 
+        }
+        .stat-box { 
+            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); 
+            padding: 12px 20px; border-radius: 20px; font-weight: 900; 
+            border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; min-width: 80px; 
+        }
         .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; margin-bottom: 2px; }
-        #goal-bar-container { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; height: 20px; background: rgba(255,255,255,0.2); border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; }
+
+        /* Barra de Progreso */
+        #goal-bar-container { 
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 70%; height: 20px; background: rgba(255,255,255,0.2); 
+            border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; 
+        }
         #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.2s; }
-        canvas { display: block; }
-        .loader { border: 8px solid #f3f3f3; border-top: 8px solid #22c55e; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+
+        /* Loader de Sincronización */
+        .loader { 
+            border: 8px solid #f3f3f3; border-top: 8px solid #22c55e; 
+            border-radius: 50%; width: 50px; height: 50px; 
+            animation: spin 1s linear infinite; margin: 0 auto 20px; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        canvas { display: block; }
     </style>
 </head>
 <body>
@@ -28,9 +67,11 @@
         <div class="card">
             <h1 style="margin:0; font-size: 2.2rem;">🌈 Seguimiento Mágico</h1>
             <div class="habilidades-box">
-                <strong>🎯 Habilidades:</strong> Seguimiento Visual, Fijación Sostenida y Motilidad Ocular.
+                <strong>🎯 Habilidades a trabajar:</strong><br>
+                Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
             </div>
-            <p>Mantén contacto con el círculo de color para avanzar.</p>
+            <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Mantén el contacto con el círculo. ¡A partir del nivel 2 el círculo puede saltar de lugar!</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
@@ -38,17 +79,17 @@
     <div id="sync-screen" style="display: none;">
         <div class="card">
             <div class="loader"></div>
-            <h2>Sincronizando con Excel...</h2>
-            <p>Guardando resultados finales.</p>
+            <h2 style="margin:0;">Sincronizando con Excel...</h2>
+            <p>Guardando resultados finales del paciente.</p>
         </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
             <h2 id="result-title">✨ ¡Logrado! ✨</h2>
-            <p id="result-text"></p>
-            <button id="main-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            <a href="javascript:location.reload()" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">VOLVER AL INICIO</a>
+            <p id="result-text" style="color: #64748b; margin-bottom: 25px;"></p>
+            <button id="next-btn" onclick="proximoNivel()">Siguiente Nivel</button>
+            <a href="javascript:location.reload()" id="back-link" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">VOLVER AL INICIO</a>
         </div>
     </div>
 
@@ -66,15 +107,16 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // IDs vinculados a las columnas de tu Excel
+        // Configuración de Google Forms (Basada en tus links de prellenado)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
-            paciente: "entry.369874016", // Columna B
-            juego: "entry.1353470174",    // Columna C
-            nivel: "entry.721051298",     // Columna D
-            aciertos: "entry.873272199",  // Columna E
-            fallos: "entry.1030094511",   // Columna F
-            tiempo: "entry.1303309812"    // Columna G
+            paciente: "entry.369874016",
+            juego: "entry.1353470174",
+            nivel: "entry.721051298",
+            aciertos: "entry.873272199",
+            fallos: "entry.1030094511",
+            tiempo: "entry.1303309812",
+            fecha: "entry.845098414"
         };
 
         let nivelActual = 1;
@@ -85,28 +127,32 @@
         let tiempoMeta = 15; 
         let juegoActivo = false;
         let enContacto = false;
+        let framesFuera = 0;
         let x, y, dx, dy, radio;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        function enviarExcel(callback) {
-            const nombre = localStorage.getItem('pacienteActual') || "Prueba Seguimiento";
+        function enviarDatosFinales(callback) {
+            const nombre = localStorage.getItem('pacienteActual') || "Paciente Prueba";
+            const hoy = new Date().toISOString().split('T')[0]; // Formato AAAA-MM-DD
+
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
-            data.append(ENTRIES.juego, "Seguimiento de Color");
+            data.append(ENTRIES.juego, "Seguimiento Mágico");
             data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, segundosContacto);
+            data.append(ENTRIES.aciertos, segundosContacto); // Segundos de fijación logrados
             data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
+            data.append(ENTRIES.fecha, hoy);
 
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            setTimeout(callback, 2000); // Pausa de sincronización
+            setTimeout(callback, 2000); // 2 segundos de espera para sincronizar
         }
 
         function ajustarDificultad() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             radio = Math.max(50, 140 - (nivelActual * 5)); 
-            let velocidad = 1.4 + (nivelActual * 0.4);
+            let velocidad = 1.6 + (nivelActual * 0.4);
             dx = velocidad; dy = velocidad;
             tiempoMeta = 10 + (nivelActual * 5); 
             x = canvas.width / 2; y = canvas.height / 2;
@@ -129,6 +175,7 @@
             document.getElementById('txt-nivel').innerText = nivelActual;
             document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
             document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
+            
             let min = Math.floor(segundosTotales / 60);
             let seg = segundosTotales % 60;
             document.getElementById('txt-cronometro').innerText = `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
@@ -138,30 +185,33 @@
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
             enContacto = dist < radio;
         };
+
         canvas.addEventListener('mousemove', (e) => check(e.clientX, e.clientY));
         canvas.addEventListener('touchstart', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
         canvas.addEventListener('touchmove', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
 
         function finalizarJuego(exito) {
             juegoActivo = false;
+            
             if(exito) {
-                // Gana nivel: Sin sincronizar
+                // GANÓ NIVEL: Pantalla normal sin sincronizar
                 document.getElementById('result-screen').style.display = 'flex';
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = "¡Sigue así!";
-                document.getElementById('main-btn').style.display = "block";
+                document.getElementById('result-text').innerText = "¡Tus ojos son cada vez más precisos!";
+                document.getElementById('next-btn').style.display = "block";
             } else {
-                // Pierde vidas: Sincroniza con Excel
+                // PERDIÓ VIDAS: Pantalla de Sincronización y Envío
                 document.getElementById('ui-layer').style.display = 'none';
                 document.getElementById('goal-bar-container').style.display = 'none';
                 document.getElementById('sync-screen').style.display = 'flex';
-                enviarExcel(() => {
+
+                enviarDatosFinales(() => {
                     document.getElementById('sync-screen').style.display = 'none';
                     document.getElementById('result-screen').style.display = 'flex';
                     document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                    document.getElementById('result-text').innerText = "Resultados enviados al reporte.";
-                    document.getElementById('main-btn').style.display = "none";
+                    document.getElementById('result-text').innerText = "Resumen de sesión guardado correctamente.";
+                    document.getElementById('next-btn').style.display = "none";
                 });
             }
         }
@@ -171,30 +221,33 @@
         function render() {
             if(!juegoActivo) return;
             ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             if (!enContacto) {
-                if(++framesFuera > 90) { 
+                framesFuera++; ctx.globalAlpha = 0.2;
+                if(framesFuera > 90) { 
                     vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
-                ctx.globalAlpha = 0.2;
-            } else { framesFuera = 0; ctx.globalAlpha = 1.0; }
-            
-            // Salto aleatorio nivel 2+
-            if (nivelActual >= 2 && Math.random() < 0.005) {
-                x = Math.random() * (canvas.width - radio * 2) + radio;
-                y = Math.random() * (canvas.height - radio * 2) + radio;
+            } else { 
+                framesFuera = 0; ctx.globalAlpha = 1.0;
+                // SALTOS ALEATORIOS: A partir de Nivel 2
+                if (nivelActual >= 2 && Math.random() < 0.005) {
+                    x = Math.random() * (canvas.width - radio * 2) + radio;
+                    y = Math.random() * (canvas.height - radio * 2) + radio;
+                }
             }
 
             ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
             ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
             ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
+
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
+
             requestAnimationFrame(render);
         }
 
-        let framesFuera = 0;
         setInterval(() => {
             if(juegoActivo) {
                 segundosTotales++;
