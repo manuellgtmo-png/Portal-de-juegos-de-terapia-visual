@@ -8,140 +8,151 @@
     <style>
         body { margin: 0; background: #f8fafc; color: #1e293b; font-family: 'Montserrat', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
         
+        /* Distractores Animados */
+        .bubble { position: absolute; border-radius: 50%; opacity: 0.2; animation: float 15s infinite linear; z-index: 0; pointer-events: none; }
+        @keyframes float { from { transform: translateY(110vh) rotate(0deg); } to { transform: translateY(-10vh) rotate(360deg); } }
+
         /* HUD Stats */
         #ui-layer { position: fixed; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 10; }
         .stat-box { background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-weight: 900; border: 2px solid #e2e8f0; }
 
-        #game-container { text-align: center; width: 100%; max-width: 500px; padding: 20px; }
-        
-        /* El Optotipo */
-        #optotipo-wrapper { height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .optotipo { font-size: 200px; font-weight: 900; transition: all 0.2s ease; display: inline-block; line-height: 1; color: #0f172a; }
+        /* Área de Juego */
+        #game-container { text-align: center; width: 100%; max-width: 600px; padding: 20px; z-index: 5; }
+        #optotipo-wrapper { height: 250px; display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .optotipo { font-weight: 900; color: #0f172a; transition: all 0.3s; }
         
         /* Controles */
         .controles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 350px; margin: 0 auto; }
-        .btn-dir { 
-            background: white; border: 4px solid #1e293b; padding: 25px; font-size: 2rem; 
-            border-radius: 25px; cursor: pointer; transition: 0.1s; box-shadow: 0 8px 0 #1e293b;
-        }
-        .btn-dir:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e293b; background: #f1f5f9; }
-        
-        /* Pantalla de Sincronización */
-        #sync-screen { 
-            position: fixed; inset: 0; background: #1e293b; color: white; 
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; 
-        }
-        .loader { 
-            border: 6px solid #f3f3f3; border-top: 6px solid #22c55e; 
-            border-radius: 50%; width: 50px; height: 50px; 
-            animation: spin 1s linear infinite; margin-bottom: 20px; 
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-dir { background: white; border: 4px solid #1e293b; padding: 20px; font-size: 1.8rem; border-radius: 20px; cursor: pointer; transition: 0.1s; box-shadow: 0 6px 0 #1e293b; }
+        .btn-dir:active { transform: translateY(3px); box-shadow: 0 3px 0 #1e293b; }
+
+        /* Modales e Instrucciones */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); display: flex; align-items: center; justify-content: center; z-index: 100; color: white; padding: 20px; text-align: center; }
+        .modal { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .btn-ready { background: #22c55e; color: white; padding: 15px 40px; border-radius: 20px; font-weight: 900; border: none; cursor: pointer; margin-top: 20px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="ui-layer">
         <div class="stat-box">Nivel: <span id="txt-nivel">1</span></div>
+        <div class="stat-box">⏱️ <span id="txt-tiempo">0s</span></div>
         <div class="stat-box">Vidas: <span id="txt-vidas">❤️❤️❤️</span></div>
     </div>
 
-    <div id="game-container">
-        <div id="optotipo-wrapper">
-            <div id="optotipo-display" class="optotipo">E</div>
-        </div>
-        <p style="font-weight: bold; color: #64748b;">¿Hacia dónde apunta la E?</p>
-        <div class="controles">
-            <button class="btn-dir" onclick="verificar('ARRIBA')">↑</button>
-            <button class="btn-dir" onclick="verificar('ABAJO')">↓</button>
-            <button class="btn-dir" onclick="verificar('IZQUIERDA')">←</button>
-            <button class="btn-dir" onclick="verificar('DERECHA')">→</button>
+    <div id="modal-instrucciones" class="overlay">
+        <div class="modal">
+            <h2 style="color: #6366f1;">¿Cómo jugar?</h2>
+            <p>Observa la secuencia de las <b>"E"</b>. <br>Memoriza sus posiciones y repítelas usando las flechas después de que desaparezcan.</p>
+            <button class="btn-ready" onclick="cerrarInstrucciones()">¡Empezar!</button>
         </div>
     </div>
 
-    <div id="sync-screen">
-        <div class="loader"></div>
-        <h2 style="font-family: 'Montserrat';">Sincronizando con Excel...</h2>
-        <p>Guardando resultados de agudeza visual</p>
+    <div id="modal-next" class="overlay" style="display:none;">
+        <div class="modal">
+            <h2 style="color: #22c55e;">¡Excelente!</h2>
+            <p>Has completado el patrón correctamente.</p>
+            <button class="btn-ready" onclick="proximoNivel()">Siguiente Nivel</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="optotipo-wrapper"></div>
+        <p id="instruccion-fase" style="font-weight: bold; color: #64748b;">Observa el patrón...</p>
+        <div class="controles" id="pad-controles" style="pointer-events: none; opacity: 0.5;">
+            <button class="btn-dir" onclick="registrarEntrada('ARRIBA')">↑</button>
+            <button class="btn-dir" onclick="registrarEntrada('ABAJO')">↓</button>
+            <button class="btn-dir" onclick="registrarEntrada('IZQUIERDA')">←</button>
+            <button class="btn-dir" onclick="registrarEntrada('DERECHA')">→</button>
+        </div>
     </div>
 
     <script>
-        // Configuración de Google Forms (Mismos IDs que el juego de seguimiento)
-        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const ENTRIES = {
-            paciente: "entry.369874016",
-            juego: "entry.1353470174",
-            nivel: "entry.721051298",
-            aciertos: "entry.873272199",
-            fallos: "entry.1030094511",
-            tiempo: "entry.1303309812",
-            fecha: "entry.845098414"
-        };
-
         let nivel = 1;
         let vidas = 3;
-        let aciertos = 0;
-        let fallos = 0;
-        let tamañoActual = 220; // Tamaño inicial en px
-        let direccionActual = "";
-        
+        let tiempoSec = 0;
+        let timerInterval;
+        let secuenciaActual = [];
+        let secuenciaUsuario = [];
+        let tamañoActual = 120;
         const direcciones = ["ARRIBA", "ABAJO", "IZQUIERDA", "DERECHA"];
         const rotaciones = { "ARRIBA": "-90deg", "ABAJO": "90deg", "IZQUIERDA": "180deg", "DERECHA": "0deg" };
 
-        function nuevaRonda() {
-            direccionActual = direcciones[Math.floor(Math.random() * direcciones.length)];
-            const el = document.getElementById('optotipo-display');
-            
-            // Aplicar rotación y tamaño
-            el.style.transform = `rotate(${rotaciones[direccionActual]})`;
-            el.style.fontSize = `${tamañoActual}px`;
-        }
-
-        function verificar(respuesta) {
-            if (respuesta === direccionActual) {
-                aciertos++;
-                nivel++;
-                // Reducir tamaño un 12% en cada acierto para aumentar dificultad
-                tamañoActual = Math.max(8, tamañoActual * 0.88); 
-            } else {
-                fallos++;
-                vidas--;
-                actualizarUI();
-                if (vidas <= 0) return finalizarJuego();
+        function crearBurbujas() {
+            for(let i=0; i<10; i++) {
+                let b = document.createElement('div');
+                b.className = 'bubble';
+                let size = Math.random() * 50 + 20;
+                b.style.width = size + 'px';
+                b.style.height = size + 'px';
+                b.style.left = Math.random() * 100 + 'vw';
+                b.style.background = ['#6366f1', '#22c55e', '#f59e0b', '#ec4899'][Math.floor(Math.random()*4)];
+                b.style.animationDelay = Math.random() * 10 + 's';
+                document.body.appendChild(b);
             }
-            actualizarUI();
-            nuevaRonda();
         }
 
-        function actualizarUI() {
-            document.getElementById('txt-nivel').innerText = nivel;
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+        function cerrarInstrucciones() {
+            document.getElementById('modal-instrucciones').style.display = 'none';
+            iniciarJuego();
         }
 
-        function finalizarJuego() {
-            document.getElementById('sync-screen').style.display = 'flex';
-            const nombre = localStorage.getItem('pacienteActual') || "Paciente Prueba";
-            const hoy = new Date().toISOString().split('T')[0];
+        function iniciarJuego() {
+            crearBurbujas();
+            timerInterval = setInterval(() => { tiempoSec++; document.getElementById('txt-tiempo').innerText = tiempoSec + "s"; }, 1000);
+            generarPatron();
+        }
 
-            const data = new FormData();
-            data.append(ENTRIES.paciente, nombre);
-            data.append(ENTRIES.juego, "Enigma de Snellen (Estática)");
-            data.append(ENTRIES.nivel, nivel);
-            data.append(ENTRIES.aciertos, aciertos);
-            data.append(ENTRIES.fallos, fallos);
-            data.append(ENTRIES.tiempo, "N/A");
-            data.append(ENTRIES.fecha, hoy);
+        function generarPatron() {
+            secuenciaActual = [];
+            secuenciaUsuario = [];
+            const wrapper = document.getElementById('optotipo-wrapper');
+            const numSimbolos = Math.min(6, 1 + Math.floor(nivel / 2)); 
+            wrapper.innerHTML = '';
+            document.getElementById('instruccion-fase').innerText = "Observa el patrón...";
+            document.getElementById('pad-controles').style.pointer-events = "none";
+            document.getElementById('pad-controles').style.opacity = "0.5";
 
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
+            for(let i=0; i < numSimbolos; i++) {
+                let dir = direcciones[Math.floor(Math.random() * direcciones.length)];
+                secuenciaActual.push(dir);
+                let el = document.createElement('div');
+                el.className = 'optotipo';
+                el.innerText = 'E';
+                el.style.fontSize = tamañoActual + 'px';
+                el.style.transform = `rotate(${rotaciones[dir]})`;
+                wrapper.appendChild(el);
+            }
 
-            // Esperar 2 segundos y volver al submenú
             setTimeout(() => {
-                window.location.href = "agudeza-estatica.html";
-            }, 2500);
+                wrapper.innerHTML = '<h1 style="font-size:3rem">?</h1>';
+                document.getElementById('instruccion-fase').innerText = "¡Repite la secuencia!";
+                document.getElementById('pad-controles').style.pointer-events = "auto";
+                document.getElementById('pad-controles').style.opacity = "1";
+            }, 1500 + (nivel * 200));
         }
 
-        // Iniciar primer nivel
-        nuevaRonda();
+        function registrarEntrada(dir) {
+            secuenciaUsuario.push(dir);
+            if (dir !== secuenciaActual[secuenciaUsuario.length - 1]) {
+                vidas--;
+                document.getElementById('txt-vidas').innerText = "❤️".repeat(vidas);
+                if(vidas <= 0) { alert("Fin del juego. Sincronizando..."); location.reload(); }
+                else { alert("Secuencia incorrecta. Intenta de nuevo."); generarPatron(); }
+                return;
+            }
+            if (secuenciaUsuario.length === secuenciaActual.length) {
+                document.getElementById('modal-next').style.display = 'flex';
+            }
+        }
+
+        function proximoNivel() {
+            nivel++;
+            tamañoActual = Math.max(20, tamañoActual * 0.9);
+            document.getElementById('txt-nivel').innerText = nivel;
+            document.getElementById('modal-next').style.display = 'none';
+            generarPatron();
+        }
     </script>
 </body>
 </html>
