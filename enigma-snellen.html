@@ -36,7 +36,7 @@
     <div id="modal-inicio" class="overlay">
         <div class="modal">
             <h2 style="color: #6366f1; margin-top:0">Enigma de Snellen</h2>
-            <p>Memoriza la secuencia y repítela.</p>
+            <p>Memoriza la secuencia de las "E" y repítelas.</p>
             <div class="config-box">
                 <label style="font-weight: bold; font-size: 0.8rem;">TIEMPO DE MEMORIA: <span id="val-timer">1.5</span>s</label>
                 <input type="range" min="0.5" max="5.0" step="0.5" value="1.5" oninput="document.getElementById('val-timer').innerText = this.value">
@@ -55,8 +55,7 @@
 
     <div id="modal-next" class="overlay" style="display:none">
         <div class="modal" style="border-color: #22c55e;">
-            <h2 style="color: #22c55e; margin-top:0">¡Genial!</h2>
-            <p>Siguiente nivel preparado.</p>
+            <h2 style="color: #22c55e; margin-top:0">¡Genial! 🌟</h2>
             <button class="btn-game" style="background: #22c55e;" onclick="siguienteNivel()">SIGUIENTE</button>
         </div>
     </div>
@@ -66,16 +65,16 @@
         <h2 style="color: white">Guardando en Excel...</h2>
     </div>
 
-    <form id="real-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="entry_paciente">
-        <input type="hidden" name="entry.1353470174" id="entry_juego">
-        <input type="hidden" name="entry.721051298" id="entry_nivel">
-        <input type="hidden" name="entry.873272199" id="entry_aciertos">
-        <input type="hidden" name="entry.1030094511" id="entry_fallos">
-        <input type="hidden" name="entry.1303309812" id="entry_tiempo">
-        <input type="hidden" name="entry.845098414" id="entry_fecha">
+    <iframe name="vacio" id="vacio" style="display:none;"></iframe>
+    <form id="form-google" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="vacio" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="field_paciente">
+        <input type="hidden" name="entry.1353470174" id="field_juego">
+        <input type="hidden" name="entry.721051298" id="field_nivel">
+        <input type="hidden" name="entry.873272199" id="field_aciertos">
+        <input type="hidden" name="entry.1030094511" id="field_fallos">
+        <input type="hidden" name="entry.1303309812" id="field_tiempo">
+        <input type="hidden" name="entry.845098414" id="field_fecha">
     </form>
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
     <div id="game-container">
         <div id="optotipo-wrapper"></div>
@@ -168,19 +167,18 @@
             clearInterval(crono);
             document.getElementById('sync-screen').style.display = 'flex';
             
-            // Rellenar el formulario oculto
-            document.getElementById('entry_paciente').value = localStorage.getItem('pacienteActual') || "Paciente";
-            document.getElementById('entry_juego').value = "Enigma de Snellen";
-            document.getElementById('entry_nivel').value = nivel;
-            document.getElementById('entry_aciertos').value = nivel - 1;
-            document.getElementById('entry_fallos').value = 3 - vidas;
-            document.getElementById('entry_tiempo').value = segundosTotal + "s";
-            document.getElementById('entry_fecha').value = new Date().toLocaleDateString();
+            // Llenado de datos
+            document.getElementById('field_paciente').value = localStorage.getItem('pacienteActual') || "Paciente";
+            document.getElementById('field_juego').value = "Enigma de Snellen";
+            document.getElementById('field_nivel').value = nivel;
+            document.getElementById('field_aciertos').value = nivel - 1;
+            document.getElementById('field_fallos').value = 3 - vidas;
+            document.getElementById('field_tiempo').value = segundosTotal + "s";
+            document.getElementById('field_fecha').value = new Date().toISOString().split('T')[0];
 
-            // Enviar el formulario
-            document.getElementById('real-form').submit();
+            // Envío forzado
+            document.getElementById('form-google').submit();
 
-            // Redirigir después de un momento
             setTimeout(() => {
                 window.location.href = "agudeza-estatica.html";
             }, 3000);
