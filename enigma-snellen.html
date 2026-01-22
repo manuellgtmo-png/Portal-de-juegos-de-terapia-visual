@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enigma de Snellen - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; background: #f8fafc; color: #1e293b; font-family: 'Montserrat', sans-serif; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        
+        /* HUD Stats */
+        #ui-layer { position: fixed; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 10; }
+        .stat-box { background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-weight: 900; border: 2px solid #e2e8f0; }
+
+        #game-container { text-align: center; width: 100%; max-width: 500px; padding: 20px; }
+        
+        /* El Optotipo */
+        #optotipo-wrapper { height: 300px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+        .optotipo { font-size: 200px; font-weight: 900; transition: all 0.2s ease; display: inline-block; line-height: 1; color: #0f172a; }
+        
+        /* Controles */
+        .controles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 350px; margin: 0 auto; }
+        .btn-dir { 
+            background: white; border: 4px solid #1e293b; padding: 25px; font-size: 2rem; 
+            border-radius: 25px; cursor: pointer; transition: 0.1s; box-shadow: 0 8px 0 #1e293b;
+        }
+        .btn-dir:active { transform: translateY(4px); box-shadow: 0 4px 0 #1e293b; background: #f1f5f9; }
+        
+        /* Pantalla de Sincronización */
+        #sync-screen { 
+            position: fixed; inset: 0; background: #1e293b; color: white; 
+            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; 
+        }
+        .loader { 
+            border: 6px solid #f3f3f3; border-top: 6px solid #22c55e; 
+            border-radius: 50%; width: 50px; height: 50px; 
+            animation: spin 1s linear infinite; margin-bottom: 20px; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div class="stat-box">Nivel: <span id="txt-nivel">1</span></div>
+        <div class="stat-box">Vidas: <span id="txt-vidas">❤️❤️❤️</span></div>
+    </div>
+
+    <div id="game-container">
+        <div id="optotipo-wrapper">
+            <div id="optotipo-display" class="optotipo">E</div>
+        </div>
+        <p style="font-weight: bold; color: #64748b;">¿Hacia dónde apunta la E?</p>
+        <div class="controles">
+            <button class="btn-dir" onclick="verificar('ARRIBA')">↑</button>
+            <button class="btn-dir" onclick="verificar('ABAJO')">↓</button>
+            <button class="btn-dir" onclick="verificar('IZQUIERDA')">←</button>
+            <button class="btn-dir" onclick="verificar('DERECHA')">→</button>
+        </div>
+    </div>
+
+    <div id="sync-screen">
+        <div class="loader"></div>
+        <h2 style="font-family: 'Montserrat';">Sincronizando con Excel...</h2>
+        <p>Guardando resultados de agudeza visual</p>
+    </div>
+
+    <script>
+        // Configuración de Google Forms (Mismos IDs que el juego de seguimiento)
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const ENTRIES = {
+            paciente: "entry.369874016",
+            juego: "entry.1353470174",
+            nivel: "entry.721051298",
+            aciertos: "entry.873272199",
+            fallos: "entry.1030094511",
+            tiempo: "entry.1303309812",
+            fecha: "entry.845098414"
+        };
+
+        let nivel = 1;
+        let vidas = 3;
+        let aciertos = 0;
+        let fallos = 0;
+        let tamañoActual = 220; // Tamaño inicial en px
+        let direccionActual = "";
+        
+        const direcciones = ["ARRIBA", "ABAJO", "IZQUIERDA", "DERECHA"];
+        const rotaciones = { "ARRIBA": "-90deg", "ABAJO": "90deg", "IZQUIERDA": "180deg", "DERECHA": "0deg" };
+
+        function nuevaRonda() {
+            direccionActual = direcciones[Math.floor(Math.random() * direcciones.length)];
+            const el = document.getElementById('optotipo-display');
+            
+            // Aplicar rotación y tamaño
+            el.style.transform = `rotate(${rotaciones[direccionActual]})`;
+            el.style.fontSize = `${tamañoActual}px`;
+        }
+
+        function verificar(respuesta) {
+            if (respuesta === direccionActual) {
+                aciertos++;
+                nivel++;
+                // Reducir tamaño un 12% en cada acierto para aumentar dificultad
+                tamañoActual = Math.max(8, tamañoActual * 0.88); 
+            } else {
+                fallos++;
+                vidas--;
+                actualizarUI();
+                if (vidas <= 0) return finalizarJuego();
+            }
+            actualizarUI();
+            nuevaRonda();
+        }
+
+        function actualizarUI() {
+            document.getElementById('txt-nivel').innerText = nivel;
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+        }
+
+        function finalizarJuego() {
+            document.getElementById('sync-screen').style.display = 'flex';
+            const nombre = localStorage.getItem('pacienteActual') || "Paciente Prueba";
+            const hoy = new Date().toISOString().split('T')[0];
+
+            const data = new FormData();
+            data.append(ENTRIES.paciente, nombre);
+            data.append(ENTRIES.juego, "Enigma de Snellen (Estática)");
+            data.append(ENTRIES.nivel, nivel);
+            data.append(ENTRIES.aciertos, aciertos);
+            data.append(ENTRIES.fallos, fallos);
+            data.append(ENTRIES.tiempo, "N/A");
+            data.append(ENTRIES.fecha, hoy);
+
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
+
+            // Esperar 2 segundos y volver al submenú
+            setTimeout(() => {
+                window.location.href = "agudeza-estatica.html";
+            }, 2500);
+        }
+
+        // Iniciar primer nivel
+        nuevaRonda();
+    </script>
+</body>
+</html>
