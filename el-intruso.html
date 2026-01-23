@@ -3,222 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Intruso PRO - Edición Clínica</title>
+    <title>El Intruso PRO - Edición Clínica Completa</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #3b82f6; --bg: #f8fafc; --text: #1e293b; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        :root { 
+            --blue: #3b82f6; --bg: #f8fafc; --text: #1e293b; 
+            --success: #22c55e; --danger: #ef4444; --card-bg: #ffffff;
+        }
         
-        /* UI y Headers */
-        #ui-layer { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 10; }
-        .stat-box { background: #f1f5f9; padding: 8px 15px; border-radius: 12px; font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; }
-        #timer-container { width: 100%; height: 8px; background: #e2e8f0; z-index: 10; }
+        body { 
+            margin: 0; background: var(--bg); color: var(--text); 
+            font-family: 'Montserrat', sans-serif; overflow: hidden; 
+            display: flex; flex-direction: column; height: 100vh; 
+        }
+
+        /* UI SUPERIOR */
+        #ui-layer { 
+            padding: 15px 25px; display: flex; justify-content: space-between; 
+            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100; 
+        }
+        .stat-box { 
+            background: #f1f5f9; padding: 8px 15px; border-radius: 12px; 
+            font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; 
+        }
+        
+        #timer-bar-wrapper { width: 100%; background: #e2e8f0; height: 10px; z-index: 100; }
         #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* Área de Juego y Ruido */
-        #game-area { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; background: #fdfdfd; }
-        #noise-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.15; }
-        
-        #grid { display: grid; gap: 10px; padding: 25px; background: rgba(255,255,255,0.8); border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); z-index: 5; border: 1px solid rgba(0,0,0,0.05); }
-        
-        .cell { 
-            width: 65px; height: 65px; display: flex; align-items: center; justify-content: center; 
-            border-radius: 15px; cursor: pointer; transition: 0.15s; background: #fff; 
-            border: 2px solid #f1f5f9; user-select: none; font-weight: 900; position: relative;
+        /* ÁREA DE JUEGO */
+        #game-area { 
+            flex: 1; display: flex; align-items: center; justify-content: center; 
+            position: relative; overflow: hidden; background: #fff; 
         }
-        .cell:hover { transform: scale(1.05); border-color: var(--blue); box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2); }
-
-        /* Modales */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.96); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; color: white; text-align: center; }
-        .modal { background: white; color: var(--text); padding: 35px; border-radius: 35px; max-width: 500px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.25; z-index: 1; }
         
-        .btn-game { color: white; padding: 18px; border-radius: 18px; font-weight: 900; border: none; cursor: pointer; margin-top: 15px; width: 100%; font-size: 1.1rem; text-transform: uppercase; transition: 0.2s; }
-        .btn-game:active { transform: scale(0.98); }
+        #grid { 
+            display: grid; gap: 12px; padding: 30px; background: rgba(255,255,255,0.9); 
+            border-radius: 25px; z-index: 10; border: 2px solid #cbd5e1;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+        }
 
-        .instr-list { text-align: left; font-size: 0.9rem; margin: 20px 0; background: #f1f5f9; padding: 15px; border-radius: 15px; border-left: 5px solid var(--blue); }
+        .cell { 
+            width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; 
+            border-radius: 12px; cursor: pointer; background: #fff; border: 2px solid #e2e8f0; 
+            user-select: none; font-weight: 900; transition: transform 0.1s;
+        }
+        .cell:hover { transform: scale(1.05); border-color: var(--blue); }
+        .cell svg { width: 75%; height: 75%; fill: #000; }
+        .cell.optotipo { font-size: 2.5rem; color: #000; filter: grayscale(100%); }
+
+        /* MODALES */
+        .overlay { 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); 
+            z-index: 2000; display: flex; align-items: center; justify-content: center; 
+            padding: 20px; color: white; text-align: center; 
+        }
+        .modal { 
+            background: white; color: var(--text); padding: 40px; 
+            border-radius: 35px; max-width: 500px; width: 100%; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+        }
+
+        .mode-select { display: flex; gap: 15px; margin: 25px 0; }
+        .mode-btn { 
+            flex: 1; padding: 15px; border: 3px solid #f1f5f9; 
+            border-radius: 15px; cursor: pointer; font-weight: 900; 
+            transition: 0.2s; font-size: 0.9rem;
+        }
+        .mode-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+
+        .btn-start { 
+            background: var(--success); color: white; padding: 20px; 
+            border-radius: 20px; width: 100%; border: none; font-weight: 900; 
+            cursor: pointer; font-size: 1.2rem; box-shadow: 0 8px 0 #16a34a;
+        }
         
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--blue); margin-top: 10px; }
+        #btn-next { 
+            position: absolute; bottom: 40px; padding: 18px 50px; 
+            background: var(--success); color: white; border: none; 
+            border-radius: 20px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 150; box-shadow: 0 8px 0 #16a34a;
+            font-size: 1.1rem; animation: bounce 1s infinite;
+        }
 
-        /* Clase para el intruso de la manzana sin tallo */
-        .no-stem { clip-path: inset(12% 0 0 0); }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* CONFIGURACIÓN DEL SLIDER */
+        .slider-wrap { text-align: left; margin: 20px 0; }
+        input[type=range] { width: 100%; accent-color: var(--blue); cursor: pointer; }
+
+        #sync-screen { display: none; flex-direction: column; }
     </style>
 </head>
 <body>
 
     <div id="ui-layer">
-        <div class="stat-box">Nivel: <span id="txt-nivel">1</span></div>
-        <div class="stat-box" id="vidas-cont" style="color:#ef4444">❤️❤️❤️</div>
+        <div class="stat-box">NIVEL: <span id="txt-nivel">1</span></div>
+        <div id="vidas-cont" class="stat-box" style="color:var(--danger); font-size: 1.2rem;">❤️❤️❤️</div>
         <div class="stat-box">⏱️ <span id="txt-crono">0.0s</span></div>
     </div>
-    <div id="timer-container"><div id="timer-bar"></div></div>
+    <div id="timer-bar-wrapper"><div id="timer-bar"></div></div>
 
     <div id="game-area">
         <canvas id="noise-canvas"></canvas>
         <div id="grid"></div>
+        <button id="btn-next" onclick="avanzarNivel()">SIGUIENTE NIVEL ➜</button>
     </div>
 
     <div id="modal-inicio" class="overlay">
         <div class="modal">
-            <h2 style="color:var(--blue); margin-top:0;">🔍 El Intruso: Discriminación Fina</h2>
-            <p id="saludo" style="font-weight: 700;"></p>
+            <h1 style="color:var(--blue); margin:0; font-size: 1.8rem;">🔍 EL INTRUSO PRO</h1>
+            <p id="saludo" style="font-weight: 700; color: #64748b;"></p>
             
-            <div class="instr-list">
-                <b>Cómo jugar:</b><br>
-                1. Observa la cuadrícula de figuras.<br>
-                2. Encuentra la figura que tiene una <b>diferencia mínima</b>.<br>
-                3. Hazlo antes de que la barra azul se agote.<br>
-                4. Perderás una vida si fallas o si se acaba el tiempo.
+            <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 15px; font-size: 0.85rem; border-left: 4px solid var(--blue);">
+                <b>INSTRUCCIONES:</b><br>
+                Encuentra el símbolo diferente. En niveles de <b>E</b> o <b>C</b>, busca la que tiene distinta orientación. En niveles de <b>manzanas</b>, busca la que no tiene tallo.
             </div>
 
-            <div style="text-align: left; margin-bottom: 20px;">
-                <label><b>Configurar tiempo por nivel:</b> <span id="val-t" style="color:var(--blue)">15</span>s</label>
-                <input type="range" min="5" max="30" value="15" id="input-tiempo" oninput="document.getElementById('val-t').innerText=this.value">
+            <div class="mode-select">
+                <div id="m-reloj" class="mode-btn active" onclick="setModo('reloj')">CONTRA RELOJ</div>
+                <div id="m-libre" class="mode-btn" onclick="setModo('libre')">CRONOMETRADO</div>
             </div>
 
-            <button class="btn-game" style="background:#22c55e; box-shadow: 0 6px 0 #16a34a;" onclick="empezar()">COMENZAR TERAPIA</button>
+            <div id="config-t" class="slider-wrap">
+                <label><b>TIEMPO POR NIVEL:</b> <span id="val-t" style="color:var(--blue)">15</span>s</label>
+                <input type="range" min="5" max="30" value="15" oninput="document.getElementById('val-t').innerText=this.value">
+            </div>
+
+            <button class="btn-start" onclick="iniciarJuego()">INICIAR EVALUACIÓN</button>
         </div>
     </div>
 
-    <div id="sync-screen" class="overlay" style="display:none">
-        <h2 style="color:white">Guardando resultados...</h2>
+    <div id="sync-screen" class="overlay">
+        <h1 id="msg-final">SESIÓN COMPLETADA</h1>
+        <p id="resumen-final"></p>
+        <div style="margin-top:20px; font-weight: 900; color: var(--blue);">🚀 SINCRONIZANDO CON EXCEL...</div>
     </div>
 
-    <iframe name="v_int" style="display:none;"></iframe>
-    <form id="f_int" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="v_int" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="ex_pac">
-        <input type="hidden" name="entry.1353470174" id="ex_jue" value="El Intruso (Ruido Visual y Detalle)">
-        <input type="hidden" name="entry.721051298" id="ex_niv">
-        <input type="hidden" name="entry.873272199" id="ex_aci">
-        <input type="hidden" name="entry.1030094511" id="ex_fal">
-        <input type="hidden" name="entry.1303309812" id="ex_tie">
-        <input type="hidden" name="entry.845098414" id="ex_fec">
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
+    <form id="google-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="field-nombre">
+        <input type="hidden" name="entry.1353470174" value="El Intruso - Edición Clínica">
+        <input type="hidden" name="entry.721051298" id="field-nivel">
+        <input type="hidden" name="entry.873272199" id="field-aciertos">
+        <input type="hidden" name="entry.1030094511" id="field-fallos">
+        <input type="hidden" name="entry.1303309812" id="field-tiempo">
+        <input type="hidden" name="entry.845098414" id="field-fecha">
     </form>
 
     <script>
+        // VARIABLES DE ESTADO
         let nivel = 1, aciertos = 0, fallos = 0, vidas = 3;
-        let tiempoMax = 15, tiempoNivel = 0, tiempoTotal = 0;
-        let timer, noiseInterval;
-        const nombre = localStorage.getItem('pacienteActual') || "Paciente";
+        let modo = 'reloj', tiempoMax = 15, tNivel = 0, tTotal = 0;
+        let timer, canvas, ctx, gameActive = false;
+        
+        const nombrePaciente = localStorage.getItem('pacienteActual') || "Paciente General";
+        document.getElementById('saludo').innerText = `Paciente: ${nombrePaciente}`;
 
-        document.getElementById('saludo').innerText = `¡Hola ${nombre}!`;
+        // SVG DE MANZANA CLÍNICA
+        const getManzana = (conTallo) => `
+            <svg viewBox="0 0 100 100">
+                ${conTallo ? '<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>' : ''}
+                <path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/>
+            </svg>`;
 
-        function empezar() {
-            tiempoMax = parseInt(document.getElementById('input-tiempo').value);
-            document.getElementById('modal-inicio').style.display = 'none';
-            timer = setInterval(actualizarReloj, 100);
-            generarNivel();
-            iniciarRuido();
+        function setModo(m) {
+            modo = m;
+            document.getElementById('m-reloj').classList.toggle('active', m === 'reloj');
+            document.getElementById('m-libre').classList.toggle('active', m === 'libre');
+            document.getElementById('config-t').style.opacity = m === 'reloj' ? "1" : "0.3";
         }
 
-        function iniciarRuido() {
-            const canvas = document.getElementById('noise-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function iniciarJuego() {
+            tiempoMax = parseInt(document.querySelector('input[type=range]').value);
+            document.getElementById('modal-inicio').style.display = 'none';
+            gameActive = true;
+            
+            // Reloj Principal
+            timer = setInterval(() => {
+                if(!gameActive) return;
+                tTotal += 0.1; tNivel += 0.1;
+                document.getElementById('txt-crono').innerText = tTotal.toFixed(1) + "s";
+                
+                if(modo === 'reloj') {
+                    let p = (1 - (tNivel/tiempoMax)) * 100;
+                    document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
+                    if(tNivel >= tiempoMax) { registrarFallo(); }
+                }
+            }, 100);
 
-            noiseInterval = setInterval(() => {
-                if (nivel < 4) return; // Ruido aparece desde nivel 4
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const density = Math.min(2000, nivel * 200);
-                for (let i = 0; i < density; i++) {
-                    ctx.fillStyle = Math.random() > 0.5 ? '#000' : '#ccc';
-                    ctx.beginPath();
-                    ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, 1, 0, Math.PI * 2);
-                    ctx.fill();
+            initNoise();
+            generarNivel();
+        }
+
+        function initNoise() {
+            canvas = document.getElementById('noise-canvas'); ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            setInterval(() => {
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                // Dibujar puntos y líneas de ruido visual
+                for(let i=0; i<600; i++) {
+                    ctx.fillStyle = Math.random() > 0.5 ? "#ccc" : "#eee";
+                    ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
+                }
+                if(nivel > 5) { // Agregar líneas de interferencia
+                    for(let i=0; i<5; i++) {
+                        ctx.strokeStyle = "rgba(200,200,200,0.2)";
+                        ctx.beginPath(); ctx.moveTo(0, Math.random()*canvas.height);
+                        ctx.lineTo(canvas.width, Math.random()*canvas.height); ctx.stroke();
+                    }
                 }
             }, 100);
         }
 
-        function actualizarReloj() {
-            tiempoTotal += 0.1;
-            tiempoNivel += 0.1;
-            document.getElementById('txt-crono').innerText = tiempoTotal.toFixed(1) + "s";
-            let porcentaje = (1 - (tiempoNivel / tiempoMax)) * 100;
-            document.getElementById('timer-bar').style.width = Math.max(0, porcentaje) + "%";
-            if(tiempoNivel >= tiempoMax) { fallos++; perderVida(); }
-        }
-
         function generarNivel() {
-            tiempoNivel = 0;
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
+            tNivel = 0;
+            gameActive = true;
+            const grid = document.getElementById('grid'); grid.innerHTML = '';
+            document.getElementById('btn-next').style.display = 'none';
             
-            const dim = Math.min(10, 2 + Math.floor(nivel/2));
+            const dim = Math.min(10, 3 + Math.floor(nivel/3));
             grid.style.gridTemplateColumns = `repeat(${dim}, 1fr)`;
             
-            const tipo = Math.floor(Math.random() * 4); // 0:Rotación, 1:Detalle, 2:Similitud, 3:Unicode
-            let base, intruso, esRot = false, esApple = false;
+            const tipo = Math.floor(Math.random() * 3); // 0:E, 1:C, 2:Manzanas
+            const totalCells = dim * dim;
+            const posIntruso = Math.floor(Math.random() * totalCells);
 
-            if (tipo === 0) { // SNELLEN/LANDOLT
-                base = Math.random() > 0.5 ? "E" : "C";
-                esRot = true;
-            } else if (tipo === 1) { // MANZANA DETALLE
-                base = "🍎"; intruso = "🍎"; esApple = true;
-            } else if (tipo === 2) { // CARAS SUTILES
-                const retos = [["🙂","😐"], ["😃","😄"], ["🙁","☹️"], ["😮","😯"], ["😶","🫥"]];
-                const r = retos[Math.floor(Math.random()*retos.length)];
-                base = r[0]; intruso = r[1];
-            } else { // OBJETOS SIMILARES
-                const retos = [["🏫","🏨"], ["🥛","🥤"], ["📉","📈"], ["🛡️","🔱"], ["🍙","🍘"]];
-                const r = retos[Math.floor(Math.random()*retos.length)];
-                base = r[0]; intruso = r[1];
-            }
+            // Definir orientaciones para optotipos
+            const orientaciones = [0, 90, 180, 270];
+            const degBase = orientaciones[Math.floor(Math.random()*4)];
+            let degIntruso;
+            do { degIntruso = orientaciones[Math.floor(Math.random()*4)]; } while(degIntruso === degBase);
 
-            const total = dim * dim;
-            const posInt = Math.floor(Math.random() * total);
-            const size = Math.max(22, 70 - (nivel * 2.5));
-
-            for(let i=0; i<total; i++) {
-                const c = document.createElement('div');
-                c.className = 'cell';
-                c.style.width = size + "px";
-                c.style.height = size + "px";
-                c.style.fontSize = (size * 0.7) + "px";
-                if (nivel > 8) c.style.filter = "grayscale(100%)";
-
-                if (esRot) {
-                    c.innerText = base;
-                    const rots = [0, 90, 180, 270];
-                    const rB = rots[Math.floor(Math.random()*4)];
-                    let rI; do { rI = rots[Math.floor(Math.random()*4)]; } while(rI === rB);
-                    c.style.transform = `rotate(${(i === posInt) ? rI : rB}deg)`;
+            for(let i=0; i<totalCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                
+                if(tipo === 0 || tipo === 1) {
+                    cell.classList.add('optotipo');
+                    cell.innerText = tipo === 0 ? "E" : "C";
+                    cell.style.transform = `rotate(${i === posIntruso ? degIntruso : degBase}deg)`;
                 } else {
-                    c.innerText = (i === posInt) ? intruso : base;
-                    if (i === posInt && esApple) c.classList.add('no-stem');
+                    cell.innerHTML = getManzana(i !== posIntruso);
                 }
 
-                c.onclick = () => {
-                    if(i === posInt) {
-                        aciertos++; nivel++;
-                        document.getElementById('txt-nivel').innerText = nivel;
-                        generarNivel();
-                    } else { fallos++; perderVida(); }
+                cell.onclick = () => {
+                    if(!gameActive) return;
+                    if(i === posIntruso) {
+                        aciertos++;
+                        gameActive = false;
+                        document.getElementById('btn-next').style.display = 'block';
+                        // Feedback visual positivo
+                        cell.style.borderColor = "var(--success)";
+                        cell.style.background = "#f0fdf4";
+                    } else {
+                        registrarFallo();
+                    }
                 };
-                grid.appendChild(c);
+                grid.appendChild(cell);
             }
         }
 
-        function perderVida() {
-            vidas--;
+        function registrarFallo() {
+            fallos++; vidas--;
             document.getElementById('vidas-cont').innerText = "❤️".repeat(Math.max(0, vidas));
-            if(vidas <= 0) finalizar();
+            
+            // Efecto de error en pantalla
+            document.body.style.background = "#fee2e2";
+            setTimeout(() => document.body.style.background = "var(--bg)", 200);
+
+            if(vidas <= 0) finalizarPartida();
             else generarNivel();
         }
 
-        function finalizar() {
-            clearInterval(timer);
-            clearInterval(noiseInterval);
-            document.getElementById('sync-screen').style.display = 'flex';
-            
-            document.getElementById('ex_pac').value = nombre;
-            document.getElementById('ex_niv').value = nivel;
-            document.getElementById('ex_aci').value = aciertos;
-            document.getElementById('ex_fal').value = fallos;
-            document.getElementById('ex_tie').value = tiempoTotal.toFixed(1) + "s";
-            document.getElementById('ex_fec').value = new Date().toISOString().split('T')[0];
+        function avanzarNivel() {
+            nivel++;
+            document.getElementById('txt-nivel').innerText = nivel;
+            generarNivel();
+        }
 
-            document.getElementById('f_int').submit();
-            setTimeout(() => { window.location.href = "index.html"; }, 3000);
+        function finalizarPartida() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            document.getElementById('sync-screen').style.display = 'flex';
+            document.getElementById('resumen-final').innerText = `Nivel alcanzado: ${nivel} | Aciertos: ${aciertos}`;
+
+            // Mapeo para Google Sheets
+            document.getElementById('field-nombre').value = nombrePaciente;
+            document.getElementById('field-nivel').value = nivel;
+            document.getElementById('field-aciertos').value = aciertos;
+            document.getElementById('field-fallos').value = fallos;
+            document.getElementById('field-tiempo').value = tTotal.toFixed(1) + "s";
+            document.getElementById('field-fecha').value = new Date().toISOString().split('T')[0];
+
+            document.getElementById('google-form').submit();
+
+            // Volver al portal tras 4 segundos
+            setTimeout(() => {
+                window.location.href = "index.html"; 
+            }, 4000);
         }
     </script>
 </body>
