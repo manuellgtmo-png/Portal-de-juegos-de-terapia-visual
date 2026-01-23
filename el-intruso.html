@@ -3,183 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agudeza Estática - El Intruso</title>
+    <title>Agudeza Estática Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #3b82f6; --bg: #f0f4f8; --card-bg: #ffffff;
-            --text: #1e293b; --success: #22c55e; --danger: #ef4444; 
+            --primary: #3b82f6; --bg: #f8fafc; --text: #1e293b; 
+            --success: #22c55e; --danger: #ef4444; 
         }
         
-        body { 
-            margin: 0; background-color: var(--bg); font-family: 'Montserrat', sans-serif; 
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg); color: var(--text); 
+            font-family: 'Montserrat', sans-serif; overflow: hidden; 
         }
 
-        /* HEADER MODERNO */
-        #header { 
-            background: white; padding: 15px 25px; display: flex; justify-content: space-between; 
-            align-items: center; border-bottom: 2px solid #e2e8f0; z-index: 100;
+        /* HEADER */
+        #ui-layer { 
+            padding: 10px 25px; display: flex; justify-content: space-between; 
+            align-items: center; background: white; border-bottom: 3px solid #e2e8f0; z-index: 100;
         }
-        .stat { background: #f8fafc; padding: 8px 18px; border-radius: 12px; font-weight: 900; border: 1px solid #e2e8f0; }
+        .stat-box { 
+            background: #f1f5f9; padding: 10px 18px; border-radius: 12px; 
+            font-weight: 900; border: 2px solid #e2e8f0; min-width: 100px; text-align: center; 
+        }
         
-        #progress-container { width: 100%; background: #e2e8f0; height: 8px; }
-        #progress-bar { width: 100%; height: 100%; background: var(--primary); transition: width 0.1s linear; }
+        #timer-wrapper { width: 100%; background: #e2e8f0; height: 10px; z-index: 100; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: var(--primary); transition: width 0.1s linear; }
 
-        /* EL TABLERO ESTILO "CARDS" */
-        #game-container { 
-            flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px;
+        /* JUEGO */
+        #game-area { 
+            height: calc(100vh - 85px); display: flex; align-items: center; justify-content: center; 
+            position: relative; overflow: hidden;
         }
+        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.15; z-index: 1; }
         
         #grid { 
-            display: grid; gap: 12px; padding: 25px; background: white; 
-            border-radius: 25px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0,0,0,0.05); max-width: 95vw; max-height: 80vh;
+            display: grid; gap: 10px; padding: 20px; z-index: 10; 
+            background: rgba(255,255,255,0.9); border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            max-width: 98vw; max-height: 85vh;
         }
 
         .item-card { 
-            background: white; border: 2px solid #f1f5f9; border-radius: 18px;
+            background: white; border: 2px solid #f1f5f9; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            width: 70px; height: 70px; /* Tamaño base ajustable */
+            cursor: pointer; transition: 0.1s; width: 65px; height: 65px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
+        .item-card:hover { border-color: var(--primary); transform: scale(1.05); background: #f8faff; }
+        .item-card span, .item-card div, .item-card svg { user-select: none; pointer-events: none; }
+
+        #btn-next { 
+            position: absolute; bottom: 30px; padding: 18px 60px; 
+            background: var(--success); color: white; border: none; 
+            border-radius: 50px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 150; box-shadow: 0 8px 15px rgba(34,197,94,0.4);
+            font-size: 1.2rem;
+        }
+
+        /* MODAL INICIAL */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 35px; text-align: center; max-width: 450px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
         
-        .item-card:hover { transform: scale(1.05); border-color: var(--primary); background: #f8faff; }
-        .item-card:active { transform: scale(0.95); }
+        .mode-selector { display: flex; gap: 10px; margin: 20px 0; }
+        .mode-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .mode-btn.active { border-color: var(--primary); background: #eff6ff; color: var(--primary); }
 
-        .item-card span { font-size: 2.5rem; font-weight: 900; color: #000; user-select: none; }
-        .item-card svg { width: 70%; height: 70%; }
+        .btn-start { background: var(--success); color: white; padding: 20px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.1rem; }
 
-        /* MODALES */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .popup { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 450px; width: 90%; }
-        .btn-play { background: var(--success); color: white; border: none; padding: 18px 40px; border-radius: 15px; font-weight: 900; font-size: 1.2rem; cursor: pointer; width: 100%; margin-top: 20px; }
-
-        #next-lvl { 
-            position: absolute; bottom: 40px; background: var(--success); color: white; 
-            border: none; padding: 20px 50px; border-radius: 50px; font-weight: 900; 
-            font-size: 1.2rem; cursor: pointer; display: none; z-index: 500;
-            box-shadow: 0 10px 15px rgba(34, 197, 94, 0.3);
-        }
-
-        /* Animaciones */
-        .wrong { animation: shake 0.4s; border-color: var(--danger) !important; }
+        .shake { animation: shake 0.4s; border-color: var(--danger) !important; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
     </style>
 </head>
 <body>
 
-    <div id="header">
-        <div class="stat">Nivel: <span id="lvl">1</span></div>
-        <div class="stat" style="color:var(--danger)">❤️❤️ <span id="lives">3</span></div>
-        <div class="stat">⏱️ <span id="clock">0.0s</span></div>
+    <div id="ui-layer">
+        <div class="stat-box">NIVEL: <span id="txt-lvl">1</span></div>
+        <div id="lives-box" class="stat-box" style="color:var(--danger)">❤️❤️❤️</div>
+        <div class="stat-box">⏱️ <span id="txt-time">0.0s</span></div>
     </div>
-    <div id="progress-container"><div id="progress-bar"></div></div>
+    <div id="timer-wrapper"><div id="timer-bar"></div></div>
 
-    <div id="game-container">
+    <div id="game-area">
+        <canvas id="noise-canvas"></canvas>
         <div id="grid"></div>
-        <button id="next-lvl" onclick="next()">SIGUIENTE NIVEL ➜</button>
+        <button id="btn-next" onclick="nextLvl()">SIGUIENTE NIVEL ➜</button>
     </div>
 
-    <div id="start-modal" class="overlay">
-        <div class="popup">
-            <h1 style="color:var(--primary)">Agudeza Estática</h1>
-            <p id="greeting">¡Hola!</p>
-            <div style="background:#f1f5f9; padding:15px; border-radius:15px; font-size:0.9rem; text-align:left;">
-                Encuentra el símbolo que tiene una <b>orientación o forma diferente</b>.
+    <div id="modal-init" class="overlay">
+        <div class="modal">
+            <h1 style="color:var(--primary); margin-bottom:5px;">Agudeza Estática</h1>
+            <p id="p-saludo" style="font-weight:700; color:#64748b;"></p>
+            
+            <p style="font-size: 0.9rem;">Selecciona el modo de juego:</p>
+            <div class="mode-selector">
+                <div id="btn-reloj" class="mode-btn active" onclick="setModo('reloj')">CONTRA RELOJ</div>
+                <div id="btn-libre" class="mode-btn" onclick="setModo('libre')">CRONOMETRADO</div>
             </div>
-            <button class="btn-play" onclick="start()">INICIAR ENTRENAMIENTO</button>
+
+            <button class="btn-start" onclick="comenzar()">INICIAR ENTRENAMIENTO</button>
         </div>
     </div>
 
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
-    <form id="sheet-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="form-name">
-        <input type="hidden" name="entry.1353470174" value="Agudeza Estática - El Intruso">
-        <input type="hidden" name="entry.721051298" id="form-lvl">
-        <input type="hidden" name="entry.1303309812" id="form-time">
-    </form>
-
     <script>
-        let level = 1, lives = 3, timeTotal = 0, timeLvl = 0, active = false, timer;
-        const patient = localStorage.getItem('pacienteActual') || "Manu";
-        document.getElementById('greeting').innerText = `¡Hola ${patient}!`;
+        let lvl = 1, lives = 3, modo = 'reloj', tTotal = 0, tLvl = 0, activo = false, timer;
+        const nombre = localStorage.getItem('pacienteActual') || "Paciente";
+        document.getElementById('p-saludo').innerText = `¡Hola ${nombre}!`;
 
-        const apple = (t) => `<svg viewBox="0 0 100 100">${t?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
-
-        function start() {
-            document.getElementById('start-modal').style.display = 'none';
-            active = true;
-            timer = setInterval(() => {
-                if(!active) return;
-                timeTotal += 0.1; timeLvl += 0.1;
-                document.getElementById('clock').innerText = timeTotal.toFixed(1) + "s";
-                let p = (1 - (timeLvl/15)) * 100;
-                document.getElementById('progress-bar').style.width = Math.max(0, p) + "%";
-                if(timeLvl >= 15) fail();
-            }, 100);
-            draw();
+        function setModo(m) {
+            modo = m;
+            document.getElementById('btn-reloj').classList.toggle('active', m === 'reloj');
+            document.getElementById('btn-libre').classList.toggle('active', m === 'libre');
+            document.getElementById('timer-wrapper').style.display = (m === 'reloj') ? 'block' : 'none';
         }
 
-        function draw() {
-            timeLvl = 0; active = true;
-            const grid = document.getElementById('grid'); grid.innerHTML = '';
-            document.getElementById('next-lvl').style.display = 'none';
+        // Generador de iconos variados
+        function getIconHTML(tipo, isTarget, deg) {
+            const rot = `style="transform: rotate(${deg}deg)"`;
+            const iconStyle = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
             
-            const cols = Math.min(8, 3 + Math.floor(level/3));
+            if(tipo === 0) return `<span ${rot} style="font-size:2.8rem; font-weight:900;">E</span>`;
+            if(tipo === 1) return `<div ${rot} style="${iconStyle} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
+            if(tipo === 2) return `<svg ${rot} style="${iconStyle}" viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
+            if(tipo === 3) return `<div ${rot} style="${iconStyle} border:8px solid black; position:relative;">${isTarget?'':'<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:50%; transform:translateX(-50%);"></div>'}</div>`;
+            return `<div ${rot} style="${iconStyle} background:black; border-radius:50%; position:relative;">${isTarget?'':'<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}</div>`;
+        }
+
+        function comenzar() {
+            document.getElementById('modal-init').style.display = 'none';
+            if(modo === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
+            activo = true;
+            initNoise();
+            timer = setInterval(() => {
+                if(!activo) return;
+                tTotal += 0.1; tLvl += 0.1;
+                document.getElementById('txt-time').innerText = tTotal.toFixed(1) + "s";
+                if(modo === 'reloj') {
+                    let limite = Math.max(4, 15 - (lvl * 0.4));
+                    let p = (1 - (tLvl/limite)) * 100;
+                    document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
+                    if(tLvl >= limite) registrarError();
+                }
+            }, 100);
+            render();
+        }
+
+        function initNoise() {
+            const cvs = document.getElementById('noise-canvas'); const ctx = cvs.getContext('2d');
+            cvs.width = window.innerWidth; cvs.height = window.innerHeight;
+            for(let i=0; i<800; i++) {
+                ctx.fillStyle = "#cbd5e1";
+                ctx.beginPath(); ctx.arc(Math.random()*cvs.width, Math.random()*cvs.height, 0.8, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function render() {
+            tLvl = 0; activo = true;
+            const grid = document.getElementById('grid'); grid.innerHTML = '';
+            document.getElementById('btn-next').style.display = 'none';
+            
+            const cols = Math.min(14, 3 + Math.floor(lvl / 2));
+            const rows = 7; 
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             
-            const type = Math.floor(Math.random() * 3);
-            const total = cols * cols;
-            const target = Math.floor(Math.random() * total);
-            const degs = [0, 90, 180, 270];
-            const baseDeg = degs[Math.floor(Math.random()*4)];
-            let targetDeg; do { targetDeg = degs[Math.floor(Math.random()*4)]; } while(targetDeg === baseDeg);
+            const tipoIcono = Math.floor(Math.random() * 5);
+            const total = cols * rows;
+            const posIntruso = Math.floor(Math.random() * total);
+            const orientaciones = [0, 90, 180, 270];
+            const angBase = orientaciones[Math.floor(Math.random()*4)];
+            let angInt; do { angInt = orientaciones[Math.floor(Math.random()*4)]; } while(angInt === angBase);
 
             for(let i=0; i<total; i++) {
                 const card = document.createElement('div');
                 card.className = 'item-card';
+                const esIntruso = i === posIntruso;
+                card.innerHTML = getIconHTML(tipoIcono, esIntruso, esIntruso ? angInt : angBase);
                 
-                if(type === 0) { card.innerHTML = `<span>E</span>`; card.style.transform = `rotate(${i===target?targetDeg:baseDeg}deg)`; }
-                else if(type === 1) { 
-                    card.innerHTML = `<div style="width:50%; height:50%; border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:30%; height:30%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
-                    card.firstChild.style.transform = `rotate(${i===target?targetDeg:baseDeg}deg)`;
-                }
-                else { card.innerHTML = apple(i !== target); }
-
                 card.onclick = () => {
-                    if(!active) return;
-                    if(i === target) {
-                        active = false;
-                        card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
-                        document.getElementById('next-lvl').style.display = 'block';
+                    if(!activo) return;
+                    if(esIntruso) {
+                        activo = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
+                        document.getElementById('btn-next').style.display = 'block';
                     } else {
-                        card.classList.add('wrong');
-                        setTimeout(() => card.classList.remove('wrong'), 400);
-                        fail();
+                        card.classList.add('shake');
+                        setTimeout(() => card.classList.remove('shake'), 400);
+                        registrarError();
                     }
                 };
                 grid.appendChild(card);
             }
         }
 
-        function fail() {
-            lives--; document.getElementById('lives').innerText = lives;
-            if(lives <= 0) end(); else draw();
+        function registrarError() {
+            lives--; 
+            document.getElementById('lives-box').innerText = "❤️".repeat(Math.max(0, lives));
+            if(lives <= 0) { alert("Fin de la sesión."); location.reload(); }
+            else render();
         }
 
-        function next() { level++; document.getElementById('lvl').innerText = level; draw(); }
-
-        function end() {
-            active = false; clearInterval(timer);
-            document.getElementById('form-name').value = patient;
-            document.getElementById('form-lvl').value = level;
-            document.getElementById('form-time').value = timeTotal.toFixed(1) + "s";
-            document.getElementById('sheet-form').submit();
-            alert("Evaluación finalizada. Datos guardados.");
-            window.location.href = "index.html";
-        }
+        function nextLvl() { lvl++; document.getElementById('txt-lvl').innerText = lvl; render(); }
     </script>
 </body>
 </html>
