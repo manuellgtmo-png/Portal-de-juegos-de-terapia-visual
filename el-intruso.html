@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Intruso PRO - Edición Clínica Completa</title>
+    <title>El Intruso - Agudeza Visual Estática</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --blue: #3b82f6; --bg: #f8fafc; --text: #1e293b; 
-            --success: #22c55e; --danger: #ef4444; --card-bg: #ffffff;
+            --success: #22c55e; --danger: #ef4444; --card: #ffffff;
         }
         
         body { 
@@ -17,92 +17,95 @@
             display: flex; flex-direction: column; height: 100vh; 
         }
 
-        /* UI SUPERIOR */
+        /* HEADER Y ESTADÍSTICAS */
         #ui-layer { 
             padding: 15px 25px; display: flex; justify-content: space-between; 
             align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100; 
         }
         .stat-box { 
-            background: #f1f5f9; padding: 8px 15px; border-radius: 12px; 
-            font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; 
+            background: #f1f5f9; padding: 10px 20px; border-radius: 15px; 
+            font-weight: 900; border: 2px solid #e2e8f0; min-width: 120px; text-align: center; 
         }
         
-        #timer-bar-wrapper { width: 100%; background: #e2e8f0; height: 10px; z-index: 100; }
+        #timer-bar-wrapper { width: 100%; background: #e2e8f0; height: 12px; z-index: 100; }
         #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
         /* ÁREA DE JUEGO */
         #game-area { 
             flex: 1; display: flex; align-items: center; justify-content: center; 
-            position: relative; overflow: hidden; background: #fff; 
+            position: relative; background: #fff; overflow: hidden;
         }
         #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.25; z-index: 1; }
         
         #grid { 
-            display: grid; gap: 12px; padding: 30px; background: rgba(255,255,255,0.9); 
-            border-radius: 25px; z-index: 10; border: 2px solid #cbd5e1;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            display: grid; gap: 15px; padding: 35px; background: rgba(255,255,255,0.9); 
+            border-radius: 30px; z-index: 10; border: 2px solid #cbd5e1;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
 
         .cell { 
-            width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; 
-            border-radius: 12px; cursor: pointer; background: #fff; border: 2px solid #e2e8f0; 
-            user-select: none; font-weight: 900; transition: transform 0.1s;
+            width: 75px; height: 75px; display: flex; align-items: center; justify-content: center; 
+            border-radius: 15px; cursor: pointer; background: #fff; border: 2px solid #e2e8f0; 
+            user-select: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .cell:hover { transform: scale(1.05); border-color: var(--blue); }
-        .cell svg { width: 75%; height: 75%; fill: #000; }
-        .cell.optotipo { font-size: 2.5rem; color: #000; filter: grayscale(100%); }
+        .cell:hover { transform: scale(1.08); border-color: var(--blue); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
+        .cell svg { width: 70%; height: 70%; fill: #000; }
+        .cell.optotipo { font-size: 2.8rem; font-weight: 900; color: #000; }
 
-        /* MODALES */
+        /* MODALES Y BOTONES */
         .overlay { 
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); 
-            z-index: 2000; display: flex; align-items: center; justify-content: center; 
-            padding: 20px; color: white; text-align: center; 
+            z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; 
         }
         .modal { 
-            background: white; color: var(--text); padding: 40px; 
-            border-radius: 35px; max-width: 500px; width: 100%; 
-            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            background: white; color: var(--text); padding: 45px; border-radius: 40px; 
+            max-width: 500px; width: 100%; text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
 
-        .mode-select { display: flex; gap: 15px; margin: 25px 0; }
         .mode-btn { 
-            flex: 1; padding: 15px; border: 3px solid #f1f5f9; 
-            border-radius: 15px; cursor: pointer; font-weight: 900; 
-            transition: 0.2s; font-size: 0.9rem;
+            flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 18px; 
+            cursor: pointer; font-weight: 900; transition: 0.3s;
         }
         .mode-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
 
-        .btn-start { 
-            background: var(--success); color: white; padding: 20px; 
-            border-radius: 20px; width: 100%; border: none; font-weight: 900; 
-            cursor: pointer; font-size: 1.2rem; box-shadow: 0 8px 0 #16a34a;
+        .btn-main { 
+            background: var(--success); color: white; padding: 20px; border-radius: 20px; 
+            width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem;
+            box-shadow: 0 6px 0 #16a34a; transition: 0.1s;
         }
-        
+        .btn-main:active { transform: translateY(3px); box-shadow: 0 3px 0 #16a34a; }
+
         #btn-next { 
-            position: absolute; bottom: 40px; padding: 18px 50px; 
+            position: absolute; bottom: 50px; padding: 20px 60px; 
             background: var(--success); color: white; border: none; 
-            border-radius: 20px; font-weight: 900; cursor: pointer; 
+            border-radius: 25px; font-weight: 900; cursor: pointer; 
             display: none; z-index: 150; box-shadow: 0 8px 0 #16a34a;
-            font-size: 1.1rem; animation: bounce 1s infinite;
+            font-size: 1.3rem; animation: pulse 1.5s infinite;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
-        /* CONFIGURACIÓN DEL SLIDER */
-        .slider-wrap { text-align: left; margin: 20px 0; }
-        input[type=range] { width: 100%; accent-color: var(--blue); cursor: pointer; }
+        #sync-layer { display: none; flex-direction: column; color: white; text-align: center; }
 
-        #sync-screen { display: none; flex-direction: column; }
+        /* Animación de Error */
+        .shake { animation: shake 0.4s; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
     </style>
 </head>
 <body>
 
     <div id="ui-layer">
         <div class="stat-box">NIVEL: <span id="txt-nivel">1</span></div>
-        <div id="vidas-cont" class="stat-box" style="color:var(--danger); font-size: 1.2rem;">❤️❤️❤️</div>
+        <div id="vidas-cont" class="stat-box" style="color:var(--danger)">❤️❤️❤️</div>
         <div class="stat-box">⏱️ <span id="txt-crono">0.0s</span></div>
     </div>
     <div id="timer-bar-wrapper"><div id="timer-bar"></div></div>
@@ -115,58 +118,59 @@
 
     <div id="modal-inicio" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--blue); margin:0; font-size: 1.8rem;">🔍 EL INTRUSO PRO</h1>
-            <p id="saludo" style="font-weight: 700; color: #64748b;"></p>
+            <h1 style="color:var(--blue); margin-top:0;">🔍 El Intruso PRO</h1>
+            <p id="paciente-txt" style="font-weight: 700; color: #64748b;"></p>
             
-            <div style="text-align: left; background: #f8fafc; padding: 15px; border-radius: 15px; font-size: 0.85rem; border-left: 4px solid var(--blue);">
-                <b>INSTRUCCIONES:</b><br>
-                Encuentra el símbolo diferente. En niveles de <b>E</b> o <b>C</b>, busca la que tiene distinta orientación. En niveles de <b>manzanas</b>, busca la que no tiene tallo.
+            <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.9rem; margin-bottom: 20px;">
+                <b>Instrucciones:</b> Identifica el objeto que es diferente al resto. En letras, busca la orientación distinta. En manzanas, busca la falta de tallo.
             </div>
 
-            <div class="mode-select">
+            <div style="display:flex; gap:15px; margin-bottom: 20px;">
                 <div id="m-reloj" class="mode-btn active" onclick="setModo('reloj')">CONTRA RELOJ</div>
-                <div id="m-libre" class="mode-btn" onclick="setModo('libre')">CRONOMETRADO</div>
+                <div id="m-libre" class="mode-btn" onclick="setModo('libre')">LIBRE</div>
             </div>
 
-            <div id="config-t" class="slider-wrap">
-                <label><b>TIEMPO POR NIVEL:</b> <span id="val-t" style="color:var(--blue)">15</span>s</label>
-                <input type="range" min="5" max="30" value="15" oninput="document.getElementById('val-t').innerText=this.value">
+            <div style="text-align: left; margin-bottom: 25px;">
+                <label><b>Tiempo por nivel:</b> <span id="val-t" style="color:var(--blue)">15</span>s</label>
+                <input type="range" min="5" max="30" value="15" style="width:100%;" oninput="document.getElementById('val-t').innerText=this.value">
             </div>
 
-            <button class="btn-start" onclick="iniciarJuego()">INICIAR EVALUACIÓN</button>
+            <button class="btn-main" onclick="comenzar()">INICIAR EXAMEN</button>
         </div>
     </div>
 
-    <div id="sync-screen" class="overlay">
-        <h1 id="msg-final">SESIÓN COMPLETADA</h1>
-        <p id="resumen-final"></p>
-        <div style="margin-top:20px; font-weight: 900; color: var(--blue);">🚀 SINCRONIZANDO CON EXCEL...</div>
+    <div id="sync-layer" class="overlay">
+        <h1 style="font-size: 3rem;">SESIÓN FINALIZADA</h1>
+        <p id="resumen" style="font-size: 1.5rem;"></p>
+        <div style="margin-top:30px;">
+            <div class="stat-box" style="display:inline-block; color:var(--blue)">Sincronizando con Google Sheets...</div>
+        </div>
     </div>
 
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
-    <form id="google-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="field-nombre">
-        <input type="hidden" name="entry.1353470174" value="El Intruso - Edición Clínica">
-        <input type="hidden" name="entry.721051298" id="field-nivel">
-        <input type="hidden" name="entry.873272199" id="field-aciertos">
-        <input type="hidden" name="entry.1030094511" id="field-fallos">
-        <input type="hidden" name="entry.1303309812" id="field-tiempo">
-        <input type="hidden" name="entry.845098414" id="field-fecha">
+    <iframe name="hidden_frame" style="display:none;"></iframe>
+    <form id="google-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_frame" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="f-nombre">
+        <input type="hidden" name="entry.1353470174" value="Agudeza Estática - El Intruso">
+        <input type="hidden" name="entry.721051298" id="f-nivel">
+        <input type="hidden" name="entry.873272199" id="f-aciertos">
+        <input type="hidden" name="entry.1030094511" id="f-fallos">
+        <input type="hidden" name="entry.1303309812" id="f-tiempo">
+        <input type="hidden" name="entry.845098414" id="f-fecha">
     </form>
 
     <script>
-        // VARIABLES DE ESTADO
+        // ESTADO GLOBAL
         let nivel = 1, aciertos = 0, fallos = 0, vidas = 3;
         let modo = 'reloj', tiempoMax = 15, tNivel = 0, tTotal = 0;
-        let timer, canvas, ctx, gameActive = false;
-        
-        const nombrePaciente = localStorage.getItem('pacienteActual') || "Paciente General";
-        document.getElementById('saludo').innerText = `Paciente: ${nombrePaciente}`;
+        let gameActive = false, timer;
 
-        // SVG DE MANZANA CLÍNICA
-        const getManzana = (conTallo) => `
+        const nombrePaciente = localStorage.getItem('pacienteActual') || "Paciente Anónimo";
+        document.getElementById('paciente-txt').innerText = `Evaluando a: ${nombrePaciente}`;
+
+        // SVG GENERATOR
+        const getManzanaSVG = (tallo) => `
             <svg viewBox="0 0 100 100">
-                ${conTallo ? '<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>' : ''}
+                ${tallo ? '<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>' : ''}
                 <path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/>
             </svg>`;
 
@@ -174,15 +178,13 @@
             modo = m;
             document.getElementById('m-reloj').classList.toggle('active', m === 'reloj');
             document.getElementById('m-libre').classList.toggle('active', m === 'libre');
-            document.getElementById('config-t').style.opacity = m === 'reloj' ? "1" : "0.3";
         }
 
-        function iniciarJuego() {
+        function comenzar() {
             tiempoMax = parseInt(document.querySelector('input[type=range]').value);
             document.getElementById('modal-inicio').style.display = 'none';
             gameActive = true;
             
-            // Reloj Principal
             timer = setInterval(() => {
                 if(!gameActive) return;
                 tTotal += 0.1; tNivel += 0.1;
@@ -191,121 +193,108 @@
                 if(modo === 'reloj') {
                     let p = (1 - (tNivel/tiempoMax)) * 100;
                     document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
-                    if(tNivel >= tiempoMax) { registrarFallo(); }
+                    if(tNivel >= tiempoMax) registrarError();
                 }
             }, 100);
 
             initNoise();
-            generarNivel();
+            crearNivel();
         }
 
         function initNoise() {
-            canvas = document.getElementById('noise-canvas'); ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const cvs = document.getElementById('noise-canvas');
+            const ctx = cvs.getContext('2d');
+            cvs.width = window.innerWidth;
+            cvs.height = window.innerHeight;
+            
             setInterval(() => {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                // Dibujar puntos y líneas de ruido visual
-                for(let i=0; i<600; i++) {
-                    ctx.fillStyle = Math.random() > 0.5 ? "#ccc" : "#eee";
-                    ctx.fillRect(Math.random()*canvas.width, Math.random()*canvas.height, 2, 2);
-                }
-                if(nivel > 5) { // Agregar líneas de interferencia
-                    for(let i=0; i<5; i++) {
-                        ctx.strokeStyle = "rgba(200,200,200,0.2)";
-                        ctx.beginPath(); ctx.moveTo(0, Math.random()*canvas.height);
-                        ctx.lineTo(canvas.width, Math.random()*canvas.height); ctx.stroke();
-                    }
+                ctx.clearRect(0,0,cvs.width,cvs.height);
+                ctx.fillStyle = "#ddd";
+                for(let i=0; i<500; i++) {
+                    ctx.fillRect(Math.random()*cvs.width, Math.random()*cvs.height, 2, 2);
                 }
             }, 100);
         }
 
-        function generarNivel() {
+        function crearNivel() {
             tNivel = 0;
             gameActive = true;
-            const grid = document.getElementById('grid'); grid.innerHTML = '';
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
             document.getElementById('btn-next').style.display = 'none';
             
             const dim = Math.min(10, 3 + Math.floor(nivel/3));
             grid.style.gridTemplateColumns = `repeat(${dim}, 1fr)`;
             
             const tipo = Math.floor(Math.random() * 3); // 0:E, 1:C, 2:Manzanas
-            const totalCells = dim * dim;
-            const posIntruso = Math.floor(Math.random() * totalCells);
-
-            // Definir orientaciones para optotipos
+            const posInt = Math.floor(Math.random() * (dim*dim));
+            
             const orientaciones = [0, 90, 180, 270];
-            const degBase = orientaciones[Math.floor(Math.random()*4)];
-            let degIntruso;
-            do { degIntruso = orientaciones[Math.floor(Math.random()*4)]; } while(degIntruso === degBase);
+            const angBase = orientaciones[Math.floor(Math.random()*4)];
+            let angInt; do { angInt = orientaciones[Math.floor(Math.random()*4)]; } while(angInt === angBase);
 
-            for(let i=0; i<totalCells; i++) {
+            for(let i=0; i<(dim*dim); i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
                 
-                if(tipo === 0 || tipo === 1) {
+                if(tipo < 2) {
                     cell.classList.add('optotipo');
                     cell.innerText = tipo === 0 ? "E" : "C";
-                    cell.style.transform = `rotate(${i === posIntruso ? degIntruso : degBase}deg)`;
+                    cell.style.transform = `rotate(${i === posInt ? angInt : angBase}deg)`;
                 } else {
-                    cell.innerHTML = getManzana(i !== posIntruso);
+                    cell.innerHTML = getManzanaSVG(i !== posInt);
                 }
 
                 cell.onclick = () => {
                     if(!gameActive) return;
-                    if(i === posIntruso) {
+                    if(i === posInt) {
                         aciertos++;
                         gameActive = false;
-                        document.getElementById('btn-next').style.display = 'block';
-                        // Feedback visual positivo
                         cell.style.borderColor = "var(--success)";
                         cell.style.background = "#f0fdf4";
+                        document.getElementById('btn-next').style.display = 'block';
                     } else {
-                        registrarFallo();
+                        cell.classList.add('shake');
+                        setTimeout(() => cell.classList.remove('shake'), 400);
+                        registrarError();
                     }
                 };
                 grid.appendChild(cell);
             }
         }
 
-        function registrarFallo() {
-            fallos++; vidas--;
-            document.getElementById('vidas-cont').innerText = "❤️".repeat(Math.max(0, vidas));
-            
-            // Efecto de error en pantalla
-            document.body.style.background = "#fee2e2";
-            setTimeout(() => document.body.style.background = "var(--bg)", 200);
-
-            if(vidas <= 0) finalizarPartida();
-            else generarNivel();
-        }
-
         function avanzarNivel() {
             nivel++;
             document.getElementById('txt-nivel').innerText = nivel;
-            generarNivel();
+            crearNivel();
         }
 
-        function finalizarPartida() {
+        function registrarError() {
+            fallos++; vidas--;
+            document.getElementById('vidas-cont').innerText = "❤️".repeat(Math.max(0, vidas));
+            
+            if(vidas <= 0) finalizar();
+            else crearNivel();
+        }
+
+        function finalizar() {
             gameActive = false;
             clearInterval(timer);
             
-            document.getElementById('sync-screen').style.display = 'flex';
-            document.getElementById('resumen-final').innerText = `Nivel alcanzado: ${nivel} | Aciertos: ${aciertos}`;
+            document.getElementById('sync-layer').style.display = 'flex';
+            document.getElementById('resumen').innerText = `Nivel: ${nivel} | Aciertos: ${aciertos} | Fallos: ${fallos}`;
 
-            // Mapeo para Google Sheets
-            document.getElementById('field-nombre').value = nombrePaciente;
-            document.getElementById('field-nivel').value = nivel;
-            document.getElementById('field-aciertos').value = aciertos;
-            document.getElementById('field-fallos').value = fallos;
-            document.getElementById('field-tiempo').value = tTotal.toFixed(1) + "s";
-            document.getElementById('field-fecha').value = new Date().toISOString().split('T')[0];
+            // Sincronizar Formulario
+            document.getElementById('f-nombre').value = nombrePaciente;
+            document.getElementById('f-nivel').value = nivel;
+            document.getElementById('f-aciertos').value = aciertos;
+            document.getElementById('f-fallos').value = fallos;
+            document.getElementById('f-tiempo').value = tTotal.toFixed(1) + "s";
+            document.getElementById('f-fecha').value = new Date().toISOString().split('T')[0];
 
             document.getElementById('google-form').submit();
-
-            // Volver al portal tras 4 segundos
-            setTimeout(() => {
-                window.location.href = "index.html"; 
-            }, 4000);
+            
+            setTimeout(() => { window.location.href = "index.html"; }, 4000);
         }
     </script>
 </body>
