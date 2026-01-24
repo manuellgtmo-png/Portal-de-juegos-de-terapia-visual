@@ -6,80 +6,59 @@
     <title>Agudeza Estática Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --blue: #3b82f6; --dark: #0f172a; --success: #22c55e; --danger: #ef4444; 
-        }
+        :root { --blue: #3b82f6; --dark: #0f172a; --success: #22c55e; --danger: #ef4444; }
         
         body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%;
+            margin: 0; padding: 0; width: 100%; height: 100%; 
             background-color: var(--dark);
-            /* Fondo de rejilla médica */
-            background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-            background-size: 45px 45px;
+            /* Tu fondo de rejilla médica que funcionó bien */
+            background-image: linear-gradient(rgba(59, 130, 246, 0.1) 1.5px, transparent 1.5px), 
+                              linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1.5px, transparent 1.5px);
+            background-size: 50px 50px;
             font-family: 'Montserrat', sans-serif; overflow: hidden; 
         }
 
-        /* --- HEADER --- */
         #ui-header { 
-            height: 75px; padding: 0 25px; display: flex; justify-content: space-between; 
-            align-items: center; background: rgba(15, 23, 42, 0.95); border-bottom: 3px solid var(--blue); color: white;
+            height: 80px; padding: 0 30px; display: flex; justify-content: space-between; 
+            align-items: center; background: rgba(15, 23, 42, 0.9); border-bottom: 4px solid var(--blue); color: white;
             z-index: 1000; position: relative;
         }
-        .stat-box { 
-            background: rgba(255,255,255,0.05); padding: 10px 18px; border-radius: 12px; 
-            font-weight: 900; border: 1px solid rgba(59,130,246,0.3); min-width: 100px; text-align: center; 
-        }
-        
-        #timer-container { width: 100%; background: #1e293b; height: 10px; display: none; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 15px; font-weight: 900; border: 1px solid rgba(59,130,246,0.3); min-width: 110px; text-align: center; }
+
+        #timer-container { width: 100%; background: #1e293b; height: 12px; display: none; }
         #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* --- AREA DE JUEGO --- */
-        #game-stage { 
-            height: calc(100vh - 85px); display: flex; align-items: center; justify-content: center; 
-            position: relative;
-        }
-        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.15; z-index: 1; }
+        #game-stage { height: calc(100vh - 92px); display: flex; align-items: center; justify-content: center; position: relative; }
         
         #main-grid { 
-            display: grid; gap: 15px; padding: 35px; z-index: 100; 
-            background: #ffffff; border-radius: 45px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            max-width: 90vw; max-height: 75vh; border: 4px solid var(--blue);
-            overflow: visible;
+            display: grid; gap: 12px; padding: 25px; z-index: 100; 
+            background: white; border-radius: 35px; border: 6px solid var(--blue);
+            box-shadow: 0 0 60px rgba(0,0,0,0.6); max-width: 95vw; max-height: 75vh;
         }
 
         .item-card { 
-            background: #f8fafc; border: 3px solid #e2e8f0; border-radius: 20px;
+            background: #ffffff; border: 2px solid #cbd5e1; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; width: 75px; height: 75px; transition: 0.1s;
-            box-shadow: 0 4px 0 #cbd5e1;
+            cursor: pointer; width: 65px; height: 65px; transition: 0.1s;
         }
-        .item-card:hover { transform: scale(1.08); border-color: var(--blue); z-index: 150; }
-        .item-card:active { transform: translateY(3px); box-shadow: none; }
-        
-        /* Forzado de visibilidad de figuras */
-        .symbol { font-size: 3rem; font-weight: 900; color: #000000 !important; line-height: 1; display: block; user-select: none; }
-        .symbol-svg { width: 55px; height: 55px; fill: black; stroke: black; stroke-width: 1px; display: block; }
+
+        /* ESTILOS DE FIGURAS NEGRAS */
+        .symbol-text { font-size: 2.8rem; font-weight: 900; color: #000 !important; line-height: 1; display: block; }
+        .symbol-svg { width: 50px; height: 50px; fill: #000; display: block; }
 
         #next-btn { 
-            position: absolute; bottom: 35px; padding: 22px 75px; 
+            position: absolute; bottom: 30px; padding: 20px 70px; 
             background: var(--success); color: white; border: none; 
-            border-radius: 25px; font-weight: 900; cursor: pointer; 
-            display: none; z-index: 1000; font-size: 1.5rem; box-shadow: 0 10px 0 #166534;
+            border-radius: 30px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 2000; font-size: 1.4rem; box-shadow: 0 8px 0 #166534;
         }
 
-        /* --- MODAL --- */
         .overlay { position: fixed; inset: 0; background: var(--dark); z-index: 5000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 40px; text-align: center; max-width: 450px; border-bottom: 8px solid var(--blue); }
-        .mode-pick { display: flex; gap: 15px; margin: 25px 0; }
-        .pick-btn { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 15px; cursor: pointer; font-weight: 900; }
-        .pick-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
-        #help-txt { background: #f8fafc; padding: 20px; border-radius: 15px; font-size: 0.9rem; text-align: left; margin-bottom: 20px; color: #475569; border-left: 5px solid var(--blue); }
-        .go-btn { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.3rem; }
-
-        .shake { animation: shake 0.4s; border-color: var(--danger) !important; background: #fee2e2 !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .modal { background: white; padding: 40px; border-radius: 40px; text-align: center; max-width: 450px; border-bottom: 10px solid var(--blue); }
+        .mode-row { display: flex; gap: 15px; margin: 20px 0; }
+        .m-btn { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 20px; cursor: pointer; font-weight: 900; }
+        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -92,140 +71,129 @@
     <div id="timer-container"><div id="timer-bar"></div></div>
 
     <div id="game-stage">
-        <canvas id="noise-canvas"></canvas>
         <div id="main-grid"></div>
-        <button id="next-btn" onclick="goToNext()">SIGUIENTE NIVEL ➜</button>
+        <button id="next-btn" onclick="advanceLevel()">SIGUIENTE NIVEL ➜</button>
     </div>
 
     <div id="start-overlay" class="overlay">
         <div class="modal">
             <h1 style="color:var(--dark); margin:0;">Agudeza Estática</h1>
-            <p id="greet" style="font-weight:700; color:#64748b; margin: 10px 0 20px 0;"></p>
-            <div class="mode-pick">
-                <div id="m-rel" class="pick-btn active" onclick="updateMode('reloj')">CONTRA RELOJ</div>
-                <div id="m-lib" class="pick-btn" onclick="updateMode('libre')">CRONOMETRADO</div>
+            <p id="greet" style="font-weight:700; color:#64748b; margin: 15px 0;"></p>
+            <div class="mode-row">
+                <div id="m-rel" class="m-btn active" onclick="setMode('reloj')">CONTRA RELOJ</div>
+                <div id="m-lib" class="m-btn" onclick="setMode('libre')">CRONOMETRADO</div>
             </div>
-            <div id="help-txt"><b>MODO RELOJ:</b> Tienes 15s que se reducen en cada nivel. Pierdes una vida si el tiempo se agota.</div>
-            <button class="go-btn" onclick="init()">COMENZAR EVALUACIÓN</button>
+            <p id="info-p" style="text-align:left; background:#f8fafc; padding:15px; border-radius:15px; font-size:0.9rem;">
+                Encuentra el símbolo con orientación o forma diferente.
+            </p>
+            <button class="go-btn" onclick="startApp()">COMENZAR</button>
         </div>
     </div>
 
-    <iframe name="hidden_frame" style="display:none;"></iframe>
-    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_frame" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="field-name">
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="f-name">
         <input type="hidden" name="entry.1353470174" value="Agudeza Estática">
-        <input type="hidden" name="entry.721051298" id="field-lvl">
-        <input type="hidden" name="entry.1303309812" id="field-time">
+        <input type="hidden" name="entry.721051298" id="f-lvl">
+        <input type="hidden" name="entry.1303309812" id="f-time">
     </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
 
     <script>
-        let currentLvl = 1, lives = 3, gameMode = 'reloj', totalT = 0, lvlT = 0, isRunning = false, loop;
-        const patient = localStorage.getItem('pacienteActual') || "Usuario";
-        document.getElementById('greet').innerText = `¡Hola ${patient}!`;
+        let lvl = 1, lives = 3, mode = 'reloj', tTot = 0, tLvl = 0, active = false, mainLoop;
+        const pName = localStorage.getItem('pacienteActual') || "Manu Real";
+        document.getElementById('greet').innerText = `¡Hola ${pName}! ¿Listo?`;
 
-        function updateMode(m) {
-            gameMode = m;
+        function setMode(m) {
+            mode = m;
             document.getElementById('m-rel').classList.toggle('active', m === 'reloj');
             document.getElementById('m-lib').classList.toggle('active', m === 'libre');
-            document.getElementById('help-txt').innerHTML = m === 'reloj' ? 
-                "<b>MODO RELOJ:</b> El tiempo límite baja en cada nivel. ¡Niveles infinitos y máxima dificultad!" : 
-                "<b>MODO CRONOMETRADO:</b> Tómate tu tiempo. Mediremos cuánto tardas en total en completar los niveles.";
         }
 
-        function getFigureHTML(id, isTarget, rotation) {
-            const rotStyle = `style="transform: rotate(${rotation}deg)"`;
-            const box = `width:55px; height:55px; display:flex; align-items:center; justify-content:center;`;
-            
-            switch(id) {
-                case 0: return `<span class="symbol" ${rotStyle}>E</span>`;
-                case 1: return `<div ${rotStyle} style="${box} border:10px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:18px; height:18px; top:50%; right:-14px; transform:translateY(-50%);"></div></div>`;
-                case 2: return `<svg class="symbol-svg" ${rotStyle} viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="10" fill="none"/>':''}<path d="M50 85 Q22 85 22 55 Q22 25 50 25 Q78 25 78 55 Q78 85 50 85" fill="black"/></svg>`;
-                case 3: return `<div ${rotStyle} style="${box} border:10px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:18px; height:18px; top:-10px; left:16px;"></div>'}</div>`;
-                case 4: return `<div ${rotStyle} style="width:0; height:0; border-left:26px solid transparent; border-right:26px solid transparent; border-bottom:45px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:12px; height:12px; bottom:-32px; left:-6px; border-radius:50%;"></div>'}</div>`;
-                default: return `<div ${rotStyle} style="${box} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:18px; height:18px; top:12px; left:12px; border-radius:50%;"></div>'}</div>`;
+        // LÓGICA DE FIGURAS NEGRAS REFORZADAS
+        function getFigure(type, isTarget, rot) {
+            const s = `style="transform: rotate(${rot}deg)"`;
+            switch(type) {
+                case 0: // E de Snellen
+                    return `<span class="symbol-text" ${s}>E</span>`;
+                case 1: // C de Landolt
+                    return `<span class="symbol-text" ${s}>C</span>`;
+                case 2: // Caras (Sonriente vs Seria)
+                    return isTarget ? 
+                        `<svg class="symbol-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" stroke="black" stroke-width="8" fill="none"/><circle cx="35" cy="40" r="5" fill="black"/><circle cx="65" cy="40" r="5" fill="black"/><path d="M30 70 Q50 70 70 70" stroke="black" stroke-width="8" fill="none"/></svg>` :
+                        `<svg class="symbol-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" stroke="black" stroke-width="8" fill="none"/><circle cx="35" cy="40" r="5" fill="black"/><circle cx="65" cy="40" r="5" fill="black"/><path d="M30 75 Q50 55 70 75" stroke="black" stroke-width="8" fill="none"/></svg>`;
+                case 3: // Estrellas (5 puntas vs 4 puntas)
+                    return isTarget ?
+                        `<svg class="symbol-svg" viewBox="0 0 100 100"><path d="M50 5 L60 40 L95 40 L65 60 L75 95 L50 75 L25 95 L35 60 L5 40 L40 40 Z" fill="black"/></svg>` :
+                        `<svg class="symbol-svg" viewBox="0 0 100 100"><path d="M50 5 L65 35 L95 50 L65 65 L50 95 L35 65 L5 50 L35 35 Z" fill="black"/></svg>`;
             }
         }
 
-        function init() {
+        function startApp() {
             document.getElementById('start-overlay').style.display = 'none';
-            if(gameMode === 'reloj') document.getElementById('timer-container').style.display = 'block';
-            isRunning = true;
-            generateNoise();
-            loop = setInterval(() => {
-                if(!isRunning) return;
-                totalT += 0.1; lvlT += 0.1;
-                document.getElementById('val-time').innerText = totalT.toFixed(1) + "s";
-                if(gameMode === 'reloj') {
-                    let limit = Math.max(3, 15 - (currentLvl * 0.5));
-                    document.getElementById('timer-bar').style.width = Math.max(0, (1 - lvlT/limit)*100) + "%";
-                    if(lvlT >= limit) processError();
+            if(mode === 'reloj') document.getElementById('timer-container').style.display = 'block';
+            active = true;
+            mainLoop = setInterval(() => {
+                if(!active) return;
+                tTot += 0.1; tLvl += 0.1;
+                document.getElementById('val-time').innerText = tTot.toFixed(1) + "s";
+                if(mode === 'reloj') {
+                    let limit = Math.max(3, 15 - (lvl * 0.5));
+                    document.getElementById('timer-bar').style.width = Math.max(0, (1 - tLvl/limit)*100) + "%";
+                    if(tLvl >= limit) fail();
                 }
             }, 100);
-            renderLevel();
+            render();
         }
 
-        function generateNoise() {
-            const c = document.getElementById('noise-canvas'); const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            for(let i=0; i<850; i++) {
-                ctx.fillStyle = "#3b82f6"; ctx.globalAlpha = 0.2;
-                ctx.beginPath(); ctx.arc(Math.random()*c.width, Math.random()*c.height, 1, 0, Math.PI*2); ctx.fill();
-            }
-        }
-
-        function renderLevel() {
-            lvlT = 0; isRunning = true;
+        function render() {
+            tLvl = 0; active = true;
             const grid = document.getElementById('main-grid');
             grid.innerHTML = ''; 
             document.getElementById('next-btn').style.display = 'none';
 
-            const cols = Math.min(11, 3 + Math.floor(currentLvl / 2));
+            const cols = Math.min(10, 3 + Math.floor(lvl / 3));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-            const sType = Math.floor(Math.random() * 6);
-            const totalItems = cols * 6;
-            const targetPos = Math.floor(Math.random() * totalItems);
-            const rotations = [0, 90, 180, 270];
-            const baseRot = rotations[Math.floor(Math.random()*4)];
-            let tRot; do { tRot = rotations[Math.floor(Math.random()*4)]; } while(tRot === baseRot);
+            const sType = Math.floor(Math.random() * 4);
+            const total = cols * 5;
+            const target = Math.floor(Math.random() * total);
+            const degs = [0, 90, 180, 270];
+            const baseRot = degs[Math.floor(Math.random()*4)];
+            let tRot; do { tRot = degs[Math.floor(Math.random()*4)]; } while(tRot === baseRot);
 
-            for(let i=0; i<totalItems; i++) {
+            for(let i=0; i<total; i++) {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                card.innerHTML = getFigureHTML(sType, i === targetPos, i === targetPos ? tRot : baseRot);
+                // Para las caras y estrellas no rotamos, para E y C sí.
+                const finalRot = (sType < 2) ? (i === target ? tRot : baseRot) : 0;
+                card.innerHTML = getFigure(sType, i === target, finalRot);
                 
                 card.onclick = () => {
-                    if(!isRunning) return;
-                    if(i === targetPos) {
-                        isRunning = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
+                    if(!active) return;
+                    if(i === target) {
+                        active = false; card.style.background = "#dcfce7";
                         document.getElementById('next-btn').style.display = 'block';
-                    } else {
-                        card.classList.add('shake');
-                        setTimeout(() => card.classList.remove('shake'), 400);
-                        processError();
-                    }
+                    } else fail();
                 };
                 grid.appendChild(card);
             }
         }
 
-        function processError() {
+        function fail() {
             lives--;
             document.getElementById('val-lives').innerText = "❤️".repeat(Math.max(0, lives));
-            if(lives <= 0) exit();
-            else renderLevel();
+            if(lives <= 0) finish(); else render();
         }
 
-        function goToNext() { currentLvl++; document.getElementById('val-lvl').innerText = currentLvl; renderLevel(); }
+        function advanceLevel() { lvl++; document.getElementById('val-lvl').innerText = lvl; render(); }
 
-        function exit() {
-            isRunning = false; clearInterval(loop);
-            document.getElementById('field-name').value = patient;
-            document.getElementById('field-lvl').value = currentLvl;
-            document.getElementById('field-time').value = totalT.toFixed(1) + "s";
+        function finish() {
+            active = false; clearInterval(mainLoop);
+            document.getElementById('f-name').value = pName;
+            document.getElementById('f-lvl').value = lvl;
+            document.getElementById('f-time').value = tTot.toFixed(1) + "s";
             document.getElementById('gs-form').submit();
-            alert("Evaluación finalizada. Volviendo al menú.");
-            /* Solución al 404: Redirección al archivo correcto */
+            alert("Evaluación finalizada");
             window.location.href = "agudeza-visual.html";
         }
     </script>
