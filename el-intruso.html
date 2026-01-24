@@ -18,214 +18,227 @@
         }
 
         /* --- HEADER --- */
-        #header { 
+        #header-ui { 
             padding: 15px 30px; display: flex; justify-content: space-between; 
-            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100;
+            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100; position: relative;
         }
-        .stat-box { 
-            background: #f1f5f9; padding: 10px 20px; border-radius: 12px; 
-            font-weight: 900; border: 2px solid #e2e8f0; min-width: 100px; text-align: center; 
+        .stat-card { 
+            background: #f1f5f9; padding: 12px 20px; border-radius: 15px; 
+            font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
         
-        #timer-wrapper { width: 100%; background: #e2e8f0; height: 10px; display: none; }
+        #timer-wrapper { width: 100%; background: #e2e8f0; height: 12px; position: relative; z-index: 100; display: none; }
         #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* --- ÁREA DE JUEGO --- */
-        #game-area { 
-            height: calc(100vh - 95px); display: flex; align-items: center; justify-content: center; 
-            position: relative;
+        /* --- ÁREA DE ENTRENAMIENTO --- */
+        #game-container { 
+            height: calc(100vh - 100px); display: flex; align-items: center; justify-content: center; 
+            position: relative; overflow: hidden;
         }
-        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; z-index: 1; }
+        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.15; z-index: 1; }
         
-        #grid { 
+        #grid-main { 
             display: grid; gap: 12px; padding: 25px; z-index: 10; 
-            background: rgba(255,255,255,0.9); border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            max-width: 95vw; max-height: 80vh; transition: all 0.3s ease;
+            background: rgba(255,255,255,0.9); border-radius: 35px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 96vw; max-height: 80vh; transition: all 0.4s ease;
         }
 
         .item-card { 
             background: white; border: 2px solid #f1f5f9; border-radius: 15px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.15s; width: 65px; height: 65px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 65px; height: 65px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .item-card:hover { border-color: var(--blue); transform: translateY(-3px); }
-        .item-card span { font-size: 2.5rem; font-weight: 900; color: #000; }
+        .item-card:hover { border-color: var(--blue); transform: translateY(-3px) scale(1.05); z-index: 20; }
+        
+        .item-card span { font-size: 2.8rem; font-weight: 900; color: #000; line-height: 1; }
         .item-card svg { width: 75%; height: 75%; }
 
-        #btn-next { 
-            position: absolute; bottom: 30px; padding: 18px 60px; 
+        #btn-action { 
+            position: absolute; bottom: 40px; padding: 20px 60px; 
             background: var(--success); color: white; border: none; 
-            border-radius: 50px; font-weight: 900; cursor: pointer; 
-            display: none; z-index: 150; font-size: 1.2rem; box-shadow: 0 10px 20px rgba(34,197,94,0.3);
+            border-radius: 20px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 150; font-size: 1.3rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
         }
 
-        /* --- MODAL INICIAL --- */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 40px; text-align: center; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .mode-row { display: flex; gap: 15px; margin: 25px 0; }
-        .m-btn { flex: 1; padding: 18px; border: 2px solid #e2e8f0; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.2s; }
-        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); transform: translateY(-2px); }
-        #instr-box { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; color: #475569; }
-        .btn-start { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
+        /* --- MODALES --- */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 45px; border-radius: 40px; text-align: center; max-width: 500px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        
+        .mode-selector { display: flex; gap: 15px; margin: 25px 0; }
+        .mode-option { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.3s; }
+        .mode-option.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
 
-        .shake { animation: shake 0.4s; border-color: var(--danger) !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+        #info-box { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; color: #475569; line-height: 1.5; }
+        .start-trigger { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
+
+        .shake-anim { animation: shake 0.4s; border-color: var(--danger) !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
     </style>
 </head>
 <body>
 
-    <div id="header">
-        <div class="stat-box">NIVEL: <span id="txt-lvl">1</span></div>
-        <div id="lives-display" class="stat-box" style="color:var(--danger)">❤️❤️❤️</div>
-        <div class="stat-box">⏱️ <span id="txt-time">0.0s</span></div>
+    <div id="header-ui">
+        <div class="stat-card">NIVEL: <span id="val-lvl">1</span></div>
+        <div id="val-lives" class="stat-card" style="color:var(--danger)">❤️❤️❤️</div>
+        <div class="stat-card">⏱️ <span id="val-time">0.0s</span></div>
     </div>
     <div id="timer-wrapper"><div id="timer-bar"></div></div>
 
-    <div id="game-area">
+    <div id="game-container">
         <canvas id="noise-canvas"></canvas>
-        <div id="grid"></div>
-        <button id="btn-next" onclick="nextStep()">SIGUIENTE NIVEL ➜</button>
+        <div id="grid-main"></div>
+        <button id="btn-action" onclick="goToNextLevel()">SIGUIENTE NIVEL ➜</button>
     </div>
 
-    <div id="init-modal" class="overlay">
-        <div class="modal">
+    <div id="setup-modal" class="overlay">
+        <div class="modal-content">
             <h1 style="color:var(--blue); margin:0;">Agudeza Estática</h1>
-            <p id="paciente-txt" style="font-weight:700; color:#64748b; margin-top:5px;"></p>
-            <div class="mode-row">
-                <div id="mod-rel" class="m-btn active" onclick="setAppMode('reloj')">CONTRA RELOJ</div>
-                <div id="mod-lib" class="m-btn" onclick="setAppMode('libre')">CRONOMETRADO</div>
+            <p id="welcome-msg" style="font-weight:700; color:#64748b; margin-bottom: 25px;"></p>
+            
+            <div class="mode-selector">
+                <div id="opt-reloj" class="mode-option active" onclick="updateMode('reloj')">CONTRA RELOJ</div>
+                <div id="opt-libre" class="mode-option" onclick="updateMode('libre')">CRONOMETRADO</div>
             </div>
-            <div id="instr-box"><b>MODO RELOJ:</b> Tienes 15 segundos iniciales. El tiempo bajará en cada nivel. Si llega a cero, pierdes una vida.</div>
-            <button class="btn-start" onclick="launchApp()">INICIAR ENTRENAMIENTO</button>
+
+            <div id="info-box">
+                <b>MODO RELOJ:</b> Tienes 15 segundos iniciales. El tiempo se reduce 0.5s cada nivel. Si el tiempo llega a cero, pierdes una vida automáticamente.
+            </div>
+
+            <button class="start-trigger" onclick="initTraining()">INICIAR ENTRENAMIENTO</button>
         </div>
     </div>
 
     <iframe name="hidden_iframe" style="display:none;"></iframe>
-    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="field-name">
+    <form id="sheets-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="sheet-name">
         <input type="hidden" name="entry.1353470174" value="Agudeza Estática">
-        <input type="hidden" name="entry.721051298" id="field-lvl">
-        <input type="hidden" name="entry.1303309812" id="field-time">
+        <input type="hidden" name="entry.721051298" id="sheet-lvl">
+        <input type="hidden" name="entry.1303309812" id="sheet-time">
     </form>
 
     <script>
-        let nivel = 1, vidas = 3, modoJuego = 'reloj', tTotal = 0, tLvl = 0, appActiva = false, mainTimer;
-        const nombrePaciente = localStorage.getItem('pacienteActual') || "Manu Real";
-        document.getElementById('paciente-txt').innerText = `¡Hola ${nombrePaciente}!`;
+        let currentLvl = 1, currentLives = 3, gameMode = 'reloj', totalTime = 0, lvlTime = 0, isGameActive = false, intervalRef;
+        const patientName = localStorage.getItem('pacienteActual') || "Usuario";
+        document.getElementById('welcome-msg').innerText = `¡Hola ${patientName}!`;
 
-        function setAppMode(m) {
-            modoJuego = m;
-            document.getElementById('mod-rel').classList.toggle('active', m === 'reloj');
-            document.getElementById('mod-lib').classList.toggle('active', m === 'libre');
-            const ib = document.getElementById('instr-box');
+        function updateMode(m) {
+            gameMode = m;
+            document.getElementById('opt-reloj').classList.toggle('active', m === 'reloj');
+            document.getElementById('opt-libre').classList.toggle('active', m === 'libre');
+            const ib = document.getElementById('info-box');
             if(m === 'reloj') {
-                ib.innerHTML = "<b>MODO RELOJ:</b> El tiempo bajará 0.5s en cada nivel. ¡Niveles infinitos y máxima presión!";
+                ib.innerHTML = "<b>MODO RELOJ:</b> El tiempo se reduce en cada nivel. ¡Niveles infinitos y máxima dificultad!";
                 document.getElementById('timer-wrapper').style.display = 'block';
             } else {
-                ib.innerHTML = "<b>MODO CRONOMETRADO:</b> No hay límite. Ideal para medir precisión y escaneo visual sin estrés.";
+                ib.innerHTML = "<b>MODO CRONOMETRADO:</b> Sin límite de tiempo por nivel. Mediremos cuánto tardas en total.";
                 document.getElementById('timer-wrapper').style.display = 'none';
             }
         }
 
-        // --- SISTEMA DE DIBUJO ---
-        function generateIcon(type, isTarget, rotation) {
-            const rStyle = `style="transform: rotate(${rotation}deg)"`;
-            const boxStyle = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
+        // --- MOTOR DE DIBUJO DE FIGURAS ---
+        function createShapeHTML(type, isTarget, deg) {
+            const rot = `style="transform: rotate(${deg}deg)"`;
+            const container = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
             
             switch(type) {
-                case 0: return `<span ${rStyle}>E</span>`;
-                case 1: return `<div ${rStyle} style="${boxStyle} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
-                case 2: return `<svg ${rStyle} style="width:45px; height:45px;" viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
-                case 3: return `<div ${rStyle} style="${boxStyle} border:8px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:35%;"></div>'}</div>`;
-                case 4: return `<div ${rStyle} style="width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:38px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:10px; height:10px; bottom:-28px; left:-5px; border-radius:50%;"></div>'}</div>`;
-                default: return `<div ${rStyle} style="${boxStyle} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}</div>`;
+                case 0: return `<span ${rot}>E</span>`;
+                case 1: return `<div ${rot} style="${container} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
+                case 2: return `<svg ${rot} style="width:45px; height:45px;" viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
+                case 3: return `<div ${rot} style="${container} border:8px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:35%;"></div>'}</div>`;
+                case 4: return `<div ${rot} style="width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:38px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:10px; height:10px; bottom:-28px; left:-5px; border-radius:50%;"></div>'}</div>`;
+                default: return `<div ${rot} style="${container} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}</div>`;
             }
         }
 
-        function launchApp() {
-            document.getElementById('init-modal').style.display = 'none';
-            if(modoJuego === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
-            appActiva = true;
-            createNoise();
-            mainTimer = setInterval(() => {
-                if(!appActiva) return;
-                tTotal += 0.1; tLvl += 0.1;
-                document.getElementById('txt-time').innerText = tTotal.toFixed(1) + "s";
-                if(modoJuego === 'reloj') {
-                    let limit = Math.max(3, 15 - (nivel * 0.5));
-                    let percent = (1 - (tLvl/limit)) * 100;
-                    document.getElementById('timer-bar').style.width = Math.max(0, percent) + "%";
-                    if(tLvl >= limit) handleError();
+        function initTraining() {
+            document.getElementById('setup-modal').style.display = 'none';
+            if(gameMode === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
+            isGameActive = true;
+            generateNoise();
+            intervalRef = setInterval(() => {
+                if(!isGameActive) return;
+                totalTime += 0.1; lvlTime += 0.1;
+                document.getElementById('val-time').innerText = totalTime.toFixed(1) + "s";
+                if(gameMode === 'reloj') {
+                    let limit = Math.max(3, 15 - (currentLvl * 0.5));
+                    let p = (1 - (lvlTime/limit)) * 100;
+                    document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
+                    if(lvlTime >= limit) registerFailure();
                 }
             }, 100);
-            renderLevel();
+            renderLevelGrid();
         }
 
-        function createNoise() {
+        function generateNoise() {
             const c = document.getElementById('noise-canvas'); const ctx = c.getContext('2d');
             c.width = window.innerWidth; c.height = window.innerHeight;
-            for(let i=0; i<800; i++) {
+            for(let i=0; i<900; i++) {
                 ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); 
-                ctx.arc(Math.random()*c.width, Math.random()*c.height, 0.8, 0, Math.PI*2); ctx.fill();
+                ctx.arc(Math.random()*c.width, Math.random()*c.height, 0.9, 0, Math.PI*2); ctx.fill();
             }
         }
 
-        function renderLevel() {
-            tLvl = 0; appActiva = true;
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            document.getElementById('btn-next').style.display = 'none';
+        function renderLevelGrid() {
+            lvlTime = 0; isGameActive = true;
+            const grid = document.getElementById('grid-main');
+            grid.innerHTML = ''; // Limpieza atómica
+            document.getElementById('btn-action').style.display = 'none';
 
-            const cols = Math.min(14, 3 + Math.floor(nivel / 2));
+            const cols = Math.min(15, 3 + Math.floor(currentLvl / 2));
             const rows = 7;
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-            const sType = Math.floor(Math.random() * 6);
-            const total = cols * rows;
-            const target = Math.floor(Math.random() * total);
-            const degs = [0, 90, 180, 270];
-            const baseRot = degs[Math.floor(Math.random()*4)];
-            let tRot; do { tRot = degs[Math.floor(Math.random()*4)]; } while(tRot === baseRot);
+            const shapeType = Math.floor(Math.random() * 6);
+            const totalCount = cols * rows;
+            const targetPos = Math.floor(Math.random() * totalCount);
+            const rotations = [0, 90, 180, 270];
+            const baseRot = rotations[Math.floor(Math.random()*4)];
+            let targetRot; do { targetRot = rotations[Math.floor(Math.random()*4)]; } while(targetRot === baseRot);
 
-            for(let i=0; i<total; i++) {
+            for(let i=0; i<totalCount; i++) {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                const isTarget = i === target;
-                card.innerHTML = generateIcon(sType, isTarget, isTarget ? tRot : baseRot);
+                const isTarget = i === targetPos;
+                card.innerHTML = createShapeHTML(shapeType, isTarget, isTarget ? targetRot : baseRot);
+                
                 card.onclick = () => {
-                    if(!appActiva) return;
+                    if(!isGameActive) return;
                     if(isTarget) {
-                        appActiva = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
-                        document.getElementById('btn-next').style.display = 'block';
+                        isGameActive = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
+                        document.getElementById('btn-action').style.display = 'block';
                     } else {
-                        card.classList.add('shake');
-                        setTimeout(() => card.classList.remove('shake'), 400);
-                        handleError();
+                        card.classList.add('shake-anim');
+                        setTimeout(() => card.classList.remove('shake-anim'), 400);
+                        registerFailure();
                     }
                 };
                 grid.appendChild(card);
             }
         }
 
-        function handleError() {
-            vidas--; 
-            document.getElementById('lives-display').innerText = "❤️".repeat(Math.max(0, vidas));
-            if(vidas <= 0) finishGame();
-            else renderLevel();
+        function registerFailure() {
+            currentLives--; 
+            document.getElementById('val-lives').innerText = "❤️".repeat(Math.max(0, currentLives));
+            if(currentLives <= 0) exitSession();
+            else renderLevelGrid();
         }
 
-        function nextStep() { nivel++; document.getElementById('txt-lvl').innerText = nivel; renderLevel(); }
+        function goToNextLevel() { 
+            currentLvl++; 
+            document.getElementById('val-lvl').innerText = currentLvl; 
+            renderLevelGrid(); 
+        }
 
-        function finishGame() {
-            appActiva = false; clearInterval(mainTimer);
-            document.getElementById('field-name').value = nombrePaciente;
-            document.getElementById('field-lvl').value = nivel;
-            document.getElementById('field-time').value = tTotal.toFixed(1) + "s";
-            document.getElementById('gs-form').submit();
-            alert("Evaluación finalizada. Redirigiendo al submenú...");
-            // REDIRECCIÓN AL SUBMENÚ
+        function exitSession() {
+            isGameActive = false; clearInterval(intervalRef);
+            document.getElementById('sheet-name').value = patientName;
+            document.getElementById('sheet-lvl').value = currentLvl;
+            document.getElementById('sheet-time').value = totalTime.toFixed(1) + "s";
+            document.getElementById('sheets-form').submit();
+            alert("Sesión finalizada. Volviendo al menú.");
             window.location.href = "agudeza-visual.html";
         }
     </script>
