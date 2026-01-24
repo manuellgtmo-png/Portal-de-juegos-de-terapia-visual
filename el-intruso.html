@@ -3,242 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agudeza Estática Pro - Perceptum</title>
+    <title>Agudeza Estática Profesional - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --blue: #3b82f6; --bg: #f8fafc; --text: #1e293b; 
-            --success: #22c55e; --danger: #ef4444; 
+            --blue: #3b82f6; --dark: #0f172a; --success: #22c55e; --danger: #ef4444; 
         }
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg); color: var(--text); 
+            background-color: var(--dark);
+            background-image: linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
             font-family: 'Montserrat', sans-serif; overflow: hidden; 
         }
 
         /* --- HEADER --- */
-        #header-ui { 
-            padding: 15px 30px; display: flex; justify-content: space-between; 
-            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100; position: relative;
+        #ui-header { 
+            height: 75px; padding: 0 30px; display: flex; justify-content: space-between; 
+            align-items: center; background: rgba(15, 23, 42, 0.9); border-bottom: 3px solid var(--blue); color: white;
+            position: relative; z-index: 100;
         }
         .stat-card { 
-            background: #f1f5f9; padding: 12px 20px; border-radius: 15px; 
-            font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 12px; 
+            font-weight: 900; border: 1px solid rgba(59,130,246,0.3); min-width: 120px; text-align: center; 
         }
         
-        #timer-wrapper { width: 100%; background: #e2e8f0; height: 12px; position: relative; z-index: 100; display: none; }
+        #timer-wrap { width: 100%; background: #1e293b; height: 10px; position: relative; display: none; }
         #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* --- ÁREA DE ENTRENAMIENTO --- */
-        #game-container { 
-            height: calc(100vh - 100px); display: flex; align-items: center; justify-content: center; 
+        /* --- STAGE --- */
+        #stage { 
+            height: calc(100vh - 85px); display: flex; align-items: center; justify-content: center; 
             position: relative; overflow: hidden;
         }
-        #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.15; z-index: 1; }
+        #noise-layer { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; z-index: 1; }
         
-        #grid-main { 
-            display: grid; gap: 12px; padding: 25px; z-index: 10; 
-            background: rgba(255,255,255,0.9); border-radius: 35px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-width: 96vw; max-height: 80vh; transition: all 0.4s ease;
+        #grid { 
+            display: grid; gap: 12px; padding: 30px; z-index: 10; 
+            background: rgba(255, 255, 255, 0.98); border-radius: 40px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5), 0 0 20px rgba(59,130,246,0.2);
+            max-width: 92vw; max-height: 78vh; border: 1px solid white;
         }
 
-        .item-card { 
-            background: white; border: 2px solid #f1f5f9; border-radius: 15px;
+        .item { 
+            background: white; border: 2px solid #e2e8f0; border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 65px; height: 65px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            cursor: pointer; width: 68px; height: 68px; transition: 0.15s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .item-card:hover { border-color: var(--blue); transform: translateY(-3px) scale(1.05); z-index: 20; }
+        .item:hover { border-color: var(--blue); transform: scale(1.05); z-index: 20; }
         
-        .item-card span { font-size: 2.8rem; font-weight: 900; color: #000; line-height: 1; }
-        .item-card svg { width: 75%; height: 75%; }
+        /* Contenido de figuras */
+        .fig-txt { font-size: 2.8rem; font-weight: 900; color: #000 !important; line-height: 1; }
+        .fig-svg { width: 50px; height: 50px; fill: black; }
 
-        #btn-action { 
+        #btn-next { 
             position: absolute; bottom: 40px; padding: 20px 60px; 
             background: var(--success); color: white; border: none; 
-            border-radius: 20px; font-weight: 900; cursor: pointer; 
-            display: none; z-index: 150; font-size: 1.3rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
+            border-radius: 25px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 200; font-size: 1.3rem; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
         }
 
-        /* --- MODALES --- */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; padding: 45px; border-radius: 40px; text-align: center; max-width: 500px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        
-        .mode-selector { display: flex; gap: 15px; margin: 25px 0; }
-        .mode-option { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.3s; }
-        .mode-option.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+        /* --- MODAL --- */
+        .overlay { position: fixed; inset: 0; background: var(--dark); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 45px; border-radius: 40px; text-align: center; max-width: 480px; width: 90%; }
+        .mode-row { display: flex; gap: 15px; margin: 25px 0; }
+        .m-btn { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 20px; cursor: pointer; font-weight: 900; }
+        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+        #info { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; }
+        .btn-start { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
 
-        #info-box { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; color: #475569; line-height: 1.5; }
-        .start-trigger { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
-
-        .shake-anim { animation: shake 0.4s; border-color: var(--danger) !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        .shake { animation: shake 0.4s; border-color: var(--danger) !important; background: #fee2e2 !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
     </style>
 </head>
 <body>
 
-    <div id="header-ui">
-        <div class="stat-card">NIVEL: <span id="val-lvl">1</span></div>
-        <div id="val-lives" class="stat-card" style="color:var(--danger)">❤️❤️❤️</div>
-        <div class="stat-card">⏱️ <span id="val-time">0.0s</span></div>
+    <div id="ui-header">
+        <div class="stat-card">NIVEL: <span id="v-lvl">1</span></div>
+        <div id="v-lives" class="stat-card" style="color:var(--danger)">❤️❤️❤️</div>
+        <div class="stat-card">⏱️ <span id="v-time">0.0s</span></div>
     </div>
-    <div id="timer-wrapper"><div id="timer-bar"></div></div>
+    <div id="timer-wrap"><div id="timer-bar"></div></div>
 
-    <div id="game-container">
-        <canvas id="noise-canvas"></canvas>
-        <div id="grid-main"></div>
-        <button id="btn-action" onclick="goToNextLevel()">SIGUIENTE NIVEL ➜</button>
+    <div id="stage">
+        <canvas id="noise-layer"></canvas>
+        <div id="grid"></div>
+        <button id="btn-next" onclick="nextLevel()">SIGUIENTE NIVEL ➜</button>
     </div>
 
-    <div id="setup-modal" class="overlay">
-        <div class="modal-content">
-            <h1 style="color:var(--blue); margin:0;">Agudeza Estática</h1>
-            <p id="welcome-msg" style="font-weight:700; color:#64748b; margin-bottom: 25px;"></p>
-            
-            <div class="mode-selector">
-                <div id="opt-reloj" class="mode-option active" onclick="updateMode('reloj')">CONTRA RELOJ</div>
-                <div id="opt-libre" class="mode-option" onclick="updateMode('libre')">CRONOMETRADO</div>
+    <div id="init-modal" class="overlay">
+        <div class="modal">
+            <h1 style="color:var(--blue); margin:0; font-size: 2.2rem;">Agudeza Estática</h1>
+            <p id="p-saludo" style="font-weight:700; color:#64748b; margin-top:10px;"></p>
+            <div class="mode-row">
+                <div id="b-rel" class="m-btn active" onclick="setMode('reloj')">CONTRA RELOJ</div>
+                <div id="b-lib" class="m-btn" onclick="setMode('libre')">CRONOMETRADO</div>
             </div>
-
-            <div id="info-box">
-                <b>MODO RELOJ:</b> Tienes 15 segundos iniciales. El tiempo se reduce 0.5s cada nivel. Si el tiempo llega a cero, pierdes una vida automáticamente.
-            </div>
-
-            <button class="start-trigger" onclick="initTraining()">INICIAR ENTRENAMIENTO</button>
+            <div id="info"><b>MODO RELOJ:</b> Tienes 15 segundos. El tiempo baja 0.5s por nivel. ¡Niveles infinitos!</div>
+            <button class="btn-start" onclick="launch()">COMENZAR EVALUACIÓN</button>
         </div>
     </div>
 
     <iframe name="hidden_iframe" style="display:none;"></iframe>
-    <form id="sheets-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="sheet-name">
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="f-name">
         <input type="hidden" name="entry.1353470174" value="Agudeza Estática">
-        <input type="hidden" name="entry.721051298" id="sheet-lvl">
-        <input type="hidden" name="entry.1303309812" id="sheet-time">
+        <input type="hidden" name="entry.721051298" id="f-lvl">
+        <input type="hidden" name="entry.1303309812" id="f-time">
     </form>
 
     <script>
-        let currentLvl = 1, currentLives = 3, gameMode = 'reloj', totalTime = 0, lvlTime = 0, isGameActive = false, intervalRef;
-        const patientName = localStorage.getItem('pacienteActual') || "Usuario";
-        document.getElementById('welcome-msg').innerText = `¡Hola ${patientName}!`;
+        let lvl = 1, lives = 3, mode = 'reloj', tTotal = 0, tLvl = 0, active = false, timer;
+        const pName = localStorage.getItem('pacienteActual') || "Paciente";
+        document.getElementById('p-saludo').innerText = `¡Hola ${pName}!`;
 
-        function updateMode(m) {
-            gameMode = m;
-            document.getElementById('opt-reloj').classList.toggle('active', m === 'reloj');
-            document.getElementById('opt-libre').classList.toggle('active', m === 'libre');
-            const ib = document.getElementById('info-box');
-            if(m === 'reloj') {
-                ib.innerHTML = "<b>MODO RELOJ:</b> El tiempo se reduce en cada nivel. ¡Niveles infinitos y máxima dificultad!";
-                document.getElementById('timer-wrapper').style.display = 'block';
-            } else {
-                ib.innerHTML = "<b>MODO CRONOMETRADO:</b> Sin límite de tiempo por nivel. Mediremos cuánto tardas en total.";
-                document.getElementById('timer-wrapper').style.display = 'none';
+        function setMode(m) {
+            mode = m;
+            document.getElementById('b-rel').classList.toggle('active', m === 'reloj');
+            document.getElementById('b-lib').classList.toggle('active', m === 'libre');
+            document.getElementById('info').innerHTML = m === 'reloj' ? 
+                "<b>MODO RELOJ:</b> Tiempo limitado que baja en cada nivel. Pierdes vida al llegar a cero." : 
+                "<b>MODO LIBRE:</b> Sin tiempo límite por nivel. Mediremos tu velocidad de escaneo total.";
+        }
+
+        // --- LAS 6 FIGURAS MÉDICAS ---
+        function drawFig(id, isTarget, rot) {
+            const s = `style="transform: rotate(${rot}deg)"`;
+            const box = `width:48px; height:48px; display:flex; align-items:center; justify-content:center;`;
+            switch(id) {
+                case 0: return `<span class="fig-txt" ${s}>E</span>`;
+                case 1: return `<div ${s} style="${box} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:15px; height:15px; top:50%; right:-12px; transform:translateY(-50%);"></div></div>`;
+                case 2: return `<svg class="fig-svg" ${s} viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="8" fill="none"/>':''}<path d="M50 85 Q22 85 22 55 Q22 25 50 25 Q78 25 78 55 Q78 85 50 85" fill="black"/></svg>`;
+                case 3: return `<div ${s} style="${box} border:8px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:15px; height:15px; top:-8px; left:14px;"></div>'}</div>`;
+                case 4: return `<div ${s} style="width:0; height:0; border-left:24px solid transparent; border-right:24px solid transparent; border-bottom:42px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:12px; height:12px; bottom:-30px; left:-6px; border-radius:50%;"></div>'}</div>`;
+                default: return `<div ${s} style="${box} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:16px; height:16px; top:12px; left:12px; border-radius:50%;"></div>'}</div>`;
             }
         }
 
-        // --- MOTOR DE DIBUJO DE FIGURAS ---
-        function createShapeHTML(type, isTarget, deg) {
-            const rot = `style="transform: rotate(${deg}deg)"`;
-            const container = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
-            
-            switch(type) {
-                case 0: return `<span ${rot}>E</span>`;
-                case 1: return `<div ${rot} style="${container} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
-                case 2: return `<svg ${rot} style="width:45px; height:45px;" viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
-                case 3: return `<div ${rot} style="${container} border:8px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:35%;"></div>'}</div>`;
-                case 4: return `<div ${rot} style="width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:38px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:10px; height:10px; bottom:-28px; left:-5px; border-radius:50%;"></div>'}</div>`;
-                default: return `<div ${rot} style="${container} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}</div>`;
-            }
-        }
-
-        function initTraining() {
-            document.getElementById('setup-modal').style.display = 'none';
-            if(gameMode === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
-            isGameActive = true;
-            generateNoise();
-            intervalRef = setInterval(() => {
-                if(!isGameActive) return;
-                totalTime += 0.1; lvlTime += 0.1;
-                document.getElementById('val-time').innerText = totalTime.toFixed(1) + "s";
-                if(gameMode === 'reloj') {
-                    let limit = Math.max(3, 15 - (currentLvl * 0.5));
-                    let p = (1 - (lvlTime/limit)) * 100;
-                    document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
-                    if(lvlTime >= limit) registerFailure();
+        function launch() {
+            document.getElementById('init-modal').style.display = 'none';
+            if(mode === 'reloj') document.getElementById('timer-wrap').style.display = 'block';
+            active = true;
+            initNoise();
+            timer = setInterval(() => {
+                if(!active) return;
+                tTotal += 0.1; tLvl += 0.1;
+                document.getElementById('v-time').innerText = tTotal.toFixed(1) + "s";
+                if(mode === 'reloj') {
+                    let limit = Math.max(3, 15 - (lvl * 0.5));
+                    document.getElementById('timer-bar').style.width = Math.max(0, (1 - tLvl/limit)*100) + "%";
+                    if(tLvl >= limit) handleFail();
                 }
             }, 100);
-            renderLevelGrid();
+            render();
         }
 
-        function generateNoise() {
-            const c = document.getElementById('noise-canvas'); const ctx = c.getContext('2d');
-            c.width = window.innerWidth; c.height = window.innerHeight;
-            for(let i=0; i<900; i++) {
-                ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); 
-                ctx.arc(Math.random()*c.width, Math.random()*c.height, 0.9, 0, Math.PI*2); ctx.fill();
+        function initNoise() {
+            const cvs = document.getElementById('noise-layer'); const ctx = cvs.getContext('2d');
+            cvs.width = window.innerWidth; cvs.height = window.innerHeight;
+            for(let i=0; i<800; i++) {
+                ctx.fillStyle = "#3b82f6"; ctx.globalAlpha = 0.3;
+                ctx.beginPath(); ctx.arc(Math.random()*cvs.width, Math.random()*cvs.height, 1, 0, Math.PI*2); ctx.fill();
             }
         }
 
-        function renderLevelGrid() {
-            lvlTime = 0; isGameActive = true;
-            const grid = document.getElementById('grid-main');
-            grid.innerHTML = ''; // Limpieza atómica
-            document.getElementById('btn-action').style.display = 'none';
+        function render() {
+            tLvl = 0; active = true;
+            const grid = document.getElementById('grid');
+            grid.innerHTML = ''; // Limpieza para evitar bug verde
+            document.getElementById('btn-next').style.display = 'none';
 
-            const cols = Math.min(15, 3 + Math.floor(currentLvl / 2));
-            const rows = 7;
+            const cols = Math.min(12, 3 + Math.floor(lvl / 2));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-            const shapeType = Math.floor(Math.random() * 6);
-            const totalCount = cols * rows;
-            const targetPos = Math.floor(Math.random() * totalCount);
-            const rotations = [0, 90, 180, 270];
-            const baseRot = rotations[Math.floor(Math.random()*4)];
-            let targetRot; do { targetRot = rotations[Math.floor(Math.random()*4)]; } while(targetRot === baseRot);
+            const sType = Math.floor(Math.random() * 6);
+            const total = cols * 6;
+            const targetIdx = Math.floor(Math.random() * total);
+            const degs = [0, 90, 180, 270];
+            const baseRot = degs[Math.floor(Math.random()*4)];
+            let tRot; do { tRot = degs[Math.floor(Math.random()*4)]; } while(tRot === baseRot);
 
-            for(let i=0; i<totalCount; i++) {
+            for(let i=0; i<total; i++) {
                 const card = document.createElement('div');
-                card.className = 'item-card';
-                const isTarget = i === targetPos;
-                card.innerHTML = createShapeHTML(shapeType, isTarget, isTarget ? targetRot : baseRot);
-                
+                card.className = 'item';
+                card.innerHTML = drawFig(sType, i === targetIdx, i === targetIdx ? tRot : baseRot);
                 card.onclick = () => {
-                    if(!isGameActive) return;
-                    if(isTarget) {
-                        isGameActive = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
-                        document.getElementById('btn-action').style.display = 'block';
+                    if(!active) return;
+                    if(i === targetIdx) {
+                        active = false; card.style.background = "#dcfce7";
+                        document.getElementById('btn-next').style.display = 'block';
                     } else {
-                        card.classList.add('shake-anim');
-                        setTimeout(() => card.classList.remove('shake-anim'), 400);
-                        registerFailure();
+                        card.classList.add('shake');
+                        setTimeout(() => card.classList.remove('shake'), 400);
+                        handleFail();
                     }
                 };
                 grid.appendChild(card);
             }
         }
 
-        function registerFailure() {
-            currentLives--; 
-            document.getElementById('val-lives').innerText = "❤️".repeat(Math.max(0, currentLives));
-            if(currentLives <= 0) exitSession();
-            else renderLevelGrid();
+        function handleFail() {
+            lives--;
+            document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
+            if(lives <= 0) finalize();
+            else render();
         }
 
-        function goToNextLevel() { 
-            currentLvl++; 
-            document.getElementById('val-lvl').innerText = currentLvl; 
-            renderLevelGrid(); 
-        }
+        function nextLevel() { lvl++; document.getElementById('v-lvl').innerText = lvl; render(); }
 
-        function exitSession() {
-            isGameActive = false; clearInterval(intervalRef);
-            document.getElementById('sheet-name').value = patientName;
-            document.getElementById('sheet-lvl').value = currentLvl;
-            document.getElementById('sheet-time').value = totalTime.toFixed(1) + "s";
-            document.getElementById('sheets-form').submit();
-            alert("Sesión finalizada. Volviendo al menú.");
+        function finalize() {
+            active = false; clearInterval(timer);
+            document.getElementById('f-name').value = pName;
+            document.getElementById('f-lvl').value = lvl;
+            document.getElementById('f-time').value = tTotal.toFixed(1) + "s";
+            document.getElementById('gs-form').submit();
+            alert("Evaluación finalizada. Volviendo al menú.");
+            // REDIRECCIÓN DINÁMICA
             window.location.href = "agudeza-visual.html";
         }
     </script>
