@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agudeza Estática Profesional - Perceptum</title>
+    <title>Agudeza Estática Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --blue: #3b82f6; --bg: #f8fafc; --text: #1e293b; 
-            --success: #22c55e; --danger: #ef4444; --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --success: #22c55e; --danger: #ef4444; 
         }
         
         body, html { 
@@ -17,250 +17,216 @@
             font-family: 'Montserrat', sans-serif; overflow: hidden; 
         }
 
-        /* --- UI INTERFACE --- */
-        #ui-layer { 
-            padding: 12px 30px; display: flex; justify-content: space-between; 
-            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100; position: relative;
+        /* --- HEADER --- */
+        #header { 
+            padding: 15px 30px; display: flex; justify-content: space-between; 
+            align-items: center; background: white; border-bottom: 4px solid #e2e8f0; z-index: 100;
         }
         .stat-box { 
-            background: #f1f5f9; padding: 12px 20px; border-radius: 15px; 
-            font-weight: 900; border: 2px solid #e2e8f0; min-width: 110px; text-align: center; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            background: #f1f5f9; padding: 10px 20px; border-radius: 12px; 
+            font-weight: 900; border: 2px solid #e2e8f0; min-width: 100px; text-align: center; 
         }
         
-        #timer-wrapper { width: 100%; background: #e2e8f0; height: 10px; position: relative; z-index: 100; display: none; }
-        #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; border-radius: 0 5px 5px 0; }
+        #timer-wrapper { width: 100%; background: #e2e8f0; height: 10px; display: none; }
+        #timer-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* --- GAME AREA --- */
+        /* --- ÁREA DE JUEGO --- */
         #game-area { 
-            height: calc(100vh - 90px); display: flex; align-items: center; justify-content: center; 
-            position: relative; overflow: hidden;
+            height: calc(100vh - 95px); display: flex; align-items: center; justify-content: center; 
+            position: relative;
         }
         #noise-canvas { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; z-index: 1; }
         
         #grid { 
-            display: grid; gap: 10px; padding: 20px; z-index: 10; 
-            background: rgba(255,255,255,0.85); border-radius: 30px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            max-width: 98vw; max-height: 82vh; transition: all 0.4s ease;
-            border: 1px solid rgba(255,255,255,0.5);
+            display: grid; gap: 12px; padding: 25px; z-index: 10; 
+            background: rgba(255,255,255,0.9); border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            max-width: 95vw; max-height: 80vh; transition: all 0.3s ease;
         }
 
         .item-card { 
-            background: white; border: 2px solid #f1f5f9; border-radius: 14px;
+            background: white; border: 2px solid #f1f5f9; border-radius: 15px;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            width: 65px; height: 65px; box-shadow: var(--card-shadow);
+            cursor: pointer; transition: 0.15s; width: 65px; height: 65px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-        .item-card:hover { border-color: var(--blue); transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 20px -5px rgba(59, 130, 246, 0.2); }
-        .item-card:active { transform: scale(0.95); }
-
-        .item-card span { font-size: 2.8rem; font-weight: 900; color: #000; }
+        .item-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+        .item-card span { font-size: 2.5rem; font-weight: 900; color: #000; }
         .item-card svg { width: 75%; height: 75%; }
 
-        /* --- CONTROLS --- */
         #btn-next { 
-            position: absolute; bottom: 40px; padding: 20px 60px; 
+            position: absolute; bottom: 30px; padding: 18px 60px; 
             background: var(--success); color: white; border: none; 
-            border-radius: 20px; font-weight: 900; cursor: pointer; 
-            display: none; z-index: 150; box-shadow: 0 10px 20px rgba(34, 197, 94, 0.4);
-            font-size: 1.3rem; transition: 0.3s;
+            border-radius: 50px; font-weight: 900; cursor: pointer; 
+            display: none; z-index: 150; font-size: 1.2rem; box-shadow: 0 10px 20px rgba(34,197,94,0.3);
         }
-        #btn-next:hover { transform: scale(1.05); background: #16a34a; }
 
-        /* --- MODALES --- */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-        .modal { background: white; padding: 45px; border-radius: 40px; text-align: center; max-width: 500px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        
+        /* --- MODAL INICIAL --- */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 40px; text-align: center; max-width: 480px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .mode-row { display: flex; gap: 15px; margin: 25px 0; }
-        .m-btn { flex: 1; padding: 18px; border: 3px solid #f1f5f9; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.3s; font-size: 0.9rem; }
-        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); transform: translateY(-2px); box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2); }
-
-        #instruction-box { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; line-height: 1.5; color: #475569; }
-        .btn-go { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; box-shadow: 0 6px 0 #16a34a; }
-        .btn-go:active { transform: translateY(4px); box-shadow: 0 2px 0 #16a34a; }
+        .m-btn { flex: 1; padding: 18px; border: 2px solid #e2e8f0; border-radius: 20px; cursor: pointer; font-weight: 900; transition: 0.2s; }
+        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); transform: translateY(-2px); }
+        #instr-box { background: #f8fafc; padding: 20px; border-radius: 20px; font-size: 0.95rem; border-left: 6px solid var(--blue); margin-bottom: 25px; text-align: left; color: #475569; }
+        .btn-start { background: var(--success); color: white; padding: 22px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
 
         .shake { animation: shake 0.4s; border-color: var(--danger) !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
     </style>
 </head>
 <body>
 
-    <div id="ui-layer">
+    <div id="header">
         <div class="stat-box">NIVEL: <span id="txt-lvl">1</span></div>
-        <div id="lives-cont" class="stat-box" style="color:var(--danger)">❤️❤️❤️</div>
-        <div class="stat-box">⏱️ <span id="txt-clock">0.0s</span></div>
+        <div id="lives-display" class="stat-box" style="color:var(--danger)">❤️❤️❤️</div>
+        <div class="stat-box">⏱️ <span id="txt-time">0.0s</span></div>
     </div>
     <div id="timer-wrapper"><div id="timer-bar"></div></div>
 
     <div id="game-area">
         <canvas id="noise-canvas"></canvas>
         <div id="grid"></div>
-        <button id="btn-next" onclick="nextLevel()">SIGUIENTE NIVEL ➜</button>
+        <button id="btn-next" onclick="nextStep()">SIGUIENTE NIVEL ➜</button>
     </div>
 
-    <div id="modal-init" class="overlay">
+    <div id="init-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--blue); margin:0; font-size: 2rem;">Agudeza Estática</h1>
-            <p id="p-saludo" style="font-weight:700; color:#64748b; margin-bottom: 25px;"></p>
-            
-            <p style="font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8;">Selecciona tu modalidad</p>
+            <h1 style="color:var(--blue); margin:0;">Agudeza Estática</h1>
+            <p id="paciente-txt" style="font-weight:700; color:#64748b; margin-top:5px;"></p>
             <div class="mode-row">
-                <div id="btn-rel" class="m-btn active" onclick="setMode('reloj')">CONTRA RELOJ</div>
-                <div id="btn-lib" class="m-btn" onclick="setMode('libre')">CRONOMETRADO</div>
+                <div id="mod-rel" class="m-btn active" onclick="setAppMode('reloj')">CONTRA RELOJ</div>
+                <div id="mod-lib" class="m-btn" onclick="setAppMode('libre')">CRONOMETRADO</div>
             </div>
-
-            <div id="instruction-box">
-                <b>MODO RELOJ:</b> Tienes 15 segundos por nivel (se reduce al avanzar). Si el tiempo se acaba, pierdes una vida. ¡Encuentra al intruso rápido!
-            </div>
-
-            <button class="btn-go" onclick="startApp()">COMENZAR EVALUACIÓN</button>
+            <div id="instr-box"><b>MODO RELOJ:</b> Tienes 15 segundos iniciales. El tiempo bajará en cada nivel. Si llega a cero, pierdes una vida.</div>
+            <button class="btn-start" onclick="launchApp()">INICIAR ENTRENAMIENTO</button>
         </div>
     </div>
 
     <iframe name="hidden_iframe" style="display:none;"></iframe>
-    <form id="google-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="f-name">
-        <input type="hidden" name="entry.1353470174" id="f-tipo" value="Agudeza Estática">
-        <input type="hidden" name="entry.721051298" id="f-lvl">
-        <input type="hidden" name="entry.1303309812" id="f-time">
-        <input type="hidden" name="entry.845098414" id="f-date">
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="field-name">
+        <input type="hidden" name="entry.1353470174" value="Agudeza Estática">
+        <input type="hidden" name="entry.721051298" id="field-lvl">
+        <input type="hidden" name="entry.1303309812" id="field-time">
     </form>
 
     <script>
-        let lvl = 1, lives = 3, modo = 'reloj', tTotal = 0, tLvl = 0, activo = false, timer;
-        const nombreP = localStorage.getItem('pacienteActual') || "Manu Real";
-        document.getElementById('p-saludo').innerText = `¡Hola ${nombreP}! ¿Listo para entrenar?`;
+        let nivel = 1, vidas = 3, modoJuego = 'reloj', tTotal = 0, tLvl = 0, appActiva = false, mainTimer;
+        const nombrePaciente = localStorage.getItem('pacienteActual') || "Manu Real";
+        document.getElementById('paciente-txt').innerText = `¡Hola ${nombrePaciente}!`;
 
-        function setMode(m) {
-            modo = m;
-            document.getElementById('btn-rel').classList.toggle('active', m === 'reloj');
-            document.getElementById('btn-lib').classList.toggle('active', m === 'libre');
-            const box = document.getElementById('instruction-box');
+        function setAppMode(m) {
+            modoJuego = m;
+            document.getElementById('mod-rel').classList.toggle('active', m === 'reloj');
+            document.getElementById('mod-lib').classList.toggle('active', m === 'libre');
+            const ib = document.getElementById('instr-box');
             if(m === 'reloj') {
-                box.innerHTML = "<b>MODO RELOJ:</b> Tienes 15 segundos por nivel (se reduce al avanzar). Si el tiempo se acaba, pierdes una vida. ¡Encuentra al intruso rápido!";
+                ib.innerHTML = "<b>MODO RELOJ:</b> El tiempo bajará 0.5s en cada nivel. ¡Niveles infinitos y máxima presión!";
                 document.getElementById('timer-wrapper').style.display = 'block';
             } else {
-                box.innerHTML = "<b>MODO LIBRE:</b> No hay presión de tiempo. Mediremos cuánto tardas en identificar cada patrón para evaluar tu velocidad de procesamiento.";
+                ib.innerHTML = "<b>MODO CRONOMETRADO:</b> No hay límite. Ideal para medir precisión y escaneo visual sin estrés.";
                 document.getElementById('timer-wrapper').style.display = 'none';
             }
         }
 
-        // --- SISTEMA DE DIBUJO DE OPTOTIPOS ---
-        function getShape(type, isTarget, deg) {
-            const rot = `style="transform: rotate(${deg}deg)"`;
-            const base = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
+        // --- SISTEMA DE DIBUJO ---
+        function generateIcon(type, isTarget, rotation) {
+            const rStyle = `style="transform: rotate(${rotation}deg)"`;
+            const boxStyle = `width:45px; height:45px; display:flex; align-items:center; justify-content:center;`;
             
             switch(type) {
-                case 0: return `<span ${rot}>E</span>`; // Snellen
-                case 1: // Landolt
-                    return `<div ${rot} style="${base} border:8px solid black; border-radius:50%; position:relative;">
-                            <div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div>
-                            </div>`;
-                case 2: // Manzana
-                    return `<svg ${rot} style="${base}" viewBox="0 0 100 100">
-                            ${!isTarget ? '<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>' : ''}
-                            <path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/>
-                            </svg>`;
-                case 3: // Cuadrado con muesca
-                    return `<div ${rot} style="${base} border:8px solid black; position:relative;">
-                            ${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:35%;"></div>'}
-                            </div>`;
-                case 4: // Triángulo con punto
-                    return `<div ${rot} style="width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:38px solid black; position:relative;">
-                            ${isTarget ? '' : '<div style="position:absolute; background:white; width:10px; height:10px; bottom:-28px; left:-5px; border-radius:50%;"></div>'}
-                            </div>`;
-                default: // Círculo de fijación
-                    return `<div ${rot} style="${base} background:black; border-radius:50%; position:relative;">
-                            ${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}
-                            </div>`;
+                case 0: return `<span ${rStyle}>E</span>`;
+                case 1: return `<div ${rStyle} style="${boxStyle} border:8px solid black; border-radius:50%; position:relative;"><div style="position:absolute; background:white; width:28%; height:28%; top:50%; right:-10px; transform:translateY(-50%);"></div></div>`;
+                case 2: return `<svg ${rStyle} style="width:45px; height:45px;" viewBox="0 0 100 100">${!isTarget?'<path d="M52 22 Q58 5 70 12" stroke="black" stroke-width="6" fill="none"/>':''}<path d="M50 85 Q25 85 22 55 Q20 30 50 28 Q80 30 78 55 Q75 85 50 85" fill="black"/></svg>`;
+                case 3: return `<div ${rStyle} style="${boxStyle} border:8px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:-6px; left:35%;"></div>'}</div>`;
+                case 4: return `<div ${rStyle} style="width:0; height:0; border-left:22px solid transparent; border-right:22px solid transparent; border-bottom:38px solid black; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:10px; height:10px; bottom:-28px; left:-5px; border-radius:50%;"></div>'}</div>`;
+                default: return `<div ${rStyle} style="${boxStyle} background:black; border-radius:50%; position:relative;">${isTarget ? '' : '<div style="position:absolute; background:white; width:30%; height:30%; top:20%; left:20%; border-radius:50%;"></div>'}</div>`;
             }
         }
 
-        function startApp() {
-            document.getElementById('modal-init').style.display = 'none';
-            if(modo === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
-            activo = true;
-            initNoise();
-            timer = setInterval(() => {
-                if(!activo) return;
+        function launchApp() {
+            document.getElementById('init-modal').style.display = 'none';
+            if(modoJuego === 'reloj') document.getElementById('timer-wrapper').style.display = 'block';
+            appActiva = true;
+            createNoise();
+            mainTimer = setInterval(() => {
+                if(!appActiva) return;
                 tTotal += 0.1; tLvl += 0.1;
-                document.getElementById('txt-clock').innerText = tTotal.toFixed(1) + "s";
-                if(modo === 'reloj') {
-                    let limit = Math.max(4.5, 15 - (lvl * 0.45));
-                    let p = (1 - (tLvl/limit)) * 100;
-                    document.getElementById('timer-bar').style.width = Math.max(0, p) + "%";
-                    if(tLvl >= limit) registerError();
+                document.getElementById('txt-time').innerText = tTotal.toFixed(1) + "s";
+                if(modoJuego === 'reloj') {
+                    let limit = Math.max(3, 15 - (nivel * 0.5));
+                    let percent = (1 - (tLvl/limit)) * 100;
+                    document.getElementById('timer-bar').style.width = Math.max(0, percent) + "%";
+                    if(tLvl >= limit) handleError();
                 }
             }, 100);
-            renderGrid();
+            renderLevel();
         }
 
-        function initNoise() {
-            const cvs = document.getElementById('noise-canvas'); const ctx = cvs.getContext('2d');
-            cvs.width = window.innerWidth; cvs.height = window.innerHeight;
-            for(let i=0; i<900; i++) {
-                ctx.fillStyle = "#cbd5e1"; ctx.globalAlpha = 0.5;
-                ctx.beginPath(); ctx.arc(Math.random()*cvs.width, Math.random()*cvs.height, 0.9, 0, Math.PI*2); ctx.fill();
+        function createNoise() {
+            const c = document.getElementById('noise-canvas'); const ctx = c.getContext('2d');
+            c.width = window.innerWidth; c.height = window.innerHeight;
+            for(let i=0; i<800; i++) {
+                ctx.fillStyle = "#cbd5e1"; ctx.beginPath(); 
+                ctx.arc(Math.random()*c.width, Math.random()*c.height, 0.8, 0, Math.PI*2); ctx.fill();
             }
         }
 
-        function renderGrid() {
-            tLvl = 0; activo = true;
-            const grid = document.getElementById('grid'); grid.innerHTML = '';
+        function renderLevel() {
+            tLvl = 0; appActiva = true;
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
             document.getElementById('btn-next').style.display = 'none';
-            
-            const cols = Math.min(15, 3 + Math.floor(lvl / 2));
-            const rows = 7; 
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            
-            const shapeType = Math.floor(Math.random() * 6);
-            const totalItems = cols * rows;
-            const targetIndex = Math.floor(Math.random() * totalItems);
-            
-            const rotations = [0, 90, 180, 270];
-            const baseRot = rotations[Math.floor(Math.random()*4)];
-            let targetRot; do { targetRot = rotations[Math.floor(Math.random()*4)]; } while(targetRot === baseRot);
 
-            for(let i=0; i<totalItems; i++) {
+            const cols = Math.min(14, 3 + Math.floor(nivel / 2));
+            const rows = 7;
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+            const sType = Math.floor(Math.random() * 6);
+            const total = cols * rows;
+            const target = Math.floor(Math.random() * total);
+            const degs = [0, 90, 180, 270];
+            const baseRot = degs[Math.floor(Math.random()*4)];
+            let tRot; do { tRot = degs[Math.floor(Math.random()*4)]; } while(tRot === baseRot);
+
+            for(let i=0; i<total; i++) {
                 const card = document.createElement('div');
                 card.className = 'item-card';
-                const isTarget = i === targetIndex;
-                card.innerHTML = getShape(shapeType, isTarget, isTarget ? targetRot : baseRot);
-                
+                const isTarget = i === target;
+                card.innerHTML = generateIcon(sType, isTarget, isTarget ? tRot : baseRot);
                 card.onclick = () => {
-                    if(!activo) return;
+                    if(!appActiva) return;
                     if(isTarget) {
-                        activo = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
+                        appActiva = false; card.style.background = "#dcfce7"; card.style.borderColor = "#22c55e";
                         document.getElementById('btn-next').style.display = 'block';
                     } else {
                         card.classList.add('shake');
                         setTimeout(() => card.classList.remove('shake'), 400);
-                        registerError();
+                        handleError();
                     }
                 };
                 grid.appendChild(card);
             }
         }
 
-        function registerError() {
-            lives--; 
-            document.getElementById('lives-cont').innerText = "❤️".repeat(Math.max(0, lives));
-            if(lives <= 0) finalizeSession();
-            else renderGrid();
+        function handleError() {
+            vidas--; 
+            document.getElementById('lives-display').innerText = "❤️".repeat(Math.max(0, vidas));
+            if(vidas <= 0) finishGame();
+            else renderLevel();
         }
 
-        function nextLevel() { lvl++; document.getElementById('txt-lvl').innerText = lvl; renderGrid(); }
+        function nextStep() { nivel++; document.getElementById('txt-lvl').innerText = nivel; renderLevel(); }
 
-        function finalizeSession() {
-            activo = false; clearInterval(timer);
-            document.getElementById('f-name').value = nombreP;
-            document.getElementById('f-lvl').value = lvl;
-            document.getElementById('f-time').value = tTotal.toFixed(1) + "s";
-            document.getElementById('f-date').value = new Date().toLocaleDateString();
-            document.getElementById('google-form').submit();
-            alert("Sesión finalizada. Los datos han sido enviados al sistema.");
-            window.location.href = "index.html";
+        function finishGame() {
+            appActiva = false; clearInterval(mainTimer);
+            document.getElementById('field-name').value = nombrePaciente;
+            document.getElementById('field-lvl').value = nivel;
+            document.getElementById('field-time').value = tTotal.toFixed(1) + "s";
+            document.getElementById('gs-form').submit();
+            alert("Evaluación finalizada. Redirigiendo al submenú...");
+            // REDIRECCIÓN AL SUBMENÚ
+            window.location.href = "agudeza-visual.html";
         }
     </script>
 </body>
