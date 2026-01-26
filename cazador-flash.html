@@ -20,16 +20,20 @@
             overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* DISTRACTORES DE FONDO (Más notorios) */
-        .bubble {
-            position: absolute; background: rgba(59, 130, 246, 0.18);
-            border-radius: 50%; pointer-events: none; z-index: 1;
-            animation: float Up 12s linear infinite;
+        /* FONDO DE DISTRACCIÓN AGRESIVO */
+        #bg-noise {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
         }
-        @keyframes floatUp {
-            from { transform: translateY(110vh) rotate(0deg); }
-            to { transform: translateY(-20vh) rotate(360deg); }
+        .noise-line {
+            position: absolute; background: rgba(59, 130, 246, 0.25);
+            height: 2px; width: 100%; animation: moveLine 10s linear infinite;
         }
+        .noise-circle {
+            position: absolute; border: 3px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50%; animation: floatCircle 15s linear infinite;
+        }
+        @keyframes moveLine { from { top: -10%; transform: rotate(5deg); } to { top: 110%; transform: rotate(-5deg); } }
+        @keyframes floatCircle { from { transform: translate(0, 110vh) scale(1); } to { transform: translate(20vw, -10vh) scale(2); } }
 
         #header { 
             padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;
@@ -38,16 +42,14 @@
         }
         .stat-pill { background: #fff; padding: 8px 20px; border-radius: 12px; font-weight: 800; border: 1px solid #e2e8f0; }
 
-        #stage { flex: 1; position: relative; z-index: 5; }
+        #stage { flex: 1; position: relative; z-index: 5; cursor: crosshair; }
 
-        /* PUNTO DE FIJACIÓN */
         #fix-dot {
             position: absolute; top: 50%; left: 50%; width: 25px; height: 25px;
             background: var(--blue); border-radius: 50%; transform: translate(-50%, -50%);
             display: none; z-index: 10; box-shadow: 0 0 20px rgba(59,130,246,0.6);
         }
 
-        /* ANUNCIADOR DE OBJETIVO */
         #target-announcer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 30px; border-radius: 30px;
@@ -56,27 +58,23 @@
         }
 
         .flash-item { position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .sym { width: 100%; height: 100%; fill: #000; }
+        .sym { width: 100%; height: 100%; fill: #000; pointer-events: none; }
 
-        /* BOTÓN SIGUIENTE NIVEL */
         #btn-next { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             padding: 25px 60px; background: var(--success); color: white; border: none; 
             border-radius: 20px; font-weight: 900; cursor: pointer; 
-            display: none; font-size: 1.6rem; box-shadow: 0 15px 30px rgba(34,197,94,0.4);
-            z-index: 100; transition: 0.2s;
+            display: none; font-size: 1.6rem; z-index: 100;
         }
-        #btn-next:hover { transform: translate(-50%, -50%) scale(1.05); }
 
-        /* MODALES */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 35px; text-align: center; max-width: 450px; width: 90%; border-bottom: 10px solid var(--blue); }
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 35px; text-align: center; max-width: 450px; border-bottom: 10px solid var(--blue); }
         .go-btn { background: var(--success); color: white; padding: 22px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.3rem; }
     </style>
 </head>
-<body>
+<body onclick="penalizeClick(event)">
 
-    <div id="bg-distractors"></div>
+    <div id="bg-noise"></div>
 
     <div id="header">
         <div class="stat-pill">NIVEL: <span id="v-lvl">1</span></div>
@@ -87,39 +85,25 @@
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <h2 style="margin:0 0 15px 0; color:var(--blue); font-size:1.2rem;">CAZA ESTA FIGURA:</h2>
-            <div id="target-preview" style="width:100px; height:100px; margin:0 auto 15px;"></div>
-            <p id="target-label" style="margin:0; font-weight:900; font-size:1.3rem; text-transform:uppercase; color:var(--dark);"></p>
+            <h2 style="margin:0 0 15px 0; color:var(--blue); font-size:1.1rem;">NUEVO OBJETIVO:</h2>
+            <div id="target-preview" style="width:90px; height:90px; margin:0 auto 15px;"></div>
+            <p id="target-label" style="margin:0; font-weight:900; color:var(--dark);"></p>
         </div>
         <button id="btn-next" onclick="prepareNewLevel()">SIGUIENTE NIVEL ➜</button>
     </div>
 
     <div id="init-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--blue); margin:0; font-size:2.8rem;">Cazador Flash ⚡</h1>
-            <p style="font-weight:700; color:#64748b; margin-bottom:25px;">¡Captura los estímulos antes que se esfumen!</p>
-            <div style="text-align:left; background:#f1f5f9; padding:20px; border-radius:20px; margin-bottom:25px; font-size:1rem; line-height:1.6;">
-                🎯 <b>Mira el punto azul</b> central.<br>
-                👀 <b>Caza</b> solo la figura correcta.<br>
-                🚫 <b>Ignora</b> los distractores y las figuras rotas.
-            </div>
+            <h1 style="color:var(--blue); margin:0; font-size:2.5rem;">Cazador Flash Pro ⚡</h1>
+            <p style="font-weight:700; color:#64748b; margin:15px 0;">¡Ojo! Tocar el fondo te resta vidas.</p>
             <button class="go-btn" onclick="startApp()">¡COMENZAR!</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--blue); font-size:2rem;">¡Buen Juego!</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:25px 0;">
-                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
-                    <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:700;">NIVEL</span>
-                    <span id="res-lvl" style="font-size:1.8rem; font-weight:900;">1</span>
-                </div>
-                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
-                    <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:700;">ACIERTOS</span>
-                    <span id="res-hits" style="font-size:1.8rem; font-weight:900;">0</span>
-                </div>
-            </div>
+            <h2 style="color:var(--blue); font-size:2rem;">Partida Finalizada</h2>
+            <div id="res-data" style="margin:20px 0; font-weight:800; font-size:1.2rem;"></div>
             <button class="go-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
@@ -136,32 +120,38 @@
     <iframe name="h_frame" style="display:none;"></iframe>
 
     <script>
-        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, tTotal = 0, active = false, currentTargetIdx = 0;
+        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, tTotal = 0, active = false, currentTargetIdx = 0, lastIdx = -1;
         const pName = localStorage.getItem('pacienteActual') || "Paciente";
         
-        // Estímulos: [SVG Objetivo, SVG Roto, Nombre]
         const stimuli = [
             ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E de Snellen'],
-            ['<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/><path d="M50 30 Q55 5 75 10" stroke="black" stroke-width="8" fill="none"/><path d="M45 25 Q40 5 30 15" stroke="black" stroke-width="5" fill="none"/>', '<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/>', 'Manzana de 2 Hojas'],
-            ['<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/><path d="M50 25 L50 10 M35 15 L65 15" stroke="black" stroke-width="8"/><circle cx="50" cy="55" r="5" fill="black"/>', '<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/>', 'Campana con badajo']
+            ['<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/><path d="M50 30 Q55 5 75 10" stroke="black" stroke-width="8" fill="none"/><path d="M45 25 Q40 5 30 15" stroke="black" stroke-width="5" fill="none"/>', '<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/>', 'Manzana (2 Hojas)'],
+            ['<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/><path d="M50 25 L50 10 M35 15 L65 15" stroke="black" stroke-width="8"/><circle cx="50" cy="55" r="5" fill="black"/>', '<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/>', 'Campana'],
+            ['<path d="M30 20 L70 50 L30 80 Z" fill="black"/><path d="M70 30 L85 50 L70 70" fill="none" stroke="black" stroke-width="5"/>', '<path d="M30 20 L70 50 L30 80 Z" fill="black"/>', 'Flecha de Guía']
         ];
 
-        function createBubbles() {
-            const container = document.getElementById('bg-distractors');
-            for(let i=0; i<12; i++) {
-                const b = document.createElement('div');
-                b.className = 'bubble';
-                const size = Math.random() * 80 + 40;
-                b.style.width = size + 'px'; b.style.height = size + 'px';
-                b.style.left = Math.random() * 90 + 'vw';
-                b.style.animationDuration = (Math.random() * 8 + 6) + 's';
-                b.style.animationDelay = (Math.random() * 5) + 's';
-                container.appendChild(b);
+        function createNoise() {
+            const container = document.getElementById('bg-noise');
+            for(let i=0; i<8; i++) {
+                const l = document.createElement('div'); l.className = 'noise-line';
+                l.style.top = (i*15)+'vh'; l.style.animationDelay = (i*1.2)+'s';
+                container.appendChild(l);
+            }
+            for(let i=0; i<10; i++) {
+                const c = document.createElement('div'); c.className = 'noise-circle';
+                const s = Math.random()*150 + 50; c.style.width = s+'px'; c.style.height = s+'px';
+                c.style.left = Math.random()*100+'vw'; c.style.animationDelay = Math.random()*10+'s';
+                container.appendChild(c);
             }
         }
 
+        function penalizeClick(e) {
+            if(!active || e.target.closest('.flash-item') || e.target.closest('#btn-next') || e.target.closest('.modal')) return;
+            fail();
+        }
+
         function startApp() {
-            createBubbles();
+            createNoise();
             document.getElementById('init-modal').style.display = 'none';
             active = true;
             setInterval(() => { if(active) { tTotal += 0.1; document.getElementById('v-time').innerText = tTotal.toFixed(1)+'s'; } }, 100);
@@ -169,44 +159,41 @@
         }
 
         function prepareNewLevel() {
+            if(lvl % 7 === 0 && lvl > 1) { lives++; updateLives(); }
             document.getElementById('btn-next').style.display = 'none';
             lvlHits = 0;
-            currentTargetIdx = Math.floor(Math.random() * stimuli.length);
             
+            do { currentTargetIdx = Math.floor(Math.random() * stimuli.length); } while(currentTargetIdx === lastIdx);
+            lastIdx = currentTargetIdx;
+
             const announcer = document.getElementById('target-announcer');
             document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
             document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
-            
             announcer.style.display = 'block';
-            setTimeout(() => { 
-                announcer.style.display = 'none'; 
-                nextFlash(); 
-            }, 2500);
+            setTimeout(() => { announcer.style.display = 'none'; nextFlash(); }, 2500);
         }
 
         function nextFlash() {
             if(!active) return;
-            if(lvlHits >= 5) {
-                document.getElementById('btn-next').style.display = 'block';
-                return;
-            }
-            
-            const dot = document.getElementById('fix-dot');
-            dot.style.display = 'block';
-            
-            setTimeout(() => {
-                dot.style.display = 'none';
-                spawnItems();
-            }, 900);
+            if(lvlHits >= 5) { document.getElementById('btn-next').style.display = 'block'; return; }
+            document.getElementById('fix-dot').style.display = 'block';
+            setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 900);
         }
 
         function spawnItems() {
             const stage = document.getElementById('stage');
-            // Tiempo flash: Base 1.8s, baja rápido por nivel
-            const showTime = Math.max(380, 1800 - (lvl * 150));
+            const showTime = Math.max(350, 1800 - (lvl * 140));
             
-            const isTargetRight = Math.random() > 0.5;
-            const items = [createElem(isTargetRight, true), createElem(!isTargetRight, false)];
+            let numItems = 2;
+            if(lvl >= 7) numItems = 3;
+            if(lvl >= 11) numItems = 4;
+
+            const items = [];
+            const targetIdx = Math.floor(Math.random() * numItems);
+
+            for(let i=0; i<numItems; i++) {
+                items.push(createElem(i === targetIdx));
+            }
             
             items.forEach(item => stage.appendChild(item));
 
@@ -221,37 +208,30 @@
                     const correct = item.getAttribute('data-target') === 'true';
                     clearTimeout(flashTimer);
                     items.forEach(i => i.remove());
-                    if(correct) {
-                        hits++; lvlHits++;
-                        nextFlash();
-                    } else {
-                        fail();
-                    }
+                    if(correct) { hits++; lvlHits++; nextFlash(); } else { fail(); }
                 };
             });
         }
 
-        function createElem(side, isTarget) {
+        function createElem(isTarget) {
             const el = document.createElement('div');
             el.className = 'flash-item';
             el.setAttribute('data-target', isTarget);
-            
-            const size = [55, 85, 120][Math.floor(Math.random()*3)];
+            const size = [60, 90, 130][Math.floor(Math.random()*3)];
             el.style.width = size+'px'; el.style.height = size+'px';
-            
-            // Lógica de lados para que no se solapen
-            const xPos = side ? (Math.random()*35 + 50) : (Math.random()*35 + 5);
-            el.style.left = xPos + 'vw';
+            el.style.left = (Math.random()*80 + 5) + 'vw';
             el.style.top = (Math.random()*60 + 20) + 'vh';
-            
             el.innerHTML = `<svg viewBox="0 0 100 100" class="sym">${isTarget ? stimuli[currentTargetIdx][0] : stimuli[currentTargetIdx][1]}</svg>`;
             return el;
         }
 
         function fail() {
-            lives--;
+            lives--; updateLives();
+            if(lives <= 0) finish(); else if(lvlHits < 5) nextFlash();
+        }
+
+        function updateLives() {
             document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
-            if(lives <= 0) finish(); else nextFlash();
         }
 
         function prepareNextLvl() {
@@ -259,8 +239,6 @@
             document.getElementById('v-lvl').innerText = lvl;
             prepareNewLevel();
         }
-
-        // Sobrescribir la función del botón para que use la lógica de subir nivel
         document.getElementById('btn-next').onclick = prepareNextLvl;
 
         function finish() {
@@ -268,13 +246,10 @@
             document.getElementById('f-name').value = pName;
             document.getElementById('f-lvl').value = lvl;
             document.getElementById('f-hits').value = hits;
-            document.getElementById('f-fails').value = 0;
             document.getElementById('f-time').value = tTotal.toFixed(1);
             document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('gs-form').submit();
-
-            document.getElementById('res-lvl').innerText = lvl;
-            document.getElementById('res-hits').innerText = hits;
+            document.getElementById('res-data').innerText = `Llegaste al Nivel ${lvl} con ${hits} aciertos.`;
             document.getElementById('res-modal').style.display = 'flex';
         }
     </script>
