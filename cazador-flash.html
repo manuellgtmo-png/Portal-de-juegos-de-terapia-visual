@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cazador Flash - Perceptum Pro</title>
+    <title>Cazador Flash Pro - Perceptum Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --blue: #3b82f6; 
             --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
             --success: #22c55e; 
-            --danger: #ef4444;
             --dark: #1e293b; 
         }
         
@@ -21,16 +20,17 @@
             overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* FONDO DINÁMICO (DISTRACTOR) */
-        #bg-anim {
-            position: fixed; inset: 0; z-index: 1; pointer-events: none;
-            background-image: radial-gradient(circle, rgba(59,130,246,0.05) 2px, transparent 2px);
-            background-size: 80px 80px;
-            animation: moveBG 20s linear infinite;
+        /* DISTRACTORES DE FONDO (Más notorios) */
+        .bubble {
+            position: absolute; background: rgba(59, 130, 246, 0.18);
+            border-radius: 50%; pointer-events: none; z-index: 1;
+            animation: float Up 12s linear infinite;
         }
-        @keyframes moveBG { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+        @keyframes floatUp {
+            from { transform: translateY(110vh) rotate(0deg); }
+            to { transform: translateY(-20vh) rotate(360deg); }
+        }
 
-        /* UI HEADER */
         #header { 
             padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;
             background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
@@ -38,33 +38,45 @@
         }
         .stat-pill { background: #fff; padding: 8px 20px; border-radius: 12px; font-weight: 800; border: 1px solid #e2e8f0; }
 
-        /* ÁREA DE JUEGO */
-        #stage { flex: 1; position: relative; z-index: 5; cursor: crosshair; }
-        
-        .target, .distractor {
-            position: absolute; display: flex; align-items: center; justify-content: center;
-            transition: opacity 0.1s; cursor: pointer; user-select: none;
+        #stage { flex: 1; position: relative; z-index: 5; }
+
+        /* PUNTO DE FIJACIÓN */
+        #fix-dot {
+            position: absolute; top: 50%; left: 50%; width: 25px; height: 25px;
+            background: var(--blue); border-radius: 50%; transform: translate(-50%, -50%);
+            display: none; z-index: 10; box-shadow: 0 0 20px rgba(59,130,246,0.6);
         }
-        .sym { fill: #000; color: #000; font-weight: 900; line-height: 1; pointer-events: none; }
+
+        /* ANUNCIADOR DE OBJETIVO */
+        #target-announcer {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 30px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); text-align: center;
+            z-index: 20; display: none; border: 5px solid var(--blue); width: 280px;
+        }
+
+        .flash-item { position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .sym { width: 100%; height: 100%; fill: #000; }
+
+        /* BOTÓN SIGUIENTE NIVEL */
+        #btn-next { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 25px 60px; background: var(--success); color: white; border: none; 
+            border-radius: 20px; font-weight: 900; cursor: pointer; 
+            display: none; font-size: 1.6rem; box-shadow: 0 15px 30px rgba(34,197,94,0.4);
+            z-index: 100; transition: 0.2s;
+        }
+        #btn-next:hover { transform: translate(-50%, -50%) scale(1.05); }
 
         /* MODALES */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; border-bottom: 8px solid var(--blue); }
-        .instrucciones { text-align: left; background: #f1f5f9; padding: 20px; border-radius: 15px; margin: 20px 0; font-size: 0.9rem; line-height: 1.5; color: var(--dark); }
-        .m-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-weight: 800; }
-        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
-        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 15px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
-        
-        /* RESULTADOS */
-        #res-modal { display: none; }
-        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .res-item { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; }
-        .res-val { font-size: 1.4rem; font-weight: 900; display: block; }
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 35px; text-align: center; max-width: 450px; width: 90%; border-bottom: 10px solid var(--blue); }
+        .go-btn { background: var(--success); color: white; padding: 22px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.3rem; }
     </style>
 </head>
 <body>
 
-    <div id="bg-anim"></div>
+    <div id="bg-distractors"></div>
 
     <div id="header">
         <div class="stat-pill">NIVEL: <span id="v-lvl">1</span></div>
@@ -72,32 +84,47 @@
         <div class="stat-pill">⏱️ <span id="v-time">0.0s</span></div>
     </div>
 
-    <div id="stage"></div>
+    <div id="stage">
+        <div id="fix-dot"></div>
+        <div id="target-announcer">
+            <h2 style="margin:0 0 15px 0; color:var(--blue); font-size:1.2rem;">CAZA ESTA FIGURA:</h2>
+            <div id="target-preview" style="width:100px; height:100px; margin:0 auto 15px;"></div>
+            <p id="target-label" style="margin:0; font-weight:900; font-size:1.3rem; text-transform:uppercase; color:var(--dark);"></p>
+        </div>
+        <button id="btn-next" onclick="prepareNewLevel()">SIGUIENTE NIVEL ➜</button>
+    </div>
 
     <div id="init-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--blue); margin:0;">Cazador Flash</h1>
-            <p style="font-weight:700; color:#64748b;">Entrenamiento de Atención y Flash</p>
-            <div class="instrucciones">
-                <b>OBJETIVO:</b> Caza solo la <b>E de Snellen</b> completa.<br><br>
-                Aparecerán dos figuras muy rápido en diferentes tamaños. Ignora la figura que está rota y toca la correcta antes de que desaparezcan.
+            <h1 style="color:var(--blue); margin:0; font-size:2.8rem;">Cazador Flash ⚡</h1>
+            <p style="font-weight:700; color:#64748b; margin-bottom:25px;">¡Captura los estímulos antes que se esfumen!</p>
+            <div style="text-align:left; background:#f1f5f9; padding:20px; border-radius:20px; margin-bottom:25px; font-size:1rem; line-height:1.6;">
+                🎯 <b>Mira el punto azul</b> central.<br>
+                👀 <b>Caza</b> solo la figura correcta.<br>
+                🚫 <b>Ignora</b> los distractores y las figuras rotas.
             </div>
-            <button class="go-btn" onclick="startApp()">INICIAR CACERÍA</button>
+            <button class="go-btn" onclick="startApp()">¡COMENZAR!</button>
         </div>
     </div>
 
-    <div id="res-modal" class="overlay">
+    <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--blue);">¡Entrenamiento Finalizado!</h2>
-            <div class="res-grid">
-                <div class="res-item"><span class="res-val" id="res-lvl">0</span>NIVEL</div>
-                <div class="res-item"><span class="res-val" id="res-hits">0</span>ACIERTOS</div>
+            <h2 style="color:var(--blue); font-size:2rem;">¡Buen Juego!</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin:25px 0;">
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                    <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:700;">NIVEL</span>
+                    <span id="res-lvl" style="font-size:1.8rem; font-weight:900;">1</span>
+                </div>
+                <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                    <span style="display:block; font-size:0.8rem; color:#64748b; font-weight:700;">ACIERTOS</span>
+                    <span id="res-hits" style="font-size:1.8rem; font-weight:900;">0</span>
+                </div>
             </div>
-            <button class="go-btn" onclick="location.reload()">VOLVER A INTENTAR</button>
+            <button class="go-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
-    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="h_frame" style="display:none;">
         <input type="hidden" name="entry.369874016" id="f-name">
         <input type="hidden" name="entry.1353470174" value="Cazador Flash">
         <input type="hidden" name="entry.721051298" id="f-lvl">
@@ -106,95 +133,142 @@
         <input type="hidden" name="entry.1303309812" id="f-time">
         <input type="hidden" name="entry.845098414" id="f-date">
     </form>
-    <iframe name="hidden_iframe" style="display:none;"></iframe>
+    <iframe name="h_frame" style="display:none;"></iframe>
 
     <script>
-        let lvl = 1, lives = 3, tTotal = 0, hits = 0, fails = 0, active = false;
-        let flashTimeout;
+        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, tTotal = 0, active = false, currentTargetIdx = 0;
         const pName = localStorage.getItem('pacienteActual') || "Paciente";
-        const stage = document.getElementById('stage');
+        
+        // Estímulos: [SVG Objetivo, SVG Roto, Nombre]
+        const stimuli = [
+            ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E de Snellen'],
+            ['<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/><path d="M50 30 Q55 5 75 10" stroke="black" stroke-width="8" fill="none"/><path d="M45 25 Q40 5 30 15" stroke="black" stroke-width="5" fill="none"/>', '<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/>', 'Manzana de 2 Hojas'],
+            ['<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/><path d="M50 25 L50 10 M35 15 L65 15" stroke="black" stroke-width="8"/><circle cx="50" cy="55" r="5" fill="black"/>', '<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/>', 'Campana con badajo']
+        ];
+
+        function createBubbles() {
+            const container = document.getElementById('bg-distractors');
+            for(let i=0; i<12; i++) {
+                const b = document.createElement('div');
+                b.className = 'bubble';
+                const size = Math.random() * 80 + 40;
+                b.style.width = size + 'px'; b.style.height = size + 'px';
+                b.style.left = Math.random() * 90 + 'vw';
+                b.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                b.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(b);
+            }
+        }
 
         function startApp() {
-            lvl = 1; lives = 3; hits = 0; fails = 0; tTotal = 0;
+            createBubbles();
             document.getElementById('init-modal').style.display = 'none';
             active = true;
-            
-            setInterval(() => { if(active) { tTotal += 0.1; document.getElementById('v-time').innerText = tTotal.toFixed(1) + "s"; } }, 100);
-            
-            spawnFlash();
+            setInterval(() => { if(active) { tTotal += 0.1; document.getElementById('v-time').innerText = tTotal.toFixed(1)+'s'; } }, 100);
+            prepareNewLevel();
         }
 
-        function spawnFlash() {
+        function prepareNewLevel() {
+            document.getElementById('btn-next').style.display = 'none';
+            lvlHits = 0;
+            currentTargetIdx = Math.floor(Math.random() * stimuli.length);
+            
+            const announcer = document.getElementById('target-announcer');
+            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
+            document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
+            
+            announcer.style.display = 'block';
+            setTimeout(() => { 
+                announcer.style.display = 'none'; 
+                nextFlash(); 
+            }, 2500);
+        }
+
+        function nextFlash() {
             if(!active) return;
-            stage.innerHTML = '';
+            if(lvlHits >= 5) {
+                document.getElementById('btn-next').style.display = 'block';
+                return;
+            }
             
-            // Tiempos: Empieza en 1.5s y baja 0.1s por nivel (mínimo 0.35s)
-            const showTime = Math.max(350, 1500 - (lvl * 100));
-
-            // Crear Objetivo y Distractor
-            const obj = createElem(true);
-            const dist = createElem(false);
-
-            stage.appendChild(obj);
-            stage.appendChild(dist);
-
-            // Tiempo para cazar
-            flashTimeout = setTimeout(() => {
-                if(stage.contains(obj)) {
-                    fail();
-                }
-            }, showTime);
+            const dot = document.getElementById('fix-dot');
+            dot.style.display = 'block';
+            
+            setTimeout(() => {
+                dot.style.display = 'none';
+                spawnItems();
+            }, 900);
         }
 
-        function createElem(isTarget) {
-            const div = document.createElement('div');
-            div.className = isTarget ? 'target' : 'distractor';
+        function spawnItems() {
+            const stage = document.getElementById('stage');
+            // Tiempo flash: Base 1.8s, baja rápido por nivel
+            const showTime = Math.max(380, 1800 - (lvl * 150));
             
-            // Tamaños aleatorios (40px a 100px)
-            const size = Math.floor(Math.random() * 60) + 40;
-            div.style.width = size + 'px';
-            div.style.height = size + 'px';
+            const isTargetRight = Math.random() > 0.5;
+            const items = [createElem(isTargetRight, true), createElem(!isTargetRight, false)];
             
-            // Posición aleatoria (evitando bordes)
-            const x = Math.random() * (window.innerWidth - size - 40) + 20;
-            const y = Math.random() * (window.innerHeight - size - 150) + 20;
-            div.style.left = x + 'px';
-            div.style.top = y + 'px';
+            items.forEach(item => stage.appendChild(item));
 
-            // SVG de E de Snellen (Objetivo completo vs Distractor roto)
-            div.innerHTML = isTarget ? 
-                `<svg viewBox="0 0 100 100" class="sym"><path d="M20 20 H80 V35 H35 V45 H70 V55 H35 V65 H80 V80 H20 Z"/></svg>` :
-                `<svg viewBox="0 0 100 100" class="sym"><path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/></svg>`; // Falta barra central
+            const flashTimer = setTimeout(() => {
+                items.forEach(i => { if(stage.contains(i)) i.remove(); });
+                if(active) fail();
+            }, showTime);
 
-            div.onclick = (e) => {
-                e.stopPropagation();
-                clearTimeout(flashTimeout);
-                if(isTarget) {
-                    hits++;
-                    if(hits % 3 === 0) lvl++; // Sube nivel cada 3 aciertos
-                    document.getElementById('v-lvl').innerText = lvl;
-                    spawnFlash();
-                } else {
-                    fail();
-                }
-            };
-            return div;
+            items.forEach(item => {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    const correct = item.getAttribute('data-target') === 'true';
+                    clearTimeout(flashTimer);
+                    items.forEach(i => i.remove());
+                    if(correct) {
+                        hits++; lvlHits++;
+                        nextFlash();
+                    } else {
+                        fail();
+                    }
+                };
+            });
+        }
+
+        function createElem(side, isTarget) {
+            const el = document.createElement('div');
+            el.className = 'flash-item';
+            el.setAttribute('data-target', isTarget);
+            
+            const size = [55, 85, 120][Math.floor(Math.random()*3)];
+            el.style.width = size+'px'; el.style.height = size+'px';
+            
+            // Lógica de lados para que no se solapen
+            const xPos = side ? (Math.random()*35 + 50) : (Math.random()*35 + 5);
+            el.style.left = xPos + 'vw';
+            el.style.top = (Math.random()*60 + 20) + 'vh';
+            
+            el.innerHTML = `<svg viewBox="0 0 100 100" class="sym">${isTarget ? stimuli[currentTargetIdx][0] : stimuli[currentTargetIdx][1]}</svg>`;
+            return el;
         }
 
         function fail() {
-            fails++;
             lives--;
             document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
-            if(lives <= 0) finish(); else spawnFlash();
+            if(lives <= 0) finish(); else nextFlash();
         }
+
+        function prepareNextLvl() {
+            lvl++;
+            document.getElementById('v-lvl').innerText = lvl;
+            prepareNewLevel();
+        }
+
+        // Sobrescribir la función del botón para que use la lógica de subir nivel
+        document.getElementById('btn-next').onclick = prepareNextLvl;
 
         function finish() {
             active = false;
-            // Enviar a Google Sheets
             document.getElementById('f-name').value = pName;
             document.getElementById('f-lvl').value = lvl;
             document.getElementById('f-hits').value = hits;
-            document.getElementById('f-fails').value = fails;
+            document.getElementById('f-fails').value = 0;
             document.getElementById('f-time').value = tTotal.toFixed(1);
             document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('gs-form').submit();
