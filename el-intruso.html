@@ -6,34 +6,42 @@
     <title>Evaluación de Agudeza Estática - Perceptum Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #3b82f6; --light-bg: #f8fafc; --success: #22c55e; --dark: #1e293b; }
+        :root { 
+            --blue: #3b82f6; 
+            /* Fondo más alegre: un degradado sutil en lugar de blanco puro */
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+            --success: #22c55e; 
+            --dark: #1e293b; 
+        }
         
         body, html { 
             margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: var(--light-bg); font-family: 'Montserrat', sans-serif; 
+            background: var(--bg-gradient); 
+            font-family: 'Montserrat', sans-serif; 
             overflow: hidden; display: flex; flex-direction: column;
         }
 
         /* HEADER */
         #header { 
             padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;
-            background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
         }
         .stat-pill { background: #fff; padding: 8px 20px; border-radius: 12px; font-weight: 800; border: 1px solid #e2e8f0; }
 
         /* BARRA DE TIEMPO */
-        #t-wrap { width: 100%; height: 8px; background: #e2e8f0; display: none; }
+        #t-wrap { width: 100%; height: 8px; background: rgba(226, 232, 240, 0.5); display: none; }
         #t-bar { width: 100%; height: 100%; background: var(--blue); transition: width 0.1s linear; }
 
-        /* ESCENARIO - MAXIMIZADO */
+        /* ESCENARIO - LLENANDO ESPACIOS VERDES */
         #stage { flex: 1; display: flex; align-items: center; justify-content: center; padding: 5px; position: relative; }
         
         #grid { 
             background: white; padding: 15px; border-radius: 25px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.08);
             display: grid; 
             gap: 6px; 
-            width: 98vw; /* Ocupa el ancho que marcaste en verde */
+            width: 98vw; /* Aprovechamiento lateral máximo */
             max-height: 82vh;
             justify-content: center; align-content: center;
         }
@@ -43,7 +51,7 @@
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; transition: 0.1s;
         }
-        .card:hover { border-color: var(--blue); transform: scale(1.05); z-index: 2; }
+        .card:hover { border-color: var(--blue); transform: scale(1.05); z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
 
         .sym-v { width: 70%; height: 70%; fill: #000; }
         .sym-t { color: #000; font-weight: 900; line-height: 1; pointer-events: none; }
@@ -57,8 +65,8 @@
         }
 
         /* MENÚ CLÍNICO */
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; border-bottom: 8px solid var(--blue); }
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; border-bottom: 8px solid var(--blue); box-shadow: 0 25px 50px rgba(0,0,0,0.2); }
         .instrucciones { text-align: left; background: #f1f5f9; padding: 20px; border-radius: 15px; margin: 20px 0; font-size: 0.9rem; line-height: 1.5; color: var(--dark); }
         .mode-row { display: flex; gap: 10px; margin-bottom: 20px; }
         .m-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-weight: 800; transition: 0.2s; }
@@ -86,8 +94,8 @@
             <p style="font-weight:700; color:#64748b;">Entrenamiento de Agudeza Estática</p>
             
             <div class="instrucciones">
-                <b>¡Hola!</b> Bienvenido a tu sesión de hoy. Debes encontrar la figura que es <b>diferente</b> al resto. <br><br>
-                En niveles avanzados, las figuras serán más pequeñas y numerosas para llenar la pantalla. Presta atención a los detalles sutiles en negro.
+                <b>¡Hola!</b> Bienvenido a tu sesión. Debes encontrar la figura que es <b>diferente</b> al resto. <br><br>
+                Las figuras se volverán más pequeñas para llenar la pantalla. Presta atención a los detalles en negro sólido.
             </div>
 
             <div class="mode-row">
@@ -108,9 +116,8 @@
         </div>
     </div>
 
-    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="h_frame" style="display:none;">
+    <form id="gs-form" action="TU_URL_DE_GOOGLE_FORMS_AQUI" method="POST" target="h_frame" style="display:none;">
         <input type="hidden" name="entry.369874016" id="f-name">
-        <input type="hidden" name="entry.1353470174" value="Agudeza Estática">
         <input type="hidden" name="entry.721051298" id="f-lvl">
         <input type="hidden" name="entry.1303309812" id="f-time">
     </form>
@@ -132,7 +139,6 @@
             [20, 15, 10].forEach(v => document.getElementById('t-'+v).classList.toggle('active', v === s));
         }
 
-        // FIGURAS CON DIFERENCIAS SUTILES
         function getFig(type, isTarget, rot, size) {
             const fStyle = `style="font-size:${size}px; transform:rotate(${rot}deg)"`;
             const vStyle = `style="width:${size}px; height:${size}px; transform:rotate(${rot}deg)"`;
@@ -140,17 +146,17 @@
             switch(type) {
                 case 0: return `<span class="sym-t" ${fStyle}>E</span>`; 
                 case 1: return `<span class="sym-t" ${fStyle}>C</span>`;
-                case 2: // Manzana vs Manzana sin hoja
+                case 2: // Manzana (Intrusa: Sin hoja)
                     return `<svg class="sym-v" viewBox="0 0 100 100" ${vStyle}>
                         <path d="M50 90 Q25 90 25 60 Q25 35 50 35 Q75 35 75 60 Q75 90 50 90" fill="black"/>
                         ${!isTarget ? '<path d="M50 35 Q55 10 75 15" stroke="black" stroke-width="8" fill="none"/>' : ''}
                     </svg>`;
-                case 3: // Campana vs Campana sin badajo
+                case 3: // Campana (Intrusa: Sin badajo)
                     return `<svg class="sym-v" viewBox="0 0 100 100" ${vStyle}>
                         <path d="M20 80 L80 80 L70 35 Q70 15 50 15 Q30 15 30 35 Z" fill="black"/>
                         ${!isTarget ? '<circle cx="50" cy="85" r="8" fill="black"/>' : ''}
                     </svg>`;
-                default: // Corazón vs Corazón con muesca
+                default: // Corazón (Intruso: Muesca blanca)
                     return `<svg class="sym-v" viewBox="0 0 100 100" ${vStyle}>
                         <path d="M50 85 L20 55 Q10 30 35 30 Q50 45 50 45 Q50 45 65 30 Q90 30 80 55 Z" fill="black"/>
                         ${isTarget ? '<circle cx="80" cy="55" r="10" fill="white"/>' : ''}
@@ -159,9 +165,13 @@
         }
 
         function startApp() {
+            lvl = 1; lives = 3; tTotal = 0;
+            document.getElementById('v-lvl').innerText = lvl;
+            document.getElementById('v-lives').innerText = "❤️❤️❤️";
             document.getElementById('init-modal').style.display = 'none';
             if(mode === 'reloj') document.getElementById('t-wrap').style.display = 'block';
             active = true;
+            if(mainLoop) clearInterval(mainLoop);
             mainLoop = setInterval(() => {
                 if(!active) return;
                 tTotal += 0.1; tLvl += 0.1;
@@ -181,9 +191,7 @@
             grid.innerHTML = '';
             document.getElementById('btn-next').style.display = 'none';
 
-            // --- LÓGICA DE MAXIMIZACIÓN DE PANTALLA ---
-            const cSize = Math.max(40, 75 - (lvl * 2)); // Tamaño tarjeta
-            // Llenamos el ancho (98vw)
+            const cSize = Math.max(40, 75 - (lvl * 2));
             const cols = Math.floor((window.innerWidth * 0.96) / (cSize + 6));
             const rows = Math.floor((window.innerHeight * 0.75) / (cSize + 6));
             
@@ -223,17 +231,12 @@
 
         function finish() {
             active = false; clearInterval(mainLoop);
-            document.getElementById('f-name').value = pName;
-            document.getElementById('f-lvl').value = lvl;
-            document.getElementById('f-time').value = tTotal.toFixed(1) + "s";
+            alert(`Entrenamiento terminado. Nivel alcanzado: ${lvl}`);
             
-            alert(`Fin de sesión. Nivel: ${lvl}.`);
-            document.getElementById('gs-form').submit();
-            
-            setTimeout(() => {
-                // REDIRECCIÓN SEGURA AL PORTAL PRINCIPAL
-                window.location.href = "index.html"; 
-            }, 1000);
+            // RESET: Volver a mostrar el menú inicial en lugar de salir
+            document.getElementById('init-modal').style.display = 'flex';
+            document.getElementById('t-wrap').style.display = 'none';
+            grid.innerHTML = '';
         }
     </script>
 </body>
