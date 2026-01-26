@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cazador Flash - Perceptum Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --blue: #3b82f6; 
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); 
+            --success: #22c55e; 
+            --danger: #ef4444;
+            --dark: #1e293b; 
+        }
+        
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg-gradient); 
+            font-family: 'Montserrat', sans-serif; 
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        /* FONDO DINÁMICO (DISTRACTOR) */
+        #bg-anim {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background-image: radial-gradient(circle, rgba(59,130,246,0.05) 2px, transparent 2px);
+            background-size: 80px 80px;
+            animation: moveBG 20s linear infinite;
+        }
+        @keyframes moveBG { from { background-position: 0 0; } to { background-position: 1000px 1000px; } }
+
+        /* UI HEADER */
+        #header { 
+            padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
+        }
+        .stat-pill { background: #fff; padding: 8px 20px; border-radius: 12px; font-weight: 800; border: 1px solid #e2e8f0; }
+
+        /* ÁREA DE JUEGO */
+        #stage { flex: 1; position: relative; z-index: 5; cursor: crosshair; }
+        
+        .target, .distractor {
+            position: absolute; display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.1s; cursor: pointer; user-select: none;
+        }
+        .sym { fill: #000; color: #000; font-weight: 900; line-height: 1; pointer-events: none; }
+
+        /* MODALES */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; border-bottom: 8px solid var(--blue); }
+        .instrucciones { text-align: left; background: #f1f5f9; padding: 20px; border-radius: 15px; margin: 20px 0; font-size: 0.9rem; line-height: 1.5; color: var(--dark); }
+        .m-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-weight: 800; }
+        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 15px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
+        
+        /* RESULTADOS */
+        #res-modal { display: none; }
+        .res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .res-item { background: #f8fafc; padding: 15px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; }
+        .res-val { font-size: 1.4rem; font-weight: 900; display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="bg-anim"></div>
+
+    <div id="header">
+        <div class="stat-pill">NIVEL: <span id="v-lvl">1</span></div>
+        <div id="v-lives" style="font-size: 1.4rem;">❤️❤️❤️</div>
+        <div class="stat-pill">⏱️ <span id="v-time">0.0s</span></div>
+    </div>
+
+    <div id="stage"></div>
+
+    <div id="init-modal" class="overlay">
+        <div class="modal">
+            <h1 style="color:var(--blue); margin:0;">Cazador Flash</h1>
+            <p style="font-weight:700; color:#64748b;">Entrenamiento de Atención y Flash</p>
+            <div class="instrucciones">
+                <b>OBJETIVO:</b> Caza solo la <b>E de Snellen</b> completa.<br><br>
+                Aparecerán dos figuras muy rápido en diferentes tamaños. Ignora la figura que está rota y toca la correcta antes de que desaparezcan.
+            </div>
+            <button class="go-btn" onclick="startApp()">INICIAR CACERÍA</button>
+        </div>
+    </div>
+
+    <div id="res-modal" class="overlay">
+        <div class="modal">
+            <h2 style="color:var(--blue);">¡Entrenamiento Finalizado!</h2>
+            <div class="res-grid">
+                <div class="res-item"><span class="res-val" id="res-lvl">0</span>NIVEL</div>
+                <div class="res-item"><span class="res-val" id="res-hits">0</span>ACIERTOS</div>
+            </div>
+            <button class="go-btn" onclick="location.reload()">VOLVER A INTENTAR</button>
+        </div>
+    </div>
+
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="hidden_iframe" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="f-name">
+        <input type="hidden" name="entry.1353470174" value="Cazador Flash">
+        <input type="hidden" name="entry.721051298" id="f-lvl">
+        <input type="hidden" name="entry.873272199" id="f-hits">
+        <input type="hidden" name="entry.1030094511" id="f-fails">
+        <input type="hidden" name="entry.1303309812" id="f-time">
+        <input type="hidden" name="entry.845098414" id="f-date">
+    </form>
+    <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+    <script>
+        let lvl = 1, lives = 3, tTotal = 0, hits = 0, fails = 0, active = false;
+        let flashTimeout;
+        const pName = localStorage.getItem('pacienteActual') || "Paciente";
+        const stage = document.getElementById('stage');
+
+        function startApp() {
+            lvl = 1; lives = 3; hits = 0; fails = 0; tTotal = 0;
+            document.getElementById('init-modal').style.display = 'none';
+            active = true;
+            
+            setInterval(() => { if(active) { tTotal += 0.1; document.getElementById('v-time').innerText = tTotal.toFixed(1) + "s"; } }, 100);
+            
+            spawnFlash();
+        }
+
+        function spawnFlash() {
+            if(!active) return;
+            stage.innerHTML = '';
+            
+            // Tiempos: Empieza en 1.5s y baja 0.1s por nivel (mínimo 0.35s)
+            const showTime = Math.max(350, 1500 - (lvl * 100));
+
+            // Crear Objetivo y Distractor
+            const obj = createElem(true);
+            const dist = createElem(false);
+
+            stage.appendChild(obj);
+            stage.appendChild(dist);
+
+            // Tiempo para cazar
+            flashTimeout = setTimeout(() => {
+                if(stage.contains(obj)) {
+                    fail();
+                }
+            }, showTime);
+        }
+
+        function createElem(isTarget) {
+            const div = document.createElement('div');
+            div.className = isTarget ? 'target' : 'distractor';
+            
+            // Tamaños aleatorios (40px a 100px)
+            const size = Math.floor(Math.random() * 60) + 40;
+            div.style.width = size + 'px';
+            div.style.height = size + 'px';
+            
+            // Posición aleatoria (evitando bordes)
+            const x = Math.random() * (window.innerWidth - size - 40) + 20;
+            const y = Math.random() * (window.innerHeight - size - 150) + 20;
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+
+            // SVG de E de Snellen (Objetivo completo vs Distractor roto)
+            div.innerHTML = isTarget ? 
+                `<svg viewBox="0 0 100 100" class="sym"><path d="M20 20 H80 V35 H35 V45 H70 V55 H35 V65 H80 V80 H20 Z"/></svg>` :
+                `<svg viewBox="0 0 100 100" class="sym"><path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/></svg>`; // Falta barra central
+
+            div.onclick = (e) => {
+                e.stopPropagation();
+                clearTimeout(flashTimeout);
+                if(isTarget) {
+                    hits++;
+                    if(hits % 3 === 0) lvl++; // Sube nivel cada 3 aciertos
+                    document.getElementById('v-lvl').innerText = lvl;
+                    spawnFlash();
+                } else {
+                    fail();
+                }
+            };
+            return div;
+        }
+
+        function fail() {
+            fails++;
+            lives--;
+            document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
+            if(lives <= 0) finish(); else spawnFlash();
+        }
+
+        function finish() {
+            active = false;
+            // Enviar a Google Sheets
+            document.getElementById('f-name').value = pName;
+            document.getElementById('f-lvl').value = lvl;
+            document.getElementById('f-hits').value = hits;
+            document.getElementById('f-fails').value = fails;
+            document.getElementById('f-time').value = tTotal.toFixed(1);
+            document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('gs-form').submit();
+
+            document.getElementById('res-lvl').innerText = lvl;
+            document.getElementById('res-hits').innerText = hits;
+            document.getElementById('res-modal').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
