@@ -21,19 +21,17 @@
         }
 
         /* FONDO DE DISTRACCIÓN AGRESIVO */
-        #bg-noise {
-            position: fixed; inset: 0; z-index: 1; pointer-events: none;
-        }
+        #bg-noise { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
         .noise-line {
             position: absolute; background: rgba(59, 130, 246, 0.25);
-            height: 2px; width: 100%; animation: moveLine 10s linear infinite;
+            height: 3px; width: 100%; animation: moveLine 8s linear infinite;
         }
         .noise-circle {
-            position: absolute; border: 3px solid rgba(59, 130, 246, 0.2);
-            border-radius: 50%; animation: floatCircle 15s linear infinite;
+            position: absolute; border: 4px solid rgba(59, 130, 246, 0.15);
+            border-radius: 50%; animation: floatCircle 12s linear infinite;
         }
-        @keyframes moveLine { from { top: -10%; transform: rotate(5deg); } to { top: 110%; transform: rotate(-5deg); } }
-        @keyframes floatCircle { from { transform: translate(0, 110vh) scale(1); } to { transform: translate(20vw, -10vh) scale(2); } }
+        @keyframes moveLine { from { top: -10%; } to { top: 110%; } }
+        @keyframes floatCircle { from { transform: translateY(110vh); } to { transform: translateY(-20vh); } }
 
         #header { 
             padding: 12px 30px; display: flex; justify-content: space-between; align-items: center;
@@ -67,9 +65,13 @@
             display: none; font-size: 1.6rem; z-index: 100;
         }
 
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 40px; border-radius: 35px; text-align: center; max-width: 450px; border-bottom: 10px solid var(--blue); }
-        .go-btn { background: var(--success); color: white; padding: 22px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.3rem; }
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: white; padding: 40px; border-radius: 30px; text-align: center; max-width: 500px; width: 90%; border-bottom: 8px solid var(--blue); }
+        .instrucciones { text-align: left; background: #f1f5f9; padding: 20px; border-radius: 15px; margin: 20px 0; font-size: 0.9rem; line-height: 1.5; color: var(--dark); }
+        .mode-row { display: flex; gap: 10px; margin-bottom: 20px; }
+        .m-btn { flex: 1; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-weight: 800; transition: 0.2s; }
+        .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 15px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body onclick="penalizeClick(event)">
@@ -85,26 +87,37 @@
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <h2 style="margin:0 0 15px 0; color:var(--blue); font-size:1.1rem;">NUEVO OBJETIVO:</h2>
-            <div id="target-preview" style="width:90px; height:90px; margin:0 auto 15px;"></div>
-            <p id="target-label" style="margin:0; font-weight:900; color:var(--dark);"></p>
+            <p style="margin:0; font-weight:800; color:var(--blue);">NUEVO OBJETIVO:</p>
+            <div id="target-preview" style="width:80px; height:80px; margin:10px auto;"></div>
+            <p id="target-label" style="margin:0; font-weight:900; text-transform:uppercase;"></p>
         </div>
-        <button id="btn-next" onclick="prepareNewLevel()">SIGUIENTE NIVEL ➜</button>
+        <button id="btn-next" onclick="prepareNextLvl()">SIGUIENTE NIVEL ➜</button>
     </div>
 
     <div id="init-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--blue); margin:0; font-size:2.5rem;">Cazador Flash Pro ⚡</h1>
-            <p style="font-weight:700; color:#64748b; margin:15px 0;">¡Ojo! Tocar el fondo te resta vidas.</p>
-            <button class="go-btn" onclick="startApp()">¡COMENZAR!</button>
+            <h1 style="color:var(--blue); margin:0;">Menú Clínico</h1>
+            <p style="font-weight:700; color:#64748b;">Cazador Flash ⚡</p>
+            
+            <div class="instrucciones">
+                <b>¡Hola!</b> En este ejercicio debes cazar la figura indicada que aparece en un flash. <br><br>
+                Evita tocar el fondo o perderás vidas. Cada 7 niveles recibirás un corazón de regalo.
+            </div>
+
+            <div class="mode-row">
+                <div id="b-rel" class="m-btn active" onclick="setMode('reloj')">CONTRA RELOJ</div>
+                <div id="b-lib" class="m-btn" onclick="setMode('libre')">LIBRE</div>
+            </div>
+
+            <button class="go-btn" onclick="startApp()">INICIAR EVALUACIÓN</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--blue); font-size:2rem;">Partida Finalizada</h2>
+            <h2 style="color:var(--blue);">¡Buen Trabajo!</h2>
             <div id="res-data" style="margin:20px 0; font-weight:800; font-size:1.2rem;"></div>
-            <button class="go-btn" onclick="location.reload()">REINTENTAR</button>
+            <button class="go-btn" onclick="location.reload()">VOLVER AL INICIO</button>
         </div>
     </div>
 
@@ -120,9 +133,10 @@
     <iframe name="h_frame" style="display:none;"></iframe>
 
     <script>
-        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, tTotal = 0, active = false, currentTargetIdx = 0, lastIdx = -1;
+        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, tTotal = 0, active = false, mode = 'reloj';
+        let currentTargetIdx = 0, lastIdx = -1;
         const pName = localStorage.getItem('pacienteActual') || "Paciente";
-        
+
         const stimuli = [
             ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E de Snellen'],
             ['<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/><path d="M50 30 Q55 5 75 10" stroke="black" stroke-width="8" fill="none"/><path d="M45 25 Q40 5 30 15" stroke="black" stroke-width="5" fill="none"/>', '<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/>', 'Manzana (2 Hojas)'],
@@ -130,24 +144,24 @@
             ['<path d="M30 20 L70 50 L30 80 Z" fill="black"/><path d="M70 30 L85 50 L70 70" fill="none" stroke="black" stroke-width="5"/>', '<path d="M30 20 L70 50 L30 80 Z" fill="black"/>', 'Flecha de Guía']
         ];
 
+        function setMode(m) {
+            mode = m;
+            document.getElementById('b-rel').classList.toggle('active', m === 'reloj');
+            document.getElementById('b-lib').classList.toggle('active', m === 'libre');
+        }
+
         function createNoise() {
             const container = document.getElementById('bg-noise');
-            for(let i=0; i<8; i++) {
-                const l = document.createElement('div'); l.className = 'noise-line';
-                l.style.top = (i*15)+'vh'; l.style.animationDelay = (i*1.2)+'s';
-                container.appendChild(l);
-            }
             for(let i=0; i<10; i++) {
-                const c = document.createElement('div'); c.className = 'noise-circle';
-                const s = Math.random()*150 + 50; c.style.width = s+'px'; c.style.height = s+'px';
-                c.style.left = Math.random()*100+'vw'; c.style.animationDelay = Math.random()*10+'s';
-                container.appendChild(c);
+                const l = document.createElement('div'); l.className = 'noise-line';
+                l.style.top = (i*12)+'vh'; l.style.animationDelay = (i*1)+'s';
+                container.appendChild(l);
             }
         }
 
         function penalizeClick(e) {
             if(!active || e.target.closest('.flash-item') || e.target.closest('#btn-next') || e.target.closest('.modal')) return;
-            fail();
+            if(mode === 'reloj') fail();
         }
 
         function startApp() {
@@ -162,10 +176,8 @@
             if(lvl % 7 === 0 && lvl > 1) { lives++; updateLives(); }
             document.getElementById('btn-next').style.display = 'none';
             lvlHits = 0;
-            
             do { currentTargetIdx = Math.floor(Math.random() * stimuli.length); } while(currentTargetIdx === lastIdx);
             lastIdx = currentTargetIdx;
-
             const announcer = document.getElementById('target-announcer');
             document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
             document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
@@ -182,24 +194,23 @@
 
         function spawnItems() {
             const stage = document.getElementById('stage');
-            const showTime = Math.max(350, 1800 - (lvl * 140));
-            
             let numItems = 2;
             if(lvl >= 7) numItems = 3;
             if(lvl >= 11) numItems = 4;
 
+            // Suavizamos el tiempo si hay muchos estímulos
+            const baseTime = 1800 - (lvl * 130);
+            const extraTime = (numItems - 2) * 200; // 200ms más por cada objeto extra
+            const showTime = Math.max(450, baseTime + extraTime);
+            
             const items = [];
             const targetIdx = Math.floor(Math.random() * numItems);
-
-            for(let i=0; i<numItems; i++) {
-                items.push(createElem(i === targetIdx));
-            }
-            
+            for(let i=0; i<numItems; i++) { items.push(createElem(i === targetIdx)); }
             items.forEach(item => stage.appendChild(item));
 
             const flashTimer = setTimeout(() => {
                 items.forEach(i => { if(stage.contains(i)) i.remove(); });
-                if(active) fail();
+                if(active && mode === 'reloj') fail(); else if(active) nextFlash();
             }, showTime);
 
             items.forEach(item => {
@@ -208,7 +219,7 @@
                     const correct = item.getAttribute('data-target') === 'true';
                     clearTimeout(flashTimer);
                     items.forEach(i => i.remove());
-                    if(correct) { hits++; lvlHits++; nextFlash(); } else { fail(); }
+                    if(correct) { hits++; lvlHits++; nextFlash(); } else if(mode === 'reloj') { fail(); } else { nextFlash(); }
                 };
             });
         }
@@ -217,9 +228,9 @@
             const el = document.createElement('div');
             el.className = 'flash-item';
             el.setAttribute('data-target', isTarget);
-            const size = [60, 90, 130][Math.floor(Math.random()*3)];
+            const size = [65, 95, 125][Math.floor(Math.random()*3)];
             el.style.width = size+'px'; el.style.height = size+'px';
-            el.style.left = (Math.random()*80 + 5) + 'vw';
+            el.style.left = (Math.random()*75 + 5) + 'vw';
             el.style.top = (Math.random()*60 + 20) + 'vh';
             el.innerHTML = `<svg viewBox="0 0 100 100" class="sym">${isTarget ? stimuli[currentTargetIdx][0] : stimuli[currentTargetIdx][1]}</svg>`;
             return el;
@@ -231,15 +242,10 @@
         }
 
         function updateLives() {
-            document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
+            document.getElementById('v-lives').innerText = mode === 'reloj' ? "❤️".repeat(Math.max(0, lives)) : "♾️";
         }
 
-        function prepareNextLvl() {
-            lvl++;
-            document.getElementById('v-lvl').innerText = lvl;
-            prepareNewLevel();
-        }
-        document.getElementById('btn-next').onclick = prepareNextLvl;
+        function prepareNextLvl() { lvl++; document.getElementById('v-lvl').innerText = lvl; prepareNewLevel(); }
 
         function finish() {
             active = false;
@@ -249,7 +255,7 @@
             document.getElementById('f-time').value = tTotal.toFixed(1);
             document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('gs-form').submit();
-            document.getElementById('res-data').innerText = `Llegaste al Nivel ${lvl} con ${hits} aciertos.`;
+            document.getElementById('res-data').innerText = `Paciente: ${pName} - Nivel: ${lvl}`;
             document.getElementById('res-modal').style.display = 'flex';
         }
     </script>
