@@ -23,56 +23,56 @@
 
         #bg-noise { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
         .noise-line {
-            position: absolute; background: rgba(59, 130, 246, 0.2);
-            height: 3px; width: 100%; animation: moveLine 8s linear infinite;
+            position: absolute; background: rgba(59, 130, 246, 0.15);
+            height: 2px; width: 100%; animation: moveLine 10s linear infinite;
         }
         @keyframes moveLine { from { top: -10%; } to { top: 110%; } }
 
         #header { 
             height: 60px; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;
             background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 10;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 100;
         }
         .stat-pill { background: #fff; padding: 5px 15px; border-radius: 10px; font-weight: 800; border: 1px solid #e2e8f0; font-size: 0.9rem; }
 
         #stage { flex: 1; position: relative; z-index: 5; cursor: crosshair; overflow: hidden; }
 
         #fix-dot {
-            position: absolute; top: 50%; left: 50%; width: 25px; height: 25px;
+            position: absolute; top: 50%; left: 50%; width: 30px; height: 30px;
             background: var(--blue); border-radius: 50%; transform: translate(-50%, -50%);
-            display: none; z-index: 10; box-shadow: 0 0 20px rgba(59,130,246,0.6);
+            display: none; z-index: 10; box-shadow: 0 0 25px rgba(59,130,246,0.6);
         }
 
         #target-announcer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; padding: 25px; border-radius: 25px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15); text-align: center;
-            z-index: 20; display: none; border: 5px solid var(--blue); width: 260px;
+            background: white; padding: 30px; border-radius: 30px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2); text-align: center;
+            z-index: 200; display: none; border: 6px solid var(--blue); width: 280px;
         }
 
-        .flash-item { position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
+        .flash-item { position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); z-index: 10; }
         .sym { width: 100%; height: 100%; fill: #000; pointer-events: none; }
 
         /* MODALES */
         .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 30px; border-radius: 30px; text-align: center; max-width: 450px; width: 90%; border-bottom: 8px solid var(--blue); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .modal { background: white; padding: 30px; border-radius: 35px; text-align: center; max-width: 450px; width: 90%; border-bottom: 10px solid var(--blue); }
         
-        /* SELECTORES */
-        .mode-row { display: flex; gap: 8px; margin: 10px 0; }
-        .m-btn { flex: 1; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; cursor: pointer; font-weight: 800; font-size: 0.8rem; }
+        .mode-row { display: flex; gap: 10px; margin: 15px 0; }
+        .m-btn { flex: 1; padding: 14px; border: 2.5px solid #e2e8f0; border-radius: 15px; cursor: pointer; font-weight: 800; font-size: 0.85rem; }
         .m-btn.active { border-color: var(--blue); background: #eff6ff; color: var(--blue); }
         
-        /* SLIDER STYLING */
-        .slider-container { margin: 25px 0; text-align: left; }
-        input[type=range] { width: 100%; margin: 15px 0; cursor: pointer; }
-        .time-display { font-size: 1.5rem; font-weight: 900; color: var(--blue); text-align: center; display: block; }
+        .slider-container { margin: 30px 0; text-align: left; }
+        input[type=range] { width: 100%; margin: 15px 0; cursor: pointer; height: 10px; border-radius: 5px; appearance: none; background: #e2e8f0; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 25px; height: 25px; border-radius: 50%; background: var(--blue); cursor: pointer; }
+        .time-display { font-size: 1.8rem; font-weight: 900; color: var(--blue); text-align: center; display: block; }
 
-        .go-btn { background: var(--success); color: white; padding: 18px; border-radius: 15px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.1rem; margin-top: 10px; }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; margin-top: 15px; box-shadow: 0 5px 0 #16a34a; }
+        .go-btn:active { transform: translateY(3px); box-shadow: none; }
 
         #btn-next { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            padding: 20px 50px; background: var(--success); color: white; border: none; 
-            border-radius: 18px; font-weight: 900; cursor: pointer; display: none; font-size: 1.4rem; z-index: 100;
+            padding: 25px 60px; background: var(--success); color: white; border: none; 
+            border-radius: 20px; font-weight: 900; cursor: pointer; display: none; font-size: 1.6rem; z-index: 300;
         }
     </style>
 </head>
@@ -81,33 +81,33 @@
     <div id="bg-noise"></div>
 
     <div id="header">
-        <div class="stat-pill">LVL: <span id="v-lvl">1</span></div>
-        <div id="v-lives" style="font-size: 1.2rem;">❤️❤️❤️</div>
+        <div class="stat-pill">NIVEL: <span id="v-lvl">1</span></div>
+        <div id="v-lives" style="font-size: 1.4rem;">❤️❤️❤️</div>
         <div class="stat-pill">⏱️ <span id="v-time">0:00</span></div>
     </div>
 
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <p style="margin:0; font-weight:800; color:var(--blue); font-size:0.8rem;">ESTA ES TU FIGURA:</p>
-            <div id="target-preview" style="width:70px; height:70px; margin:10px auto;"></div>
-            <p id="target-label" style="margin:0; font-weight:900; text-transform:uppercase; font-size:1.1rem;"></p>
+            <p style="margin:0; font-weight:800; color:var(--blue); font-size:0.9rem; letter-spacing:1px;">ESTA ES TU FIGURA:</p>
+            <div id="target-preview" style="width:90px; height:90px; margin:15px auto;"></div>
+            <p id="target-label" style="margin:0; font-weight:900; text-transform:uppercase; font-size:1.3rem; color:var(--dark);"></p>
         </div>
-        <button id="btn-next" onclick="prepareNextLvl()">SIGUIENTE NIVEL ➜</button>
+        <button id="btn-next" onclick="prepareNextLvl()">¡NIVEL SUPERADO! ➜</button>
     </div>
 
     <div id="clinical-modal" class="overlay">
         <div class="modal">
-            <h2 style="color:var(--blue); margin:0;">Configuración Clínica</h2>
+            <h2 style="color:var(--blue); margin:0; font-size:1.8rem;">Menú Clínico</h2>
             
-            <p style="font-weight:800; font-size:0.7rem; margin:15px 0 5px; text-align:left; color:#64748b;">MODO DE TRABAJO:</p>
+            <p style="font-weight:800; font-size:0.75rem; margin:20px 0 5px; text-align:left; color:#64748b; text-transform:uppercase;">Modo de Ejercicio:</p>
             <div class="mode-row">
                 <div id="b-rel" class="m-btn active" onclick="updateMode('reloj')">CONTRA RELOJ</div>
                 <div id="b-lib" class="m-btn" onclick="updateMode('libre')">MODO LIBRE</div>
             </div>
 
             <div class="slider-container">
-                <p style="font-weight:800; font-size:0.7rem; margin:0; color:#64748b;">VELOCIDAD DEL FLASH (SEG):</p>
+                <p style="font-weight:800; font-size:0.75rem; margin:0; color:#64748b; text-transform:uppercase;">Velocidad del Flash:</p>
                 <input type="range" id="speed-slider" min="0.5" max="4.0" step="0.1" value="1.5" oninput="updateSpeedDisplay(this.value)">
                 <span class="time-display" id="speed-val">1.5s</span>
             </div>
@@ -118,18 +118,18 @@
 
     <div id="patient-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h1 id="p-title" style="color:var(--blue); margin:0;">¡Cazador Flash! ⚡</h1>
-            <div id="p-text" style="background:#f1f5f9; padding:20px; border-radius:20px; text-align:left; font-size:0.95rem; margin:20px 0; line-height:1.5;">
+            <h1 id="p-title" style="color:var(--blue); margin:0; font-size:2rem;">¡Cazador Flash! ⚡</h1>
+            <div id="p-text" style="background:#f1f5f9; padding:25px; border-radius:25px; text-align:left; font-size:1rem; margin:25px 0; line-height:1.6; border-left: 8px solid var(--blue);">
                 </div>
-            <button class="go-btn" onclick="startApp()">¡LISTO PARA EMPEZAR!</button>
+            <button class="go-btn" onclick="startApp()">¡EMPEZAR AHORA!</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--blue);">Resultados de la Sesión</h2>
-            <div id="res-data" style="margin:20px 0; font-weight:800;"></div>
-            <button class="go-btn" onclick="location.reload()">REPETIR EJERCICIO</button>
+            <h2 style="color:var(--blue); font-size:2rem;">¡Excelente!</h2>
+            <div id="res-data" style="margin:25px 0; font-weight:800; font-size:1.2rem; color:var(--dark);"></div>
+            <button class="go-btn" onclick="location.reload()">REPETIR SESIÓN</button>
         </div>
     </div>
 
@@ -146,7 +146,7 @@
 
     <script>
         let lvl = 1, lives = 3, hits = 0, lvlHits = 0, active = false, mode = 'reloj', flashSpeed = 1500, tTotal = 0;
-        let currentTargetIdx = 0, lastIdx = -1;
+        let currentTargetIdx = 0, lastIdx = -1, timerInt;
         const pName = localStorage.getItem('pacienteActual') || "Paciente";
 
         const stimuli = [
@@ -170,32 +170,30 @@
             document.getElementById('clinical-modal').style.display = 'none';
             const text = document.getElementById('p-text');
             if(mode === 'reloj') {
-                text.innerHTML = `🎯 <b>¡Atrápala pronto!</b><br><br>• Mira el centro y espera el flash.<br>• Toca la figura correcta lo más rápido que puedas.<br>• Tienes 3 vidas. ¡Evita tocar el fondo!`;
+                text.innerHTML = `🌟 <b>¡Objetivo: Ser Rápido!</b><br><br>1. Mira la figura que te mostraremos.<br>2. Cuando desaparezca, aparecerá un <b>punto azul</b>.<br>3. ¡Caza la figura correcta antes de que se borre!<br>4. Tienes 3 vidas. ¡No falles!`;
             } else {
-                text.innerHTML = `🧩 <b>¡Entrenamiento Libre!</b><br><br>• No hay prisa, observa bien la pantalla.<br>• Busca la figura correcta y selecciónala.<br>• No pierdes vidas, concéntrate en no fallar.`;
+                text.innerHTML = `🌈 <b>¡Objetivo: Precisión!</b><br><br>1. Observa la figura con calma.<br>2. Búscala entre las opciones que aparecerán.<br>3. No hay prisa ni vidas, lo importante es acertar.`;
             }
             document.getElementById('patient-modal').style.display = 'flex';
         }
 
         function startApp() {
             document.getElementById('patient-modal').style.display = 'none';
-            // Crear ruido visual
-            const container = document.getElementById('bg-noise');
-            for(let i=0; i<10; i++) {
+            for(let i=0; i<8; i++) {
                 const l = document.createElement('div'); l.className = 'noise-line';
-                l.style.top = (i*12)+'vh'; l.style.animationDelay = (i*0.5)+'s';
-                container.appendChild(l);
+                l.style.top = (i*15)+'vh'; l.style.animationDelay = (i*0.8)+'s';
+                document.getElementById('bg-noise').appendChild(l);
             }
             active = true;
             updateLivesUI();
-            setInterval(() => { if(active) { tTotal++; document.getElementById('v-time').innerText = formatTime(tTotal); } }, 1000);
+            timerInt = setInterval(() => { if(active) { tTotal++; document.getElementById('v-time').innerText = formatTime(tTotal); } }, 1000);
             prepareNewLevel();
         }
 
         function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
         function penalizeClick(e) {
-            if(!active || e.target.closest('.flash-item') || e.target.closest('.modal')) return;
+            if(!active || e.target.closest('.flash-item') || e.target.closest('.modal') || e.target.closest('#target-announcer')) return;
             if(mode === 'reloj') fail();
         }
 
@@ -203,21 +201,35 @@
             if(lvl % 7 === 0 && lvl > 1 && mode === 'reloj') { lives++; updateLivesUI(); }
             document.getElementById('btn-next').style.display = 'none';
             lvlHits = 0;
+            
+            // Elegir nuevo objetivo
             do { currentTargetIdx = Math.floor(Math.random() * stimuli.length); } while(currentTargetIdx === lastIdx);
             lastIdx = currentTargetIdx;
             
+            // 1. Mostrar cartel de anuncio (NADA MÁS EN PANTALLA)
             const announcer = document.getElementById('target-announcer');
             document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
             document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
             announcer.style.display = 'block';
-            setTimeout(() => { announcer.style.display = 'none'; nextFlash(); }, 2500);
+
+            // 2. Esperar 2.5s y empezar la secuencia de flash
+            setTimeout(() => {
+                announcer.style.display = 'none';
+                setTimeout(nextFlash, 500); // Pequeño respiro antes del punto azul
+            }, 2500);
         }
 
         function nextFlash() {
             if(!active) return;
             if(lvlHits >= 5) { document.getElementById('btn-next').style.display = 'block'; return; }
+            
+            // 3. Punto de fijación
             document.getElementById('fix-dot').style.display = 'block';
-            setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 900);
+            setTimeout(() => { 
+                document.getElementById('fix-dot').style.display = 'none'; 
+                // 4. Lanzar estímulos solo tras ocultar el punto
+                spawnItems(); 
+            }, 800);
         }
 
         function spawnItems() {
@@ -232,13 +244,12 @@
                 el.className = 'flash-item';
                 el.setAttribute('data-target', i === targetPos);
                 
-                // MÁXIMA SEGURIDAD PARA MÓVILES
-                const size = [70, 95, 120][Math.floor(Math.random()*3)];
+                const size = [80, 100, 120][Math.floor(Math.random()*3)];
                 el.style.width = size+'px'; el.style.height = size+'px';
                 
-                // Margen de seguridad de 100px para evitar bordes
-                const safeX = Math.random() * (rect.width - 200) + 100;
-                const safeY = Math.random() * (rect.height - 200) + 100;
+                // ZONA SEGURA: 120px de margen para que no toque bordes ni header
+                const safeX = Math.random() * (rect.width - 240) + 120;
+                const safeY = Math.random() * (rect.height - 240) + 120;
                 
                 el.style.left = safeX + 'px';
                 el.style.top = safeY + 'px';
@@ -248,6 +259,7 @@
                 stage.appendChild(el);
             }
 
+            // Temporizador del Flash
             const flashTimer = setTimeout(() => {
                 items.forEach(i => { if(stage.contains(i)) i.remove(); });
                 if(active && mode === 'reloj') fail(); else if(active) nextFlash();
@@ -278,14 +290,14 @@
         function prepareNextLvl() { lvl++; document.getElementById('v-lvl').innerText = lvl; prepareNewLevel(); }
 
         function finish() {
-            active = false;
+            active = false; clearInterval(timerInt);
             document.getElementById('f-name').value = pName;
             document.getElementById('f-lvl').value = lvl;
             document.getElementById('f-hits').value = hits;
             document.getElementById('f-time').value = formatTime(tTotal);
             document.getElementById('f-date').value = new Date().toLocaleDateString();
             document.getElementById('gs-form').submit();
-            document.getElementById('res-data').innerText = `Paciente: ${pName} | Nivel Alcanzado: ${lvl} | Aciertos: ${hits}`;
+            document.getElementById('res-data').innerText = `${pName} | Nivel: ${lvl} | Aciertos: ${hits}`;
             document.getElementById('res-modal').style.display = 'flex';
         }
     </script>
