@@ -65,8 +65,7 @@
         input[type=range]::-webkit-slider-thumb { appearance: none; width: 25px; height: 25px; border-radius: 50%; background: var(--blue); cursor: pointer; }
         .time-display { font-size: 1.8rem; font-weight: 900; color: var(--blue); text-align: center; display: block; }
 
-        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; margin-top: 15px; box-shadow: 0 5px 0 #16a34a; }
-        .go-btn:active { transform: translateY(3px); box-shadow: none; }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 18px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.2rem; margin-top: 15px; }
 
         #btn-next { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -103,7 +102,7 @@
                 <div id="b-lib" class="m-btn" onclick="updateMode('libre')">MODO LIBRE</div>
             </div>
             <div class="slider-container">
-                <p style="font-weight:800; font-size:0.75rem; margin:0; color:#64748b;">VELOCIDAD DEL FLASH:</p>
+                <p style="font-weight:800; font-size:0.75rem; margin:0; color:#64748b;">DURACIÓN DEL ESTÍMULO (VELOCIDAD):</p>
                 <input type="range" id="speed-slider" min="0.5" max="4.0" step="0.1" value="1.5" oninput="updateSpeedDisplay(this.value)">
                 <span class="time-display" id="speed-val">1.5s</span>
             </div>
@@ -113,7 +112,7 @@
 
     <div id="patient-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h1 id="p-title" style="color:var(--blue); margin:0;">¡Cazador Flash! ⚡</h1>
+            <h1 style="color:var(--blue); margin:0;">¡Cazador Flash! ⚡</h1>
             <div id="p-text" style="background:#f1f5f9; padding:25px; border-radius:25px; text-align:left; font-size:1rem; margin:25px 0; line-height:1.6;"></div>
             <button class="go-btn" onclick="startApp()">¡EMPEZAR!</button>
         </div>
@@ -121,16 +120,16 @@
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--blue);">Fin de Sesión</h2>
+            <h2 style="color:var(--blue);">Resultados</h2>
             <div id="res-data" style="margin:20px 0; font-weight:800;"></div>
-            <button class="go-btn" onclick="location.reload()">REPETIR</button>
+            <button class="go-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
         let lvl = 1, lives = 3, hits = 0, lvlHits = 0, active = false, mode = 'reloj', flashSpeed = 1500, tTotal = 0;
         let currentTargetIdx = 0, lastIdx = -1, timerInt;
-        const pName = localStorage.getItem('pacienteActual') || "Paciente";
+        let isWaitingForNextLevel = false;
 
         const stimuli = [
             ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E de Snellen'],
@@ -152,11 +151,9 @@
         function showPatientInstructions() {
             document.getElementById('clinical-modal').style.display = 'none';
             const text = document.getElementById('p-text');
-            if(mode === 'reloj') {
-                text.innerHTML = `🌟 <b>¡Atención!</b><br><br>• Mira la figura.<br>• Cuando salga el punto azul, prepárate.<br>• Toca la figura correcta rápido.<br>• Tienes 3 vidas.`;
-            } else {
-                text.innerHTML = `🌈 <b>Modo Libre</b><br><br>• Busca la figura correcta sin prisa.<br>• No pierdes vidas.`;
-            }
+            text.innerHTML = mode === 'reloj' ? 
+                `🌟 <b>¡Atención!</b><br><br>1. Primero verás la figura objetivo.<br>2. El cartel desaparecerá.<br>3. Aparecerá un punto azul.<br>4. Finalmente, busca la figura entre los estímulos rápido.` :
+                `🌈 <b>Modo Libre</b><br><br>Observa la figura y búscala entre las opciones con calma.`;
             document.getElementById('patient-modal').style.display = 'flex';
         }
 
@@ -171,32 +168,39 @@
         function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
         function penalizeClick(e) {
-            if(!active || e.target.closest('.flash-item') || e.target.closest('.modal') || e.target.closest('#target-announcer')) return;
+            if(!active || isWaitingForNextLevel || e.target.closest('.flash-item') || e.target.closest('.modal') || e.target.closest('#target-announcer')) return;
             if(mode === 'reloj') fail();
         }
 
         function prepareNewLevel() {
             if(!active) return;
-            lvlHits = 0; // REINICIO CLAVE PARA EVITAR CIERRE
+            isWaitingForNextLevel = true; // BLOQUEO DE SEGURIDAD
+            lvlHits = 0;
             document.getElementById('btn-next').style.display = 'none';
             
+            // Elegir figura
             do { currentTargetIdx = Math.floor(Math.random() * stimuli.length); } while(currentTargetIdx === lastIdx);
             lastIdx = currentTargetIdx;
             
+            // Mostrar Anuncio
             const announcer = document.getElementById('target-announcer');
             document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
             document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
             announcer.style.display = 'block';
 
+            // Flujo estrictamente secuencial
             setTimeout(() => {
                 announcer.style.display = 'none';
-                if(active) setTimeout(nextFlash, 500);
-            }, 2500);
+                isWaitingForNextLevel = false; // DESBLOQUEO
+                setTimeout(nextFlash, 500); // Pequeña pausa visual antes del punto azul
+            }, 3000);
         }
 
         function nextFlash() {
-            if(!active) return;
+            if(!active || isWaitingForNextLevel) return;
+            
             if(lvlHits >= 5) { 
+                isWaitingForNextLevel = true;
                 document.getElementById('btn-next').style.display = 'block'; 
                 return; 
             }
@@ -209,21 +213,20 @@
         }
 
         function spawnItems() {
+            if(!active || isWaitingForNextLevel) return;
             const stage = document.getElementById('stage');
-            stage.querySelectorAll('.flash-item').forEach(i => i.remove()); // Limpieza de seguridad
+            stage.querySelectorAll('.flash-item').forEach(i => i.remove());
             
             const rect = stage.getBoundingClientRect();
             let numItems = lvl >= 11 ? 4 : (lvl >= 7 ? 3 : 2);
-            const items = [];
             const targetPos = Math.floor(Math.random() * numItems);
+            const items = [];
 
             for(let i=0; i<numItems; i++) {
                 const el = document.createElement('div');
                 el.className = 'flash-item';
                 el.setAttribute('data-target', i === targetPos);
-                
-                const size = 100;
-                el.style.width = size+'px'; el.style.height = size+'px';
+                el.style.width = '100px'; el.style.height = '100px';
                 
                 const safeX = Math.random() * (rect.width - 240) + 120;
                 const safeY = Math.random() * (rect.height - 240) + 120;
@@ -231,37 +234,31 @@
                 el.style.left = safeX + 'px';
                 el.style.top = safeY + 'px';
                 el.innerHTML = `<svg viewBox="0 0 100 100" class="sym">${i === targetPos ? stimuli[currentTargetIdx][0] : stimuli[currentTargetIdx][1]}</svg>`;
+                
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    const correct = el.getAttribute('data-target') === 'true';
+                    clearTimeout(flashTimer);
+                    items.forEach(it => it.remove());
+                    if(correct) { hits++; lvlHits++; nextFlash(); } 
+                    else { if(mode === 'reloj') fail(); else nextFlash(); }
+                };
+
                 items.push(el);
                 stage.appendChild(el);
             }
 
             const flashTimer = setTimeout(() => {
                 items.forEach(i => { if(stage.contains(i)) i.remove(); });
-                if(active && mode === 'reloj') fail(); else if(active) nextFlash();
+                if(active && !isWaitingForNextLevel) {
+                    if(mode === 'reloj') fail(); else nextFlash();
+                }
             }, flashSpeed);
-
-            items.forEach(item => {
-                item.onclick = (e) => {
-                    e.stopPropagation();
-                    const correct = item.getAttribute('data-target') === 'true';
-                    clearTimeout(flashTimer);
-                    items.forEach(i => i.remove());
-                    if(correct) { 
-                        hits++; 
-                        lvlHits++; 
-                        nextFlash(); 
-                    } else {
-                        if(mode === 'reloj') fail(); else nextFlash();
-                    }
-                };
-            });
         }
 
         function fail() {
-            lives--; 
-            updateLivesUI();
-            if(lives <= 0) finish(); 
-            else if(active && lvlHits < 5) nextFlash();
+            lives--; updateLivesUI();
+            if(lives <= 0) finish(); else if(active && !isWaitingForNextLevel) nextFlash();
         }
 
         function updateLivesUI() {
@@ -271,15 +268,12 @@
         function prepareNextLvl() { 
             lvl++; 
             document.getElementById('v-lvl').innerText = lvl; 
-            if(lvl % 5 === 0 && mode === 'reloj') lives++; 
-            updateLivesUI();
             prepareNewLevel(); 
         }
 
         function finish() {
-            active = false;
-            clearInterval(timerInt);
-            document.getElementById('res-data').innerText = `Nivel: ${lvl} | Aciertos: ${hits} | Tiempo: ${formatTime(tTotal)}`;
+            active = false; clearInterval(timerInt);
+            document.getElementById('res-data').innerText = `Nivel: ${lvl} | Aciertos Totales: ${hits}`;
             document.getElementById('res-modal').style.display = 'flex';
         }
     </script>
