@@ -23,8 +23,6 @@
         }
 
         #err-flash { position: fixed; inset: 0; background: var(--danger); z-index: 999; display: none; opacity: 0.5; pointer-events: none; }
-        
-        /* Líneas de fondo sutiles */
         #bg-noise { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.4; }
         .noise-line { position: absolute; background: #3b82f644; height: 1px; width: 100%; }
 
@@ -33,12 +31,11 @@
             background: white; z-index: 100; border-bottom: 1px solid #ddd;
         }
         .stat-box { background: #f8fafc; padding: 6px 16px; border-radius: 20px; font-weight: 800; border: 1px solid #e2e8f0; font-size: 0.8rem; }
-        #v-lives { font-size: 1.5rem; transition: transform 0.2s; }
+        #v-lives { font-size: 1.5rem; }
 
         #stage { flex: 1; position: relative; z-index: 5; overflow: hidden; }
         #fix-dot { position: absolute; top: 50%; left: 50%; width: 22px; height: 22px; background: var(--blue); border-radius: 50%; transform: translate(-50%, -50%); display: none; z-index: 10; }
 
-        /* Cuadro de "ESTA ES TU FIGURA" */
         #target-announcer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 25px; border-radius: 25px;
@@ -52,22 +49,15 @@
         .exploding { animation: explosion 0.4s ease-out forwards; pointer-events: none; }
         @keyframes explosion { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } }
 
-        /* Modales Estilo Capturas */
         .overlay { position: fixed; inset: 0; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: white; padding: 35px; border-radius: 40px; text-align: center; width: 85%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .modal { background: white; padding: 35px; border-radius: 40px; text-align: center; width: 85%; max-width: 450px; }
         
         .instr-text { background: #f1f5f9; padding: 20px; border-radius: 20px; text-align: left; font-size: 0.9rem; color: #475569; margin: 20px 0; line-height: 1.5; }
-        .instr-text b { color: #1e293b; }
-
-        .btn-toggle { background: #fff; border: 2px solid #e2e8f0; color: #64748b; padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; flex: 1; font-size: 0.85rem; }
+        .btn-toggle { background: #fff; border: 2px solid #e2e8f0; color: #64748b; padding: 14px; border-radius: 15px; font-weight: 800; cursor: pointer; flex: 1; }
         .btn-toggle.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
         
-        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.1rem; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
-
-        #btn-next { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 22px 45px; background: var(--success); color: white; border: none; border-radius: 20px; font-weight: 900; cursor: pointer; display: none; z-index: 300; font-size: 1rem; }
-
-        /* Slider personalizado */
-        input[type=range] { width: 100%; margin: 15px 0; }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 20px; width: 100%; border: none; font-weight: 900; cursor: pointer; font-size: 1.1rem; margin-top: 10px; text-transform: uppercase; }
+        #btn-next { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 22px 45px; background: var(--success); color: white; border: none; border-radius: 20px; font-weight: 900; cursor: pointer; display: none; z-index: 300; }
     </style>
 </head>
 <body onclick="handleGlobalClick(event)">
@@ -95,23 +85,18 @@
         <div class="modal">
             <h1 style="color:var(--blue); margin-top:0;">Cazador Flash Pro ⚡</h1>
             <p style="font-weight: 700; color: #64748b;">¡Ojo! Tocar el fondo te resta vidas.</p>
-            <button class="go-btn" onclick="showModal(2)">¡COMENZAR!</button>
+            <button class="go-btn" onclick="initAudio(); showModal(2)">¡COMENZAR!</button>
         </div>
     </div>
 
     <div id="modal-2" class="overlay" style="display:none;">
         <div class="modal">
             <h2 style="color:var(--blue); margin:0;">Menú Clínico</h2>
-            <p style="font-size: 0.8rem; font-weight: 800; color: #94a3b8; margin-bottom: 20px;">Cazador Flash ⚡</p>
-            
-            <div id="instr-box" class="instr-text">
-                </div>
-
+            <div id="instr-box" class="instr-text"></div>
             <div style="display:flex; gap:10px; margin-bottom:20px;">
                 <button id="mode-reloj" class="btn-toggle active" onclick="setGameMode('reloj')">CONTRA RELOJ</button>
                 <button id="mode-cron" class="btn-toggle" onclick="setGameMode('cron')">LIBRE</button>
             </div>
-            
             <button class="go-btn" onclick="showModal(3)">INICIAR EVALUACIÓN</button>
         </div>
     </div>
@@ -119,11 +104,9 @@
     <div id="modal-3" class="overlay" style="display:none;">
         <div class="modal">
             <h2 style="color:var(--blue); margin-bottom:30px;">Cazador Flash</h2>
-            <div style="text-align:left;">
-                <p style="font-weight:900; font-size:0.7rem; color:#64748b; margin-bottom:5px;">DURACIÓN DEL FLASH:</p>
-                <input type="range" id="speed-slider" min="0.4" max="2.5" step="0.1" value="1.5" oninput="document.getElementById('speed-val').innerText = this.value + 's'">
-                <div id="speed-val" style="font-size:2.5rem; font-weight:900; color:var(--blue); text-align:center;">1.5s</div>
-            </div>
+            <p style="font-weight:900; font-size:0.7rem; color:#64748b;">DURACIÓN DEL FLASH:</p>
+            <input type="range" id="speed-slider" min="0.4" max="2.5" step="0.1" value="1.5" oninput="document.getElementById('speed-val').innerText = this.value + 's'">
+            <div id="speed-val" style="font-size:2.5rem; font-weight:900; color:var(--blue); text-align:center;">1.5s</div>
             <button class="go-btn" style="margin-top:40px;" onclick="startGame()">COMENZAR SESIÓN</button>
         </div>
     </div>
@@ -140,6 +123,26 @@
         let lvl = 1, lives = 3, hits = 0, lvlHits = 0, fails = 0, tTotal = 0;
         let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 1500;
         let currentTargetIdx = 0, flashTimer = null;
+        
+        // --- SISTEMA DE AUDIO ---
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSound(freq, duration, type = 'sine') {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
 
         const stimuli = [
             ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E DE SNELLEN'],
@@ -162,11 +165,9 @@
 
         function updateInstr() {
             const box = document.getElementById('instr-box');
-            if(gameMode === 'reloj') {
-                box.innerHTML = `<b>¡Hola!</b> En este ejercicio debes cazar la figura indicada que aparece en un flash.<br><br>Evita tocar el fondo o perderás vidas. Cada 7 niveles recibirás un corazón de regalo.`;
-            } else {
-                box.innerHTML = `<b>Modo Libre:</b> Entrena sin límite de tiempo. Si pierdes tus 3 vidas por errores, se reiniciarán para que puedas continuar niveles infinitos.`;
-            }
+            box.innerHTML = gameMode === 'reloj' 
+                ? `<b>¡Hola!</b> En este ejercicio debes cazar la figura indicada que aparece en un flash.<br><br>Evita tocar el fondo o perderás vidas. Cada 7 niveles recibirás un corazón de regalo.`
+                : `<b>Modo Libre:</b> Entrena sin límite de tiempo. Si pierdes tus 3 vidas por errores, se reiniciarán para que puedas continuar niveles infinitos.`;
         }
 
         function startGame() {
@@ -203,7 +204,6 @@
             if(!active || isBlocked) return;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
             if(lvlHits >= 5) { isBlocked = true; document.getElementById('btn-next').style.display = 'block'; return; }
-            
             document.getElementById('fix-dot').style.display = 'block';
             setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 700);
         }
@@ -228,6 +228,7 @@
                     if(isBlocked) return;
                     clearTimeout(flashTimer);
                     if(i === targetPos) {
+                        playSound(880, 0.2); // Sonido de acierto (agudo)
                         el.classList.add('exploding');
                         isBlocked = true; hits++; lvlHits++;
                         setTimeout(() => { isBlocked = false; nextFlash(); }, 400);
@@ -244,6 +245,7 @@
             clearTimeout(flashTimer);
             fails++; lives--;
             
+            playSound(150, 0.5, 'sawtooth'); // Sonido de error (grave/rasposo)
             document.getElementById('err-flash').style.display = 'block';
             document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
 
@@ -277,7 +279,6 @@
             document.getElementById('res-modal').style.display = 'flex';
         }
 
-        // Inicializar
         updateInstr();
     </script>
 </body>
