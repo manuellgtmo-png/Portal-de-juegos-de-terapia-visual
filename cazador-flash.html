@@ -23,11 +23,7 @@
             user-select: none;
         }
 
-        /* FONDO DISTRACTOR EXTREMO */
-        #bg-canvas {
-            position: absolute; inset: 0;
-            z-index: 1; pointer-events: none;
-        }
+        #bg-canvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 
         #header { 
             height: 70px; padding: 0 20px; 
@@ -55,8 +51,8 @@
         #target-announcer {
             position: absolute; top: 50%; left: 50%; 
             transform: translate(-50%, -50%);
-            background: white; padding: 30px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+            background: white; padding: 30px; border-radius: 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6); 
             text-align: center; z-index: 200; 
             display: none; width: 260px;
         }
@@ -65,7 +61,6 @@
             position: absolute; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
             transform: translate(-50%, -50%); z-index: 20; 
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
         .overlay { 
@@ -73,12 +68,32 @@
             backdrop-filter: blur(15px); z-index: 1000; display: flex; 
             align-items: center; justify-content: center; 
         }
-        .modal { background: white; padding: 35px; border-radius: 40px; text-align: center; width: 85%; max-width: 400px; }
+        .modal { background: white; padding: 35px; border-radius: 40px; text-align: center; width: 85%; max-width: 420px; }
         
-        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 20px; width: 100%; border: none; font-weight: 900; font-size: 1.1rem; margin-top: 15px; box-shadow: 0 10px 0 #166534; transition: 0.1s; }
-        .go-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #166534; }
+        .instr-box { 
+            background: #f1f5f9; padding: 20px; border-radius: 25px; 
+            text-align: left; font-size: 0.9rem; margin: 20px 0; 
+            border-left: 6px solid var(--blue); color: #334155;
+            line-height: 1.5;
+        }
 
-        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--blue); }
+        .btn-toggle { 
+            background: white; border: 2px solid #e2e8f0; 
+            padding: 18px; border-radius: 20px; font-weight: 900; 
+            cursor: pointer; flex: 1; transition: 0.2s;
+        }
+        .btn-toggle.active { border-color: var(--blue); color: var(--blue); background: #eef2ff; }
+        
+        .go-btn { 
+            background: var(--success); color: white; 
+            padding: 22px; border-radius: 22px; 
+            width: 100%; border: none; font-weight: 900; 
+            font-size: 1.1rem; margin-top: 10px; 
+            box-shadow: 0 10px 0 #166534; cursor: pointer;
+        }
+        .go-btn:active { transform: translateY(4px); box-shadow: 0 6px 0 #166534; }
+
+        input[type=range] { width: 100%; margin: 25px 0; accent-color: var(--blue); }
     </style>
 </head>
 <body onclick="handleGlobalClick(event)">
@@ -95,60 +110,60 @@
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <h3 style="margin:0; color:var(--blue); font-size:0.9rem;">¡BUSCA ESTE! 🎯</h3>
-            <div id="target-preview" style="margin:15px 0"></div>
-            <p id="target-label" style="font-weight:900; font-size:1.1rem; text-transform:uppercase;"></p>
+            <p style="font-weight:900; color:var(--blue); font-size:0.8rem; margin:0;">ESTE ES TU OBJETIVO: 🎯</p>
+            <div id="target-preview" style="margin:20px 0; display:flex; justify-content:center;"></div>
+            <p id="target-label" style="font-weight:900; font-size:1rem; text-transform:uppercase; color:var(--dark-blue)"></p>
         </div>
-        <button id="btn-next" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); padding:25px 50px; background:var(--success); color:white; border:none; border-radius:25px; font-weight:900; display:none; z-index:300;" onclick="prepareNextLvl()">¡SIGUIENTE NIVEL! 🚀</button>
+        <button id="btn-next" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); padding:25px 50px; background:var(--success); color:white; border:none; border-radius:30px; font-weight:900; font-size:1.3rem; display:none; z-index:300; box-shadow: 0 10px 20px rgba(0,0,0,0.3);" onclick="prepareNextLvl()">SIGUIENTE NIVEL ➜</button>
     </div>
 
     <div id="modal-1" class="overlay"><div class="modal">
-        <h1 style="color:var(--blue); font-size:2rem; margin:0;">¡Hola! 🤩</h1>
-        <p style="font-weight:700;">Prepárate para el verdadero reto visual.</p>
-        <button class="go-btn" onclick="initAudio(); showModal(2)">¡VAMOS! 🔥</button>
+        <h1 style="color:var(--blue); font-size:2.2rem; margin:0;">¡Hola! 🤩</h1>
+        <p style="font-weight:800; color:#64748b;">Bienvenido a Cazador Flash Extremo.</p>
+        <button class="go-btn" onclick="initAudio(); showModal(2)">¡EMPEZAR! 🔥</button>
     </div></div>
 
     <div id="modal-2" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue);">¿Cómo jugamos? 🎮</h2>
-        <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <button id="mode-reloj" class="btn-toggle" style="flex:1; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;" onclick="setGameMode('reloj')">RELOJ ⏱️</button>
-            <button id="mode-cron" class="btn-toggle" style="flex:1; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;" onclick="setGameMode('cron')">LIBRE ♾️</button>
+        <h2 style="color:var(--blue); margin-bottom:10px;">Modo de Juego 🎮</h2>
+        <div id="instr-box" class="instr-box"></div>
+        <div style="display:flex; gap:12px; margin-bottom:25px;">
+            <button id="mode-reloj" class="btn-toggle active" onclick="setGameMode('reloj')">RELOJ ⏱️</button>
+            <button id="mode-cron" class="btn-toggle" onclick="setGameMode('cron')">LIBRE ♾️</button>
         </div>
         <button class="go-btn" onclick="showModal(3)">CONFIGURAR ⚙️</button>
     </div></div>
 
     <div id="modal-3" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue);">Velocidad Flash ⚡</h2>
-        <input type="range" id="speed-slider" min="0.2" max="1.5" step="0.1" value="0.8">
-        <div id="speed-val" style="font-size:3rem; font-weight:900; color:var(--blue);">0.8s</div>
-        <button class="go-btn" onclick="startGame()">¡EMPEZAR YA! 💥</button>
+        <h2 style="color:var(--blue);">Dificultad Flash ⚡</h2>
+        <p style="font-weight:700; color:#64748b;">¿Qué tan rápido puedes ver?</p>
+        <input type="range" id="speed-slider" min="0.2" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('speed-val').innerText = this.value + 's'">
+        <div id="speed-val" style="font-size:3.5rem; font-weight:900; color:var(--blue);">0.8s</div>
+        <button class="go-btn" onclick="startGame()">¡A JUGAR! 💥</button>
     </div></div>
 
     <div id="res-modal" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue);">¡SESIÓN LISTA! ✨</h2>
-        <div id="res-data" style="margin:20px 0; text-align:left; background:#f1f5f9; padding:20px; border-radius:20px; font-weight:800;"></div>
-        <p id="sync-status" style="font-size:0.8rem; font-weight:700;">Sincronizando...</p>
-        <button class="go-btn" onclick="location.reload()">REPETIR 🔄</button>
+        <h2 style="color:var(--blue);">¡SESIÓN FINALIZADA! ✨</h2>
+        <div id="res-data" style="margin:20px 0; text-align:left; background:#f1f5f9; padding:25px; border-radius:25px; font-weight:800; font-size:0.95rem; line-height:2;"></div>
+        <p id="sync-status" style="font-size:0.8rem; font-weight:700; color:var(--blue)">Sincronizando historial...</p>
+        <button class="go-btn" onclick="location.reload()">REPETIR SESIÓN 🔄</button>
     </div></div>
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const pacienteId = urlParams.get('id') || 'PRO_USER';
+        const pacienteId = urlParams.get('id') || 'SIN_ID';
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
 
         let lvl = 1, lives = 3, hits = 0, lvlHits = 0, fails = 0, tTotal = 0;
         let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 800, audioCtx;
         let currentTarget = null;
 
-        // FIGURAS CASI IDÉNTICAS (Dificultad Alta)
         const items = [
-            { id: 1, name: "Círculo Notch 12", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><rect x="45" y="10" width="10" height="15" fill="white"/>' },
-            { id: 2, name: "Círculo Notch 6", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><rect x="45" y="75" width="10" height="15" fill="white"/>' },
-            { id: 3, name: "Círculo Dot Interno", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><circle cx="50" cy="35" r="5" fill="white"/>' },
-            { id: 4, name: "Círculo Dual", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><circle cx="50" cy="50" r="15" fill="none" stroke="white" stroke-width="4"/>' }
+            { id: 1, name: "Muesca Superior", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="9"/><rect x="44" y="10" width="12" height="18" fill="white"/>' },
+            { id: 2, name: "Muesca Inferior", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="9"/><rect x="44" y="72" width="12" height="18" fill="white"/>' },
+            { id: 3, name: "Punto Central", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="9"/><circle cx="50" cy="50" r="8" fill="white"/>' },
+            { id: 4, name: "Anillo Doble", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="9"/><circle cx="50" cy="50" r="18" fill="none" stroke="white" stroke-width="5"/>' }
         ];
 
-        // MOTOR DE FONDO DISTRACTOR
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -156,29 +171,27 @@
         function initParticles() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            for(let i=0; i<80; i++) {
+            for(let i=0; i<70; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 5,
-                    vy: (Math.random() - 0.5) * 5,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
                     size: Math.random() * 3 + 1,
-                    color: `rgba(${Math.random()*100+100}, ${Math.random()*100+100}, 255, ${Math.random()*0.5})`
+                    color: `rgba(${Math.random()*150+100}, ${Math.random()*100+150}, 255, ${Math.random()*0.4})`
                 });
             }
         }
 
         function animate() {
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
                 p.x += p.vx; p.y += p.vy;
                 if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
                 if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                ctx.fillStyle = p.color;
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.color; ctx.fill();
             });
             requestAnimationFrame(animate);
         }
@@ -186,8 +199,24 @@
         function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
         function playSound(f, d) { if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }
 
-        function showModal(n) { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); if(n) document.getElementById(`modal-${n}`).style.display='flex'; }
+        function showModal(n) { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); if(n) document.getElementById(`modal-${n}`).style.display='flex'; if(n===2) updateInstr(); }
         
+        function setGameMode(m) { 
+            gameMode = m; 
+            updateInstr(); 
+            document.getElementById('mode-reloj').className = m === 'reloj' ? 'btn-toggle active' : 'btn-toggle';
+            document.getElementById('mode-cron').className = m === 'cron' ? 'btn-toggle active' : 'btn-toggle';
+        }
+
+        function updateInstr() {
+            const box = document.getElementById('instr-box');
+            if(gameMode === 'reloj') {
+                box.innerHTML = "<b>Modo Contra Reloj:</b> ⏱️<br>Tienes 3 vidas. Debes ser rápido; si no tocas la figura a tiempo, pierdes una vida. ¡Cada 5 niveles recuperas una! ❤️";
+            } else {
+                box.innerHTML = "<b>Modo Libre:</b> ♾️<br>Entrena sin presión. Las vidas no se acaban y puedes practicar el tiempo que necesites. Ideal para calentar. 🚀";
+            }
+        }
+
         function startGame() {
             flashSpeed = document.getElementById('speed-slider').value * 1000;
             initParticles(); animate();
@@ -202,10 +231,10 @@
             if(!active) return; isBlocked = true;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
             currentTarget = items[Math.floor(Math.random()*items.length)];
-            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="80">${currentTarget.html}</svg>`;
+            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="85">${currentTarget.html}</svg>`;
             document.getElementById('target-label').innerText = currentTarget.name;
             document.getElementById('target-announcer').style.display = 'block';
-            setTimeout(() => { document.getElementById('target-announcer').style.display='none'; isBlocked=false; nextFlash(); }, 2000);
+            setTimeout(() => { document.getElementById('target-announcer').style.display='none'; isBlocked=false; nextFlash(); }, 2200);
         }
 
         function nextFlash() {
@@ -213,7 +242,7 @@
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
             if(lvlHits >= 5) { isBlocked=true; document.getElementById('btn-next').style.display='block'; return; }
             document.getElementById('fix-dot').style.display = 'block';
-            setTimeout(() => { document.getElementById('fix-dot').style.display='none'; spawnItems(); }, 700);
+            setTimeout(() => { document.getElementById('fix-dot').style.display='none'; spawnItems(); }, 750);
         }
 
         function spawnItems() {
@@ -226,23 +255,21 @@
             for(let i=0; i<num; i++) {
                 const el = document.createElement('div');
                 el.className = 'flash-item';
-                // TAMAÑO ALEATORIO PARA DIFICULTAD EXTRA
-                const size = (40 + Math.random()*40); 
+                const size = (45 + Math.random()*35); 
                 el.style.width = el.style.height = size + 'px';
 
                 let x, y, tooClose, att=0;
                 do {
                     tooClose = false;
-                    x = Math.random()*(rect.width - 100) + 50;
-                    y = Math.random()*(rect.height - 100) + 50;
-                    // REVISIÓN DE COLISIÓN (CAMPO DE FUERZA)
+                    x = Math.random()*(rect.width - 120) + 60;
+                    y = Math.random()*(rect.height - 120) + 60;
                     for(let p of placed) {
                         const dist = Math.hypot(x - p.x, y - p.y);
-                        if(dist < (size/2 + p.s/2 + 20)) tooClose = true;
+                        if(dist < (size/2 + p.s/2 + 25)) tooClose = true;
                     }
-                    if(Math.hypot(x - rect.width/2, y - rect.height/2) < 60) tooClose = true;
+                    if(Math.hypot(x - rect.width/2, y - rect.height/2) < 70) tooClose = true;
                     att++;
-                } while(tooClose && att < 150);
+                } while(tooClose && att < 180);
 
                 placed.push({x, y, s: size});
                 el.style.left = x+'px'; el.style.top = y+'px';
@@ -254,7 +281,7 @@
                     clearTimeout(window.fT);
                     if(i === targetPos) {
                         hits++; lvlHits++; playSound(800, 0.1);
-                        isBlocked = true; setTimeout(() => { isBlocked=false; nextFlash(); }, 300);
+                        isBlocked = true; setTimeout(() => { isBlocked=false; nextFlash(); }, 350);
                     } else fail();
                 };
                 stage.appendChild(el);
@@ -264,23 +291,23 @@
 
         function fail() {
             if(isBlocked) return; isBlocked = true; fails++; lives--;
-            playSound(100, 0.3);
+            playSound(100, 0.35);
             document.getElementById('err-flash').style.display='block';
             document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
             setTimeout(() => {
                 document.getElementById('err-flash').style.display='none';
                 if(lives <= 0 && gameMode === 'reloj') { finishGame(); }
                 else { if(lives <= 0) lives=3; isBlocked=false; nextFlash(); }
-            }, 500);
+            }, 600);
         }
 
         function handleGlobalClick(e) { if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; fail(); }
-        function prepareNextLvl() { lvl++; document.getElementById('v-lvl').innerText = lvl; prepareNewLevel(); }
+        function prepareNextLvl() { lvl++; if(lvl % 5 === 0) lives = Math.min(lives + 1, 5); document.getElementById('v-lvl').innerText = lvl; document.getElementById('v-lives').innerText = "❤️".repeat(lives); prepareNewLevel(); }
 
         function finishGame() {
             active = false; isBlocked = true;
             const finalTime = formatTime(tTotal);
-            document.getElementById('res-data').innerHTML = `ACIERTOS: ${hits}<br>ERRORES: ${fails}<br>NIVEL: ${lvl}<br>TIEMPO: ${finalTime}`;
+            document.getElementById('res-data').innerHTML = `<b>PACIENTE:</b> ${pacienteId}<br><b>NIVEL:</b> ${lvl}<br><b>ACIERTOS:</b> ${hits}<br><b>ERRORES:</b> ${fails}<br><b>TIEMPO:</b> ${finalTime}`;
             document.getElementById('res-modal').style.display = 'flex';
 
             const fd = new URLSearchParams();
@@ -293,10 +320,8 @@
             fd.append('entry.845098414', new Date().toISOString().split('T')[0]);
 
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd })
-            .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS GUARDADOS"; });
+            .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS GUARDADOS CON ÉXITO"; document.getElementById('sync-status').style.color = "var(--success)"; });
         }
-        
-        document.getElementById('speed-slider').oninput = function() { document.getElementById('speed-val').innerText = this.value + 's'; };
     </script>
 </body>
 </html>
