@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cazador Flash Pro - Perceptum Pro</title>
+    <title>Cazador Flash Extremo - Perceptum Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --blue: #3b82f6; 
-            --bg-game: #e0f2fe; 
+            --blue: #6366f1; 
+            --bg-game: #0f172a; 
             --success: #22c55e; 
             --danger: #ef4444;
             --dark-blue: #1e293b;
-            --gray-text: #64748b;
         }
         
         body, html { 
@@ -21,224 +20,177 @@
             font-family: 'Montserrat', sans-serif; 
             overflow: hidden; display: flex; flex-direction: column;
             touch-action: manipulation;
-            -webkit-user-select: none;
             user-select: none;
         }
 
-        #err-flash { 
-            position: fixed; inset: 0; 
-            background: var(--danger); 
-            z-index: 999; display: none; 
-            opacity: 0.5; pointer-events: none; 
-        }
-        
-        #bg-noise { 
-            position: absolute; inset: 0; 
-            z-index: 1; pointer-events: none; 
-            opacity: 0.4; 
-            overflow: hidden;
-        }
-        .noise-line { 
-            position: absolute; 
-            background: #3b82f644; 
-            height: 2px; 
-            width: 100%;
-            animation: moveNoise 3s infinite ease-in-out alternate;
-        }
-
-        @keyframes moveNoise {
-            0% { transform: translateY(-5px) scaleX(1); opacity: 0.2; }
-            50% { transform: translateY(10px) scaleX(1.05); opacity: 0.5; }
-            100% { transform: translateY(5px) scaleX(0.95); opacity: 0.2; }
+        /* FONDO DISTRACTOR EXTREMO */
+        #bg-canvas {
+            position: absolute; inset: 0;
+            z-index: 1; pointer-events: none;
         }
 
         #header { 
-            height: 70px; padding: 0 25px; 
+            height: 70px; padding: 0 20px; 
             display: flex; justify-content: space-between; align-items: center;
-            background: white; z-index: 100; 
-            border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.9); z-index: 100; 
+            backdrop-filter: blur(10px);
         }
         .stat-box { 
-            background: #f1f5f9; padding: 8px 18px; 
-            border-radius: 25px; font-weight: 800; 
-            border: 1px solid #e2e8f0; font-size: 0.85rem; 
-            color: var(--dark-blue);
+            background: #e2e8f0; padding: 8px 15px; 
+            border-radius: 20px; font-weight: 900; 
+            font-size: 0.8rem; color: var(--dark-blue);
         }
-        #v-lives { font-size: 1.6rem; letter-spacing: 3px; }
 
-        #stage { flex: 1; position: relative; z-index: 5; overflow: hidden; width: 100%; height: 100%; }
+        #stage { flex: 1; position: relative; z-index: 5; overflow: hidden; }
         
         #fix-dot { 
             position: absolute; top: 50%; left: 50%; 
-            width: 22px; height: 22px; 
-            background: var(--blue); border-radius: 50%; 
+            width: 15px; height: 15px; 
+            background: #fff; border-radius: 50%; 
             transform: translate(-50%, -50%); 
             display: none; z-index: 10; 
-            box-shadow: 0 0 15px rgba(59,130,246,0.6);
-            border: 3px solid white;
+            box-shadow: 0 0 20px #fff;
         }
 
         #target-announcer {
             position: absolute; top: 50%; left: 50%; 
             transform: translate(-50%, -50%);
-            background: white; padding: 35px; border-radius: 35px;
-            box-shadow: 0 0 0 6px var(--blue), 0 25px 50px rgba(0,0,0,0.15); 
+            background: white; padding: 30px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
             text-align: center; z-index: 200; 
-            display: none; width: 280px;
+            display: none; width: 260px;
         }
-        #target-preview { width: 110px; height: 110px; margin: 20px auto; }
-        #target-label { color: var(--dark-blue); font-size: 1.3rem; font-weight: 900; text-transform: uppercase; margin-top: 10px; }
 
         .flash-item { 
             position: absolute; cursor: pointer; 
             display: flex; align-items: center; justify-content: center; 
             transform: translate(-50%, -50%); z-index: 20; 
-        }
-        .sym { width: 100%; height: 100%; fill: #000; pointer-events: none; }
-        
-        .exploding { animation: explosion 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; pointer-events: none; }
-        @keyframes explosion { 
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
-            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; } 
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
         .overlay { 
-            position: fixed; inset: 0; 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(8px); 
-            z-index: 1000; display: flex; 
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(15px); z-index: 1000; display: flex; 
             align-items: center; justify-content: center; 
         }
-        .modal { 
-            background: white; padding: 45px; 
-            border-radius: 45px; text-align: center; 
-            width: 88%; max-width: 480px; 
-        }
+        .modal { background: white; padding: 35px; border-radius: 40px; text-align: center; width: 85%; max-width: 400px; }
         
-        .instr-text { 
-            background: #f8fafc; padding: 25px; 
-            border-radius: 25px; text-align: left; 
-            font-size: 0.95rem; color: #475569; 
-            margin: 25px 0; line-height: 1.7; 
-            border-left: 6px solid var(--blue);
-        }
-        
-        .btn-toggle { 
-            background: #fff; border: 2px solid #e2e8f0; 
-            color: #64748b; padding: 18px; 
-            border-radius: 18px; font-weight: 800; 
-            cursor: pointer; flex: 1; transition: all 0.2s ease;
-        }
-        .btn-toggle.active { 
-            border-color: var(--blue); color: var(--blue); 
-            background: #eff6ff; box-shadow: 0 8px 15px rgba(59,130,246,0.15); 
-        }
-        
-        .go-btn { 
-            background: var(--success); color: white; 
-            padding: 22px; border-radius: 22px; 
-            width: 100%; border: none; 
-            font-weight: 900; cursor: pointer; 
-            font-size: 1.2rem; text-transform: uppercase; 
-            margin-top: 15px; box-shadow: 0 12px 24px rgba(34,197,94,0.3);
-        }
-        
-        #btn-next { 
-            position: absolute; top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            padding: 28px 55px; background: var(--success); 
-            color: white; border: none; 
-            border-radius: 30px; font-weight: 900; 
-            cursor: pointer; display: none; 
-            z-index: 300; font-size: 1.3rem; 
-        }
+        .go-btn { background: var(--success); color: white; padding: 20px; border-radius: 20px; width: 100%; border: none; font-weight: 900; font-size: 1.1rem; margin-top: 15px; box-shadow: 0 10px 0 #166534; transition: 0.1s; }
+        .go-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #166534; }
 
-        input[type=range] { width: 100%; margin: 30px 0; accent-color: var(--blue); }
+        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--blue); }
     </style>
 </head>
 <body onclick="handleGlobalClick(event)">
 
-    <div id="err-flash"></div>
-    <div id="bg-noise"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div id="err-flash" style="position:fixed; inset:0; background:red; opacity:0.4; display:none; z-index:999; pointer-events:none;"></div>
 
     <div id="header">
         <div class="stat-box">NIVEL: <span id="v-lvl">1</span></div>
-        <div id="v-lives">❤️❤️❤️</div>
+        <div id="v-lives" style="font-size:1.4rem">❤️❤️❤️</div>
         <div class="stat-box">⏱️ <span id="v-timer">0:00</span></div>
     </div>
 
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <p style="font-weight: 800; color: var(--blue); font-size: 0.8rem;">ESTA ES TU FIGURA:</p>
-            <div id="target-preview"></div>
-            <p id="target-label"></p>
+            <h3 style="margin:0; color:var(--blue); font-size:0.9rem;">¡BUSCA ESTE! 🎯</h3>
+            <div id="target-preview" style="margin:15px 0"></div>
+            <p id="target-label" style="font-weight:900; font-size:1.1rem; text-transform:uppercase;"></p>
         </div>
-        <button id="btn-next" onclick="prepareNextLvl()">SIGUIENTE NIVEL ➜</button>
+        <button id="btn-next" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); padding:25px 50px; background:var(--success); color:white; border:none; border-radius:25px; font-weight:900; display:none; z-index:300;" onclick="prepareNextLvl()">¡SIGUIENTE NIVEL! 🚀</button>
     </div>
 
     <div id="modal-1" class="overlay"><div class="modal">
-        <h1 style="color:var(--blue); font-weight: 900;">Cazador Flash Pro ⚡</h1>
-        <p style="font-weight: 700; color: var(--gray-text); margin-bottom:40px;">Entrenamiento de percepción flash y atención selectiva.</p>
-        <button class="go-btn" onclick="initAudio(); showModal(2)">¡COMENZAR!</button>
+        <h1 style="color:var(--blue); font-size:2rem; margin:0;">¡Hola! 🤩</h1>
+        <p style="font-weight:700;">Prepárate para el verdadero reto visual.</p>
+        <button class="go-btn" onclick="initAudio(); showModal(2)">¡VAMOS! 🔥</button>
     </div></div>
 
     <div id="modal-2" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue); font-weight: 900;">Menú Clínico</h2>
-        <div id="instr-box" class="instr-text"></div>
-        <div style="display:flex; gap:12px; margin-bottom:25px;">
-            <button id="mode-reloj" class="btn-toggle active" onclick="setGameMode('reloj')">CONTRA RELOJ</button>
-            <button id="mode-cron" class="btn-toggle" onclick="setGameMode('cron')">MODO LIBRE</button>
+        <h2 style="color:var(--blue);">¿Cómo jugamos? 🎮</h2>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <button id="mode-reloj" class="btn-toggle" style="flex:1; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;" onclick="setGameMode('reloj')">RELOJ ⏱️</button>
+            <button id="mode-cron" class="btn-toggle" style="flex:1; padding:15px; border-radius:15px; border:2px solid #ddd; font-weight:900;" onclick="setGameMode('cron')">LIBRE ♾️</button>
         </div>
-        <button class="go-btn" onclick="showModal(3)">CONFIGURAR</button>
+        <button class="go-btn" onclick="showModal(3)">CONFIGURAR ⚙️</button>
     </div></div>
 
     <div id="modal-3" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue); font-weight: 900;">Velocidad Flash</h2>
-        <input type="range" id="speed-slider" min="0.4" max="2.5" step="0.1" value="1.5" oninput="document.getElementById('speed-val').innerText = this.value + 's'">
-        <div id="speed-val" style="font-size:3.5rem; font-weight:900; color:var(--blue);">1.5s</div>
-        <button class="go-btn" onclick="startGame()">INICIAR EVALUACIÓN</button>
+        <h2 style="color:var(--blue);">Velocidad Flash ⚡</h2>
+        <input type="range" id="speed-slider" min="0.2" max="1.5" step="0.1" value="0.8">
+        <div id="speed-val" style="font-size:3rem; font-weight:900; color:var(--blue);">0.8s</div>
+        <button class="go-btn" onclick="startGame()">¡EMPEZAR YA! 💥</button>
     </div></div>
 
     <div id="res-modal" class="overlay" style="display:none;"><div class="modal">
-        <h2 style="color:var(--blue); font-weight: 900;">Sesión Finalizada</h2>
-        <div id="res-data" style="margin:25px 0; font-weight:800; line-height:2.4; text-align: left; background: #f1f5f9; padding: 20px; border-radius: 20px;"></div>
-        <p id="sync-status" style="font-size: 0.8rem; color: var(--blue); font-weight: 700;">Sincronizando con historial clínico...</p>
-        <button class="go-btn" onclick="location.reload()">REPETIR</button>
+        <h2 style="color:var(--blue);">¡SESIÓN LISTA! ✨</h2>
+        <div id="res-data" style="margin:20px 0; text-align:left; background:#f1f5f9; padding:20px; border-radius:20px; font-weight:800;"></div>
+        <p id="sync-status" style="font-size:0.8rem; font-weight:700;">Sincronizando...</p>
+        <button class="go-btn" onclick="location.reload()">REPETIR 🔄</button>
     </div></div>
 
     <script>
-        // --- LÓGICA DE CONEXIÓN GOOGLE FORMS ---
         const urlParams = new URLSearchParams(window.location.search);
-        const pacienteId = urlParams.get('id') || 'SIN_ID';
+        const pacienteId = urlParams.get('id') || 'PRO_USER';
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
 
         let lvl = 1, lives = 3, hits = 0, lvlHits = 0, fails = 0, tTotal = 0;
-        let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 1500, audioCtx;
+        let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 800, audioCtx;
+        let currentTarget = null;
 
-        const stimuli = [
-            ['<path d="M20 20 H80 V35 H35 V45 H75 V55 H35 V65 H80 V80 H20 Z"/>', '<path d="M20 20 H80 V35 H35 V45 H35 V65 H80 V80 H20 Z"/>', 'E DE SNELLEN'],
-            ['<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/><path d="M50 30 Q55 5 75 10" stroke="black" stroke-width="8" fill="none"/><path d="M45 25 Q40 5 30 15" stroke="black" stroke-width="5" fill="none"/>', '<path d="M50 85 Q25 85 25 55 Q25 30 50 30 Q75 30 75 55 Q75 85 50 85" fill="black"/>', 'MANZANA'],
-            ['<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/><path d="M50 25 L50 10 M35 15 L65 15" stroke="black" stroke-width="8"/><circle cx="50" cy="55" r="5" fill="black"/>', '<circle cx="50" cy="55" r="30" fill="none" stroke="black" stroke-width="12"/>', 'CAMPANA']
+        // FIGURAS CASI IDÉNTICAS (Dificultad Alta)
+        const items = [
+            { id: 1, name: "Círculo Notch 12", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><rect x="45" y="10" width="10" height="15" fill="white"/>' },
+            { id: 2, name: "Círculo Notch 6", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><rect x="45" y="75" width="10" height="15" fill="white"/>' },
+            { id: 3, name: "Círculo Dot Interno", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><circle cx="50" cy="35" r="5" fill="white"/>' },
+            { id: 4, name: "Círculo Dual", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="8"/><circle cx="50" cy="50" r="15" fill="none" stroke="white" stroke-width="4"/>' }
         ];
 
-        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        function playSound(f, d, t = 'sine') { if (!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type=t; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(0.12, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d); }
+        // MOTOR DE FONDO DISTRACTOR
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
 
-        function showModal(n) { document.querySelectorAll('.overlay').forEach(o => o.style.display = 'none'); if(n) document.getElementById(`modal-${n}`).style.display = 'flex'; if(n === 2) updateInstr(); }
-        function setGameMode(m) { gameMode = m; updateInstr(); document.getElementById('mode-reloj').classList.toggle('active', m === 'reloj'); document.getElementById('mode-cron').classList.toggle('active', m === 'cron'); }
-        function updateInstr() { document.getElementById('instr-box').innerHTML = gameMode === 'reloj' ? `<b>Modo Reloj:</b> 3 vidas. Cada 7 niveles recibes una extra. Tocar fondo resta vida.` : `<b>Modo Libre:</b> Sin límites. Si pierdes las vidas, se reinician automáticamente.`; }
-
-        function startGame() {
-            flashSpeed = parseFloat(document.getElementById('speed-slider').value) * 1000;
-            const noise = document.getElementById('bg-noise');
-            for(let i=0; i<30; i++) {
-                const l = document.createElement('div'); l.className = 'noise-line';
-                l.style.top = (i * 3.3) + '%'; l.style.animationDelay = (Math.random() * 3) + 's';
-                l.style.animationDuration = (2 + Math.random() * 3) + 's';
-                noise.appendChild(l);
+        function initParticles() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            for(let i=0; i<80; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    size: Math.random() * 3 + 1,
+                    color: `rgba(${Math.random()*100+100}, ${Math.random()*100+100}, 255, ${Math.random()*0.5})`
+                });
             }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        function playSound(f, d) { if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+d); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+d); }
+
+        function showModal(n) { document.querySelectorAll('.overlay').forEach(o => o.style.display='none'); if(n) document.getElementById(`modal-${n}`).style.display='flex'; }
+        
+        function startGame() {
+            flashSpeed = document.getElementById('speed-slider').value * 1000;
+            initParticles(); animate();
             showModal(0); active = true;
             setInterval(() => { if(active) { tTotal++; document.getElementById('v-timer').innerText = formatTime(tTotal); }}, 1000);
             prepareNewLevel();
@@ -247,113 +199,104 @@
         function formatTime(s) { return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
 
         function prepareNewLevel() {
-            if(!active) return; isBlocked = true; lvlHits = 0;
-            document.getElementById('btn-next').style.display = 'none';
+            if(!active) return; isBlocked = true;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
-            currentTargetIdx = Math.floor(Math.random() * stimuli.length);
-            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100">${stimuli[currentTargetIdx][0]}</svg>`;
-            document.getElementById('target-label').innerText = stimuli[currentTargetIdx][2];
+            currentTarget = items[Math.floor(Math.random()*items.length)];
+            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="80">${currentTarget.html}</svg>`;
+            document.getElementById('target-label').innerText = currentTarget.name;
             document.getElementById('target-announcer').style.display = 'block';
-            setTimeout(() => { document.getElementById('target-announcer').style.display = 'none'; isBlocked = false; nextFlash(); }, 2600);
+            setTimeout(() => { document.getElementById('target-announcer').style.display='none'; isBlocked=false; nextFlash(); }, 2000);
         }
 
         function nextFlash() {
             if(!active || isBlocked) return;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
-            if(lvlHits >= 5) { isBlocked = true; document.getElementById('btn-next').style.display = 'block'; return; }
+            if(lvlHits >= 5) { isBlocked=true; document.getElementById('btn-next').style.display='block'; return; }
             document.getElementById('fix-dot').style.display = 'block';
-            setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 850);
+            setTimeout(() => { document.getElementById('fix-dot').style.display='none'; spawnItems(); }, 700);
         }
 
         function spawnItems() {
             if(!active || isBlocked) return;
             const stage = document.getElementById('stage'), rect = stage.getBoundingClientRect();
-            const baseSize = Math.max(55, 120 - (lvl * 3.5));
-            let num = lvl >= 5 ? 3 : 2;
-            const targetPos = Math.floor(Math.random() * num), placed = [];
+            let num = lvl >= 5 ? 5 : 3;
+            const targetPos = Math.floor(Math.random()*num);
+            const placed = [];
 
             for(let i=0; i<num; i++) {
-                const el = document.createElement('div'); el.className = 'flash-item';
-                const fSize = baseSize * (0.88 + Math.random() * 0.24);
-                el.style.width = el.style.height = fSize + 'px';
-                let x, y, too, att = 0;
+                const el = document.createElement('div');
+                el.className = 'flash-item';
+                // TAMAÑO ALEATORIO PARA DIFICULTAD EXTRA
+                const size = (40 + Math.random()*40); 
+                el.style.width = el.style.height = size + 'px';
+
+                let x, y, tooClose, att=0;
                 do {
-                    too = false; x = Math.random() * (rect.width - fSize * 2.2) + fSize; y = Math.random() * (rect.height - fSize * 2.2) + fSize;
-                    if (Math.hypot(x - rect.width/2, y - rect.height/2) < 90) too = true;
-                    for(let c of placed) if (Math.hypot(x - c.x, y - c.y) < fSize * 1.6) too = true;
+                    tooClose = false;
+                    x = Math.random()*(rect.width - 100) + 50;
+                    y = Math.random()*(rect.height - 100) + 50;
+                    // REVISIÓN DE COLISIÓN (CAMPO DE FUERZA)
+                    for(let p of placed) {
+                        const dist = Math.hypot(x - p.x, y - p.y);
+                        if(dist < (size/2 + p.s/2 + 20)) tooClose = true;
+                    }
+                    if(Math.hypot(x - rect.width/2, y - rect.height/2) < 60) tooClose = true;
                     att++;
-                } while (too && att < 120);
-                placed.push({x, y}); el.style.left = x + 'px'; el.style.top = y + 'px';
-                el.innerHTML = `<svg viewBox="0 0 100 100" class="sym">${i === targetPos ? stimuli[currentTargetIdx][0] : stimuli[currentTargetIdx][1]}</svg>`;
+                } while(tooClose && att < 150);
+
+                placed.push({x, y, s: size});
+                el.style.left = x+'px'; el.style.top = y+'px';
+                const content = (i === targetPos) ? currentTarget.html : items.filter(it => it.id !== currentTarget.id)[Math.floor(Math.random()*3)].html;
+                el.innerHTML = `<svg viewBox="0 0 100 100" style="width:100%; height:100%">${content}</svg>`;
+                
                 el.onclick = (e) => {
                     e.stopPropagation(); if(isBlocked) return;
-                    clearTimeout(flashTimer);
+                    clearTimeout(window.fT);
                     if(i === targetPos) {
-                        playSound(900, 0.22); el.classList.add('exploding');
-                        isBlocked = true; hits++; lvlHits++;
-                        setTimeout(() => { isBlocked = false; nextFlash(); }, 450);
+                        hits++; lvlHits++; playSound(800, 0.1);
+                        isBlocked = true; setTimeout(() => { isBlocked=false; nextFlash(); }, 300);
                     } else fail();
                 };
                 stage.appendChild(el);
             }
-            flashTimer = setTimeout(() => { if(!isBlocked && active) fail(); }, flashSpeed);
+            window.fT = setTimeout(() => { if(!isBlocked) fail(); }, flashSpeed);
         }
 
         function fail() {
-            if(isBlocked || !active) return;
-            isBlocked = true; clearTimeout(flashTimer); fails++; lives--;
-            playSound(140, 0.45, 'sawtooth');
-            document.getElementById('err-flash').style.display = 'block';
+            if(isBlocked) return; isBlocked = true; fails++; lives--;
+            playSound(100, 0.3);
+            document.getElementById('err-flash').style.display='block';
             document.getElementById('v-lives').innerText = "❤️".repeat(Math.max(0, lives));
             setTimeout(() => {
-                document.getElementById('err-flash').style.display = 'none';
-                if (lives <= 0) {
-                    if (gameMode === 'reloj') { finishGame(); return; } 
-                    else { lives = 3; document.getElementById('v-lives').innerText = "❤️❤️❤️"; }
-                }
-                isBlocked = false; nextFlash();
-            }, 650);
+                document.getElementById('err-flash').style.display='none';
+                if(lives <= 0 && gameMode === 'reloj') { finishGame(); }
+                else { if(lives <= 0) lives=3; isBlocked=false; nextFlash(); }
+            }, 500);
         }
 
-        function handleGlobalClick(e) { if(!active || isBlocked || e.target.closest('.flash-item') || e.target.closest('.modal')) return; fail(); }
-        function prepareNextLvl() { lvl++; if(lvl % 7 === 0) lives = Math.min(lives + 1, 5); document.getElementById('v-lvl').innerText = lvl; document.getElementById('v-lives').innerText = "❤️".repeat(lives); prepareNewLevel(); }
+        function handleGlobalClick(e) { if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; fail(); }
+        function prepareNextLvl() { lvl++; document.getElementById('v-lvl').innerText = lvl; prepareNewLevel(); }
 
         function finishGame() {
             active = false; isBlocked = true;
             const finalTime = formatTime(tTotal);
-            const today = new Date().toISOString().split('T')[0];
-
-            document.getElementById('res-data').innerHTML = `
-                <b>PACIENTE:</b> ${pacienteId}<br>
-                <b>NIVEL:</b> ${lvl}<br>
-                <b>ACIERTOS:</b> ${hits}<br>
-                <b>ERRORES:</b> ${fails}<br>
-                <b>TIEMPO:</b> ${finalTime}
-            `;
+            document.getElementById('res-data').innerHTML = `ACIERTOS: ${hits}<br>ERRORES: ${fails}<br>NIVEL: ${lvl}<br>TIEMPO: ${finalTime}`;
             document.getElementById('res-modal').style.display = 'flex';
 
-            // ENVÍO SILENCIOSO AL FORMULARIO
-            const formData = new URLSearchParams();
-            formData.append('entry.369874016', pacienteId);           // Paciente
-            formData.append('entry.1353470174', 'Cazador Flash');     // Juego
-            formData.append('entry.721051298', lvl);                 // Nivel
-            formData.append('entry.873272199', hits);                // Aciertos
-            formData.append('entry.1030094511', fails);               // Errores
-            formData.append('entry.1303309812', finalTime);           // Tiempo
-            formData.append('entry.845098414', today);               // Fecha
+            const fd = new URLSearchParams();
+            fd.append('entry.369874016', pacienteId);
+            fd.append('entry.1353470174', 'Cazador Flash Extremo');
+            fd.append('entry.721051298', lvl);
+            fd.append('entry.873272199', hits);
+            fd.append('entry.1030094511', fails);
+            fd.append('entry.1303309812', finalTime);
+            fd.append('entry.845098414', new Date().toISOString().split('T')[0]);
 
-            fetch(FORM_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: formData
-            }).then(() => {
-                document.getElementById('sync-status').innerText = "✓ Sesión guardada con éxito.";
-                document.getElementById('sync-status').style.color = "var(--success)";
-            }).catch(() => {
-                document.getElementById('sync-status').innerText = "Error en sincronización.";
-                document.getElementById('sync-status').style.color = "var(--danger)";
-            });
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd })
+            .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS GUARDADOS"; });
         }
+        
+        document.getElementById('speed-slider').oninput = function() { document.getElementById('speed-val').innerText = this.value + 's'; };
     </script>
 </body>
 </html>
