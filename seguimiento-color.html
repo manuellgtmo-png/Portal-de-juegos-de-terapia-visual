@@ -2,59 +2,153 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Seguimiento Mágico - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; background: #000; color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
-        
-        /* Pantallas de Interfaz */
-        #intro-screen, #result-screen, #sync-screen { 
-            position: fixed; inset: 0; background: #1e293b; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 30px; text-align: center; z-index: 200; 
+        body { 
+            margin: 0; 
+            background: #000; 
+            color: white; 
+            font-family: 'Montserrat', sans-serif; 
+            overflow: hidden; 
+            touch-action: none; 
         }
         
-        .card { background: white; color: #1e293b; padding: 40px; border-radius: 40px; max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        /* PANTALLAS DE INTERFAZ ORIGINALES */
+        #intro-screen, #result-screen, #sync-screen, #pause-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: #1e293b; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 30px; 
+            text-align: center; 
+            z-index: 200; 
+        }
+
+        /* Pantalla de Pausa (Nueva) */
+        #pause-screen {
+            background: rgba(30, 41, 59, 0.98);
+            display: none;
+        }
+        
+        .card { 
+            background: white; 
+            color: #1e293b; 
+            padding: 40px; 
+            border-radius: 40px; 
+            max-width: 500px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+        }
         
         .habilidades-box { 
-            background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; 
-            padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; line-height: 1.4; 
+            background: #f0f9ff; 
+            border: 2px dashed #0ea5e9; 
+            color: #0369a1; 
+            padding: 15px; 
+            border-radius: 20px; 
+            font-size: 0.9rem; 
+            margin: 20px 0; 
+            line-height: 1.4; 
         }
         
         button { 
-            background: #22c55e; color: white; border: none; padding: 20px 50px; 
-            border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; 
+            background: #22c55e; 
+            color: white; 
+            border: none; 
+            padding: 20px 50px; 
+            border-radius: 60px; 
+            font-size: 1.4rem; 
+            cursor: pointer; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            box-shadow: 0 10px 0 #16a34a; 
+            transition: all 0.1s; 
+            width: 100%; 
         }
-        button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
+        button:active { 
+            transform: translateY(5px); 
+            box-shadow: 0 5px 0 #16a34a; 
+        }
 
-        /* HUD del Juego (Stats) */
+        /* HUD DEL JUEGO (STATS) */
         #ui-layer { 
-            position: absolute; top: 0; width: 100%; padding: 20px; 
-            display: flex; justify-content: space-between; box-sizing: border-box; 
-            pointer-events: none; z-index: 100; display: none; 
+            position: absolute; 
+            top: 0; 
+            width: 100%; 
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            box-sizing: border-box; 
+            pointer-events: none; 
+            z-index: 100; 
+            display: none; 
         }
         .stat-box { 
-            background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); 
-            padding: 12px 20px; border-radius: 20px; font-weight: 900; 
-            border: 1px solid rgba(255,255,255,0.3); display: flex; flex-direction: column; align-items: center; min-width: 80px; 
+            background: rgba(255,255,255,0.2); 
+            backdrop-filter: blur(10px); 
+            padding: 12px 20px; 
+            border-radius: 20px; 
+            font-weight: 900; 
+            border: 1px solid rgba(255,255,255,0.3); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-width: 80px; 
+            pointer-events: auto; /* Habilitado para clic en pausa */
         }
-        .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.8; margin-bottom: 2px; }
+        .label { 
+            font-size: 0.7rem; 
+            text-transform: uppercase; 
+            opacity: 0.8; 
+            margin-bottom: 2px; 
+        }
 
-        /* Barra de Progreso */
+        /* Etiqueta de Identificación (Nueva) */
+        #patient-display {
+            position: absolute;
+            top: 90px;
+            left: 20px;
+            font-size: 0.8rem;
+            background: rgba(99, 102, 241, 0.5);
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* BARRA DE PROGRESO */
         #goal-bar-container { 
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            width: 70%; height: 20px; background: rgba(255,255,255,0.2); 
-            border-radius: 20px; display:none; overflow: hidden; border: 2px solid white; 
+            position: absolute; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 70%; 
+            height: 20px; 
+            background: rgba(255,255,255,0.2); 
+            border-radius: 20px; 
+            display:none; 
+            overflow: hidden; 
+            border: 2px solid white; 
         }
-        #goal-bar-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.2s; }
+        #goal-bar-fill { 
+            width: 0%; 
+            height: 100%; 
+            background: #22c55e; 
+            transition: width 0.2s; 
+        }
 
-        /* Loader de Sincronización */
+        /* LOADER DE SINCRONIZACIÓN */
         .loader { 
-            border: 8px solid #f3f3f3; border-top: 8px solid #22c55e; 
-            border-radius: 50%; width: 50px; height: 50px; 
-            animation: spin 1s linear infinite; margin: 0 auto 20px; 
+            border: 8px solid #f3f3f3; 
+            border-top: 8px solid #22c55e; 
+            border-radius: 50%; 
+            width: 50px; 
+            height: 50px; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 20px; 
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -73,6 +167,14 @@
             <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
             <p style="color: #64748b; font-size: 0.9rem;">Mantén el contacto con el círculo. ¡A partir del nivel 2 el círculo puede saltar de lugar!</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
+        </div>
+    </div>
+
+    <div id="pause-screen">
+        <div class="card">
+            <h2 style="margin:0; font-size: 2rem; color: #6366f1;">PAUSA</h2>
+            <p style="color: #64748b;">La sesión está detenida temporalmente.</p>
+            <button onclick="reanudarJuego()" style="background: #6366f1; box-shadow: 0 10px 0 #4338ca;">REANUDAR</button>
         </div>
     </div>
 
@@ -95,8 +197,9 @@
 
     <div id="ui-layer">
         <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
-        <div class="stat-box"><span class="label">Cronómetro</span><span id="txt-cronometro">00:00</span></div>
+        <div class="stat-box" onclick="pausarJuego()" style="cursor: pointer;"><span class="label">⏱️ Cronómetro</span><span id="txt-cronometro">00:00</span></div>
         <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
+        <div id="patient-display">Paciente: <span id="txt-paciente">---</span></div>
     </div>
     
     <div id="goal-bar-container"><div id="goal-bar-fill"></div></div>
@@ -107,7 +210,7 @@
         const ctx = canvas.getContext('2d');
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
 
-        // Configuración de Google Forms (Basada en tus links de prellenado)
+        // Configuración de Google Forms (Idéntica a la tuya)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -129,23 +232,29 @@
         let enContacto = false;
         let framesFuera = 0;
         let x, y, dx, dy, radio;
+        let animationId;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
+        // Confirmación de salida para evitar pérdida de datos
+        window.onbeforeunload = function() {
+            if(juegoActivo || segundosTotales > 0) return "Si sales ahora, los datos de la terapia no se guardarán.";
+        };
+
         function enviarDatosFinales(callback) {
-            const nombre = localStorage.getItem('pacienteActual') || "Paciente Prueba";
-            const hoy = new Date().toISOString().split('T')[0]; // Formato AAAA-MM-DD
+            const nombre = localStorage.getItem('paciente') || "Paciente Prueba";
+            const hoy = new Date().toISOString().split('T')[0];
 
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
             data.append(ENTRIES.juego, "Seguimiento Mágico");
             data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, segundosContacto); // Segundos de fijación logrados
+            data.append(ENTRIES.aciertos, segundosContacto); 
             data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
             data.append(ENTRIES.fecha, hoy);
 
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            setTimeout(callback, 2000); // 2 segundos de espera para sincronizar
+            setTimeout(callback, 2000); 
         }
 
         function ajustarDificultad() {
@@ -159,14 +268,27 @@
         }
 
         function iniciarJuego() {
+            document.getElementById('txt-paciente').innerText = localStorage.getItem('paciente') || "Anónimo";
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'none';
             document.getElementById('sync-screen').style.display = 'none';
+            document.getElementById('pause-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
             ajustarDificultad();
             segundosContacto = 0;
             actualizarUI();
+            juegoActivo = true;
+            render();
+        }
+
+        function pausarJuego() {
+            juegoActivo = false;
+            document.getElementById('pause-screen').style.display = 'flex';
+        }
+
+        function reanudarJuego() {
+            document.getElementById('pause-screen').style.display = 'none';
             juegoActivo = true;
             render();
         }
@@ -188,20 +310,22 @@
 
         canvas.addEventListener('mousemove', (e) => check(e.clientX, e.clientY));
         canvas.addEventListener('touchstart', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
-        canvas.addEventListener('touchmove', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            check(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
 
         function finalizarJuego(exito) {
             juegoActivo = false;
+            cancelAnimationFrame(animationId);
             
             if(exito) {
-                // GANÓ NIVEL: Pantalla normal sin sincronizar
                 document.getElementById('result-screen').style.display = 'flex';
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
                 document.getElementById('result-text').innerText = "¡Tus ojos son cada vez más precisos!";
                 document.getElementById('next-btn').style.display = "block";
             } else {
-                // PERDIÓ VIDAS: Pantalla de Sincronización y Envío
                 document.getElementById('ui-layer').style.display = 'none';
                 document.getElementById('goal-bar-container').style.display = 'none';
                 document.getElementById('sync-screen').style.display = 'flex';
@@ -220,32 +344,47 @@
 
         function render() {
             if(!juegoActivo) return;
-            ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (!enContacto) {
-                framesFuera++; ctx.globalAlpha = 0.2;
+                framesFuera++; 
+                ctx.globalAlpha = 0.2;
                 if(framesFuera > 90) { 
                     vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
             } else { 
-                framesFuera = 0; ctx.globalAlpha = 1.0;
-                // SALTOS ALEATORIOS: A partir de Nivel 2
+                framesFuera = 0; 
+                ctx.globalAlpha = 1.0;
+                
+                // EFECTO RESPLANDOR (GLOW) AL CONTACTO
+                ctx.shadowBlur = 25;
+                ctx.shadowColor = "white";
+
                 if (nivelActual >= 2 && Math.random() < 0.005) {
                     x = Math.random() * (canvas.width - radio * 2) + radio;
                     y = Math.random() * (canvas.height - radio * 2) + radio;
                 }
             }
 
-            ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
-            ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
-            ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
+            ctx.beginPath(); 
+            ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; 
+            ctx.fill();
+            ctx.strokeStyle = "white"; 
+            ctx.lineWidth = 8; 
+            ctx.stroke(); 
+            ctx.closePath();
+            
+            // Reset de sombra para no afectar otras figuras
+            ctx.shadowBlur = 0;
 
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
 
-            requestAnimationFrame(render);
+            animationId = requestAnimationFrame(render);
         }
 
         setInterval(() => {
@@ -256,6 +395,8 @@
                 if(segundosContacto >= tiempoMeta) finalizarJuego(true);
             }
         }, 1000);
+
+        window.addEventListener('resize', ajustarDificultad);
     </script>
 </body>
 </html>
