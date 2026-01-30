@@ -29,7 +29,6 @@
             z-index: 200; 
         }
 
-        /* Pantalla de Pausa (Nueva) */
         #pause-screen {
             background: rgba(30, 41, 59, 0.98);
             display: none;
@@ -98,7 +97,7 @@
             flex-direction: column; 
             align-items: center; 
             min-width: 80px; 
-            pointer-events: auto; /* Habilitado para clic en pausa */
+            pointer-events: auto; 
         }
         .label { 
             font-size: 0.7rem; 
@@ -107,7 +106,6 @@
             margin-bottom: 2px; 
         }
 
-        /* Etiqueta de Identificación (Nueva) */
         #patient-display {
             position: absolute;
             top: 90px;
@@ -165,7 +163,7 @@
                 Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
             </div>
             <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Mantén el contacto con el círculo. ¡A partir del nivel 2 el círculo puede saltar de lugar!</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Mantén el contacto con el círculo para escuchar el sonido mágico.</p>
             <button onclick="iniciarJuego()">¡EMPEZAR!</button>
         </div>
     </div>
@@ -208,9 +206,13 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // AUDIOS TERAPÉUTICOS
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
+        const audioContact = new Audio('https://assets.mixkit.co/active_storage/sfx/610/610-preview.mp3'); 
+        audioContact.loop = true; // El sonido se mantiene mientras hay contacto
+        audioContact.volume = 0.3;
 
-        // Configuración de Google Forms (Idéntica a la tuya)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = {
             paciente: "entry.369874016",
@@ -222,28 +224,17 @@
             fecha: "entry.845098414"
         };
 
-        let nivelActual = 1;
-        let vidas = 3;
-        let segundosTotales = 0; 
-        let segundosContacto = 0; 
-        let fallosTotales = 0;
-        let tiempoMeta = 15; 
-        let juegoActivo = false;
-        let enContacto = false;
-        let framesFuera = 0;
-        let x, y, dx, dy, radio;
-        let animationId;
+        let nivelActual = 1, vidas = 3, segundosTotales = 0, segundosContacto = 0, fallosTotales = 0, tiempoMeta = 15;
+        let juegoActivo = false, enContacto = false, framesFuera = 0, x, y, dx, dy, radio, animationId;
         const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
 
-        // Confirmación de salida para evitar pérdida de datos
         window.onbeforeunload = function() {
-            if(juegoActivo || segundosTotales > 0) return "Si sales ahora, los datos de la terapia no se guardarán.";
+            if(juegoActivo || segundosTotales > 0) return "Atención: La sesión está en curso.";
         };
 
         function enviarDatosFinales(callback) {
             const nombre = localStorage.getItem('paciente') || "Paciente Prueba";
             const hoy = new Date().toISOString().split('T')[0];
-
             const data = new FormData();
             data.append(ENTRIES.paciente, nombre);
             data.append(ENTRIES.juego, "Seguimiento Mágico");
@@ -252,7 +243,6 @@
             data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
             data.append(ENTRIES.fecha, hoy);
-
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
             setTimeout(callback, 2000); 
         }
@@ -282,30 +272,36 @@
             render();
         }
 
-        function pausarJuego() {
-            juegoActivo = false;
-            document.getElementById('pause-screen').style.display = 'flex';
+        function pausarJuego() { 
+            juegoActivo = false; 
+            audioContact.pause();
+            document.getElementById('pause-screen').style.display = 'flex'; 
         }
-
-        function reanudarJuego() {
-            document.getElementById('pause-screen').style.display = 'none';
-            juegoActivo = true;
-            render();
+        
+        function reanudarJuego() { 
+            document.getElementById('pause-screen').style.display = 'none'; 
+            juegoActivo = true; 
+            render(); 
         }
 
         function actualizarUI() {
             document.getElementById('txt-nivel').innerText = nivelActual;
             document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
             document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
-            
-            let min = Math.floor(segundosTotales / 60);
-            let seg = segundosTotales % 60;
+            let min = Math.floor(segundosTotales / 60), seg = segundosTotales % 60;
             document.getElementById('txt-cronometro').innerText = `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
         }
 
         const check = (ex, ey) => {
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
             enContacto = dist < radio;
+            
+            // Lógica de sonido en tiempo real
+            if (enContacto && juegoActivo) {
+                if (audioContact.paused) audioContact.play().catch(()=>{});
+            } else {
+                audioContact.pause();
+            }
         };
 
         canvas.addEventListener('mousemove', (e) => check(e.clientX, e.clientY));
@@ -317,25 +313,20 @@
 
         function finalizarJuego(exito) {
             juegoActivo = false;
+            audioContact.pause();
             cancelAnimationFrame(animationId);
-            
             if(exito) {
                 document.getElementById('result-screen').style.display = 'flex';
                 audioWin.play();
                 document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('result-text').innerText = "¡Tus ojos son cada vez más precisos!";
                 document.getElementById('next-btn').style.display = "block";
             } else {
                 document.getElementById('ui-layer').style.display = 'none';
-                document.getElementById('goal-bar-container').style.display = 'none';
                 document.getElementById('sync-screen').style.display = 'flex';
-
                 enviarDatosFinales(() => {
                     document.getElementById('sync-screen').style.display = 'none';
                     document.getElementById('result-screen').style.display = 'flex';
                     document.getElementById('result-title').innerText = "💔 Fin del Juego";
-                    document.getElementById('result-text').innerText = "Resumen de sesión guardado correctamente.";
-                    document.getElementById('next-btn').style.display = "none";
                 });
             }
         }
@@ -344,46 +335,31 @@
 
         function render() {
             if(!juegoActivo) return;
-            ctx.fillStyle = 'black'; 
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (!enContacto) {
-                framesFuera++; 
-                ctx.globalAlpha = 0.2;
+                framesFuera++; ctx.globalAlpha = 0.2;
                 if(framesFuera > 90) { 
                     vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
             } else { 
-                framesFuera = 0; 
-                ctx.globalAlpha = 1.0;
-                
-                // EFECTO RESPLANDOR (GLOW) AL CONTACTO
-                ctx.shadowBlur = 25;
-                ctx.shadowColor = "white";
-
+                framesFuera = 0; ctx.globalAlpha = 1.0;
+                ctx.shadowBlur = 25; ctx.shadowColor = "white";
                 if (nivelActual >= 2 && Math.random() < 0.005) {
                     x = Math.random() * (canvas.width - radio * 2) + radio;
                     y = Math.random() * (canvas.height - radio * 2) + radio;
                 }
             }
 
-            ctx.beginPath(); 
-            ctx.arc(x, y, radio, 0, Math.PI * 2);
-            ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; 
-            ctx.fill();
-            ctx.strokeStyle = "white"; 
-            ctx.lineWidth = 8; 
-            ctx.stroke(); 
-            ctx.closePath();
-            
-            // Reset de sombra para no afectar otras figuras
+            ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
+            ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
             ctx.shadowBlur = 0;
 
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
-
             animationId = requestAnimationFrame(render);
         }
 
