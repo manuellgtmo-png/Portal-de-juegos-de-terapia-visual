@@ -3,85 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Visión: Umbral PRO</title>
+    <title>Misión Visión PRO - Umbral de Contraste</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        :root { 
+            --cyan-perceptum: #06b6d4; 
+            --cyan-dark: #0891b2;
+            --green-success: #22c55e;
+            --green-dark: #16a34a;
+        }
+
         body { 
             margin: 0; background: #ffffff; color: #1e293b; 
-            font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; 
+            font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none;
+            width: 100vw; height: 100vh;
         }
-        
+
+        /* CAPAS DE INTERFAZ ALEGRE Y ROBUSTA */
         #intro-screen, #result-screen, #sync-screen, #level-win-screen, #instruction-screen { 
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.98); 
+            position: fixed; inset: 0; background: rgba(248, 250, 252, 0.98); 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             padding: 30px; text-align: center; z-index: 200; 
         }
 
         .card { 
-            background: white; padding: 40px; border-radius: 40px; 
-            max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.1);
-            border: 2px solid #f1f5f9;
+            background: white; padding: 40px; border-radius: 45px; 
+            width: 90%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.12);
+            border: 2px solid #f1f5f9; position: relative;
         }
         
         .habilidades-box { 
-            background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; 
+            background: #f0f9ff; border: 2px dashed var(--cyan-perceptum); color: #0369a1; 
             padding: 20px; border-radius: 25px; font-size: 1rem; margin: 25px 0; 
             line-height: 1.5;
         }
         
-        h1 { font-size: 2.2rem; color: #0ea5e9; margin: 0; text-transform: uppercase; }
+        h1 { font-size: 2.4rem; color: var(--cyan-perceptum); margin: 0; text-transform: uppercase; font-weight: 900; }
+        h2 { font-size: 1.8rem; margin: 0; }
         
         button { 
-            background: #22c55e; color: white; border: none; padding: 22px 50px; 
+            background: var(--green-success); color: white; border: none; padding: 22px 50px; 
             border-radius: 60px; font-size: 1.5rem; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; 
+            text-transform: uppercase; box-shadow: 0 10px 0 var(--green-dark); transition: all 0.1s; width: 100%; 
         }
-        button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
+        button:active { transform: translateY(5px); box-shadow: 0 5px 0 var(--green-dark); }
 
+        /* HUD MULTIDISPOSITIVO */
         #ui-layer { 
-            position: absolute; top: 0; width: 100%; padding: 20px; 
-            display: flex; justify-content: space-between; box-sizing: border-box; 
-            z-index: 100; display: none; pointer-events: none;
+            position: absolute; top: 0; width: 100%; padding: 15px; 
+            display: none; justify-content: space-between; box-sizing: border-box; 
+            z-index: 100; pointer-events: none;
         }
         .stat-box { 
-            background: white; padding: 12px 20px; border-radius: 20px; 
-            font-weight: 900; border: 2px solid #f1f5f9;
-            display: flex; flex-direction: column; align-items: center; min-width: 95px; 
+            background: white; padding: 12px 18px; border-radius: 20px; 
+            font-weight: 900; border: 2px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; align-items: center; min-width: 90px; 
         }
-        .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
 
         #patient-tag {
-            position: absolute; top: 100px; left: 20px; font-size: 0.85rem;
-            background: #0ea5e9; color: white; padding: 8px 18px; border-radius: 15px; font-weight: bold;
+            position: absolute; top: 90px; left: 15px; font-size: 0.85rem;
+            background: var(--cyan-perceptum); color: white; padding: 8px 18px; border-radius: 15px; font-weight: bold;
         }
 
-        #game-area { width: 100vw; height: 100vh; position: relative; background: white; cursor: crosshair; }
-        .target-img { 
-            position: absolute; width: 100px; height: 100px; 
-            cursor: pointer; filter: grayscale(1) brightness(0);
+        /* ÁREA DE JUEGO DINÁMICA CON REJILLA */
+        #game-area { 
+            width: 100vw; height: 100vh; position: relative; 
+            background: white; display: block; overflow: hidden;
+        }
+        
+        .stimulus-container { 
+            position: absolute; 
+            width: 22vw; height: 22vw; 
+            max-width: 120px; max-height: 120px;
+            min-width: 80px; min-height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+        .stimulus-container:active { transform: translate(-50%, -50%) scale(0.9); }
+        
+        .stimulus-img { 
+            width: 90%; height: 90%; object-fit: contain; 
+            filter: grayscale(1) brightness(0); /* Negro puro */
         }
 
+        /* BARRA DE PROGRESO ALEGRE */
         #prog-container { 
-            position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); 
-            width: 75%; height: 15px; background: #e2e8f0; border-radius: 20px; overflow: hidden; border: 3px solid white;
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 70%; height: 16px; background: #e2e8f0; border-radius: 20px; 
+            overflow: hidden; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        #prog-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.3s; }
+        #prog-fill { width: 0%; height: 100%; background: var(--green-success); transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body onclick="registrarFalloFondo(event)">
 
     <div id="intro-screen">
         <div class="card">
-            <h1>🌈 ¡Misión Visión! 🌈</h1>
+            <h1>🌈 ¡Misión Visión!</h1>
             <div class="habilidades-box">
-                <strong>¿Qué vamos a entrenar hoy?</strong><br>
-                Tus ojos se volverán expertos en encontrar figuras que se esconden. Entrenaremos tu <b>Agudeza Visual Estática</b> para ver detalles con poco contraste.
+                <strong>Entrenamiento de Hoy:</strong><br>
+                Vamos a convertir tus ojos en radares de alta precisión trabajando la <b>Agudeza Visual Estática</b> y el <b>Contraste Intensivo</b>.
             </div>
-            <p style="color: #475569; font-size: 1.1rem; line-height: 1.4;">
-                <b>Cómo jugar:</b><br>
-                1. Mira la figura secreta.<br>
-                2. Búscala entre otras figuras que se parecen.<br>
-                3. ¡No toques el fondo blanco ni figuras equivocadas!
+            <p style="color: #475569; line-height: 1.5;">
+                Busca la figura que te mostraré. Cada nivel será más difícil porque las figuras se volverán casi invisibles.
             </p>
             <button onclick="mostrarInstruccionNivel()">¡EMPEZAR AVENTURA!</button>
         </div>
@@ -89,36 +115,42 @@
 
     <div id="instruction-screen" style="display: none;">
         <div class="card">
-            <h2 style="color: #0ea5e9;">Busca SOLO esta figura:</h2>
-            <img id="img-goal" src="" style="width: 120px; height: 120px; margin: 20px; filter: grayscale(1) brightness(0);">
-            <p id="txt-meta-nivel" style="font-size: 1.2rem; font-weight: bold; color: #475569;"></p>
-            <button onclick="iniciarNivel()">¡LISTO!</button>
+            <h2 style="color: var(--cyan-perceptum);">Tu objetivo secreto es:</h2>
+            <div style="margin: 30px 0;">
+                <img id="img-goal" src="" style="width: 130px; height: 130px; filter: grayscale(1) brightness(0);">
+            </div>
+            <p id="txt-meta-nivel" style="font-weight: 900; color: #475569; font-size: 1.2rem;"></p>
+            <button onclick="iniciarNivel()">¡LO ENCONTRARÉ!</button>
         </div>
     </div>
 
     <div id="level-win-screen" style="display: none;">
         <div class="card">
-            <h2 style="color: #22c55e;">✨ ¡EXCELENTE! ✨</h2>
-            <p>Tus ojos son poderosos. El siguiente nivel será más difícil.</p>
-            <button onclick="subirNivel()">SIGUIENTE NIVEL</button>
+            <h2 style="color: var(--green-success); font-size: 2.5rem;">✨ ¡LOGRADO! ✨</h2>
+            <p style="font-size: 1.2rem; color: #475569; margin: 20px 0;">Tu agudeza visual es impresionante. ¿Listo para que sea más difícil?</p>
+            <button onclick="subirNivel()" style="background: var(--cyan-perceptum); box-shadow: 0 10px 0 var(--cyan-dark);">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
     <div id="sync-screen" style="display: none;">
-        <div class="card"><h2>🚀 Sincronizando...</h2></div>
+        <div class="card">
+            <div style="border: 5px solid #f3f3f3; border-top: 5px solid var(--cyan-perceptum); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <h2>Sincronizando...</h2>
+            <p>Guardando tus superpoderes en el expediente clínico.</p>
+        </div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
-            <h2 id="result-title">Fin de la Misión</h2>
-            <p id="result-text"></p>
-            <button onclick="location.reload()">REINTENTAR</button>
+            <h2 id="result-title">Misión Cumplida</h2>
+            <p id="result-text" style="font-size: 1.2rem; margin: 20px 0; color: #64748b;"></p>
+            <button onclick="location.reload()">JUGAR OTRA VEZ</button>
         </div>
     </div>
 
     <div id="ui-layer">
         <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
-        <div class="stat-box"><span class="label">Visibilidad</span><span id="txt-contraste">100%</span></div>
+        <div class="stat-box"><span class="label">Contraste</span><span id="txt-contraste">100%</span></div>
         <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
         <div id="patient-tag">Paciente: <span id="txt-paciente">---</span></div>
     </div>
@@ -130,14 +162,16 @@
         const gameArea = document.getElementById('game-area');
         const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
         const audioError = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'); 
-        
+
         const FigurasPool = [
             "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", // Estrella 5
             "https://cdn-icons-png.flaticon.com/512/1828/1828961.png", // Estrella Redonda
             "https://cdn-icons-png.flaticon.com/512/1828/1828970.png", // Estrella 4
-            "https://cdn-icons-png.flaticon.com/512/616/616412.png"    // Estrella Sol
+            "https://cdn-icons-png.flaticon.com/512/616/616412.png",   // Sol
+            "https://cdn-icons-png.flaticon.com/512/1156/1156949.png"  // Polígono
         ];
 
+        // CONFIGURACIÓN GOOGLE SHEETS ORIGINAL
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = { paciente: "entry.369874016", juego: "entry.1353470174", nivel: "entry.721051298", aciertos: "entry.873272199", fallos: "entry.1030094511", tiempo: "entry.1303309812", fecha: "entry.845098414" };
 
@@ -145,8 +179,7 @@
         let figuraActual = "", juegoActivo = false, metasPorNivel = 3;
 
         function mostrarInstruccionNivel() {
-            document.getElementById('intro-screen').style.display = 'none';
-            document.getElementById('level-win-screen').style.display = 'none';
+            document.querySelectorAll('div[id$="-screen"]').forEach(s => s.style.display = 'none');
             document.getElementById('instruction-screen').style.display = 'flex';
             document.getElementById('ui-layer').style.display = 'none';
             
@@ -162,55 +195,65 @@
             aciertosNivel = 0;
             juegoActivo = true;
             actualizarUI();
-            generarEstimulos();
+            generarRetoVisual();
         }
 
-        function generarEstimulos() {
+        function generarRetoVisual() {
             if(!juegoActivo) return;
             gameArea.innerHTML = "";
+            
+            // CURVA INTENSIVA: Baja 10% por nivel
             let opacidad = Math.max(0.02, 1.1 - (nivel * 0.1)); 
             document.getElementById('txt-contraste').innerText = Math.round(opacidad * 100) + "%";
 
-            // LÓGICA GARANTIZADA: 1 OBJETIVO + 3 DISTRACTORES DIFERENTES
-            // 1. Crear el array de distractores (excluyendo la figuraActual)
-            let distractoresPool = FigurasPool.filter(img => img !== figuraActual);
-            
-            // 2. Mezclar distractores y tomar 3
-            distractoresPool.sort(() => Math.random() - 0.5);
-            let seleccionados = [figuraActual, distractoresPool[0], distractoresPool[1], distractoresPool[2]];
-            
-            // 3. Mezclar la posición final
-            seleccionados.sort(() => Math.random() - 0.5);
+            // SISTEMA DE REJILLA 3x3 PARA EVITAR SOLAPAMIENTO
+            // Definimos 9 puntos seguros en porcentajes para que sea responsivo
+            let puntosSeguros = [
+                {x: 20, y: 25}, {x: 50, y: 25}, {x: 80, y: 25},
+                {x: 20, y: 50}, {x: 50, y: 50}, {x: 80, y: 50},
+                {x: 20, y: 75}, {x: 50, y: 75}, {x: 80, y: 75}
+            ];
+            puntosSeguros.sort(() => Math.random() - 0.5);
 
-            seleccionados.forEach(imgSrc => {
-                const img = document.createElement('img');
-                img.src = imgSrc;
-                img.className = 'target-img';
-                img.style.opacity = opacidad;
-                
-                const x = Math.random() * (window.innerWidth - 150) + 50;
-                const y = Math.random() * (window.innerHeight - 250) + 120;
-                img.style.left = x + 'px';
-                img.style.top = y + 'px';
+            // 1. EL ÚNICO OBJETIVO REAL
+            crearEstimulo(figuraActual, puntosSeguros[0], opacidad, true);
 
-                img.onclick = (e) => {
-                    e.stopPropagation();
-                    if(imgSrc === figuraActual) acertar(); else registrarFallo();
-                };
-                gameArea.appendChild(img);
-            });
+            // 2. TRES DISTRACTORES DIFERENTES AL OBJETIVO
+            let distractores = FigurasPool.filter(f => f !== figuraActual).sort(() => Math.random() - 0.5);
+            for(let i=1; i<=3; i++) {
+                crearEstimulo(distractores[i-1], puntosSeguros[i], opacidad, false);
+            }
         }
 
-        function acertar() {
-            aciertosNivel++; aciertosTotales++;
-            audioClick.play();
-            actualizarUI();
-            if(aciertosNivel >= metasPorNivel) {
-                juegoActivo = false;
-                document.getElementById('level-win-screen').style.display = 'flex';
-            } else {
-                generarEstimulos();
-            }
+        function crearEstimulo(src, pos, op, esCorrecto) {
+            const container = document.createElement('div');
+            container.className = 'stimulus-container';
+            container.style.left = pos.x + "%";
+            container.style.top = pos.y + "%";
+            container.style.opacity = op;
+            
+            const img = document.createElement('img');
+            img.src = src;
+            img.className = 'stimulus-img';
+            
+            container.appendChild(img);
+            container.onclick = (e) => {
+                e.stopPropagation();
+                if(esCorrecto) {
+                    audioClick.play();
+                    aciertosNivel++; aciertosTotales++;
+                    if(aciertosNivel >= metasPorNivel) {
+                        juegoActivo = false;
+                        document.getElementById('level-win-screen').style.display = 'flex';
+                    } else {
+                        generarRetoVisual();
+                    }
+                    actualizarUI();
+                } else {
+                    registrarFallo();
+                }
+            };
+            gameArea.appendChild(container);
         }
 
         function registrarFalloFondo(e) {
@@ -222,10 +265,13 @@
             vidas--; fallosTotales++;
             audioError.play();
             actualizarUI();
-            if(vidas <= 0) finalizarPrueba();
+            if(vidas <= 0) finalizarMision();
         }
 
-        function subirNivel() { nivel++; mostrarInstruccionNivel(); }
+        function subirNivel() { 
+            nivel++; 
+            mostrarInstruccionNivel(); 
+        }
 
         function actualizarUI() {
             document.getElementById('txt-nivel').innerText = nivel;
@@ -233,10 +279,12 @@
             document.getElementById('prog-fill').style.width = (aciertosNivel / metasPorNivel * 100) + "%";
         }
 
-        function finalizarPrueba() {
+        function finalizarMision() {
             juegoActivo = false;
+            gameArea.innerHTML = "";
             document.getElementById('ui-layer').style.display = 'none';
             document.getElementById('sync-screen').style.display = 'flex';
+
             const data = new FormData();
             data.append(ENTRIES.paciente, localStorage.getItem('pacienteActual') || "Anónimo");
             data.append(ENTRIES.juego, "Umbral Intensivo");
@@ -245,13 +293,16 @@
             data.append(ENTRIES.fallos, fallosTotales);
             data.append(ENTRIES.tiempo, "N/A");
             data.append(ENTRIES.fecha, new Date().toISOString().split('T')[0]);
+
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
+
             setTimeout(() => {
                 document.getElementById('sync-screen').style.display = 'none';
                 document.getElementById('result-screen').style.display = 'flex';
-                document.getElementById('result-text').innerText = `Nivel alcanzado: ${nivel}. Visibilidad final: ${document.getElementById('txt-contraste').innerText}.`;
+                document.getElementById('result-text').innerText = `Llegaste al Nivel ${nivel} con un contraste final del ${document.getElementById('txt-contraste').innerText}. ¡Sigue así!`;
             }, 2000);
         }
     </script>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
 </body>
 </html>
