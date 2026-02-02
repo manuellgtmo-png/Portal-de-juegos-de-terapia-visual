@@ -13,169 +13,178 @@
             --green-neon: #22c55e;
             --danger-red: #f43f5e;
             --text-main: #f8fafc;
-            --slate-600: #475569;
         }
 
+        /* --- RESET Y BASE --- */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { 
-            margin: 0; background: var(--navy-dark); color: var(--text-main); 
+            margin: 0; padding: 0; background: var(--navy-dark); color: var(--text-main); 
             font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none;
-            width: 100vw; height: 100vh; display: flex; flex-direction: column;
+            width: 100vw; height: 100vh;
         }
 
-        /* --- INTERFAZ HUD SUPERIOR --- */
+        /* --- HUD (INDICADORES SUPERIORES) --- */
         #ui-layer { 
             position: absolute; top: 0; width: 100%; padding: 25px; 
-            display: none; justify-content: space-between; box-sizing: border-box; z-index: 100;
-            pointer-events: none;
+            display: none; justify-content: space-between; align-items: flex-start; z-index: 100;
         }
         .stat-box { 
-            background: var(--navy-card); padding: 12px 20px; border-radius: 22px; 
-            font-weight: 900; border: 1px solid rgba(255,255,255,0.15); 
-            display: flex; flex-direction: column; align-items: center; min-width: 90px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            background: var(--navy-card); padding: 15px 25px; border-radius: 25px; 
+            font-weight: 900; border: 1px solid rgba(255,255,255,0.1); 
+            display: flex; flex-direction: column; align-items: center; min-width: 100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
 
-        /* --- ZONAS DIVIDIDAS (PARA NO TAPAR BOTONES) --- */
-        #game-area { 
-            flex: 0 0 65%; /* 65% de la pantalla para el juego */
-            position: relative; background: var(--navy-dark); overflow: hidden; 
-            border-bottom: 2px solid rgba(255,255,255,0.05);
-        }
-
-        #controls-area {
-            flex: 0 0 35%; /* 35% inferior para controles */
-            background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center;
-            position: relative; z-index: 200;
+        #patient-info {
+            position: absolute; top: 110px; left: 25px; font-size: 0.9rem;
+            background: var(--vernier-purple); color: white; padding: 12px 25px; 
+            border-radius: 20px; font-weight: 700; box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
         }
 
-        /* --- ELEMENTOS DE LAS LÍNEAS --- */
-        .line { position: absolute; border-radius: 25px; touch-action: none; z-index: 10; }
+        /* --- ELEMENTOS DEL JUEGO --- */
+        #game-area { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+        
+        .line { 
+            position: absolute; border-radius: 50px; touch-action: none; 
+            z-index: 10; transition: box-shadow 0.3s ease;
+        }
         .v-line { width: 12px; height: 180px; }
         .h-line { width: 180px; height: 12px; }
 
-        #fixed-line { background: var(--slate-600); box-shadow: 0 0 15px rgba(71, 85, 105, 0.3); }
+        #fixed-line { background: #475569; box-shadow: 0 0 15px rgba(0,0,0,0.3); }
         #mobile-line { 
             background: var(--vernier-purple); 
             box-shadow: 0 0 25px rgba(168, 85, 247, 0.6); 
             cursor: grab;
         }
-        #mobile-line:active { cursor: grabbing; transform: scale(1.05); }
+        #mobile-line:active { cursor: grabbing; box-shadow: 0 0 40px rgba(168, 85, 247, 0.9); }
 
-        /* --- BARRA DE TIEMPO CON ANIMACIÓN --- */
+        /* --- BOTÓN DE ACCIÓN --- */
+        #confirm-btn { 
+            position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%); 
+            width: 88%; max-width: 480px; z-index: 200; height: 85px;
+            background: var(--green-neon); color: var(--navy-dark); border: none; 
+            border-radius: 45px; font-size: 1.6rem; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s ease;
+        }
+        #confirm-btn:active { transform: translateX(-50%) translateY(5px); box-shadow: 0 5px 0 #16a34a; }
+
+        /* --- SISTEMA DE TIEMPO --- */
         #timer-container { 
-            position: absolute; top: 120px; left: 50%; transform: translateX(-50%); 
-            width: 280px; height: 14px; background: rgba(255,255,255,0.1); 
-            border-radius: 20px; overflow: hidden; display: none; border: 2px solid var(--navy-dark);
+            position: absolute; top: 35px; left: 50%; transform: translateX(-50%); 
+            width: 260px; height: 15px; background: rgba(255,255,255,0.05); 
+            border-radius: 20px; overflow: hidden; display: none; z-index: 90;
+            border: 2px solid var(--navy-dark);
         }
         #timer-fill { width: 100%; height: 100%; background: var(--danger-red); transition: width 0.1s linear; }
 
-        /* --- BOTONES Y MENÚS --- */
-        .primary-btn { 
-            background: var(--green-neon); color: var(--navy-dark); border: none; padding: 25px 50px; 
-            border-radius: 50px; font-size: 1.6rem; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; box-shadow: 0 8px 0 #16a34a; transition: all 0.1s;
-        }
-        .primary-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #16a34a; }
-
+        /* --- MENSAJES DE ESTADO --- */
         #game-msg {
-            position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            background: var(--danger-red); color: white; padding: 40px 80px; border-radius: 30px;
-            font-weight: 900; font-size: 2.5rem; z-index: 500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; border: 6px solid white; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            background: var(--danger-red); color: white; padding: 45px 90px; border-radius: 35px;
+            font-weight: 900; font-size: 2.8rem; z-index: 500; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none; border: 8px solid white; text-align: center;
+            box-shadow: 0 0 100px rgba(244, 63, 94, 0.5);
         }
         #game-msg.active { transform: translate(-50%, -50%) scale(1); }
 
-        /* --- CAPAS OVERLAY --- */
+        /* --- PANTALLAS (OVERLAYS) --- */
         .overlay { 
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.99); 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             padding: 20px; text-align: center; z-index: 400; 
         }
         .card { 
-            background: var(--navy-card); padding: 50px; border-radius: 50px; 
-            width: 90%; max-width: 550px; border: 1px solid rgba(255,255,255,0.1);
+            background: var(--navy-card); padding: 55px; border-radius: 55px; width: 92%; max-width: 620px; 
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 40px 80px rgba(0,0,0,0.6);
         }
 
         .mode-option {
-            background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1);
-            padding: 30px; border-radius: 30px; margin-bottom: 20px; cursor: pointer; text-align: left;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.04); border: 2px solid rgba(255,255,255,0.1);
+            padding: 30px; border-radius: 35px; margin-bottom: 25px; cursor: pointer; text-align: left;
+            transition: all 0.3s ease;
         }
-        .mode-option:hover { border-color: var(--vernier-purple); background: rgba(168, 85, 247, 0.05); }
+        .mode-option:hover { background: rgba(168, 85, 247, 0.1); border-color: var(--vernier-purple); transform: translateY(-3px); }
+        .mode-option h3 { margin: 0; font-size: 1.3rem; color: var(--vernier-purple); }
+        .mode-option p { margin: 8px 0 0; font-size: 0.9rem; color: #94a3b8; line-height: 1.4; }
 
         input[type="range"] { 
-            width: 100%; margin: 30px 0; -webkit-appearance: none; background: #334155; 
-            height: 10px; border-radius: 5px; outline: none;
+            width: 100%; margin: 35px 0; -webkit-appearance: none; background: #334155; 
+            height: 12px; border-radius: 10px; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb { 
-            -webkit-appearance: none; width: 30px; height: 30px; background: var(--vernier-purple); 
-            border-radius: 50%; cursor: pointer; border: 3px solid white;
+            -webkit-appearance: none; width: 35px; height: 35px; background: var(--vernier-purple); 
+            border-radius: 50%; cursor: pointer; border: 4px solid white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
-
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .warning { animation: pulse 0.5s infinite; }
     </style>
 </head>
 <body>
 
-    <div id="game-msg">¡FALLO!</div>
+    <div id="game-msg">¡DESALINEADO!</div>
 
     <div id="intro-screen" class="overlay">
         <div class="card">
-            <h1 style="color: var(--vernier-purple); font-size: 2.5rem; font-weight: 900; margin-bottom: 40px;">MISIÓN VERNIER</h1>
-            <div class="mode-option" onclick="prepararConfig('entrenamiento')">
-                <h3 style="margin:0; color:var(--text-main)">MODO CRONOMETRADO</h3>
-                <p style="margin:10px 0 0; font-size:0.9rem; color:#94a3b8">Entrena tu agudeza visual sin presión de tiempo.</p>
+            <h1 style="color: var(--vernier-purple); font-size: 2.6rem; font-weight: 900; margin-bottom: 40px;">MISIÓN VERNIER PRO</h1>
+            <div class="mode-option" onclick="gestionarFlujoConfig('entrenamiento')">
+                <h3>⏱️ MODO CRONOMETRADO</h3>
+                <p>Terapia de precisión absoluta. Se registrará tu tiempo de respuesta y exactitud en cada nivel sin límites.</p>
             </div>
-            <div class="mode-option" onclick="prepararConfig('contrareloj')">
-                <h3 style="margin:0; color:var(--danger-red)">MODO CONTRARELOJ</h3>
-                <p style="margin:10px 0 0; font-size:0.9rem; color:#94a3b8">¡Rápido! Alinea antes de que el cronómetro llegue a cero.</p>
+            <div class="mode-option" onclick="gestionarFlujoConfig('contrareloj')">
+                <h3>🔥 MODO CONTRARELOJ</h3>
+                <p>Desafío de agudeza visual bajo presión. Tienes segundos limitados para alinear las barras antes del fallo.</p>
             </div>
         </div>
     </div>
 
-    <div id="config-screen" class="overlay" style="display: none;">
+    <div id="setup-screen" class="overlay" style="display: none;">
         <div class="card">
-            <h2 style="color: var(--vernier-purple)">AJUSTE DE DIFICULTAD</h2>
-            <p>Selecciona el tiempo límite por nivel:</p>
-            <input type="range" id="time-slider" min="3" max="15" value="10" oninput="document.getElementById('val-time').innerText = this.value">
-            <div style="font-size: 4rem; font-weight: 900; color: white;"><span id="val-time">10</span>s</div>
-            <button class="primary-btn" style="margin-top: 30px;" onclick="iniciarSesion()">INICIAR MISIÓN</button>
+            <h2 id="setup-title" style="color: var(--vernier-purple); font-size: 1.8rem;">INSTRUCCIONES</h2>
+            <div id="setup-body" style="margin: 30px 0; font-size: 1rem; line-height: 1.7; color: #cbd5e1; text-align: left;"></div>
+            
+            <div id="time-config-area" style="display: none;">
+                <p style="font-weight: 700; color: white;">Ajusta el tiempo base por nivel:</p>
+                <input type="range" id="time-slider" min="3" max="15" value="10" oninput="document.getElementById('val-time').innerText = this.value">
+                <div style="font-size: 3.5rem; font-weight: 900; color: white;"><span id="val-time">10</span>s</div>
+            </div>
+
+            <button class="primary-btn" style="background:var(--green-neon); color:var(--navy-dark); width:100%; border-radius:50px; padding:25px; font-weight:900; border:none; margin-top:30px; cursor:pointer; font-size: 1.4rem;" onclick="iniciarMisionReal()">INICIAR ENTRENAMIENTO</button>
         </div>
     </div>
 
     <div id="level-screen" class="overlay" style="display: none;">
-        <div class="card" style="border-color: var(--green-neon); border-width: 2px;">
-            <h2 style="color: var(--green-neon); font-size: 2.5rem;">NIVEL SUPERADO</h2>
-            <div style="margin: 30px 0; background: rgba(0,0,0,0.3); padding: 40px; border-radius: 35px;">
-                <p style="text-transform: uppercase; letter-spacing: 2px; opacity: 0.6;">Precisión Final</p>
-                <div id="res-precision" style="color: var(--vernier-purple); font-size: 4.5rem; font-weight: 900;">0%</div>
-                <div style="margin-top:20px; font-size: 1.2rem;">Tiempo: <span id="res-tiempo" style="color:white; font-weight:900;">0s</span></div>
+        <div class="card" style="border: 3px solid var(--green-neon); background: linear-gradient(to bottom, var(--navy-card), #0f172a);">
+            <h2 style="color: var(--green-neon); font-size: 2.5rem; margin-top: 0;">¡OBJETIVO LOGRADO!</h2>
+            <div style="margin: 35px 0; background: rgba(0,0,0,0.4); padding: 40px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.05);">
+                <p style="text-transform: uppercase; letter-spacing: 2px; opacity: 0.6; font-size: 0.8rem; margin-bottom: 10px;">Precisión de Alineación</p>
+                <div id="res-precision" style="color: var(--vernier-purple); font-size: 4.8rem; font-weight: 900; line-height: 1;">0%</div>
+                <div style="margin-top:30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                    <p style="font-size: 1.2rem;">Tiempo de Respuesta: <span id="res-tiempo" style="color:white; font-weight:900;">0s</span></p>
+                </div>
             </div>
-            <button class="primary-btn" onclick="siguienteNivel()">SIGUIENTE OBJETIVO</button>
+            <button class="primary-btn" style="background:var(--green-neon); color:var(--navy-dark); width:100%; border-radius:50px; padding:25px; font-weight:900; border:none; cursor:pointer;" onclick="irSiguienteNivel()">CONTINUAR MISIÓN</button>
         </div>
     </div>
 
     <div id="ui-layer">
-        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel" style="font-size: 1.5rem;">1</span></div>
-        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" style="font-size: 1.5rem;">❤️❤️❤️</span></div>
+        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel" style="font-size: 1.8rem; color: white;">1</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" style="font-size: 1.8rem;">❤️❤️❤️</span></div>
+        <div id="patient-info">Paciente: <span id="txt-paciente">Explorador</span></div>
     </div>
 
     <div id="game-area">
         <div id="timer-container"><div id="timer-fill"></div></div>
         <div id="fixed-line" class="line"></div>
         <div id="mobile-line" class="line"></div>
-    </div>
-
-    <div id="controls-area">
-        <button id="confirm-btn" class="primary-btn" style="display:none;" onclick="validarPosicion()">CONFIRMAR ALINEACIÓN</button>
+        <button id="confirm-btn" onclick="validarAlineacion()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
     <script>
-        // --- DATA CONNECTION ---
-        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const ENTRIES = { 
+        // --- CONFIGURACIÓN DE DATOS (GOOGLE SHEETS) ---
+        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const FORM_ENTRIES = { 
             paciente: "entry.369874016", 
             juego: "entry.1353470174", 
             nivel: "entry.721051298", 
@@ -184,161 +193,191 @@
             fecha: "entry.845098414" 
         };
 
-        // --- GAME STATE ---
-        let modo = '', nivel = 1, vidas = 3, aciertosTotales = 0, fallosTotales = 0;
-        let posMovil = { x: 50, y: 30 }, esVertical = true, juegoActivo = false;
-        let tiempoNivel = 0, mainTimer, tiempoLimiteBase = 10;
+        // --- VARIABLES GLOBALES DE ESTADO ---
+        let modoSeleccionado = '', nivelActual = 1, contadorVidas = 3;
+        let totalAciertos = 0, totalFallos = 0;
+        let posLineaMovil = { x: 50, y: 50 }, esNivelVertical = true, estadoJuegoActivo = false;
+        let cronometroNivel = 0, intervaloTimer, tiempoLimiteConfig = 10;
 
-        function prepararConfig(m) {
-            modo = m;
+        // --- FLUJO DE INICIO ---
+        function gestionarFlujoConfig(modo) {
+            modoSeleccionado = modo;
             document.getElementById('intro-screen').style.display = 'none';
-            if(m === 'contrareloj') {
-                document.getElementById('config-screen').style.display = 'flex';
+            document.getElementById('setup-screen').style.display = 'flex';
+            
+            const titulo = document.getElementById('setup-title');
+            const cuerpo = document.getElementById('setup-body');
+            const areaConfig = document.getElementById('time-config-area');
+
+            if(modo === 'entrenamiento') {
+                titulo.innerText = "MODO CRONOMETRADO";
+                cuerpo.innerHTML = "• Tu objetivo es alinear la barra morada con la gris de forma perfecta.<br>• El sistema registrará tu precisión y velocidad.<br>• <b>Usa tu dedo o mouse</b> para arrastrar la barra morada.<br>• No hay límite de tiempo, prioriza la exactitud.";
+                areaConfig.style.display = 'none';
             } else {
-                iniciarSesion();
+                titulo.innerText = "MODO CONTRARELOJ";
+                cuerpo.innerHTML = "• ¡Misión Crítica! Debes alinear las barras antes de que el tiempo se agote.<br>• Si el cronómetro llega a cero, perderás una vida automáticamente.<br>• El tiempo disponible se reduce levemente en cada nivel.";
+                areaConfig.style.display = 'block';
             }
         }
 
-        function iniciarSesion() {
-            tiempoLimiteBase = parseInt(document.getElementById('time-slider').value);
-            document.getElementById('config-screen').style.display = 'none';
+        function iniciarMisionReal() {
+            tiempoLimiteConfig = parseInt(document.getElementById('time-slider').value);
+            document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('confirm-btn').style.display = 'block';
-            juegoActivo = true;
-            generarNivel();
-        }
-
-        function generarNivel() {
-            esVertical = Math.random() > 0.5;
-            const f = document.getElementById('fixed-line');
-            const m = document.getElementById('mobile-line');
-
-            // Reset de posición en el área de juego (65% superior)
-            if(esVertical) {
-                f.className = m.className = "line v-line";
-                f.style.left = "50%"; f.style.top = "10%";
-                posMovil = { x: Math.random() > 0.5 ? 20 : 80, y: 35 };
-            } else {
-                f.className = m.className = "line h-line";
-                f.style.top = "25%"; f.style.left = "15%";
-                posMovil = { x: 55, y: Math.random() > 0.5 ? 10 : 45 };
-            }
-            actualizarVisual();
-            iniciarCronometro();
-        }
-
-        function iniciarCronometro() {
-            clearInterval(mainTimer);
-            tiempoNivel = 0;
-            const fill = document.getElementById('timer-fill');
-            fill.classList.remove('warning');
-
-            if(modo === 'contrareloj') {
+            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Manu";
+            
+            if(modoSeleccionado === 'contrareloj') {
                 document.getElementById('timer-container').style.display = 'block';
-                let tMax = Math.max(2, tiempoLimiteBase - (nivel * 0.4));
-                let tRestante = tMax;
-                mainTimer = setInterval(() => {
-                    tRestante -= 0.1; tiempoNivel += 0.1;
-                    fill.style.width = (tRestante / tMax * 100) + "%";
-                    if(tRestante < 2.5) fill.classList.add('warning');
-                    if(tRestante <= 0) { clearInterval(mainTimer); procesarFallo("¡TIEMPO AGOTADO!"); }
+            }
+            estadoJuegoActivo = true;
+            prepararNuevoReto();
+        }
+
+        // --- LÓGICA CORE DEL JUEGO ---
+        function prepararNuevoReto() {
+            esNivelVertical = Math.random() > 0.5;
+            const lineaFija = document.getElementById('fixed-line');
+            const lineaMovil = document.getElementById('mobile-line');
+
+            if(esNivelVertical) {
+                lineaFija.className = lineaMovil.className = "line v-line";
+                lineaFija.style.left = "50%"; 
+                lineaFija.style.top = "15%";
+                posLineaMovil = { x: Math.random() > 0.5 ? 20 : 80, y: 50 };
+            } else {
+                lineaFija.className = lineaMovil.className = "line h-line";
+                lineaFija.style.top = "30%"; 
+                lineaFija.style.left = "15%";
+                posLineaMovil = { x: 50, y: Math.random() > 0.5 ? 15 : 45 };
+            }
+            
+            renderizarPosicion();
+            iniciarControlTiempo();
+        }
+
+        function iniciarControlTiempo() {
+            clearInterval(intervaloTimer);
+            cronometroNivel = 0;
+            
+            if(modoSeleccionado === 'contrareloj') {
+                let tiempoMax = Math.max(2.2, tiempoLimiteConfig - (nivelActual * 0.4));
+                let tiempoRestante = tiempoMax;
+                intervaloTimer = setInterval(() => {
+                    tiempoRestante -= 0.1;
+                    cronometroNivel += 0.1;
+                    document.getElementById('timer-fill').style.width = (tiempoRestante / tiempoMax * 100) + "%";
+                    if(tiempoRestante <= 0) {
+                        clearInterval(intervaloTimer);
+                        ejecutarFallo("¡TIEMPO AGOTADO!");
+                    }
                 }, 100);
             } else {
-                mainTimer = setInterval(() => { tiempoNivel += 0.1; }, 100);
+                intervaloTimer = setInterval(() => { cronometroNivel += 0.1; }, 100);
             }
         }
 
-        // --- LOGICA DE ARRASTRE (DRAG & DROP) ---
-        let estaPulsando = false;
-        const movilElemento = document.getElementById('mobile-line');
+        // --- SISTEMA DE ARRASTRE (MOUSE & TOUCH) ---
+        let estaArrastrando = false;
+        const elemBarra = document.getElementById('mobile-line');
 
-        const empezarArrastre = (e) => { if(juegoActivo) estaPulsando = true; };
-        const moviendoArrastre = (e) => {
-            if(!estaPulsando || !juegoActivo) return;
-            const pointer = e.touches ? e.touches[0] : e;
-            const rectArea = document.getElementById('game-area').getBoundingClientRect();
-
-            // Calculamos posición relativa al área de juego
-            if(esVertical) {
-                posMovil.x = (pointer.clientX / window.innerWidth) * 100;
+        const inicioDrag = (e) => { if(estadoJuegoActivo) estaArrastrando = true; };
+        
+        const moviendoDrag = (e) => {
+            if(!estaArrastrando || !estadoJuegoActivo) return;
+            const evento = e.touches ? e.touches[0] : e;
+            
+            if(esNivelVertical) {
+                posLineaMovil.x = (evento.clientX / window.innerWidth) * 100;
             } else {
-                let yRelativa = ((pointer.clientY - rectArea.top) / rectArea.height) * 100;
-                posMovil.y = yRelativa;
+                let yPorcentaje = (evento.clientY / window.innerHeight) * 100;
+                // LÍMITE DE SEGURIDAD: No permite bajar la barra más allá del 72% para no tapar el botón
+                posLineaMovil.y = Math.min(yPorcentaje, 72);
             }
-            actualizarVisual();
+            renderizarPosicion();
         };
-        const finalizarArrastre = () => estaPulsando = false;
 
-        movilElemento.addEventListener('mousedown', empezarArrastre);
-        movilElemento.addEventListener('touchstart', empezarArrastre);
-        window.addEventListener('mousemove', moviendoArrastre);
-        window.addEventListener('touchmove', moviendoArrastre);
-        window.addEventListener('mouseup', finalizarArrastre);
-        window.addEventListener('touchend', finalizarArrastre);
+        const finDrag = () => { estaArrastrando = false; };
 
-        function actualizarVisual() {
-            movilElemento.style.left = posMovil.x + "%";
-            movilElemento.style.top = posMovil.y + "%";
+        // Registro de Eventos Expandido (PC + Tablet + Mobile)
+        elemBarra.addEventListener('mousedown', inicioDrag);
+        elemBarra.addEventListener('touchstart', inicioDrag, {passive: true});
+        window.addEventListener('mousemove', moviendoDrag);
+        window.addEventListener('touchmove', moviendoDrag, {passive: false});
+        window.addEventListener('mouseup', finDrag);
+        window.addEventListener('touchend', finDrag);
+
+        function renderizarPosicion() {
+            elemBarra.style.left = posLineaMovil.x + "%";
+            elemBarra.style.top = posLineaMovil.y + "%";
         }
 
-        // --- VALIDACION Y RESULTADOS ---
-        function validarPosicion() {
-            if(!juegoActivo) return;
-            clearInterval(mainTimer);
+        // --- VALIDACIÓN Y ENVÍO DE DATOS ---
+        function validarAlineacion() {
+            if(!estadoJuegoActivo) return;
+            clearInterval(intervaloTimer);
+            
+            let calculoError = esNivelVertical ? Math.abs(50 - posLineaMovil.x) : Math.abs(30 - posLineaMovil.y);
+            let margenTolerancia = Math.max(0.1, 1.7 - (nivelActual * 0.15));
 
-            let error = esVertical ? Math.abs(50 - posMovil.x) : Math.abs(25 - posMovil.y);
-            let tolerancia = Math.max(0.1, 1.8 - (nivel * 0.2));
-
-            if(error <= tolerancia) {
-                aciertosTotales++;
-                juegoActivo = false;
-                let perc = (100 - (error * 7)).toFixed(1);
-                if(perc > 100) perc = 100;
-                document.getElementById('res-precision').innerText = perc + "%";
-                document.getElementById('res-tiempo').innerText = tiempoNivel.toFixed(1) + "s";
+            if(calculoError <= margenTolerancia) {
+                totalAciertos++;
+                estadoJuegoActivo = false;
+                let precisionVisual = Math.max(0, (100 - (calculoError * 8))).toFixed(1);
+                document.getElementById('res-precision').innerText = precisionVisual + "%";
+                document.getElementById('res-tiempo').innerText = cronometroNivel.toFixed(2) + "s";
                 document.getElementById('level-screen').style.display = 'flex';
             } else {
-                procesarFallo("¡DESALINEADO!");
+                ejecutarFallo("¡DESALINEADO!");
             }
         }
 
-        function procesarFallo(mensaje) {
-            juegoActivo = false;
-            fallosTotales++;
-            vidas--;
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+        function ejecutarFallo(mensaje) {
+            estadoJuegoActivo = false;
+            totalFallos++;
+            contadorVidas--;
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, contadorVidas));
             
-            const msgBox = document.getElementById('game-msg');
-            msgBox.innerText = mensaje;
-            msgBox.classList.add('active');
+            const feedback = document.getElementById('game-msg');
+            feedback.innerText = mensaje;
+            feedback.classList.add('active');
 
             setTimeout(() => {
-                msgBox.classList.remove('active');
-                if(vidas <= 0) finalizarMision();
-                else { juegoActivo = true; generarNivel(); }
-            }, 1200);
+                feedback.classList.remove('active');
+                if(contadorVidas <= 0) terminarSesionYEnviar();
+                else { 
+                    estadoJuegoActivo = true; 
+                    prepararNuevoReto(); 
+                }
+            }, 1300);
         }
 
-        function siguienteNivel() {
-            nivel++;
-            document.getElementById('txt-nivel').innerText = nivel;
+        function irSiguienteNivel() {
+            nivelActual++;
+            document.getElementById('txt-nivel').innerText = nivelActual;
             document.getElementById('level-screen').style.display = 'none';
-            juegoActivo = true;
-            generarNivel();
+            estadoJuegoActivo = true;
+            prepararNuevoReto();
         }
 
-        function finalizarMision() {
-            const data = new FormData();
-            data.append(ENTRIES.paciente, localStorage.getItem('pacienteActual') || "Usuario");
-            data.append(ENTRIES.juego, "Vernier PRO - " + modo);
-            data.append(ENTRIES.nivel, nivel);
-            data.append(ENTRIES.aciertos, aciertosTotales);
-            data.append(ENTRIES.fallos, fallosTotales);
-            data.append(ENTRIES.fecha, new Date().toISOString().split('T')[0]);
+        function terminarSesionYEnviar() {
+            const payload = new FormData();
+            payload.append(FORM_ENTRIES.paciente, localStorage.getItem('pacienteActual') || "Manu");
+            payload.append(FORM_ENTRIES.juego, "Vernier PRO - " + modoSeleccionado);
+            payload.append(FORM_ENTRIES.nivel, nivelActual);
+            payload.append(FORM_ENTRIES.aciertos, totalAciertos);
+            payload.append(FORM_ENTRIES.fallos, totalFallos);
+            payload.append(FORM_ENTRIES.fecha, new Date().toISOString().split('T')[0]);
 
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            alert("MISIÓN FINALIZADA\nNivel alcanzado: " + nivel);
-            location.reload();
+            fetch(GOOGLE_FORM_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: payload 
+            }).then(() => {
+                alert("ENTRENAMIENTO FINALIZADO\nNivel alcanzado: " + nivelActual);
+                location.reload();
+            }).catch(() => {
+                location.reload();
+            });
         }
     </script>
 </body>
