@@ -3,42 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Precision Pro - Clinical Grade v4.0</title>
+    <title>Vernier Precision Pro | Clínica Visual</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         /* =========================================
-           ESTILOS GLOBALES Y VARIABLES DE DISEÑO
+           ESTILOS BASE Y VARIABLES (SISTEMA DARK)
            ========================================= */
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --purple-main: #a855f7;
-            --purple-glow: rgba(168, 85, 247, 0.6);
-            --green-success: #22c55e;
-            --green-dark: #16a34a;
-            --red-alert: #f43f5e;
-            --slate-text: #94a3b8;
-            --white-pure: #ffffff;
-            --shadow-standard: 0 10px 30px rgba(0,0,0,0.5);
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-dark: #0b0f1a;
+            --card-dark: #1e2533;
+            --purple-neon: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.4);
+            --green-ui: #22c55e;
+            --green-shadow: #16a34a;
+            --red-ui: #f43f5e;
+            --text-silver: #94a3b8;
+            --white: #ffffff;
         }
 
-        /* Reset Completo para Aplicaciones Táctiles */
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-            -webkit-user-select: none;
             margin: 0;
             padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
         body {
-            background-color: var(--bg-primary);
-            color: var(--white-pure);
+            background-color: var(--bg-dark);
+            color: var(--white);
             font-family: 'Montserrat', sans-serif;
             height: 100vh;
             width: 100vw;
@@ -49,29 +45,29 @@
         }
 
         /* =========================================
-           SISTEMA DE HUD (INTERFAZ DE USUARIO)
+           HUD SUPERIOR (ESTADÍSTICAS)
            ========================================= */
-        #ui-layer {
+        #top-hud {
             position: absolute;
-            top: 0;
+            top: 25px;
             left: 0;
             width: 100%;
-            padding: 30px;
-            display: none; /* Se activa mediante JS */
+            padding: 0 50px;
+            display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            z-index: 500;
+            z-index: 100;
             pointer-events: none;
         }
 
-        .hud-widget {
-            background: var(--bg-secondary);
-            padding: 15px 25px;
-            border-radius: 22px;
-            border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: var(--shadow-standard);
+        .hud-module {
+            background: var(--card-dark);
+            padding: 15px 20px;
+            border-radius: 18px;
             text-align: center;
             min-width: 120px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
             pointer-events: auto;
         }
 
@@ -79,544 +75,467 @@
             display: block;
             font-size: 0.7rem;
             font-weight: 900;
-            color: var(--slate-text);
+            color: var(--text-silver);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             margin-bottom: 5px;
         }
 
         .hud-value {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 900;
         }
 
-        /* Barra de Tiempo Superior */
-        #time-track {
+        /* BARRA DE TIEMPO DINÁMICA */
+        #timer-container {
             position: absolute;
-            top: 45px;
+            top: 40px;
             left: 50%;
             transform: translateX(-50%);
-            width: 260px;
-            height: 12px;
+            width: 250px;
+            height: 8px;
             background: rgba(255,255,255,0.05);
             border-radius: 20px;
             overflow: hidden;
-            border: 2px solid var(--bg-primary);
-            display: none;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        #time-fill {
+        #timer-fill {
             width: 100%;
             height: 100%;
-            background: var(--red-alert);
+            background: var(--red-ui);
             transition: width 0.1s linear;
         }
 
         /* =========================================
-           ESCENARIO DE TRABAJO (VERNIR STAGE)
+           ESCENARIO Y ELEMENTOS VERNIER
            ========================================= */
-        #stage {
+        #arena {
             flex: 1;
             position: relative;
             width: 100%;
-            height: 100%;
             z-index: 10;
         }
 
-        /* Barras Redimensionadas para mayor complejidad visual */
         .vernier-bar {
             position: absolute;
-            width: 10px; /* Reducción de ancho */
-            height: 110px; /* Reducción de alto */
-            border-radius: 40px;
+            width: 10px;
+            height: 110px;
+            border-radius: 50px;
             transform-origin: center center;
-            will-change: transform;
+            will-change: transform, left, top;
         }
 
         #bar-fixed {
-            background-color: #475569;
+            background-color: #334155;
+            opacity: 0.8;
             z-index: 5;
-            opacity: 0.9;
         }
 
         #bar-player {
-            background-color: var(--purple-main);
-            box-shadow: 0 0 30px var(--purple-glow);
+            background-color: var(--purple-neon);
+            box-shadow: 0 0 25px var(--purple-glow);
             z-index: 20;
             cursor: grab;
         }
 
-        #bar-player:active {
-            cursor: grabbing;
-            filter: brightness(1.2);
-        }
-
         /* =========================================
-           CONTROLES DE PRECISIÓN (OPCIONALES)
+           CONTROLES LATERALES DE PRECISIÓN
            ========================================= */
-        #precision-pad {
+        #side-panel {
             position: absolute;
-            right: 25px;
-            top: 55%;
+            right: 40px;
+            top: 50%;
             transform: translateY(-50%);
-            display: none;
+            display: flex;
             flex-direction: column;
-            gap: 12px;
-            z-index: 600;
+            gap: 15px;
+            z-index: 200;
         }
 
-        .pad-btn {
-            width: 65px;
-            height: 65px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--purple-main);
-            border-radius: 18px;
+        .btn-precision {
+            width: 75px;
+            height: 75px;
+            background: transparent;
+            border: 2px solid var(--purple-neon);
+            border-radius: 20px;
             color: white;
-            font-weight: 900;
-            font-size: 1.3rem;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
-        .pad-btn:active {
-            transform: scale(0.9);
-            background: var(--purple-main);
+        .btn-precision:active {
+            background: var(--purple-neon);
+            transform: scale(0.92);
+        }
+
+        /* BOTÓN DE VALIDACIÓN FINAL */
+        #confirm-alignment {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 450px;
+            height: 85px;
+            background: var(--green-ui);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 45px;
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 0 var(--green-shadow);
+            cursor: pointer;
+            z-index: 300;
+        }
+
+        #confirm-alignment:active {
+            transform: translateX(-50%) translateY(6px);
+            box-shadow: 0 4px 0 var(--green-shadow);
         }
 
         /* =========================================
-           OVERLAYS, MENÚS Y MODALES
+           SISTEMA DE RESULTADOS (MODAL)
            ========================================= */
-        .full-screen-overlay {
+        .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.98);
-            display: flex;
+            background: rgba(11, 15, 26, 0.95);
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            padding: 30px;
+            padding: 20px;
         }
 
-        .card-modal {
-            background: var(--bg-secondary);
-            padding: 50px;
-            border-radius: 50px;
+        .modal-result {
+            background: var(--card-dark);
             width: 100%;
-            max-width: 600px;
+            max-width: 480px;
+            padding: 50px 40px;
+            border-radius: 40px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            border-left: 8px solid var(--purple-neon);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Selectores de Configuración */
-        .config-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-            background: rgba(0,0,0,0.25);
-            padding: 18px 25px;
-            border-radius: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .custom-select {
-            background: var(--bg-primary);
-            color: white;
-            border: 1px solid var(--purple-main);
-            padding: 8px 15px;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        /* Botón de Acción Principal */
-        #confirm-btn {
-            position: absolute;
-            bottom: 45px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 500px;
-            height: 90px;
-            background: var(--green-success);
-            color: var(--bg-primary);
-            border: none;
-            border-radius: 45px;
-            font-size: 1.8rem;
+        .res-title {
+            font-size: 2.2rem;
             font-weight: 900;
+            color: var(--purple-neon);
+            margin-bottom: 5px;
             text-transform: uppercase;
-            box-shadow: 0 12px 0 var(--green-dark);
-            z-index: 800;
-            display: none;
-            cursor: pointer;
-            transition: all 0.1s;
         }
 
-        #confirm-btn:active {
-            transform: translateX(-50%) translateY(8px);
-            box-shadow: 0 4px 0 var(--green-dark);
+        .res-subtitle {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-silver);
+            margin-bottom: 25px;
         }
 
-        /* Pantalla de Resultados Final */
-        #result-screen {
-            display: none;
-        }
-
-        .accuracy-hero {
-            font-size: 6rem;
+        .res-score {
+            font-size: 5.5rem;
             font-weight: 900;
-            color: var(--purple-main);
-            margin: 25px 0;
-            text-shadow: 0 0 40px var(--purple-glow);
+            color: var(--white);
+            margin-bottom: 20px;
         }
 
-        /* Switch UI */
-        .ui-switch {
-            position: relative;
-            display: inline-block;
-            width: 55px;
-            height: 30px;
+        .res-details {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: var(--white);
+            margin-bottom: 35px;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 20px;
         }
-        .ui-switch input { opacity: 0; width: 0; height: 0; }
-        .ui-slider {
-            position: absolute; cursor: pointer; inset: 0;
-            background: #334155; transition: .4s; border-radius: 30px;
+
+        .btn-restart {
+            background: var(--green-ui);
+            color: var(--bg-dark);
+            padding: 22px 45px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 8px 0 var(--green-shadow);
+            transition: 0.1s;
         }
-        .ui-slider:before {
-            position: absolute; content: ""; height: 22px; width: 22px;
-            left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%;
+
+        .btn-restart:active {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 var(--green-shadow);
         }
-        input:checked + .ui-slider { background: var(--purple-main); }
-        input:checked + .ui-slider:before { transform: translateX(25px); }
 
     </style>
 </head>
 <body>
 
-    <div id="overlay-main" class="full-screen-overlay">
-        <div class="card-modal">
-            <h1 style="color:var(--purple-main); font-size: 2.8rem; margin-bottom: 10px; font-weight: 900;">VERNIE PRO</h1>
-            <p style="color:var(--slate-text); margin-bottom: 35px;">Terapia de Hiperagudeza Visual</p>
-            
-            <div class="config-box">
-                <span style="font-weight: 700;">Modo Cronómetro</span>
-                <label class="ui-switch">
-                    <input type="checkbox" id="pref-time" checked>
-                    <span class="ui-slider"></span>
-                </label>
-            </div>
-
-            <div class="config-box" id="time-depth">
-                <span style="font-weight: 700;">Segundos Iniciales</span>
-                <select id="pref-seconds" class="custom-select">
-                    <option value="15">15s - Principiante</option>
-                    <option value="10" selected>10s - Estándar</option>
-                    <option value="5">5s - Experto</option>
-                    <option value="3">3s - Misión Imposible</option>
-                </select>
-            </div>
-
-            <div class="config-box">
-                <span style="font-weight: 700;">Controles de Precisión</span>
-                <label class="ui-switch">
-                    <input type="checkbox" id="pref-btns">
-                    <span class="ui-slider"></span>
-                </label>
-            </div>
-
-            <button onclick="bootGame()" style="background:var(--green-success); width:100%; padding:28px; border-radius:35px; border:none; font-weight:900; font-size:1.5rem; margin-top:25px; cursor:pointer; color:var(--bg-primary);">
-                INICIAR SESIÓN
-            </button>
-        </div>
-    </div>
-
-    <div id="result-screen" class="full-screen-overlay">
-        <div class="card-modal">
-            <h2 id="result-title" style="color:var(--green-success); font-size: 2.5rem;">¡NIVEL COMPLETADO!</h2>
-            <div class="accuracy-hero" id="accuracy-text">98%</div>
-            <p id="result-desc" style="color:var(--slate-text); line-height: 1.6; margin-bottom: 40px;">Tu alineación vernier está dentro del rango terapéutico óptimo.</p>
-            
-            <button id="result-btn" onclick="handleFlow()" style="background:var(--green-success); width:100%; padding:25px; border-radius:30px; border:none; font-weight:900; font-size: 1.3rem; color:var(--bg-primary);">
-                CONTINUAR
-            </button>
-        </div>
-    </div>
-
-    <div id="ui-layer">
-        <div class="hud-widget">
+    <div id="top-hud">
+        <div class="hud-module">
             <span class="hud-label">Misión</span>
-            <span id="val-lvl" class="hud-value">1</span>
+            <span id="lvl-val" class="hud-value">1</span>
         </div>
         
-        <div id="time-track">
-            <div id="time-fill"></div>
+        <div id="timer-container">
+            <div id="timer-fill"></div>
         </div>
 
-        <div class="hud-widget">
+        <div class="hud-module">
             <span class="hud-label">Integridad</span>
-            <span id="val-hp" class="hud-value">❤️❤️❤️</span>
+            <span id="hp-val" class="hud-value">❤️❤️❤️</span>
         </div>
     </div>
 
-    <div id="precision-pad">
-        <button class="pad-btn" onclick="nudge('ang', -2)">↺</button>
-        <button class="pad-btn" onclick="nudge('ang', 2)">↻</button>
-        <button class="pad-btn" onclick="nudge('x', -0.5)">←</button>
-        <button class="pad-btn" onclick="nudge('x', 0.5)">→</button>
+    <div id="side-panel">
+        <button class="btn-precision" onmousedown="startNudge('ang', -2)" onmouseup="stopNudge()" ontouchstart="startNudge('ang', -2)" ontouchend="stopNudge()">↻</button>
+        <button class="btn-precision" onmousedown="startNudge('ang', 2)" onmouseup="stopNudge()" ontouchstart="startNudge('ang', 2)" ontouchend="stopNudge()">↺</button>
+        <button class="btn-precision" onmousedown="startNudge('x', -0.5)" onmouseup="stopNudge()" ontouchstart="startNudge('x', -0.5)" ontouchend="stopNudge()">←</button>
+        <button class="btn-precision" onmousedown="startNudge('x', 0.5)" onmouseup="stopNudge()" ontouchstart="startNudge('x', 0.5)" ontouchend="stopNudge()">→</button>
     </div>
 
-    <div id="stage">
+    <div id="arena">
         <div id="bar-fixed" class="vernier-bar"></div>
         <div id="bar-player" class="vernier-bar"></div>
-        <button id="confirm-btn" onclick="executeEvaluation()">CONFIRMAR ALINEACIÓN</button>
+        <button id="confirm-alignment" onclick="processValidation()">Confirmar Alineación</button>
+    </div>
+
+    <div id="result-overlay" class="overlay">
+        <div class="modal-result">
+            <h2 id="modal-title" class="res-title">FUERA DE RANGO</h2>
+            <p id="modal-sub" class="res-subtitle">MISIÓN TERMINADA</p>
+            <div id="modal-score" class="res-score">55%</div>
+            <div id="modal-stats" class="res-details">
+                Desviación Lateral: X.XX px<br>
+                Error Angular: Y.3°<br>
+                Vidas restantes: N
+            </div>
+            <button id="modal-btn" class="btn-restart" onclick="closeResults()">REINTERTAR NIVEL</button>
+        </div>
     </div>
 
     <script>
         /* =========================================
-           CONFIGURACIÓN DE DATOS (GOOGLE SHEETS)
+           LÓGICA DEL SOFTWARE (JAVASCRIPT)
            ========================================= */
-        const GOOGLE_DATA_ENDPOINT = "TU_URL_DE_WEB_APP_AQUI"; // Debes pegar tu URL de Apps Script aquí
-        
-        // Objeto de Estado Maestro
-        const session = {
+
+        // 1. CONFIGURACIÓN Y ESTADO INICIAL
+        const GOOGLE_SHEETS_URL = "TU_URL_DE_APPS_SCRIPT_AQUI";
+
+        const gameState = {
             level: 1,
-            lives: 3,
-            isActive: false,
-            useTime: true,
-            useBtns: false,
-            initialTime: 10,
-            remainingTime: 10,
-            timerClock: null,
-            results: [],
-            patientId: "Paciente_Alpha_" + Math.floor(Math.random()*9000)
+            hp: 3,
+            isActive: true,
+            timer: null,
+            baseTime: 12,
+            currentTime: 12,
+            nudgeInterval: null
         };
 
-        // Coordenadas de las Barras
-        let fixedState = { x: 50, y: 30, ang: 0 };
-        let playerState = { x: 50, y: 70, ang: 0 };
+        const targetPos = { x: 50, y: 30, ang: 0 };
+        const playerPos = { x: 50, y: 70, ang: 0 };
 
-        /* =========================================
-           LÓGICA DE MOTOR DE JUEGO
-           ========================================= */
-        
-        function bootGame() {
-            // Captura de Preferencias
-            session.useTime = document.getElementById('pref-time').checked;
-            session.useBtns = document.getElementById('pref-btns').checked;
-            session.initialTime = parseInt(document.getElementById('pref-seconds').value);
+        // 2. INICIALIZADOR DE NIVEL
+        function initLevel() {
+            gameState.isActive = true;
             
-            // UI Switch
-            document.getElementById('overlay-main').style.display = 'none';
-            document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('confirm-btn').style.display = 'block';
+            // Generación aleatoria para la barra objetivo (evitando los bordes)
+            targetPos.x = 30 + (Math.random() * 40);
+            targetPos.y = 25 + (Math.random() * 10);
             
-            if(session.useBtns) document.getElementById('precision-pad').style.display = 'flex';
-            if(session.useTime) document.getElementById('time-track').style.display = 'block';
-            
-            startNewLevel();
+            // Rotación progresiva: Nivel 1 (0°), Nivel 2 (90°), Nivel 3+ (Aleatorio)
+            if (gameState.level === 1) targetPos.ang = 0;
+            else if (gameState.level === 2) targetPos.ang = 90;
+            else targetPos.ang = Math.floor(Math.random() * 180);
+
+            // Posición inicial del jugador (descentrado para forzar el ajuste)
+            playerPos.x = targetPos.x + (Math.random() > 0.5 ? 15 : -15);
+            playerPos.y = 65; 
+            playerPos.ang = 0;
+
+            updateVisuals();
+            startTimer();
         }
 
-        function startNewLevel() {
-            session.isActive = true;
-            
-            // Generación de Posición Fija (Evitando HUD)
-            fixedState.x = 30 + Math.random() * 40;
-            fixedState.y = 25 + Math.random() * 15;
-            
-            // Progresión de Dificultad Rotacional
-            if(session.level >= 5) {
-                fixedState.ang = Math.floor(Math.random() * 360);
-            } else if(session.level >= 2) {
-                fixedState.ang = Math.random() > 0.5 ? 0 : 90;
-            } else {
-                fixedState.ang = 0;
-            }
-
-            // Reset de Barra del Jugador
-            playerState.x = fixedState.x + (Math.random() > 0.5 ? 20 : -20);
-            playerState.y = 65; // Mantenemos separación para Vernier Real
-            playerState.ang = 0;
-
-            refreshStage();
-            if(session.useTime) launchTimer();
-        }
-
-        function refreshStage() {
-            const fBar = document.getElementById('bar-fixed');
+        // 3. ACTUALIZACIÓN DE INTERFAZ
+        function updateVisuals() {
+            const tBar = document.getElementById('bar-fixed');
             const pBar = document.getElementById('bar-player');
-            
-            fBar.style.left = fixedState.x + "%";
-            fBar.style.top = fixedState.y + "%";
-            fBar.style.transform = `translate(-50%, -50%) rotate(${fixedState.ang}deg)`;
 
-            pBar.style.left = playerState.x + "%";
-            pBar.style.top = playerState.y + "%";
-            pBar.style.transform = `translate(-50%, -50%) rotate(${playerState.ang}deg)`;
+            tBar.style.left = targetPos.x + "%";
+            tBar.style.top = targetPos.y + "%";
+            tBar.style.transform = `translate(-50%, -50%) rotate(${targetPos.ang}deg)`;
+
+            pBar.style.left = playerPos.x + "%";
+            pBar.style.top = playerPos.y + "%";
+            pBar.style.transform = `translate(-50%, -50%) rotate(${playerPos.ang}deg)`;
         }
 
-        /* =========================================
-           SISTEMA DE CONTROL (DRAG & TOUCH)
-           ========================================= */
+        // 4. CONTROL HÍBRIDO (TOUCH DRAG)
         let isDragging = false;
-        let touchStartAng = 0;
-        let playerStartAng = 0;
-        const playerEl = document.getElementById('bar-player');
+        const playerBarEl = document.getElementById('bar-player');
 
-        // Soporte Multitouch
-        window.addEventListener('touchstart', (e) => {
-            if(!session.isActive) return;
-            
-            if(e.touches.length === 2) {
-                isDragging = false;
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                touchStartAng = Math.atan2(dy, dx) * 180 / Math.PI;
-                playerStartAng = playerState.ang;
-            } else if(e.target === playerEl) {
-                isDragging = true;
-            }
-        }, {passive: false});
+        playerBarEl.addEventListener('touchstart', (e) => {
+            if(gameState.isActive) isDragging = true;
+        });
 
         window.addEventListener('touchmove', (e) => {
-            if(!session.isActive) return;
-
-            if(e.touches.length === 2) {
-                const dx = e.touches[0].clientX - e.touches[1].clientX;
-                const dy = e.touches[0].clientY - e.touches[1].clientY;
-                const currentTouchAng = Math.atan2(dy, dx) * 180 / Math.PI;
-                playerState.ang = playerStartAng + (currentTouchAng - touchStartAng);
-                refreshStage();
-            } else if(isDragging) {
-                const touch = e.touches[0];
-                playerState.x = (touch.clientX / window.innerWidth) * 100;
-                // Bloqueo de eje Y para forzar alineación Vernier lateral
-                refreshStage();
-            }
+            if (!isMoving || !gameState.isActive) return;
+            
+            let touchX = e.touches[0].clientX;
+            let percentX = (touchX / window.innerWidth) * 100;
+            
+            playerPos.x = Math.min(Math.max(percentX, 5), 95);
+            updateVisuals();
             e.preventDefault();
-        }, {passive: false});
+        }, { passive: false });
 
         window.addEventListener('touchend', () => isDragging = false);
 
-        // Control con Mouse / Rueda
-        window.addEventListener('wheel', (e) => {
-            if(!session.isActive) return;
-            playerState.ang += e.deltaY > 0 ? 3 : -3;
-            refreshStage();
-        });
-
-        function nudge(axis, val) {
-            if(axis === 'x') playerState.x += val;
-            if(axis === 'ang') playerState.ang += val;
-            refreshStage();
+        // 5. CONTROL HÍBRIDO (BOTONES DE PRECISIÓN)
+        function startNudge(axis, val) {
+            if (!gameState.isActive) return;
+            // Aplicamos un primer movimiento inmediato
+            applyNudge(axis, val);
+            // Iniciamos repetición para "mantener pulsado"
+            gameState.nudgeInterval = setInterval(() => applyNudge(axis, val), 100);
         }
 
-        /* =========================================
-           EVALUACIÓN, RESULTADOS Y DATOS
-           ========================================= */
-        
-        function executeEvaluation() {
-            if(!session.isActive) return;
-            clearInterval(session.timerClock);
-            session.isActive = false;
-
-            // 1. Cálculo de Error de Eje (Vernier Accuracy)
-            const errorX = Math.abs(fixedState.x - playerState.x);
-            
-            // 2. Cálculo de Error Angular (Factor Rotacional)
-            let errorAng = Math.abs((fixedState.ang % 180) - (playerState.ang % 180));
-            if(errorAng > 90) errorAng = Math.abs(180 - errorAng);
-
-            // 3. Score Algorítmico (Penalizaciones: X pesa más que Ang)
-            const precisionFinal = Math.max(0, 100 - (errorX * 18 + errorAng * 3));
-            
-            // Lógica de éxito (Umbral del 88%)
-            const isSuccess = precisionFinal >= 88;
-            if(!isSuccess) session.lives--;
-
-            displayScreen(isSuccess, precisionFinal);
-            postDataToCloud(precisionFinal);
+        function stopNudge() {
+            clearInterval(gameState.nudgeInterval);
         }
 
-        function displayScreen(success, score) {
-            const screen = document.getElementById('result-screen');
-            const title = document.getElementById('result-title');
-            const text = document.getElementById('accuracy-text');
-            const desc = document.getElementById('result-desc');
-            const btn = document.getElementById('result-btn');
-
-            screen.style.display = 'flex';
-            text.innerText = score.toFixed(0) + "%";
-            
-            if(success) {
-                title.innerText = "¡MISIÓN LOGRADA!";
-                title.style.color = "var(--green-success)";
-                desc.innerText = "Alineación y rotación perfectas. Estás listo para el siguiente desafío.";
-                btn.innerText = "SIGUIENTE NIVEL";
-            } else {
-                title.innerText = "FUERA DE RANGO";
-                title.style.color = "var(--red-alert)";
-                desc.innerText = `Precisión insuficiente. Te quedan ${session.lives} vidas para completar la sesión.`;
-                btn.innerText = session.lives > 0 ? "REINTENTAR" : "VER RESUMEN FINAL";
-            }
+        function applyNudge(axis, val) {
+            if (axis === 'x') playerPos.x += val;
+            if (axis === 'ang') playerPos.ang += val;
+            updateVisuals();
         }
 
-        function handleFlow() {
-            document.getElementById('result-screen').style.display = 'none';
-            if(session.lives <= 0) {
-                alert("SESIÓN TERMINADA\nNivel Alcanzado: " + session.level);
-                location.reload();
-            } else {
-                if(document.getElementById('result-title').innerText === "¡MISIÓN LOGRADA!") {
-                    session.level++;
-                }
-                document.getElementById('val-lvl').innerText = session.level;
-                document.getElementById('val-hp').innerText = "❤️".repeat(session.lives);
-                startNewLevel();
-            }
-        }
+        // 6. GESTIÓN DEL TIEMPO
+        function startTimer() {
+            let limit = Math.max(3, gameState.baseTime - (gameState.level * 0.7));
+            gameState.currentTime = limit;
+            const barFill = document.getElementById('timer-fill');
 
-        function launchTimer() {
-            let limit = Math.max(2, session.initialTime - (session.level * 0.8));
-            session.remainingTime = limit;
-            const bar = document.getElementById('time-fill');
-            
-            clearInterval(session.timerClock);
-            session.timerClock = setInterval(() => {
-                session.remainingTime -= 0.1;
-                bar.style.width = (session.remainingTime / limit * 100) + "%";
-                if(session.remainingTime <= 0) {
-                    executeEvaluation();
+            clearInterval(gameState.timer);
+            gameState.timer = setInterval(() => {
+                gameState.currentTime -= 0.1;
+                barFill.style.width = (gameState.currentTime / limit * 100) + "%";
+                
+                if (gameState.currentTime <= 0) {
+                    processValidation();
                 }
             }, 100);
         }
 
-        async function postDataToCloud(val) {
-            const packet = {
-                user: session.patientId,
-                lvl: session.level,
-                acc: val.toFixed(2),
-                mode: session.useTime ? "Cronometrado" : "Libre",
-                stamp: new Date().toLocaleString()
+        // 7. VALIDACIÓN CLÍNICA (VERNIER ACCURACY)
+        function processValidation() {
+            if (!gameState.isActive) return;
+            gameState.isActive = false;
+            clearInterval(gameState.timer);
+
+            // Cálculo de errores
+            const errorX = Math.abs(targetPos.x - playerPos.x);
+            let errorAng = Math.abs((targetPos.ang % 180) - (playerPos.ang % 180));
+            if (errorAng > 90) errorAng = Math.abs(180 - errorAng);
+
+            // Algoritmo de puntuación (Prioridad 1: Alineación lateral, Prioridad 2: Ángulo)
+            const finalScore = Math.max(0, 100 - (errorX * 18 + errorAng * 3.5));
+            const isSuccess = finalScore >= 88;
+
+            if (!isSuccess) gameState.hp--;
+
+            showResults(isSuccess, finalScore, errorX, errorAng);
+            sendDataToCloud(finalScore);
+        }
+
+        // 8. DESPLIEGUE DE RESULTADOS (MODAL ESTILO JUEGO)
+        function showResults(success, score, ex, ea) {
+            const overlay = document.getElementById('result-overlay');
+            const title = document.getElementById('modal-title');
+            const sub = document.getElementById('modal-sub');
+            const scoreDisp = document.getElementById('modal-score');
+            const stats = document.getElementById('modal-stats');
+            const btn = document.getElementById('modal-btn');
+
+            overlay.style.display = 'flex';
+            scoreDisp.innerText = Math.round(score) + "%";
+            
+            if (success) {
+                title.innerText = "¡LOGRADO!";
+                title.style.color = "var(--green-ui)";
+                sub.innerText = "ALINEACIÓN COMPLETADA";
+                btn.innerText = "SIGUIENTE NIVEL";
+            } else {
+                title.innerText = "FUERA DE RANGO";
+                title.style.color = "var(--purple-neon)";
+                sub.innerText = "MISIÓN TERMINADA";
+                btn.innerText = gameState.hp > 0 ? "REINTENTAR NIVEL" : "FINALIZAR SESIÓN";
+            }
+
+            stats.innerHTML = `
+                Desviación Lateral: ${ex.toFixed(2)} px<br>
+                Error Angular: ${ea.toFixed(1)}°<br>
+                Vidas restantes: ${Math.max(0, gameState.hp)}
+            `;
+        }
+
+        function closeResults() {
+            document.getElementById('result-overlay').style.display = 'none';
+            
+            if (gameState.hp <= 0) {
+                location.reload(); // Reinicio total si pierde vidas
+            } else {
+                // Si tuvo éxito, sube nivel. Si no, repite el mismo.
+                const wasSuccess = document.getElementById('modal-title').innerText === "¡LOGRADO!";
+                if (wasSuccess) gameState.level++;
+                
+                document.getElementById('lvl-val').innerText = gameState.level;
+                document.getElementById('hp-val').innerText = "❤️".repeat(gameState.hp);
+                initLevel();
+            }
+        }
+
+        // 9. CONEXIÓN CON GOOGLE SHEETS
+        async function sendDataToCloud(score) {
+            if (!GOOGLE_SHEETS_URL || GOOGLE_SHEETS_URL.includes("TU_URL")) return;
+
+            const payload = {
+                paciente: "ID_CLINICO_001",
+                nivel: gameState.level,
+                precision: score.toFixed(2),
+                fecha: new Date().toLocaleString()
             };
 
-            console.log("Enviando a Google Sheets:", packet);
-
             try {
-                // Fetch modo 'no-cors' para evitar problemas de seguridad del navegador
-                fetch(GOOGLE_DATA_ENDPOINT, {
+                fetch(GOOGLE_SHEETS_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     cache: 'no-cache',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(packet)
+                    body: JSON.stringify(payload)
                 });
-            } catch(e) { 
-                console.error("Error de Red Cloud:", e); 
+            } catch (e) {
+                console.warn("Fallo en sincronización cloud:", e);
             }
         }
+
+        // Lanzar primer nivel al cargar
+        initLevel();
 
     </script>
 </body>
