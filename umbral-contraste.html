@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Misión Visión PRO - Umbral de Contraste</title>
+    <title>Umbral de Contraste PRO - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -11,89 +11,76 @@
             --cyan-dark: #0891b2;
             --green-success: #22c55e;
             --green-dark: #16a34a;
-            --slate: #1e293b;
         }
 
         body { 
-            margin: 0; background: #ffffff; color: var(--slate); 
+            margin: 0; background: #ffffff; color: #1e293b; 
             font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none;
             width: 100vw; height: 100vh;
         }
 
-        /* PANTALLAS DE INTERFAZ COMPLETAS */
+        /* INTERFAZ PROFESIONAL */
         .overlay { 
             position: fixed; inset: 0; background: rgba(248, 250, 252, 0.98); 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            padding: 25px; text-align: center; z-index: 200; 
+            padding: 30px; text-align: center; z-index: 200; 
         }
 
         .card { 
             background: white; padding: 45px; border-radius: 45px; 
-            width: 85%; max-width: 550px; box-shadow: 0 30px 70px rgba(0,0,0,0.15);
+            width: 90%; max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.12);
             border: 2px solid #f1f5f9;
         }
         
         .habilidades-box { 
             background: #f0f9ff; border: 2px dashed var(--cyan-perceptum); color: #0369a1; 
             padding: 20px; border-radius: 25px; font-size: 1rem; margin: 25px 0; 
-            line-height: 1.6; text-align: left;
         }
         
-        h1 { font-size: 2.6rem; color: var(--cyan-perceptum); margin: 0; text-transform: uppercase; font-weight: 900; }
+        h1 { font-size: 2.4rem; color: var(--cyan-perceptum); margin: 0; text-transform: uppercase; font-weight: 900; }
         
         button { 
-            background: var(--green-success); color: white; border: none; padding: 24px; 
-            border-radius: 60px; font-size: 1.6rem; cursor: pointer; font-weight: 900; 
+            background: var(--green-success); color: white; border: none; padding: 22px 50px; 
+            border-radius: 60px; font-size: 1.5rem; cursor: pointer; font-weight: 900; 
             text-transform: uppercase; box-shadow: 0 10px 0 var(--green-dark); transition: all 0.1s; width: 100%; 
         }
         button:active { transform: translateY(5px); box-shadow: 0 5px 0 var(--green-dark); }
 
-        /* HUD Y ELEMENTOS DE CONTROL */
+        /* HUD RESPONSIVO */
         #ui-layer { 
-            position: absolute; top: 0; width: 100%; padding: 20px; 
+            position: absolute; top: 0; width: 100%; padding: 15px; 
             display: none; justify-content: space-between; box-sizing: border-box; 
             z-index: 100; pointer-events: none;
         }
         .stat-box { 
-            background: white; padding: 12px 20px; border-radius: 20px; 
-            font-weight: 900; border: 2px solid #f1f5f9; box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-            display: flex; flex-direction: column; align-items: center; min-width: 100px; 
+            background: white; padding: 12px 18px; border-radius: 20px; 
+            font-weight: 900; border: 2px solid #f1f5f9;
+            display: flex; flex-direction: column; align-items: center; min-width: 90px; 
         }
-        .label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; }
+        .label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
 
         #patient-tag {
-            position: absolute; top: 105px; left: 20px; font-size: 0.9rem;
-            background: var(--cyan-perceptum); color: white; padding: 8px 20px; border-radius: 15px; font-weight: bold;
+            position: absolute; top: 90px; left: 15px; font-size: 0.85rem;
+            background: var(--cyan-perceptum); color: white; padding: 8px 18px; border-radius: 15px; font-weight: bold;
         }
 
-        /* ÁREA DE JUEGO DINÁMICA - SISTEMA ANTI-SOLAPAMIENTO */
-        #game-area { 
-            width: 100vw; height: 100vh; position: relative; 
-            background: white; overflow: hidden;
-        }
+        /* ELEMENTO ÚNICO DINÁMICO */
+        #game-area { width: 100vw; height: 100vh; position: relative; background: white; }
         
-        .stimulus { 
+        #target { 
             position: absolute; 
-            width: 18vw; height: 18vw; 
-            max-width: 110px; max-height: 110px;
-            min-width: 75px; min-height: 75px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transform: translate(-50%, -50%);
-            transition: opacity 0.3s;
-        }
-        
-        .stimulus img { 
-            width: 95%; height: 95%; object-fit: contain; 
-            filter: grayscale(1) brightness(0); /* Negro puro para contraste */
+            cursor: pointer; 
+            filter: grayscale(1) brightness(0); /* Siempre negro para contraste puro */
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
         }
 
         #prog-container { 
-            position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); 
-            width: 75%; height: 18px; background: #f1f5f9; border-radius: 25px; 
-            overflow: hidden; border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            width: 70%; height: 16px; background: #e2e8f0; border-radius: 20px; overflow: hidden; border: 4px solid white;
         }
-        #prog-fill { width: 0%; height: 100%; background: var(--green-success); transition: width 0.4s ease-out; }
-
+        #prog-fill { width: 0%; height: 100%; background: var(--green-success); transition: width 0.4s; }
+        
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -103,47 +90,25 @@
         <div class="card">
             <h1>🌈 Misión Visión</h1>
             <div class="habilidades-box">
-                <strong>Objetivos Clínicos:</strong><br>
-                • Agudeza Visual Estática.<br>
-                • Sensibilidad al Contraste (Método Intensivo).<br>
-                • Discriminación de Formas Complejas.
+                <strong>Modo Dinámico Único:</strong><br>
+                Ideal para medir el umbral de sensibilidad al contraste sin distracciones.
             </div>
-            <p>Tu misión es encontrar la figura secreta. En cada nivel, el contraste bajará un 10%, poniéndote a prueba.</p>
-            <button onclick="prepararNivel()">INICIAR ENTRENAMIENTO</button>
-        </div>
-    </div>
-
-    <div id="instruction-screen" class="overlay" style="display: none;">
-        <div class="card">
-            <h2 style="color: var(--cyan-perceptum); font-size: 2rem;">Busca esta figura:</h2>
-            <div style="margin: 35px 0;">
-                <img id="img-goal" src="" style="width: 120px; height: 120px; filter: grayscale(1) brightness(0);">
-            </div>
-            <p id="txt-meta-nivel" style="font-weight: 900; font-size: 1.3rem; color: var(--slate);"></p>
-            <button onclick="iniciarNivel()">¡LA TENGO!</button>
-        </div>
-    </div>
-
-    <div id="level-win-screen" class="overlay" style="display: none;">
-        <div class="card">
-            <h2 style="color: var(--green-success); font-size: 2.5rem;">¡EXCELENTE!</h2>
-            <p style="margin: 20px 0; font-size: 1.2rem;">Has superado el umbral. El contraste va a disminuir ahora.</p>
-            <button onclick="subirDificultad()" style="background: var(--cyan-perceptum); box-shadow: 0 10px 0 var(--cyan-dark);">SIGUIENTE DESAFÍO</button>
+            <p>Toca la figura negra. En cada nivel será más difícil verla.</p>
+            <button onclick="iniciarMision()">EMPEZAR</button>
         </div>
     </div>
 
     <div id="sync-screen" class="overlay" style="display: none;">
         <div class="card">
-            <div style="border: 6px solid #f3f3f3; border-top: 6px solid var(--cyan-perceptum); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 25px;"></div>
-            <h2>Guardando Progreso...</h2>
-            <p>Enviando resultados al portal Perceptum.</p>
+            <div style="border: 5px solid #f3f3f3; border-top: 5px solid var(--cyan-perceptum); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <h2>Sincronizando Datos...</h2>
         </div>
     </div>
 
     <div id="result-screen" class="overlay" style="display: none;">
         <div class="card">
-            <h2>Sesión Finalizada</h2>
-            <p id="result-text" style="font-size: 1.3rem; margin: 25px 0;"></p>
+            <h2>Fin de la Prueba</h2>
+            <p id="result-text" style="font-size: 1.2rem; margin: 20px 0;"></p>
             <button onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
@@ -155,126 +120,90 @@
         <div id="patient-tag">Paciente: <span id="txt-paciente">---</span></div>
     </div>
 
-    <div id="game-area"></div>
+    <div id="game-area">
+        <img id="target" src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" onclick="registrarAcierto(event)">
+    </div>
     <div id="prog-container"><div id="prog-fill"></div></div>
 
     <script>
-        const gameArea = document.getElementById('game-area');
         const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
         const audioError = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'); 
-
-        // POOL DE FIGURAS ÚNICAS
-        const FigurasPool = [
-            { id: "estrella5", src: "https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-            { id: "redonda", src: "https://cdn-icons-png.flaticon.com/512/1828/1828961.png" },
-            { id: "estrella4", src: "https://cdn-icons-png.flaticon.com/512/1828/1828970.png" },
-            { id: "sol", src: "https://cdn-icons-png.flaticon.com/512/616/616412.png" },
-            { id: "poligono", src: "https://cdn-icons-png.flaticon.com/512/1156/1156949.png" }
-        ];
 
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRIES = { paciente: "entry.369874016", juego: "entry.1353470174", nivel: "entry.721051298", aciertos: "entry.873272199", fallos: "entry.1030094511", tiempo: "entry.1303309812", fecha: "entry.845098414" };
 
         let nivel = 1, vidas = 3, aciertosNivel = 0, fallosTotales = 0, aciertosTotales = 0;
-        let objActual = null, juegoActivo = false, metasPorNivel = 3;
+        let juegoActivo = false;
 
-        function prepararNivel() {
-            document.querySelectorAll('.overlay').forEach(s => s.style.display = 'none');
-            document.getElementById('instruction-screen').style.display = 'flex';
-            document.getElementById('ui-layer').style.display = 'none';
-            
-            // Elegir objetivo de forma aleatoria
-            objActual = FigurasPool[Math.floor(Math.random() * FigurasPool.length)];
-            document.getElementById('img-goal').src = objActual.src;
-            document.getElementById('txt-meta-nivel').innerText = `Encuéntrala ${metasPorNivel} veces`;
-            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Invitado";
-        }
-
-        function iniciarNivel() {
-            document.getElementById('instruction-screen').style.display = 'none';
+        function iniciarMision() {
+            document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
-            aciertosNivel = 0;
+            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Explorador";
             juegoActivo = true;
-            actualizarUI();
-            generarEscena();
+            actualizarEscena();
         }
 
-        function generarEscena() {
+        function actualizarEscena() {
             if(!juegoActivo) return;
-            gameArea.innerHTML = "";
+
+            const target = document.getElementById('target');
             
+            // 1. CÁLCULO DE OPACIDAD (Descenso de 10% por nivel)
             let opacidad = Math.max(0.01, 1.1 - (nivel * 0.1)); 
             document.getElementById('txt-contraste').innerText = Math.round(opacidad * 100) + "%";
 
-            // REJILLA RESPONSIVA PARA EVITAR SOLAPAMIENTO (3x3)
-            let posiciones = [
-                {x: 20, y: 20}, {x: 50, y: 20}, {x: 80, y: 20},
-                {x: 20, y: 50}, {x: 50, y: 50}, {x: 80, y: 50},
-                {x: 20, y: 80}, {x: 50, y: 80}, {x: 80, y: 80}
-            ].sort(() => Math.random() - 0.5);
+            // 2. TAMAÑO DINÁMICO (Empieza grande 200px, se reduce según nivel hasta 80px)
+            let size = Math.max(80, 200 - (nivel * 10));
+            target.style.width = size + "px";
+            target.style.height = size + "px";
 
-            // 1. EL ÚNICO OBJETIVO (Garantizado por ID)
-            crearElemento(objActual, posiciones[0], opacidad, true);
-
-            // 2. DISTRACTORES ÚNICOS (Garantizado que no son el objetivo)
-            let distractores = FigurasPool.filter(f => f.id !== objActual.id).sort(() => Math.random() - 0.5);
-            for(let i=1; i<=3; i++) {
-                crearElemento(distractores[i-1], posiciones[i], opacidad, false);
-            }
+            // 3. POSICIÓN ALEATORIA SEGURA (20% a 80% para que no se pegue a los bordes)
+            let x = Math.random() * 60 + 20;
+            let y = Math.random() * 60 + 20;
+            
+            target.style.left = x + "%";
+            target.style.top = y + "%";
+            target.style.opacity = opacidad;
+            
+            actualizarUI();
         }
 
-        function crearElemento(figura, pos, op, esCorrecto) {
-            const container = document.createElement('div');
-            container.className = 'stimulus';
-            container.style.left = pos.x + "%";
-            container.style.top = pos.y + "%";
-            container.style.opacity = op;
+        function registrarAcierto(e) {
+            e.stopPropagation();
+            audioClick.play();
+            aciertosNivel++; aciertosTotales++;
             
-            container.innerHTML = `<img src="${figura.src}">`;
-            
-            container.onclick = (e) => {
-                e.stopPropagation();
-                if(esCorrecto) {
-                    audioClick.play();
-                    aciertosNivel++; aciertosTotales++;
-                    actualizarUI();
-                    if(aciertosNivel >= metasPorNivel) {
-                        juegoActivo = false;
-                        document.getElementById('level-win-screen').style.display = 'flex';
-                    } else { generarEscena(); }
-                } else { registrarFallo(); }
-            };
-            gameArea.appendChild(container);
+            if(aciertosNivel >= 3) {
+                nivel++;
+                aciertosNivel = 0;
+            }
+            actualizarEscena();
         }
 
         function registrarFalloFondo(e) {
             if(!juegoActivo) return;
-            if(e.target.id === "game-area" || e.target.tagName === "BODY") registrarFallo();
+            if(e.target.id === "game-area" || e.target.tagName === "BODY") {
+                vidas--; fallosTotales++;
+                audioError.play();
+                actualizarUI();
+                if(vidas <= 0) finalizarSesion();
+            }
         }
-
-        function registrarFallo() {
-            vidas--; fallosTotales++;
-            audioError.play();
-            actualizarUI();
-            if(vidas <= 0) finalizarPrueba();
-        }
-
-        function subirDificultad() { nivel++; prepararNivel(); }
 
         function actualizarUI() {
             document.getElementById('txt-nivel').innerText = nivel;
             document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
-            document.getElementById('prog-fill').style.width = (aciertosNivel / metasPorNivel * 100) + "%";
+            document.getElementById('prog-fill').style.width = (aciertosNivel / 3 * 100) + "%";
         }
 
-        function finalizarPrueba() {
+        function finalizarSesion() {
             juegoActivo = false;
             document.getElementById('ui-layer').style.display = 'none';
             document.getElementById('sync-screen').style.display = 'flex';
 
             const data = new FormData();
             data.append(ENTRIES.paciente, localStorage.getItem('pacienteActual') || "Anónimo");
-            data.append(ENTRIES.juego, "Umbral de Contraste PRO");
+            data.append(ENTRIES.juego, "Umbral Dinámico Único");
             data.append(ENTRIES.nivel, nivel);
             data.append(ENTRIES.aciertos, aciertosTotales);
             data.append(ENTRIES.fallos, fallosTotales);
@@ -286,7 +215,7 @@
             setTimeout(() => {
                 document.getElementById('sync-screen').style.display = 'none';
                 document.getElementById('result-screen').style.display = 'flex';
-                document.getElementById('result-text').innerText = `Llegaste al Nivel ${nivel} con una visibilidad final del ${document.getElementById('txt-contraste').innerText}.`;
+                document.getElementById('result-text').innerText = `Llegaste al Nivel ${nivel}. Visibilidad final: ${document.getElementById('txt-contraste').innerText}.`;
             }, 2000);
         }
     </script>
