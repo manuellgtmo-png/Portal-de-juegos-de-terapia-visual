@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Misión Vernier - Hiperagudeza Infinita</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --vernier-color: #8b5cf6; 
+            --vernier-dark: #6d28d9;
+            --success: #22c55e;
+            --slate: #1e293b;
+        }
+
+        body { 
+            margin: 0; background: #ffffff; color: var(--slate); 
+            font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none;
+            width: 100vw; height: 100vh;
+        }
+
+        /* INTERFAZ PERCEPTUM */
+        .overlay { 
+            position: fixed; inset: 0; background: rgba(248, 250, 252, 0.98); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            padding: 25px; text-align: center; z-index: 200; 
+        }
+
+        .card { 
+            background: white; padding: 40px; border-radius: 40px; 
+            width: 85%; max-width: 500px; box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+            border: 2px solid #f1f5f9;
+        }
+        
+        .instruccion-box { 
+            background: #f5f3ff; border: 2px dashed var(--vernier-color); color: #5b21b6; 
+            padding: 20px; border-radius: 25px; font-size: 0.95rem; margin: 20px 0;
+        }
+        
+        h1 { font-size: 2.2rem; color: var(--vernier-color); margin: 0; text-transform: uppercase; font-weight: 900; }
+        
+        button { 
+            background: var(--success); color: white; border: none; padding: 22px; 
+            border-radius: 50px; font-size: 1.4rem; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; box-shadow: 0 8px 0 #16a34a; transition: all 0.1s; width: 100%; 
+        }
+        button:active { transform: translateY(4px); box-shadow: 0 4px 0 #16a34a; }
+
+        /* HUD */
+        #ui-layer { 
+            position: absolute; top: 0; width: 100%; padding: 15px; 
+            display: none; justify-content: space-between; box-sizing: border-box; 
+            z-index: 100; pointer-events: none;
+        }
+        .stat-box { 
+            background: white; padding: 10px 15px; border-radius: 18px; 
+            font-weight: 900; border: 2px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column; align-items: center; min-width: 80px; 
+        }
+        .label { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; }
+
+        #patient-tag {
+            position: absolute; top: 95px; left: 15px; font-size: 0.8rem;
+            background: var(--vernier-color); color: white; padding: 8px 15px; border-radius: 12px; font-weight: bold;
+        }
+
+        /* JUEGO */
+        #game-area { width: 100vw; height: 100vh; position: relative; background: white; overflow: hidden; }
+        
+        .line { 
+            position: absolute; width: 6px; height: 100px; 
+            background: var(--slate); border-radius: 10px; 
+            left: 50%; transform: translateX(-50%);
+        }
+        #fixed-line { top: calc(50% - 110px); }
+        #mobile-line { top: calc(50% + 10px); background: var(--vernier-color); transition: left 0.1s ease; }
+
+        /* CONTROLES */
+        #controls { 
+            position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; width: 90%; max-width: 400px; 
+        }
+        .btn-move { 
+            flex: 1; padding: 25px; font-size: 2.5rem; background: #f8fafc; 
+            color: var(--vernier-color); border: 3px solid #e2e8f0; border-radius: 25px;
+            cursor: pointer; box-shadow: 0 8px 0 #e2e8f0; font-weight: 900;
+        }
+        .btn-move:active { transform: translateY(4px); box-shadow: 0 4px 0 #e2e8f0; }
+
+        #confirm-btn { 
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 400px;
+        }
+
+        #prog-container { 
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%); 
+            width: 150px; height: 10px; background: #f1f5f9; border-radius: 10px; overflow: hidden;
+        }
+        #prog-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.3s; }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen" class="overlay">
+        <div class="card">
+            <h1>🎯 Misión Vernier</h1>
+            <div class="instruccion-box">
+                <strong>Entrenamiento de Alineación:</strong><br>
+                Usa las flechas para mover la barra morada hasta que esté perfectamente alineada con la negra.
+            </div>
+            <button onclick="iniciar()">EMPEZAR</button>
+        </div>
+    </div>
+
+    <div id="sync-screen" class="overlay" style="display: none;">
+        <div class="card">
+            <div style="border: 5px solid #f3f3f3; border-top: 5px solid var(--vernier-color); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+            <h2>Guardando en Expediente...</h2>
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
+        <div id="patient-tag">Paciente: <span id="txt-paciente">---</span></div>
+    </div>
+
+    <div id="game-area">
+        <div id="prog-container"><div id="prog-fill"></div></div>
+        <div id="fixed-line" class="line"></div>
+        <div id="mobile-line" class="line"></div>
+        
+        <div id="controls">
+            <button class="btn-move" onclick="mover(-0.5)">◀</button>
+            <button class="btn-move" onclick="mover(0.5)">▶</button>
+        </div>
+        
+        <button id="confirm-btn" style="display:none;" onclick="validar()">CONFIRMAR ALINEACIÓN</button>
+    </div>
+
+    <script>
+        const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
+        const audioError = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'); 
+
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const ENTRIES = { paciente: "entry.369874016", juego: "entry.1353470174", nivel: "entry.721051298", aciertos: "entry.873272199", fallos: "entry.1030094511", fecha: "entry.845098414" };
+
+        let nivel = 1, vidas = 3, aciertosNivel = 0, fallosTotales = 0, aciertosTotales = 0;
+        let posActual = 50, juegoActivo = false;
+
+        function iniciar() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            document.getElementById('confirm-btn').style.display = 'block';
+            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Explorador";
+            juegoActivo = true;
+            generarReto();
+        }
+
+        function mover(delta) {
+            if(!juegoActivo) return;
+            // La sensibilidad aumenta (movimiento más lento) en niveles altos para precisión extrema
+            let factor = nivel > 10 ? 0.3 : 1;
+            posActual += (delta * factor);
+            if(posActual < 10) posActual = 10;
+            if(posActual > 90) posActual = 90;
+            document.getElementById('mobile-line').style.left = posActual + "%";
+        }
+
+        function generarReto() {
+            posActual = Math.random() > 0.5 ? 20 : 80;
+            document.getElementById('mobile-line').style.left = posActual + "%";
+            
+            // DIFICULTAD INFINITA: El "Gap" crece y el margen de error baja
+            let gap = Math.min(200, 15 + (nivel * 10));
+            document.getElementById('fixed-line').style.top = `calc(50% - ${gap + 100}px)`;
+            document.getElementById('mobile-line').style.top = `calc(50% + ${gap}px)`;
+            
+            actualizarUI();
+        }
+
+        function validar() {
+            if(!juegoActivo) return;
+            
+            let error = Math.abs(50 - posActual);
+            let margenTolerancia = Math.max(0.1, 1.5 - (nivel * 0.15));
+
+            if(error <= margenTolerancia) {
+                audioClick.play();
+                aciertosNivel++; aciertosTotales++;
+                if(aciertosNivel >= 2) {
+                    nivel++;
+                    aciertosNivel = 0;
+                }
+                generarReto();
+            } else {
+                audioError.play();
+                vidas--; fallosTotales++;
+                actualizarUI();
+                if(vidas <= 0) finalizar();
+                else generarReto();
+            }
+        }
+
+        function actualizarUI() {
+            document.getElementById('txt-nivel').innerText = nivel;
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+            document.getElementById('prog-fill').style.width = (aciertosNivel / 2 * 100) + "%";
+        }
+
+        function finalizar() {
+            juegoActivo = false;
+            document.getElementById('ui-layer').style.display = 'none';
+            document.getElementById('confirm-btn').style.display = 'none';
+            document.getElementById('sync-screen').style.display = 'flex';
+
+            const data = new FormData();
+            data.append(ENTRIES.paciente, localStorage.getItem('pacienteActual') || "Anónimo");
+            data.append(ENTRIES.juego, "Misión Vernier");
+            data.append(ENTRIES.nivel, nivel);
+            data.append(ENTRIES.aciertos, aciertosTotales);
+            data.append(ENTRIES.fallos, fallosTotales);
+            data.append(ENTRIES.fecha, new Date().toISOString().split('T')[0]);
+
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
+
+            setTimeout(() => { location.reload(); }, 2500);
+        }
+    </script>
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+</body>
+</html>
