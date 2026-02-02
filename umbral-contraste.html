@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Umbral de Contraste INTENSIVO - Perceptum</title>
+    <title>Umbral de Contraste PRO - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body { 
@@ -11,100 +11,110 @@
             font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; 
         }
         
+        /* PANTALLAS DE INTERFAZ ALEGRE */
         #intro-screen, #result-screen, #sync-screen, #level-win-screen, #instruction-screen { 
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.98); 
+            position: fixed; inset: 0; background: rgba(248, 250, 252, 0.98); 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             padding: 30px; text-align: center; z-index: 200; 
         }
 
         .card { 
             background: white; padding: 40px; border-radius: 40px; 
-            max-width: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
+            max-width: 550px; box-shadow: 0 25px 60px rgba(0,0,0,0.1);
+            border: 2px solid #f1f5f9;
         }
         
         .habilidades-box { 
-            background: #f0fdfa; border: 2px dashed #06b6d4; color: #0891b2; 
-            padding: 15px; border-radius: 20px; font-size: 0.9rem; margin: 20px 0; 
+            background: #f0f9ff; border: 2px dashed #0ea5e9; color: #0369a1; 
+            padding: 20px; border-radius: 25px; font-size: 1rem; margin: 25px 0; 
+            line-height: 1.5;
         }
         
+        h1 { font-size: 2.5rem; color: #0ea5e9; margin: 0; text-transform: uppercase; }
+        
         button { 
-            background: #06b6d4; color: white; border: none; padding: 22px 50px; 
-            border-radius: 60px; font-size: 1.4rem; cursor: pointer; font-weight: 900; 
-            text-transform: uppercase; box-shadow: 0 10px 0 #0891b2; transition: all 0.1s; width: 100%; 
+            background: #22c55e; color: white; border: none; padding: 22px 50px; 
+            border-radius: 60px; font-size: 1.5rem; cursor: pointer; font-weight: 900; 
+            text-transform: uppercase; box-shadow: 0 10px 0 #16a34a; transition: all 0.1s; width: 100%; 
         }
-        button:active { transform: translateY(5px); box-shadow: 0 5px 0 #0891b2; }
+        button:active { transform: translateY(5px); box-shadow: 0 5px 0 #16a34a; }
 
+        /* HUD Y ELEMENTOS VISUALES */
         #ui-layer { 
             position: absolute; top: 0; width: 100%; padding: 20px; 
             display: flex; justify-content: space-between; box-sizing: border-box; 
             z-index: 100; display: none; pointer-events: none;
         }
         .stat-box { 
-            background: #f8fafc; padding: 12px 20px; border-radius: 20px; 
-            font-weight: 900; border: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; align-items: center; min-width: 90px; 
+            background: white; padding: 12px 20px; border-radius: 20px; 
+            font-weight: 900; border: 2px solid #f1f5f9;
+            display: flex; flex-direction: column; align-items: center; min-width: 95px; 
         }
-        .label { font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px; }
+        .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
 
         #patient-tag {
-            position: absolute; top: 95px; left: 20px; font-size: 0.8rem;
-            background: #06b6d4; color: white; padding: 6px 15px; border-radius: 12px; font-weight: bold;
+            position: absolute; top: 100px; left: 20px; font-size: 0.85rem;
+            background: #0ea5e9; color: white; padding: 8px 18px; border-radius: 15px; font-weight: bold;
         }
 
         #game-area { width: 100vw; height: 100vh; position: relative; background: white; cursor: crosshair; }
         .target-img { 
-            position: absolute; width: 85px; height: 85px; 
-            cursor: pointer; filter: grayscale(1) brightness(0);
-            transition: opacity 0.2s;
+            position: absolute; width: 110px; height: 110px; 
+            cursor: pointer; filter: grayscale(1) brightness(0); /* Figuras negras */
+            transition: transform 0.1s;
         }
+        .target-img:active { transform: scale(0.9); }
 
         #prog-container { 
-            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            width: 70%; height: 12px; background: #f1f5f9; border-radius: 10px; overflow: hidden; 
+            position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); 
+            width: 75%; height: 15px; background: #e2e8f0; border-radius: 20px; overflow: hidden; border: 3px solid white;
         }
-        #prog-fill { width: 0%; height: 100%; background: #06b6d4; transition: width 0.3s; }
+        #prog-fill { width: 0%; height: 100%; background: #22c55e; transition: width 0.3s; }
     </style>
 </head>
 <body onclick="registrarFalloFondo(event)">
 
     <div id="intro-screen">
         <div class="card">
-            <h1 style="margin:0; font-size: 2.2rem; color: #0891b2;">Umbral Intensivo</h1>
+            <h1>🌈 ¡Misión Visión! 🌈</h1>
             <div class="habilidades-box">
-                <strong>Modo:</strong> Descenso Rápido de Contraste.
+                <strong>¿Qué vamos a entrenar hoy?</strong><br>
+                Tus ojos se volverán expertos en encontrar figuras ocultas. Vamos a trabajar la <b>Agudeza Visual Estática</b> y el <b>Umbral de Contraste</b>.
             </div>
-            <p style="color: #64748b;">La visibilidad bajará un 10% cada nivel. ¡Concéntrate!</p>
-            <button onclick="mostrarInstruccionNivel()">EMPEZAR</button>
+            <p style="color: #475569; font-size: 1.1rem; line-height: 1.4;">
+                <b>Instrucciones:</b> Mira bien la figura secreta que te mostraré. Luego, búscala en la pantalla. <br><br>
+                ⚠️ ¡Cuidado! Si tocas el fondo blanco o una figura equivocada, perderás una vida.
+            </p>
+            <button onclick="mostrarInstruccionNivel()">¡EMPEZAR LA AVENTURA!</button>
         </div>
     </div>
 
     <div id="instruction-screen" style="display: none;">
         <div class="card">
-            <h2 style="color: #0891b2;">Busca este objetivo:</h2>
-            <img id="img-goal" src="" style="width: 100px; height: 100px; margin: 20px; filter: grayscale(1) brightness(0);">
-            <p id="txt-meta-nivel" style="font-weight: bold; color: #64748b;"></p>
-            <button onclick="iniciarNivel()">LO TENGO</button>
+            <h2 style="color: #0ea5e9; margin-top: 0;">Tu objetivo secreto es:</h2>
+            <img id="img-goal" src="" style="width: 130px; height: 130px; margin: 20px; filter: grayscale(1) brightness(0);">
+            <p id="txt-meta-nivel" style="font-size: 1.2rem; font-weight: bold; color: #475569;"></p>
+            <button onclick="iniciarNivel()">¡LO ENCONTRARÉ!</button>
         </div>
     </div>
 
     <div id="level-win-screen" style="display: none;">
         <div class="card">
-            <h2 style="color: #22c55e;">✨ ¡Nivel Superado! ✨</h2>
-            <p>El contraste bajará drásticamente ahora.</p>
-            <button onclick="subirNivel()">SIGUIENTE PASO</button>
+            <h2 style="color: #22c55e; font-size: 2.2rem;">✨ ¡LOGRADO! ✨</h2>
+            <p style="font-size: 1.2rem; color: #475569;">Tus ojos son muy rápidos. En el siguiente nivel será un poco más difícil ver las figuras.</p>
+            <button onclick="subirNivel()" style="background: #0ea5e9; box-shadow: 0 10px 0 #0284c7;">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
     <div id="sync-screen" style="display: none;">
-        <div class="card"><h2>Sincronizando...</h2></div>
+        <div class="card"><h2>🚀 Sincronizando...</h2><p>Guardando tus grandes resultados.</p></div>
     </div>
 
     <div id="result-screen" style="display: none;">
         <div class="card">
-            <h2 id="result-title">Fin de la Prueba</h2>
-            <p id="result-text"></p>
-            <button onclick="location.reload()">REINTENTAR</button>
+            <h2 id="result-title">Fin de la Misión</h2>
+            <p id="result-text" style="font-size: 1.2rem; margin-bottom: 25px;"></p>
+            <button onclick="location.reload()">JUGAR DE NUEVO</button>
         </div>
     </div>
 
@@ -123,12 +133,13 @@
         const audioClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'); 
         const audioError = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'); 
         
+        // Figuras con diferencias sutiles
         const FigurasPool = [
-            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", // Estrella 5
-            "https://cdn-icons-png.flaticon.com/512/1828/1828961.png", // Estrella Round
-            "https://cdn-icons-png.flaticon.com/512/1828/1828970.png", // Estrella 4
-            "https://cdn-icons-png.flaticon.com/512/616/616412.png",   // Sol
-            "https://cdn-icons-png.flaticon.com/512/1156/1156949.png"  // Hexágono
+            "https://cdn-icons-png.flaticon.com/512/1828/1828884.png", // Estrella 5 puntas
+            "https://cdn-icons-png.flaticon.com/512/1828/1828961.png", // Estrella redondeada
+            "https://cdn-icons-png.flaticon.com/512/1828/1828970.png", // Estrella 4 puntas
+            "https://cdn-icons-png.flaticon.com/512/616/616412.png",   // Estrella sol
+            "https://cdn-icons-png.flaticon.com/512/1156/1156949.png"  // Polígono sutil
         ];
 
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
@@ -143,10 +154,11 @@
             document.getElementById('instruction-screen').style.display = 'flex';
             document.getElementById('ui-layer').style.display = 'none';
             
+            // Seleccionar figura objetivo
             figuraActual = FigurasPool[Math.floor(Math.random() * FigurasPool.length)];
             document.getElementById('img-goal').src = figuraActual;
-            document.getElementById('txt-meta-nivel').innerText = `Encuentra el objetivo ${metasPorNivel} veces.`;
-            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Invitado";
+            document.getElementById('txt-meta-nivel').innerText = `¡Encuéntrala ${metasPorNivel} veces!`;
+            document.getElementById('txt-paciente').innerText = localStorage.getItem('pacienteActual') || "Explorador";
         }
 
         function iniciarNivel() {
@@ -162,13 +174,14 @@
             if(!juegoActivo) return;
             gameArea.innerHTML = "";
             
-            // CURVA AGRESIVA: 1.1 - (nivel * 0.1) -> Nivel 1=100%, Nivel 2=90%, Nivel 5=60%, Nivel 10=10%
-            let opacidad = Math.max(0.01, 1.1 - (nivel * 0.1)); 
+            // Curva de dificultad de contraste (10% menos por nivel)
+            let opacidad = Math.max(0.02, 1.1 - (nivel * 0.1)); 
             document.getElementById('txt-contraste').innerText = Math.round(opacidad * 100) + "%";
 
-            // Aumentamos distractores según el nivel (3 distractores + 1 objetivo)
-            let distractores = [...FigurasPool].filter(f => f !== figuraActual);
+            // LÓGICA CORREGIDA: 1 Figura correcta + 3 Distractores diferentes
+            let distractores = FigurasPool.filter(f => f !== figuraActual);
             distractores = distractores.sort(() => 0.5 - Math.random()).slice(0, 3);
+            
             let deck = [figuraActual, ...distractores];
             deck.sort(() => 0.5 - Math.random());
 
@@ -178,14 +191,19 @@
                 img.className = 'target-img';
                 img.style.opacity = opacidad;
                 
-                const x = Math.random() * (window.innerWidth - 120) + 60;
-                const y = Math.random() * (window.innerHeight - 200) + 120;
+                // Posicionamiento aleatorio
+                const x = Math.random() * (window.innerWidth - 150) + 50;
+                const y = Math.random() * (window.innerHeight - 250) + 125;
                 img.style.left = x + 'px';
                 img.style.top = y + 'px';
 
                 img.onclick = (e) => {
                     e.stopPropagation();
-                    if(imgSrc === figuraActual) acertar(); else registrarFallo();
+                    if(imgSrc === figuraActual) {
+                        acertar();
+                    } else {
+                        registrarFallo(); // Error por tocar figura equivocada
+                    }
                 };
                 gameArea.appendChild(img);
             });
@@ -205,7 +223,10 @@
 
         function registrarFalloFondo(e) {
             if(!juegoActivo) return;
-            if(e.target.id === "game-area" || e.target.tagName === "BODY") registrarFallo();
+            // Solo si toca el fondo blanco puro
+            if(e.target.id === "game-area" || e.target.tagName === "BODY") {
+                registrarFallo();
+            }
         }
 
         function registrarFallo() {
@@ -225,6 +246,7 @@
 
         function finalizarPrueba() {
             juegoActivo = false;
+            gameArea.innerHTML = "";
             document.getElementById('ui-layer').style.display = 'none';
             document.getElementById('sync-screen').style.display = 'flex';
 
@@ -242,7 +264,7 @@
             setTimeout(() => {
                 document.getElementById('sync-screen').style.display = 'none';
                 document.getElementById('result-screen').style.display = 'flex';
-                document.getElementById('result-text').innerText = `Umbral Crítico: Nivel ${nivel} (${document.getElementById('txt-contraste').innerText} contraste).`;
+                document.getElementById('result-text').innerText = `¡Gran trabajo! Llegaste al Nivel ${nivel}. Tu umbral de visión llegó hasta el ${document.getElementById('txt-contraste').innerText}.`;
             }, 2000);
         }
     </script>
