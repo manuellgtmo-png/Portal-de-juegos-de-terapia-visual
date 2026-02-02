@@ -3,215 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Precisión Vernier PRO - Versión Final Expandida</title>
+    <title>Vernier Precisión PRO - Edición Definitiva</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- VARIABLES DE DISEÑO --- */
-        :root { 
-            --navy-bg: #0f172a; 
+        /* =========================================
+           CONFIGURACIÓN DE VARIABLES Y TEMAS
+           ========================================= */
+        :root {
+            --navy-dark: #0f172a;
             --navy-card: #1e293b;
-            --vernier-purple: #a855f7; 
+            --vernier-purple: #a855f7;
+            --vernier-light: #c084fc;
             --green-neon: #22c55e;
+            --green-glow: #4ade80;
             --danger-red: #f43f5e;
             --text-main: #f8fafc;
+            --text-dim: #94a3b8;
             --slate-gray: #475569;
+            --transition-speed: 0.3s;
         }
 
-        /* --- BASE DEL DOCUMENTO --- */
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
+        /* =========================================
+           RESET Y ESTILOS BASE
+           ========================================= */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
             user-select: none;
+            -webkit-user-select: none;
         }
 
-        body { 
-            margin: 0; padding: 0; 
-            background-color: var(--navy-bg); 
-            color: var(--text-main); 
-            font-family: 'Montserrat', sans-serif; 
-            overflow: hidden; 
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--navy-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
             touch-action: none;
-            width: 100vw; height: 100vh;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- INTERFAZ HUD (ESTADÍSTICAS) --- */
-        #hud-container { 
-            position: absolute; top: 0; width: 100%; padding: 25px; 
-            display: none; justify-content: space-between; align-items: flex-start; 
-            z-index: 100; pointer-events: none;
+        /* =========================================
+           ANIMACIONES CSS
+           ========================================= */
+        @keyframes pulse-purple {
+            0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(168, 85, 247, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); }
         }
 
-        .stat-panel { 
-            background: var(--navy-card); 
-            padding: 15px 25px; 
-            border-radius: 25px; 
-            font-weight: 900; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            display: flex; flex-direction: column; 
-            align-items: center; 
-            min-width: 110px;
+        @keyframes slide-up {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* =========================================
+           INTERFAZ HUD (TOP BAR)
+           ========================================= */
+        #hud-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 25px;
+            display: none; /* Se activa al iniciar */
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .hud-item {
+            background: var(--navy-card);
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 120px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .stat-label { 
-            font-size: 0.75rem; 
-            color: #94a3b8; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            margin-bottom: 5px; 
+        .hud-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
         }
 
-        .stat-value { font-size: 1.8rem; color: white; }
-
-        /* --- ELEMENTOS DE JUEGO (LÍNEAS) --- */
-        #game-canvas { 
-            width: 100vw; height: 100vh; 
-            position: relative; 
-            overflow: hidden; 
+        .hud-value {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: white;
         }
-        
-        .vernier-line { 
-            position: absolute; 
-            border-radius: 50px; 
-            width: 14px; height: 180px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+
+        /* =========================================
+           SISTEMA DE TIEMPO (PROGRESS BAR)
+           ========================================= */
+        #timer-wrapper {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            height: 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            display: none;
+            z-index: 90;
+            border: 2px solid var(--navy-dark);
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        #timer-progress {
+            width: 100%;
+            height: 100%;
+            background: var(--danger-red);
+            transition: width 0.1s linear;
+        }
+
+        /* =========================================
+           ELEMENTOS DEL JUEGO (LÍNEAS)
+           ========================================= */
+        #game-arena {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vernier-line {
+            position: absolute;
+            width: 14px;
+            height: 180px;
+            border-radius: 25px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4);
             transform-origin: center;
             will-change: transform, top, left;
             z-index: 10;
         }
 
-        #target-line { 
-            background-color: var(--slate-gray); 
-            opacity: 0.7;
-            z-index: 5; 
+        #line-fixed {
+            background-color: var(--slate-gray);
+            opacity: 0.8;
+            z-index: 5;
         }
 
-        #player-line { 
-            background-color: var(--vernier-purple); 
-            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); 
+        #line-mobile {
+            background-color: var(--vernier-purple);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
             cursor: grab;
-            z-index: 15;
+            z-index: 20;
         }
 
-        #player-line:active { cursor: grabbing; box-shadow: 0 0 45px rgba(168, 85, 247, 0.7); }
+        #line-mobile:active {
+            cursor: grabbing;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.8);
+            transform: translate(-50%, -50%) scale(1.05);
+        }
 
-        /* --- BOTÓN DE ACCIÓN PRINCIPAL --- */
-        #confirm-action-btn { 
-            position: absolute; 
-            bottom: 45px; left: 50%; 
-            transform: translateX(-50%); 
-            width: 88%; max-width: 480px; 
-            height: 85px; 
-            background: var(--green-neon); 
-            color: var(--navy-bg); 
-            border: none; 
-            border-radius: 45px; 
-            font-size: 1.6rem; 
-            cursor: pointer; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            box-shadow: 0 10px 0 #16a34a; 
-            z-index: 200; 
-            transition: transform 0.1s, box-shadow 0.1s;
+        /* =========================================
+           BOTÓN DE ACCIÓN
+           ========================================= */
+        #btn-verify {
+            position: absolute;
+            bottom: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88%;
+            max-width: 500px;
+            height: 90px;
+            background: var(--green-neon);
+            color: var(--navy-dark);
+            border: none;
+            border-radius: 45px;
+            font-size: 1.7rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 12px 0 #16a34a;
+            z-index: 200;
+            cursor: pointer;
             display: none;
+            transition: transform 0.1s;
         }
 
-        #confirm-action-btn:active { 
-            transform: translateX(-50%) translateY(5px); 
-            box-shadow: 0 5px 0 #16a34a; 
+        #btn-verify:active {
+            transform: translateX(-50%) translateY(6px);
+            box-shadow: 0 6px 0 #16a34a;
         }
 
-        /* --- OVERLAYS Y MODALES --- */
-        .full-screen-overlay { 
-            position: fixed; inset: 0; 
-            background: rgba(15, 23, 42, 0.98); 
-            display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; 
-            padding: 20px; text-align: center; 
-            z-index: 400; 
+        /* =========================================
+           MENÚS, MODALES Y OVERLAYS
+           ========================================= */
+        .game-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.98);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            padding: 25px;
+            text-align: center;
         }
 
-        .glass-card { 
-            background: var(--navy-card); 
-            padding: 50px; 
-            border-radius: 50px; 
-            width: 95%; max-width: 600px; 
-            border: 1px solid rgba(255,255,255,0.1); 
+        .modal-card {
+            background: var(--navy-card);
+            padding: 50px;
+            border-radius: 50px;
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid rgba(255,255,255,0.1);
             box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+            animation: slide-up 0.5s ease-out;
         }
 
-        /* --- MENSAJES DE ERROR --- */
-        #error-toast {
-            position: fixed; top: 45%; left: 50%; 
-            transform: translate(-50%, -50%) scale(0);
-            background: var(--danger-red); 
-            color: white; 
-            padding: 40px 70px; 
+        .mode-selector {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.1);
+            padding: 30px;
             border-radius: 35px;
-            font-weight: 900; 
-            font-size: 2.5rem; 
-            z-index: 500; 
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none; 
-            border: 8px solid white;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all var(--transition-speed);
+            text-align: left;
+            width: 100%;
         }
-        #error-toast.active { transform: translate(-50%, -50%) scale(1); }
+
+        .mode-selector:hover {
+            border-color: var(--vernier-purple);
+            background: rgba(168, 85, 247, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .mode-selector h3 {
+            margin: 0;
+            color: var(--vernier-purple);
+            font-size: 1.4rem;
+            font-weight: 900;
+        }
+
+        .mode-selector p {
+            margin: 10px 0 0;
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* PANTALLA DE ÉXITO ESTILO VIDEOJUEGO */
+        #victory-screen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--navy-card);
+            padding: 60px;
+            border-radius: 60px;
+            text-align: center;
+            z-index: 700;
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 5px solid var(--green-neon);
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 0 100px rgba(34, 197, 94, 0.3);
+        }
+
+        #victory-screen.active {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .precision-badge {
+            margin: 40px 0;
+            background: rgba(0,0,0,0.4);
+            padding: 40px;
+            border-radius: 45px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        #precision-value {
+            font-size: 5.5rem;
+            font-weight: 900;
+            color: var(--vernier-purple);
+            line-height: 1;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+        }
+
+        /* TOAST DE ERROR */
+        #toast-alert {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--danger-red);
+            color: white;
+            padding: 45px 90px;
+            border-radius: 40px;
+            font-weight: 900;
+            font-size: 2.8rem;
+            z-index: 800;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 10px solid white;
+            pointer-events: none;
+        }
+        #toast-alert.active { transform: translate(-50%, -50%) scale(1); }
 
     </style>
 </head>
 <body>
 
-    <div id="error-toast">¡DESALINEADO!</div>
+    <div id="toast-alert">¡REINTENTAR!</div>
 
-    <div id="screen-start" class="full-screen-overlay">
-        <div class="glass-card">
-            <h1 style="color:var(--vernier-purple); font-size: 2.8rem; margin-bottom: 10px; font-weight: 900;">VERNIER PRO</h1>
-            <p style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 40px;">Sistema de Entrenamiento Visual</p>
+    <div id="overlay-modes" class="game-overlay">
+        <div class="modal-card">
+            <h1 style="color:var(--vernier-purple); font-size: 3rem; margin-bottom: 10px; font-weight: 900;">MISIÓN VERNIER</h1>
+            <p style="color: var(--text-dim); margin-bottom: 40px;">Entrenamiento de Hiperagudeza Visual</p>
             
-            <div style="background: rgba(0,0,0,0.2); padding: 30px; border-radius: 35px; text-align: left; margin-bottom: 40px;">
-                <p style="margin: 0 0 10px 0; color: var(--green-neon); font-weight: bold;">OBJETIVO:</p>
-                <p style="margin: 0; font-size: 0.95rem; line-height: 1.6;">
-                    Alinea la barra morada con la gris. El margen de error permitido es del <b>10%</b>. 
-                    A partir del nivel 5, prepárate para alineaciones <b>diagonales</b>.
-                </p>
+            <div class="mode-selector" onclick="irAConfiguracion('entrenamiento')">
+                <h3>⏱️ MODO CRONOMETRADO</h3>
+                <p>Enfoque en la precisión absoluta. Medimos cuánto tardas en lograr la alineación perfecta.</p>
+            </div>
+            
+            <div class="mode-selector" onclick="irAConfiguracion('contrareloj')">
+                <h3>🔥 MODO CONTRARELOJ</h3>
+                <p>Desafío bajo presión. Tienes segundos limitados para alinear antes de perder una vida.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay-setup" class="game-overlay" style="display: none;">
+        <div class="modal-card">
+            <h2 id="setup-title" style="color: var(--vernier-purple); font-size: 2rem;">INSTRUCCIONES</h2>
+            <div id="setup-body" style="margin: 35px 0; line-height: 1.8; text-align: left; color: #cbd5e1; font-size: 1.1rem;"></div>
+            
+            <div id="time-picker-area" style="display: none;">
+                <p style="font-weight: bold; margin-bottom: 10px;">Dificultad (Tiempo inicial):</p>
+                <input type="range" id="input-time-slider" min="3" max="15" value="10" 
+                       style="width: 100%; margin: 25px 0;" 
+                       oninput="document.getElementById('display-time-val').innerText = this.value">
+                <div style="font-size: 4rem; font-weight: 900; color: white;"><span id="display-time-val">10</span>s</div>
             </div>
 
-            <button onclick="iniciarSesion()" style="background:var(--green-neon); color:var(--navy-bg); width:100%; border-radius:50px; padding:25px; font-weight:900; border:none; cursor:pointer; font-size: 1.5rem; box-shadow: 0 8px 0 #16a34a;">
-                INICIAR MISIÓN
+            <button onclick="iniciarPartidaReal()" style="background:var(--green-neon); color:var(--navy-dark); width:100%; border-radius:50px; padding:30px; font-weight:900; border:none; margin-top:30px; cursor:pointer; font-size: 1.6rem; box-shadow: 0 8px 0 #16a34a;">
+                ¡COMENZAR AHORA!
             </button>
         </div>
     </div>
 
-    <div id="screen-success" class="full-screen-overlay" style="display: none;">
-        <div class="glass-card" style="border: 3px solid var(--green-neon);">
-            <h2 style="color:var(--green-neon); font-size: 2.5rem; margin: 0;">¡BIEN HECHO!</h2>
-            <div style="margin: 40px 0; background: rgba(0,0,0,0.3); padding: 40px; border-radius: 40px;">
-                <p style="text-transform: uppercase; color: #94a3b8; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 10px;">Exactitud Lograda</p>
-                <div id="txt-precision" style="font-size: 5rem; font-weight: 900; color: var(--vernier-purple); line-height: 1;">98%</div>
-            </div>
-            <button onclick="continuarAlSiguienteNivel()" style="background:var(--green-neon); color:var(--navy-bg); width:100%; border-radius:50px; padding:25px; font-weight:900; border:none; cursor:pointer; font-size: 1.5rem;">
-                SIGUIENTE RETO
-            </button>
+    <div id="victory-screen">
+        <h2 style="color:var(--green-neon); font-size: 3rem; margin: 0;">¡OBJETIVO LOGRADO!</h2>
+        <div class="precision-badge">
+            <p style="text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); font-size: 0.9rem; margin-bottom: 15px;">Precisión de Alineación</p>
+            <div id="precision-value">100%</div>
+        </div>
+        <button onclick="cargarSiguienteNivel()" style="background:var(--green-neon); color:var(--navy-dark); width:100%; border-radius:50px; padding:25px; font-weight:900; border:none; cursor:pointer; font-size: 1.5rem;">
+            CONTINUAR MISIÓN
+        </button>
+    </div>
+
+    <div id="hud-interface">
+        <div class="hud-item">
+            <span class="hud-label">Nivel</span>
+            <span id="val-nivel" class="hud-value">1</span>
+        </div>
+        
+        <div id="timer-wrapper">
+            <div id="timer-progress"></div>
+        </div>
+
+        <div class="hud-item">
+            <span class="hud-label">Vidas</span>
+            <span id="val-vidas" class="hud-value">❤️❤️❤️</span>
         </div>
     </div>
 
-    <div id="hud-container">
-        <div class="stat-panel"><span class="stat-label">Nivel</span><span id="display-nivel" class="stat-value">1</span></div>
-        <div class="stat-panel"><span class="stat-label">Vidas</span><span id="display-vidas" class="stat-value">❤️❤️❤️</span></div>
-    </div>
-
-    <div id="game-canvas">
-        <div id="target-line" class="vernier-line"></div>
-        <div id="player-line" class="vernier-line"></div>
-        <button id="confirm-action-btn" onclick="procesarVerificacion()">CONFIRMAR ALINEACIÓN</button>
+    <div id="game-arena">
+        <div id="line-fixed" class="vernier-line"></div>
+        <div id="line-mobile" class="vernier-line"></div>
+        <button id="btn-verify" onclick="validarAlineacionFinal()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
     <script>
-        // --- CONSTANTES DE INTEGRACIÓN (GOOGLE SHEETS) ---
-        const WEB_APP_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const SHEET_MAP = {
+        /* =========================================
+           SISTEMA DE DATOS Y GOOGLE SHEETS
+           ========================================= */
+        const FORM_ENDPOINT = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const FORM_MAP = {
             paciente: "entry.369874016",
             juego: "entry.1353470174",
             nivel: "entry.721051298",
@@ -220,173 +406,268 @@
             fecha: "entry.845098414"
         };
 
-        // --- ESTADO DEL JUEGO ---
-        let nivel = 1, vidas = 3, aciertosTotales = 0, fallosTotales = 0;
-        let dataFija = {x: 0, y: 0, angulo: 0};
-        let dataMovil = {x: 0, y: 0, angulo: 0};
-        let juegoEstaActivo = false;
-        let estaSiendoArrastrado = false;
-
-        // --- FLUJO DE INICIO ---
-        function iniciarSesion() {
-            document.getElementById('screen-start').style.display = 'none';
-            document.getElementById('hud-container').style.display = 'flex';
-            document.getElementById('confirm-action-btn').style.display = 'block';
-            juegoEstaActivo = true;
-            prepararEscenario();
-        }
-
-        function prepararEscenario() {
-            // Algoritmo de Safe Zone (Evita que nazcan en bordes o sobre el botón)
-            // X entre 25% y 75% | Y entre 20% y 60%
-            dataFija.x = 25 + (Math.random() * 50);
-            dataFija.y = 20 + (Math.random() * 40);
-
-            // Determinar orientación según nivel
-            let chance = Math.random();
-            if (nivel >= 5 && chance > 0.6) {
-                dataFija.angulo = 45; // Modo Diagonal
-            } else if (chance > 0.3) {
-                dataFija.angulo = 90; // Modo Vertical
-            } else {
-                dataFija.angulo = 0;  // Modo Horizontal
-            }
-
-            // Posición inicial del jugador (Alejado del objetivo)
-            dataMovil.x = dataFija.x > 50 ? 15 : 85;
-            dataMovil.y = 65; // Parte inferior del área de juego
-            dataMovil.angulo = dataFija.angulo;
-
-            renderizarLíneas();
-        }
-
-        function renderizarLíneas() {
-            const elFijo = document.getElementById('target-line');
-            const elMovil = document.getElementById('player-line');
-
-            elFijo.style.left = dataFija.x + "%";
-            elFijo.style.top = dataFija.y + "%";
-            elFijo.style.transform = `translate(-50%, -50%) rotate(${dataFija.angulo}deg)`;
-
-            elMovil.style.left = dataMovil.x + "%";
-            elMovil.style.top = dataMovil.y + "%";
-            elMovil.style.transform = `translate(-50%, -50%) rotate(${dataMovil.angulo}deg)`;
-        }
-
-        // --- LÓGICA DE INTERACCIÓN (SOPORTE TOTAL PC Y MÓVIL) ---
-        const lineaJugador = document.getElementById('player-line');
-
-        // Función unificada para manejar el movimiento
-        const manejarMovimiento = (e) => {
-            if (!estaSiendoArrastrado || !juegoEstaActivo) return;
-            
-            const pointer = e.touches ? e.touches[0] : e;
-            
-            // Cálculo de posición en porcentaje
-            let nuevoX = (pointer.clientX / window.innerWidth) * 100;
-            let nuevoY = (pointer.clientY / window.innerHeight) * 100;
-
-            // REGLA DE ORO: No permitimos que la línea baje del 75% (Zona del botón)
-            dataMovil.x = nuevoX;
-            dataMovil.y = Math.min(nuevoY, 74); 
-
-            renderizarLíneas();
+        /* =========================================
+           VARIABLES DE ESTADO GLOBAL
+           ========================================= */
+        let estado = {
+            nivelActual: 1,
+            vidasRestantes: 3,
+            modoJuego: '', // 'entrenamiento' o 'contrareloj'
+            aciertosTotales: 0,
+            fallosTotales: 0,
+            juegoActivo: false,
+            tiempoInicial: 10,
+            cronometro: null,
+            segundosRestantes: 10
         };
 
-        // Eventos de inicio
-        const activarArrastre = (e) => {
-            if(juegoEstaActivo) {
-                estaSiendoArrastrado = true;
-                if(e.type === 'touchstart') e.preventDefault();
-            }
-        };
+        let posFija = { x: 0, y: 0, angulo: 0 };
+        let posMovil = { x: 0, y: 0, angulo: 0 };
 
-        // Enlace de eventos (PC + MÓVIL)
-        lineaJugador.addEventListener('mousedown', activarArrastre);
-        lineaJugador.addEventListener('touchstart', activarArrastre, {passive: false});
+        /* =========================================
+           FLUJO DE NAVEGACIÓN
+           ========================================= */
+        function irAConfiguracion(modoSeleccionado) {
+            console.log("Cambiando a modo:", modoSeleccionado);
+            estado.modoJuego = modoSeleccionado;
+            
+            document.getElementById('overlay-modes').style.display = 'none';
+            document.getElementById('overlay-setup').style.display = 'flex';
+            
+            const titulo = document.getElementById('setup-title');
+            const cuerpo = document.getElementById('setup-body');
+            const areaTiempo = document.getElementById('time-picker-area');
 
-        window.addEventListener('mousemove', manejarMovimiento);
-        window.addEventListener('touchmove', manejarMovimiento, {passive: false});
-
-        window.addEventListener('mouseup', () => estaSiendoArrastrado = false);
-        window.addEventListener('touchend', () => estaSiendoArrastrado = false);
-
-        // --- VALIDACIÓN Y MATEMÁTICAS ---
-        function procesarVerificacion() {
-            if (!juegoEstaActivo) return;
-
-            // Distancia Euclidiana para soportar cualquier ángulo (H, V, Diag)
-            const dx = dataFija.x - dataMovil.x;
-            const dy = dataFija.y - dataMovil.y;
-            const distanciaError = Math.sqrt(dx*dx + dy*dy);
-
-            // EL MARGEN DEL 10%: 
-            // En un sistema de 100 unidades, una barra de 180px representa ~25 unidades.
-            // Un 10% de error es aprox 2.5 a 3.5 unidades.
-            const margenPermitido = 3.6; 
-
-            if (distanciaError <= margenPermitido) {
-                marcarAcierto(distanciaError);
+            if(modoSeleccionado === 'entrenamiento') {
+                titulo.innerText = "ENTRENAMIENTO LIBRE";
+                cuerpo.innerHTML = "• Tu misión es alinear la barra <b>morada</b> con la <b>gris</b>.<br>• El sistema permite un margen de error del <b>10%</b>.<br>• No hay límite de tiempo. Prioriza la exactitud visual.<br>• A partir del nivel 5, las barras podrán aparecer en <b>diagonal</b>.";
+                areaTiempo.style.display = 'none';
             } else {
-                marcarFallo();
+                titulo.innerText = "RETO CONTRARELOJ";
+                cuerpo.innerHTML = "• ¡Misión Crítica! Alinea las barras antes de que el tiempo se agote.<br>• Si el reloj llega a cero, perderás una vida.<br>• El tiempo disponible disminuirá gradualmente en cada nivel.<br>• Mantén la calma y la precisión.";
+                areaTiempo.style.display = 'block';
             }
         }
 
-        function marcarAcierto(err) {
-            juegoEstaActivo = false;
-            aciertosTotales++;
+        function iniciarPartidaReal() {
+            console.log("Iniciando partida...");
+            estado.tiempoInicial = parseInt(document.getElementById('input-time-slider').value);
             
-            // Cálculo visual de precisión
-            let score = Math.max(0, 100 - (err * 6)).toFixed(1);
-            document.getElementById('txt-precision').innerText = score + "%";
-            document.getElementById('screen-success').style.display = 'flex';
+            document.getElementById('overlay-setup').style.display = 'none';
+            document.getElementById('hud-interface').style.display = 'flex';
+            document.getElementById('btn-verify').style.display = 'block';
+            
+            if(estado.modoJuego === 'contrareloj') {
+                document.getElementById('timer-wrapper').style.display = 'block';
+            }
+            
+            estado.juegoActivo = true;
+            generarNuevoReto();
         }
 
-        function marcarFallo() {
-            juegoEstaActivo = false;
-            fallosTotales++;
-            vidas--;
+        /* =========================================
+           GENERACIÓN DE NIVELES (MATEMÁTICAS)
+           ========================================= */
+        function generarNuevoReto() {
+            console.log("Generando nivel:", estado.nivelActual);
             
-            document.getElementById('display-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+            // Definición de Zona Segura (25% a 75% de la pantalla)
+            posFija.x = 25 + (Math.random() * 50);
+            posFija.y = 20 + (Math.random() * 35); // Solo parte superior media
+
+            // Lógica de Rotación (Nivel 5 introduce diagonales)
+            let semillaAleatoria = Math.random();
+            if (estado.nivelActual >= 5 && semillaAleatoria > 0.6) {
+                posFija.angulo = 45; // Diagonal
+            } else if (semillaAleatoria > 0.3) {
+                posFija.angulo = 90; // Vertical
+            } else {
+                posFija.angulo = 0;  // Horizontal
+            }
+
+            // Posicionamiento de la barra del jugador
+            posMovil.x = posFija.x > 50 ? 15 : 85; // Aparece en el lado opuesto
+            posMovil.y = 65; // Altura estándar de inicio
+            posMovil.angulo = posFija.angulo;
+
+            dibujarElementos();
             
-            const toast = document.getElementById('error-toast');
+            if(estado.modoJuego === 'contrareloj') {
+                iniciarCuentaRegresiva();
+            }
+        }
+
+        function dibujarElementos() {
+            const elFijo = document.getElementById('line-fixed');
+            const elMovil = document.getElementById('line-mobile');
+
+            elFijo.style.left = posFija.x + "%";
+            elFijo.style.top = posFija.y + "%";
+            elFijo.style.transform = `translate(-50%, -50%) rotate(${posFija.angulo}deg)`;
+
+            elMovil.style.left = posMovil.x + "%";
+            elMovil.style.top = posMovil.y + "%";
+            elMovil.style.transform = `translate(-50%, -50%) rotate(${posMovil.angulo}deg)`;
+        }
+
+        /* =========================================
+           SISTEMA DE ARRASTRE (MOUSE & TOUCH)
+           ========================================= */
+        let dragEnProgreso = false;
+        const targetMovil = document.getElementById('line-mobile');
+
+        // Handlers para Touch
+        targetMovil.addEventListener('touchstart', (e) => {
+            if(!estado.juegoActivo) return;
+            dragEnProgreso = true;
+            // No prevenimos default aquí para permitir scroll si fuera necesario, 
+            // pero el body tiene touch-action: none.
+        }, { passive: true });
+
+        // Handlers para Mouse
+        targetMovil.addEventListener('mousedown', (e) => {
+            if(!estado.juegoActivo) return;
+            dragEnProgreso = true;
+        });
+
+        // Movimiento Unificado
+        window.addEventListener('pointermove', (e) => {
+            if (!dragEnProgreso || !estado.juegoActivo) return;
+            
+            let xPct = (e.clientX / window.innerWidth) * 100;
+            let yPct = (e.clientY / window.innerHeight) * 100;
+
+            // REGLA DE SEGURIDAD: Impedir que la barra baje del 74% (Zona de botón)
+            posMovil.x = xPct;
+            posMovil.y = Math.min(yPct, 74); 
+
+            dibujarElementos();
+        });
+
+        window.addEventListener('pointerup', () => {
+            dragEnProgreso = false;
+        });
+
+        /* =========================================
+           LÓGICA DE TIEMPO (CONTRARELOJ)
+           ========================================= */
+        function iniciarCuentaRegresiva() {
+            clearInterval(estado.cronometro);
+            
+            // El tiempo se reduce 0.4s por nivel, mínimo 2.5s
+            let tiempoParaEsteNivel = Math.max(2.5, estado.tiempoInicial - (estado.nivelActual * 0.4));
+            estado.segundosRestantes = tiempoParaEsteNivel;
+            
+            const barra = document.getElementById('timer-progress');
+            
+            estado.cronometro = setInterval(() => {
+                estado.segundosRestantes -= 0.1;
+                let porcentaje = (estado.segundosRestantes / tiempoParaEsteNivel) * 100;
+                barra.style.width = porcentaje + "%";
+
+                if(estado.segundosRestantes <= 0) {
+                    clearInterval(estado.cronometro);
+                    procesarFallo("¡TIEMPO AGOTADO!");
+                }
+            }, 100);
+        }
+
+        /* =========================================
+           VALIDACIÓN Y RESULTADOS
+           ========================================= */
+        function validarAlineacionFinal() {
+            if (!estado.juegoActivo) return;
+            
+            clearInterval(estado.cronometro);
+            
+            // Pitágoras para calcular error de distancia real (puntos en plano cartesiano %)
+            const diferenciaX = posFija.x - posMovil.x;
+            const diferenciaY = posFija.y - posMovil.y;
+            const errorAbsoluto = Math.sqrt(diferenciaX * diferenciaX + diferenciaY * diferenciaY);
+
+            // Umbral del 10% de la longitud de la barra (La barra mide aprox 180px)
+            // En unidades de porcentaje de pantalla, esto equivale a ~3.8 unidades
+            const margenDeExito = 3.8; 
+
+            if (errorAbsoluto <= margenDeExito) {
+                procesarAcierto(errorAbsoluto);
+            } else {
+                procesarFallo("¡DESALINEADO!");
+            }
+        }
+
+        function procesarAcierto(dist) {
+            console.log("¡Acierto! Error:", dist);
+            estado.juegoActivo = false;
+            estado.aciertosTotales++;
+            
+            // Calcular porcentaje visual de precisión para el usuario
+            let precisionVisual = Math.max(0, 100 - (dist * 5)).toFixed(0);
+            document.getElementById('precision-value').innerText = precisionVisual + "%";
+            
+            // Mostrar pantalla de victoria
+            document.getElementById('victory-screen').classList.add('active');
+        }
+
+        function procesarFallo(mensaje) {
+            console.log("Fallo:", mensaje);
+            estado.juegoActivo = false;
+            estado.fallosTotales++;
+            estado.vidasRestantes--;
+            
+            // Actualizar HUD de vidas
+            document.getElementById('val-vidas').innerText = "❤️".repeat(Math.max(0, estado.vidasRestantes));
+            
+            // Mostrar Toast de error
+            const toast = document.getElementById('toast-alert');
+            toast.innerText = mensaje;
             toast.classList.add('active');
 
             setTimeout(() => {
                 toast.classList.remove('active');
-                if (vidas <= 0) {
-                    finalizarYEnviar();
+                if (estado.vidasRestantes <= 0) {
+                    finalizarYEnviarResultados();
                 } else {
-                    juegoEstaActivo = true;
-                    prepararEscenario();
+                    estado.juegoActivo = true;
+                    generarNuevoReto();
                 }
-            }, 1400);
+            }, 1500);
         }
 
-        function continuarAlSiguienteNivel() {
-            nivel++;
-            document.getElementById('display-nivel').innerText = nivel;
-            document.getElementById('screen-success').style.display = 'none';
-            juegoEstaActivo = true;
-            prepararEscenario();
+        function cargarSiguienteNivel() {
+            estado.nivelActual++;
+            document.getElementById('val-nivel').innerText = estado.nivelActual;
+            document.getElementById('victory-screen').classList.remove('active');
+            estado.juegoActivo = true;
+            generarNuevoReto();
         }
 
-        // --- FINALIZACIÓN ---
-        function finalizarYEnviar() {
-            const formData = new FormData();
-            formData.append(SHEET_MAP.paciente, localStorage.getItem('pacienteActual') || "Manu");
-            formData.append(SHEET_MAP.juego, "Vernier PRO - Master");
-            formData.append(SHEET_MAP.nivel, nivel);
-            formData.append(SHEET_MAP.aciertos, aciertosTotales);
-            formData.append(SHEET_MAP.fallos, fallosTotales);
-            formData.append(SHEET_MAP.fecha, new Date().toLocaleDateString());
+        /* =========================================
+           ENVÍO DE DATOS A GOOGLE SHEETS
+           ========================================= */
+        function finalizarYEnviarResultados() {
+            console.log("Finalizando sesión y enviando datos...");
+            
+            const payload = new FormData();
+            payload.append(FORM_MAP.paciente, localStorage.getItem('pacienteActual') || "Manu");
+            payload.append(FORM_MAP.juego, "Vernier PRO - " + estado.modoJuego);
+            payload.append(FORM_MAP.nivel, estado.nivelActual);
+            payload.append(FORM_MAP.aciertos, estado.aciertosTotales);
+            payload.append(FORM_MAP.fallos, estado.fallosTotales);
+            payload.append(FORM_MAP.fecha, new Date().toLocaleDateString());
 
-            fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: formData })
-                .then(() => {
-                    alert("SESIÓN COMPLETADA\nNivel alcanzado: " + nivel);
-                    location.reload();
-                })
-                .catch(() => location.reload());
+            // Envío asíncrono modo 'no-cors' para Google Forms
+            fetch(FORM_ENDPOINT, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: payload 
+            }).then(() => {
+                alert("ENTRENAMIENTO COMPLETADO\nNivel Alcanzado: " + estado.nivelActual);
+                location.reload();
+            }).catch((err) => {
+                console.error("Error al enviar:", err);
+                location.reload();
+            });
         }
     </script>
 </body>
