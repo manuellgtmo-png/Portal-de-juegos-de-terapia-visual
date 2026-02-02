@@ -3,69 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Misión Vernier PRO - Hiperagudeza y Rotación</title>
+    <title>Vernier Precision Pro - Clinical Grade v4.0</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         /* =========================================
-           BLOQUE 1: ARQUITECTURA VISUAL (CSS)
-           ========================================= 
-        */
+           ESTILOS GLOBALES Y VARIABLES DE DISEÑO
+           ========================================= */
         :root {
-            --navy-dark: #0f172a;
-            --navy-card: #1e293b;
-            --purple-vernier: #a855f7;
-            --purple-glow: rgba(168, 85, 247, 0.5);
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --purple-main: #a855f7;
+            --purple-glow: rgba(168, 85, 247, 0.6);
             --green-success: #22c55e;
-            --green-shadow: #16a34a;
-            --red-danger: #f43f5e;
-            --slate-gray: #475569;
-            --text-dim: #94a3b8;
-            --white: #f8fafc;
+            --green-dark: #16a34a;
+            --red-alert: #f43f5e;
+            --slate-text: #94a3b8;
+            --white-pure: #ffffff;
+            --shadow-standard: 0 10px 30px rgba(0,0,0,0.5);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Reset de Estilos y Prevención de Gestos */
+        /* Reset Completo para Aplicaciones Táctiles */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
             user-select: none;
-            margin: 0; padding: 0;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            background-color: var(--navy-dark);
-            color: var(--white);
+            background-color: var(--bg-primary);
+            color: var(--white-pure);
             font-family: 'Montserrat', sans-serif;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
-            touch-action: none; /* Crucial para multitouch */
+            touch-action: none;
+            display: flex;
+            flex-direction: column;
         }
 
         /* =========================================
-           BLOQUE 2: INTERFAZ HUD (TOP BAR)
-           ========================================= 
-        */
-        #ui-hud {
+           SISTEMA DE HUD (INTERFAZ DE USUARIO)
+           ========================================= */
+        #ui-layer {
             position: absolute;
-            top: 0; left: 0; width: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
             padding: 30px;
-            display: none;
+            display: none; /* Se activa mediante JS */
             justify-content: space-between;
             align-items: flex-start;
-            z-index: 100;
+            z-index: 500;
             pointer-events: none;
         }
 
-        .hud-stat-box {
-            background: var(--navy-card);
-            padding: 18px 25px;
-            border-radius: 25px;
+        .hud-widget {
+            background: var(--bg-secondary);
+            padding: 15px 25px;
+            border-radius: 22px;
             border: 1px solid rgba(255,255,255,0.08);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            box-shadow: var(--shadow-standard);
             text-align: center;
-            min-width: 130px;
+            min-width: 120px;
             pointer-events: auto;
         }
 
@@ -73,483 +79,543 @@
             display: block;
             font-size: 0.7rem;
             font-weight: 900;
-            color: var(--text-dim);
+            color: var(--slate-text);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
         }
 
         .hud-value {
             font-size: 1.8rem;
             font-weight: 900;
-            color: white;
         }
 
-        /* Barra de Tiempo (Modo Reto) */
-        #timer-box {
+        /* Barra de Tiempo Superior */
+        #time-track {
             position: absolute;
-            top: 45px; left: 50%;
+            top: 45px;
+            left: 50%;
             transform: translateX(-50%);
-            width: 280px; height: 14px;
+            width: 260px;
+            height: 12px;
             background: rgba(255,255,255,0.05);
             border-radius: 20px;
             overflow: hidden;
+            border: 2px solid var(--bg-primary);
             display: none;
-            border: 2px solid var(--navy-dark);
-            box-shadow: 0 0 25px rgba(0,0,0,0.3);
         }
 
-        #timer-fill {
-            width: 100%; height: 100%;
-            background: var(--red-danger);
+        #time-fill {
+            width: 100%;
+            height: 100%;
+            background: var(--red-alert);
             transition: width 0.1s linear;
         }
 
         /* =========================================
-           BLOQUE 3: ESCENARIO Y LÍNEAS
-           ========================================= 
-        */
-        #game-arena {
+           ESCENARIO DE TRABAJO (VERNIR STAGE)
+           ========================================= */
+        #stage {
+            flex: 1;
+            position: relative;
             width: 100%;
             height: 100%;
-            position: relative;
+            z-index: 10;
         }
 
-        .vernier-element {
+        /* Barras Redimensionadas para mayor complejidad visual */
+        .vernier-bar {
             position: absolute;
-            width: 15px;
-            height: 190px;
-            border-radius: 50px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            width: 10px; /* Reducción de ancho */
+            height: 110px; /* Reducción de alto */
+            border-radius: 40px;
             transform-origin: center center;
-            will-change: transform, top, left;
+            will-change: transform;
         }
 
-        #fixed-target {
-            background-color: var(--slate-gray);
+        #bar-fixed {
+            background-color: #475569;
             z-index: 5;
             opacity: 0.9;
         }
 
-        #player-controlled {
-            background-color: var(--purple-vernier);
-            box-shadow: 0 0 35px var(--purple-glow);
-            z-index: 10;
+        #bar-player {
+            background-color: var(--purple-main);
+            box-shadow: 0 0 30px var(--purple-glow);
+            z-index: 20;
             cursor: grab;
         }
 
-        #player-controlled:active {
+        #bar-player:active {
             cursor: grabbing;
-            transform: translate(-50%, -50%) scale(1.02);
+            filter: brightness(1.2);
         }
 
         /* =========================================
-           BLOQUE 4: BOTONES Y MENSAJES
-           ========================================= 
-        */
-        #confirm-alignment-btn {
+           CONTROLES DE PRECISIÓN (OPCIONALES)
+           ========================================= */
+        #precision-pad {
             position: absolute;
-            bottom: 50px; left: 50%;
-            transform: translateX(-50%);
-            width: 85%; max-width: 550px;
-            height: 95px;
-            background: var(--green-success);
-            color: var(--navy-dark);
-            border: none;
-            border-radius: 50px;
-            font-size: 1.8rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            box-shadow: 0 12px 0 var(--green-shadow);
-            z-index: 200;
+            right: 25px;
+            top: 55%;
+            transform: translateY(-50%);
             display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 600;
+        }
+
+        .pad-btn {
+            width: 65px;
+            height: 65px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--purple-main);
+            border-radius: 18px;
+            color: white;
+            font-weight: 900;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: all 0.1s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #confirm-alignment-btn:active {
-            transform: translateX(-50%) translateY(6px);
-            box-shadow: 0 6px 0 var(--green-shadow);
+        .pad-btn:active {
+            transform: scale(0.9);
+            background: var(--purple-main);
         }
 
-        /* Overlays y Modales */
-        .overlay-screen {
+        /* =========================================
+           OVERLAYS, MENÚS Y MODALES
+           ========================================= */
+        .full-screen-overlay {
             position: fixed;
             inset: 0;
             background: rgba(15, 23, 42, 0.98);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 500;
-            padding: 25px;
+            z-index: 1000;
+            padding: 30px;
         }
 
-        .modal-container {
-            background: var(--navy-card);
+        .card-modal {
+            background: var(--bg-secondary);
             padding: 50px;
-            border-radius: 55px;
+            border-radius: 50px;
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 50px 100px rgba(0,0,0,0.7);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
         }
 
-        .game-mode-card {
-            background: rgba(255,255,255,0.03);
-            border: 2px solid rgba(255,255,255,0.08);
-            padding: 35px;
-            border-radius: 40px;
+        /* Selectores de Configuración */
+        .config-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin: 20px 0;
-            text-align: left;
+            background: rgba(0,0,0,0.25);
+            padding: 18px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .custom-select {
+            background: var(--bg-primary);
+            color: white;
+            border: 1px solid var(--purple-main);
+            padding: 8px 15px;
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        /* Botón de Acción Principal */
+        #confirm-btn {
+            position: absolute;
+            bottom: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 500px;
+            height: 90px;
+            background: var(--green-success);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 45px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            box-shadow: 0 12px 0 var(--green-dark);
+            z-index: 800;
+            display: none;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.1s;
         }
 
-        .game-mode-card:hover {
-            border-color: var(--purple-vernier);
-            background: rgba(168, 85, 247, 0.1);
-            transform: translateY(-5px);
+        #confirm-btn:active {
+            transform: translateX(-50%) translateY(8px);
+            box-shadow: 0 4px 0 var(--green-dark);
         }
 
-        /* Carta de Victoria */
-        #win-modal {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: var(--navy-card);
-            padding: 60px;
-            border-radius: 60px;
-            text-align: center;
-            z-index: 600;
-            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 5px solid var(--green-success);
-            width: 90%; max-width: 550px;
+        /* Pantalla de Resultados Final */
+        #result-screen {
+            display: none;
         }
 
-        #win-modal.active { transform: translate(-50%, -50%) scale(1); }
-
-        #accuracy-box {
-            margin: 40px 0;
-            background: rgba(0,0,0,0.3);
-            padding: 40px;
-            border-radius: 40px;
-        }
-
-        #accuracy-value {
+        .accuracy-hero {
             font-size: 6rem;
             font-weight: 900;
-            color: var(--purple-vernier);
-            text-shadow: 0 0 30px var(--purple-glow);
+            color: var(--purple-main);
+            margin: 25px 0;
+            text-shadow: 0 0 40px var(--purple-glow);
         }
 
-        /* Alertas */
-        #flash-toast {
-            position: fixed;
-            top: 45%; left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: var(--red-danger);
-            padding: 40px 80px;
-            border-radius: 40px;
-            font-weight: 900;
-            font-size: 2.5rem;
-            z-index: 700;
-            transition: 0.4s;
-            border: 8px solid white;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        /* Switch UI */
+        .ui-switch {
+            position: relative;
+            display: inline-block;
+            width: 55px;
+            height: 30px;
         }
-        #flash-toast.active { transform: translate(-50%, -50%) scale(1); }
+        .ui-switch input { opacity: 0; width: 0; height: 0; }
+        .ui-slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background: #334155; transition: .4s; border-radius: 30px;
+        }
+        .ui-slider:before {
+            position: absolute; content: ""; height: 22px; width: 22px;
+            left: 4px; bottom: 4px; background: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .ui-slider { background: var(--purple-main); }
+        input:checked + .ui-slider:before { transform: translateX(25px); }
 
-        .rotation-indicator {
-            position: absolute;
-            bottom: 160px; width: 100%;
-            text-align: center; color: var(--text-dim);
-            font-size: 0.85rem; font-weight: 700;
-            letter-spacing: 1px;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
-    <div id="screen-selector" class="overlay-screen">
-        <div class="modal-container">
-            <h1 style="color:var(--purple-vernier); font-size: 3rem; margin-bottom: 40px; font-weight: 900;">MISIÓN VERNIER</h1>
+    <div id="overlay-main" class="full-screen-overlay">
+        <div class="card-modal">
+            <h1 style="color:var(--purple-main); font-size: 2.8rem; margin-bottom: 10px; font-weight: 900;">VERNIE PRO</h1>
+            <p style="color:var(--slate-text); margin-bottom: 35px;">Terapia de Hiperagudeza Visual</p>
             
-            <div class="game-mode-card" onclick="initSetup('normal')">
-                <h3 style="color:white; font-size:1.4rem; margin-bottom:10px;">⏱️ ENTRENAMIENTO LIBRE</h3>
-                <p style="color:var(--text-dim); line-height:1.5;">Práctica de alineación y rotación sin límite de tiempo. Ideal para terapia inicial.</p>
+            <div class="config-box">
+                <span style="font-weight: 700;">Modo Cronómetro</span>
+                <label class="ui-switch">
+                    <input type="checkbox" id="pref-time" checked>
+                    <span class="ui-slider"></span>
+                </label>
             </div>
 
-            <div class="game-mode-card" onclick="initSetup('time')">
-                <h3 style="color:var(--red-danger); font-size:1.4rem; margin-bottom:10px;">🔥 RETO CONTRARELOJ</h3>
-                <p style="color:var(--text-dim); line-height:1.5;">El reloj no perdona. Alinea la posición y el ángulo antes de que se agote el tiempo.</p>
+            <div class="config-box" id="time-depth">
+                <span style="font-weight: 700;">Segundos Iniciales</span>
+                <select id="pref-seconds" class="custom-select">
+                    <option value="15">15s - Principiante</option>
+                    <option value="10" selected>10s - Estándar</option>
+                    <option value="5">5s - Experto</option>
+                    <option value="3">3s - Misión Imposible</option>
+                </select>
             </div>
+
+            <div class="config-box">
+                <span style="font-weight: 700;">Controles de Precisión</span>
+                <label class="ui-switch">
+                    <input type="checkbox" id="pref-btns">
+                    <span class="ui-slider"></span>
+                </label>
+            </div>
+
+            <button onclick="bootGame()" style="background:var(--green-success); width:100%; padding:28px; border-radius:35px; border:none; font-weight:900; font-size:1.5rem; margin-top:25px; cursor:pointer; color:var(--bg-primary);">
+                INICIAR SESIÓN
+            </button>
         </div>
     </div>
 
-    <div id="screen-setup" class="overlay-screen" style="display: none;">
-        <div class="modal-container">
-            <h2 style="color:var(--purple-vernier); font-size: 2.2rem;">OBJETIVO CLÍNICO</h2>
-            <div style="background: rgba(0,0,0,0.2); padding: 35px; border-radius: 35px; text-align: left; margin: 30px 0;">
-                <p style="font-size: 1.1rem; line-height: 1.8;">
-                    1. <b>Posicionamiento:</b> Alinea la barra morada con el eje de la barra gris.<br>
-                    2. <b>Factor Rotacional:</b> Ajusta el ángulo para que sea idéntico al objetivo.<br>
-                    3. <b>Control:</b> Usa un dedo para mover y dos dedos para rotar (o rueda del mouse).
-                </p>
-            </div>
-            <button onclick="startGame()" style="background:var(--green-success); width:100%; padding:30px; border-radius:50px; border:none; font-weight:900; font-size: 1.6rem; cursor:pointer; box-shadow: 0 8px 0 var(--green-shadow);">INICIAR MISIÓN</button>
+    <div id="result-screen" class="full-screen-overlay">
+        <div class="card-modal">
+            <h2 id="result-title" style="color:var(--green-success); font-size: 2.5rem;">¡NIVEL COMPLETADO!</h2>
+            <div class="accuracy-hero" id="accuracy-text">98%</div>
+            <p id="result-desc" style="color:var(--slate-text); line-height: 1.6; margin-bottom: 40px;">Tu alineación vernier está dentro del rango terapéutico óptimo.</p>
+            
+            <button id="result-btn" onclick="handleFlow()" style="background:var(--green-success); width:100%; padding:25px; border-radius:30px; border:none; font-weight:900; font-size: 1.3rem; color:var(--bg-primary);">
+                CONTINUAR
+            </button>
         </div>
     </div>
 
-    <div id="ui-hud">
-        <div class="hud-stat-box"><span class="hud-label">Nivel</span><span id="ui-lvl" class="hud-value">1</span></div>
-        <div id="timer-box"><div id="timer-fill"></div></div>
-        <div class="hud-stat-box"><span class="hud-label">Vidas</span><span id="ui-hp" class="hud-value">❤️❤️❤️</span></div>
-    </div>
-
-    <div id="game-arena">
-        <div id="fixed-target" class="vernier-element"></div>
-        <div id="player-controlled" class="vernier-element"></div>
-        <div class="rotation-indicator">Gira la barra para igualar el ángulo del objetivo</div>
-        <button id="confirm-alignment-btn" onclick="validateMission()">CONFIRMAR ALINEACIÓN</button>
-    </div>
-
-    <div id="win-modal">
-        <h2 style="color:var(--green-success); font-size: 3rem; margin:0;">¡LOGRADO!</h2>
-        <div id="accuracy-box">
-            <span style="color:var(--text-dim); font-size:0.9rem; text-transform:uppercase; letter-spacing:3px;">Precisión Final</span>
-            <div id="accuracy-value">99%</div>
+    <div id="ui-layer">
+        <div class="hud-widget">
+            <span class="hud-label">Misión</span>
+            <span id="val-lvl" class="hud-value">1</span>
         </div>
-        <button onclick="advanceLevel()" style="background:var(--green-success); border:none; width:100%; padding:30px; border-radius:40px; font-weight:900; font-size:1.5rem; cursor:pointer;">SIGUIENTE NIVEL</button>
+        
+        <div id="time-track">
+            <div id="time-fill"></div>
+        </div>
+
+        <div class="hud-widget">
+            <span class="hud-label">Integridad</span>
+            <span id="val-hp" class="hud-value">❤️❤️❤️</span>
+        </div>
     </div>
 
-    <div id="flash-toast">¡FALLO!</div>
+    <div id="precision-pad">
+        <button class="pad-btn" onclick="nudge('ang', -2)">↺</button>
+        <button class="pad-btn" onclick="nudge('ang', 2)">↻</button>
+        <button class="pad-btn" onclick="nudge('x', -0.5)">←</button>
+        <button class="pad-btn" onclick="nudge('x', 0.5)">→</button>
+    </div>
+
+    <div id="stage">
+        <div id="bar-fixed" class="vernier-bar"></div>
+        <div id="bar-player" class="vernier-bar"></div>
+        <button id="confirm-btn" onclick="executeEvaluation()">CONFIRMAR ALINEACIÓN</button>
+    </div>
 
     <script>
         /* =========================================
-           BLOQUE 5: MOTOR LÓGICO (JAVASCRIPT)
-           ========================================= 
-        */
-
-        // Estado Maestro del Juego
-        const gameState = {
+           CONFIGURACIÓN DE DATOS (GOOGLE SHEETS)
+           ========================================= */
+        const GOOGLE_DATA_ENDPOINT = "TU_URL_DE_WEB_APP_AQUI"; // Debes pegar tu URL de Apps Script aquí
+        
+        // Objeto de Estado Maestro
+        const session = {
             level: 1,
-            hp: 3,
-            mode: 'normal',
+            lives: 3,
             isActive: false,
-            successCount: 0,
-            failCount: 0,
-            timer: null,
-            timeLimit: 12,
-            currentTime: 12
+            useTime: true,
+            useBtns: false,
+            initialTime: 10,
+            remainingTime: 10,
+            timerClock: null,
+            results: [],
+            patientId: "Paciente_Alpha_" + Math.floor(Math.random()*9000)
         };
 
-        // Propiedades de las Barras
-        const fixedProps = { x: 50, y: 30, angle: 0 };
-        const playerProps = { x: 50, y: 70, angle: 0 };
+        // Coordenadas de las Barras
+        let fixedState = { x: 50, y: 30, ang: 0 };
+        let playerState = { x: 50, y: 70, ang: 0 };
 
-        // --- SISTEMA DE NAVEGACIÓN ---
-        function initSetup(m) {
-            gameState.mode = m;
-            document.getElementById('screen-selector').style.display = 'none';
-            document.getElementById('screen-setup').style.display = 'flex';
-        }
-
-        function startGame() {
-            document.getElementById('screen-setup').style.display = 'none';
-            document.getElementById('ui-hud').style.display = 'flex';
-            document.getElementById('confirm-alignment-btn').style.display = 'block';
-            if(gameState.mode === 'time') document.getElementById('timer-box').style.display = 'block';
+        /* =========================================
+           LÓGICA DE MOTOR DE JUEGO
+           ========================================= */
+        
+        function bootGame() {
+            // Captura de Preferencias
+            session.useTime = document.getElementById('pref-time').checked;
+            session.useBtns = document.getElementById('pref-btns').checked;
+            session.initialTime = parseInt(document.getElementById('pref-seconds').value);
             
-            generateNewLevel();
+            // UI Switch
+            document.getElementById('overlay-main').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            document.getElementById('confirm-btn').style.display = 'block';
+            
+            if(session.useBtns) document.getElementById('precision-pad').style.display = 'flex';
+            if(session.useTime) document.getElementById('time-track').style.display = 'block';
+            
+            startNewLevel();
         }
 
-        // --- MOTOR DE GENERACIÓN DE NIVELES ---
-        function generateNewLevel() {
-            gameState.isActive = true;
-
-            // 1. Ubicación de la Meta (Barra Gris)
-            // Mantenerla en la zona superior segura
-            fixedProps.x = 30 + Math.random() * 40;
-            fixedProps.y = 20 + Math.random() * 20;
-
-            // 2. Lógica de Rotación Progresiva
-            if(gameState.level >= 5) {
-                // Rotaciones complejas aleatorias
-                fixedProps.angle = Math.floor(Math.random() * 360);
-            } else if(gameState.level >= 2) {
-                // Solo Horizontal o Vertical
-                fixedProps.angle = Math.random() > 0.5 ? 0 : 90;
+        function startNewLevel() {
+            session.isActive = true;
+            
+            // Generación de Posición Fija (Evitando HUD)
+            fixedState.x = 30 + Math.random() * 40;
+            fixedState.y = 25 + Math.random() * 15;
+            
+            // Progresión de Dificultad Rotacional
+            if(session.level >= 5) {
+                fixedState.ang = Math.floor(Math.random() * 360);
+            } else if(session.level >= 2) {
+                fixedState.ang = Math.random() > 0.5 ? 0 : 90;
             } else {
-                fixedProps.angle = 0; // Nivel 1 siempre horizontal
+                fixedState.ang = 0;
             }
 
-            // 3. Ubicación del Jugador (Alineación Vernier Extremo a Extremo)
-            // El jugador debe desplazar la barra lateralmente para alinear los ejes
-            playerProps.x = fixedProps.x + (Math.random() > 0.5 ? 25 : -25);
-            playerProps.y = 65; 
-            playerProps.angle = 0; // Siempre inicia en 0 para forzar la rotación
+            // Reset de Barra del Jugador
+            playerState.x = fixedState.x + (Math.random() > 0.5 ? 20 : -20);
+            playerState.y = 65; // Mantenemos separación para Vernier Real
+            playerState.ang = 0;
 
-            syncVisuals();
-            if(gameState.mode === 'time') startMissionTimer();
+            refreshStage();
+            if(session.useTime) launchTimer();
         }
 
-        function syncVisuals() {
-            const fEl = document.getElementById('fixed-target');
-            const pEl = document.getElementById('player-controlled');
+        function refreshStage() {
+            const fBar = document.getElementById('bar-fixed');
+            const pBar = document.getElementById('bar-player');
+            
+            fBar.style.left = fixedState.x + "%";
+            fBar.style.top = fixedState.y + "%";
+            fBar.style.transform = `translate(-50%, -50%) rotate(${fixedState.ang}deg)`;
 
-            fEl.style.left = fixedProps.x + "%";
-            fEl.style.top = fixedProps.y + "%";
-            fEl.style.transform = `translate(-50%, -50%) rotate(${fixedProps.angle}deg)`;
-
-            pEl.style.left = playerProps.x + "%";
-            pEl.style.top = playerProps.y + "%";
-            pEl.style.transform = `translate(-50%, -50%) rotate(${playerProps.angle}deg)`;
+            pBar.style.left = playerState.x + "%";
+            pBar.style.top = playerState.y + "%";
+            pBar.style.transform = `translate(-50%, -50%) rotate(${playerState.ang}deg)`;
         }
 
-        // --- SISTEMA DE CONTROL AVANZADO (TOUCH & MOUSE) ---
-        let isMoving = false;
-        let startRotationAngle = 0;
-        let startPlayerAngle = 0;
+        /* =========================================
+           SISTEMA DE CONTROL (DRAG & TOUCH)
+           ========================================= */
+        let isDragging = false;
+        let touchStartAng = 0;
+        let playerStartAng = 0;
+        const playerEl = document.getElementById('bar-player');
 
-        const pBox = document.getElementById('player-controlled');
-
-        // Manejo de Multitouch (Rotación con 2 dedos)
+        // Soporte Multitouch
         window.addEventListener('touchstart', (e) => {
-            if(!gameState.isActive) return;
-
+            if(!session.isActive) return;
+            
             if(e.touches.length === 2) {
-                // Iniciamos modo rotación
-                isMoving = false; 
+                isDragging = false;
                 const dx = e.touches[0].clientX - e.touches[1].clientX;
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
-                startRotationAngle = Math.atan2(dy, dx) * 180 / Math.PI;
-                startPlayerAngle = playerProps.angle;
-            } else if(e.target === pBox) {
-                isMoving = true;
+                touchStartAng = Math.atan2(dy, dx) * 180 / Math.PI;
+                playerStartAng = playerState.ang;
+            } else if(e.target === playerEl) {
+                isDragging = true;
             }
         }, {passive: false});
 
         window.addEventListener('touchmove', (e) => {
-            if(!gameState.isActive) return;
+            if(!session.isActive) return;
 
             if(e.touches.length === 2) {
-                // Lógica de Rotación
                 const dx = e.touches[0].clientX - e.touches[1].clientX;
                 const dy = e.touches[0].clientY - e.touches[1].clientY;
-                const currentAngle = Math.atan2(dy, dx) * 180 / Math.PI;
-                const angleDiff = currentAngle - startRotationAngle;
-                playerProps.angle = startPlayerAngle + angleDiff;
-                syncVisuals();
-            } else if(isMoving) {
-                // Lógica de Movimiento
+                const currentTouchAng = Math.atan2(dy, dx) * 180 / Math.PI;
+                playerState.ang = playerStartAng + (currentTouchAng - touchStartAng);
+                refreshStage();
+            } else if(isDragging) {
                 const touch = e.touches[0];
-                playerProps.x = (touch.clientX / window.innerWidth) * 100;
-                // Mantener separación Vernier (No encimar)
-                const limitY = (touch.clientY / window.innerHeight) * 100;
-                playerProps.y = Math.min(Math.max(limitY, fixedProps.y + 12), 75);
-                syncVisuals();
+                playerState.x = (touch.clientX / window.innerWidth) * 100;
+                // Bloqueo de eje Y para forzar alineación Vernier lateral
+                refreshStage();
             }
             e.preventDefault();
         }, {passive: false});
 
-        // Manejo de Mouse (Scroll para rotación)
-        pBox.addEventListener('mousedown', () => { if(gameState.isActive) isMoving = true; });
-        window.addEventListener('mousemove', (e) => {
-            if(!isMoving || !gameState.isActive) return;
-            playerProps.x = (e.clientX / window.innerWidth) * 100;
-            const limitY = (e.clientY / window.innerHeight) * 100;
-            playerProps.y = Math.min(Math.max(limitY, fixedProps.y + 12), 75);
-            syncVisuals();
-        });
-        window.addEventListener('mouseup', () => isMoving = false);
+        window.addEventListener('touchend', () => isDragging = false);
+
+        // Control con Mouse / Rueda
         window.addEventListener('wheel', (e) => {
-            if(!gameState.isActive) return;
-            playerProps.angle += e.deltaY > 0 ? 4 : -4;
-            syncVisuals();
+            if(!session.isActive) return;
+            playerState.ang += e.deltaY > 0 ? 3 : -3;
+            refreshStage();
         });
 
-        // --- VALIDACIÓN DE PRECISIÓN CLÍNICA ---
-        function validateMission() {
-            if(!gameState.isActive) return;
-            clearInterval(gameState.timer);
+        function nudge(axis, val) {
+            if(axis === 'x') playerState.x += val;
+            if(axis === 'ang') playerState.ang += val;
+            refreshStage();
+        }
 
-            // 1. Error de Alineación (Distancia entre ejes X considerando rotación)
-            const diffX = Math.abs(fixedProps.x - playerProps.x);
+        /* =========================================
+           EVALUACIÓN, RESULTADOS Y DATOS
+           ========================================= */
+        
+        function executeEvaluation() {
+            if(!session.isActive) return;
+            clearInterval(session.timerClock);
+            session.isActive = false;
+
+            // 1. Cálculo de Error de Eje (Vernier Accuracy)
+            const errorX = Math.abs(fixedState.x - playerState.x);
             
-            // 2. Error de Ángulo (Normalizado a 180 grados)
-            let diffAngle = Math.abs((fixedProps.angle % 180) - (playerProps.angle % 180));
-            if(diffAngle > 90) diffAngle = Math.abs(180 - diffAngle);
+            // 2. Cálculo de Error Angular (Factor Rotacional)
+            let errorAng = Math.abs((fixedState.ang % 180) - (playerState.ang % 180));
+            if(errorAng > 90) errorAng = Math.abs(180 - errorAng);
 
-            // UMBRALES DE ÉXITO (Margen del 10% clínico)
-            // Error X < 3.5% de pantalla y Error Ángulo < 7 grados
-            if (diffX <= 3.5 && diffAngle <= 7.0) {
-                processSuccess(diffX, diffAngle);
+            // 3. Score Algorítmico (Penalizaciones: X pesa más que Ang)
+            const precisionFinal = Math.max(0, 100 - (errorX * 18 + errorAng * 3));
+            
+            // Lógica de éxito (Umbral del 88%)
+            const isSuccess = precisionFinal >= 88;
+            if(!isSuccess) session.lives--;
+
+            displayScreen(isSuccess, precisionFinal);
+            postDataToCloud(precisionFinal);
+        }
+
+        function displayScreen(success, score) {
+            const screen = document.getElementById('result-screen');
+            const title = document.getElementById('result-title');
+            const text = document.getElementById('accuracy-text');
+            const desc = document.getElementById('result-desc');
+            const btn = document.getElementById('result-btn');
+
+            screen.style.display = 'flex';
+            text.innerText = score.toFixed(0) + "%";
+            
+            if(success) {
+                title.innerText = "¡MISIÓN LOGRADA!";
+                title.style.color = "var(--green-success)";
+                desc.innerText = "Alineación y rotación perfectas. Estás listo para el siguiente desafío.";
+                btn.innerText = "SIGUIENTE NIVEL";
             } else {
-                processFailure();
+                title.innerText = "FUERA DE RANGO";
+                title.style.color = "var(--red-alert)";
+                desc.innerText = `Precisión insuficiente. Te quedan ${session.lives} vidas para completar la sesión.`;
+                btn.innerText = session.lives > 0 ? "REINTENTAR" : "VER RESUMEN FINAL";
             }
         }
 
-        function processSuccess(ex, ea) {
-            gameState.isActive = false;
-            gameState.successCount++;
-            
-            // Cálculo de precisión visual (0-100)
-            const finalScore = Math.max(0, 100 - (ex * 12 + ea * 3)).toFixed(0);
-            document.getElementById('accuracy-value').innerText = finalScore + "%";
-            document.getElementById('win-modal').classList.add('active');
-        }
-
-        function processFailure() {
-            gameState.isActive = false;
-            gameState.failCount++;
-            gameState.hp--;
-            
-            // Actualizar Vidas HUD
-            document.getElementById('ui-hp').innerText = "❤️".repeat(Math.max(0, gameState.hp));
-            
-            const toast = document.getElementById('flash-toast');
-            toast.classList.add('active');
-
-            setTimeout(() => {
-                toast.classList.remove('active');
-                if(gameState.hp <= 0) {
-                    finalizeGame();
-                } else {
-                    generateNewLevel();
+        function handleFlow() {
+            document.getElementById('result-screen').style.display = 'none';
+            if(session.lives <= 0) {
+                alert("SESIÓN TERMINADA\nNivel Alcanzado: " + session.level);
+                location.reload();
+            } else {
+                if(document.getElementById('result-title').innerText === "¡MISIÓN LOGRADA!") {
+                    session.level++;
                 }
-            }, 1400);
+                document.getElementById('val-lvl').innerText = session.level;
+                document.getElementById('val-hp').innerText = "❤️".repeat(session.lives);
+                startNewLevel();
+            }
         }
 
-        function advanceLevel() {
-            gameState.level++;
-            document.getElementById('ui-lvl').innerText = gameState.level;
-            document.getElementById('win-modal').classList.remove('active');
-            generateNewLevel();
-        }
-
-        // --- SISTEMA DE TIEMPO ---
-        function startMissionTimer() {
-            let limit = Math.max(2.5, gameState.timeLimit - (gameState.level * 0.7));
-            gameState.currentTime = limit;
-            const bar = document.getElementById('timer-fill');
+        function launchTimer() {
+            let limit = Math.max(2, session.initialTime - (session.level * 0.8));
+            session.remainingTime = limit;
+            const bar = document.getElementById('time-fill');
             
-            clearInterval(gameState.timer);
-            gameState.timer = setInterval(() => {
-                gameState.currentTime -= 0.1;
-                bar.style.width = (gameState.currentTime / limit * 100) + "%";
-                if(gameState.currentTime <= 0) {
-                    clearInterval(gameState.timer);
-                    processFailure();
+            clearInterval(session.timerClock);
+            session.timerClock = setInterval(() => {
+                session.remainingTime -= 0.1;
+                bar.style.width = (session.remainingTime / limit * 100) + "%";
+                if(session.remainingTime <= 0) {
+                    executeEvaluation();
                 }
             }, 100);
         }
 
-        function finalizeGame() {
-            // Aquí se conectarían los datos a Google Sheets
-            alert("MISIÓN CUMPLIDA\nNivel Alcanzado: " + gameState.level + "\nAciertos: " + gameState.successCount);
-            location.reload();
+        async function postDataToCloud(val) {
+            const packet = {
+                user: session.patientId,
+                lvl: session.level,
+                acc: val.toFixed(2),
+                mode: session.useTime ? "Cronometrado" : "Libre",
+                stamp: new Date().toLocaleString()
+            };
+
+            console.log("Enviando a Google Sheets:", packet);
+
+            try {
+                // Fetch modo 'no-cors' para evitar problemas de seguridad del navegador
+                fetch(GOOGLE_DATA_ENDPOINT, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(packet)
+                });
+            } catch(e) { 
+                console.error("Error de Red Cloud:", e); 
+            }
         }
 
     </script>
