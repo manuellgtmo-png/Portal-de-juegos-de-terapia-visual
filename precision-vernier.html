@@ -26,7 +26,6 @@
             --border-clin: 2px solid rgba(255,255,255,0.03);
         }
 
-        /* Reset de Motor de Renderizado y Bloqueo de Gestos Nativos */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -124,7 +123,6 @@
         .tarjeta-modo h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
         .tarjeta-modo p { font-size: 0.85rem; color: var(--clin-text-dim); line-height: 1.4; }
 
-        /* Contenedor del Slider de Tiempo */
         .contenedor-configuracion-tiempo {
             background: rgba(0,0,0,0.3);
             border-radius: 35px;
@@ -209,7 +207,7 @@
         .valor-estado-hud { font-size: 2.4rem; font-weight: 900; }
 
         /* ========================================================================
-           4. ESCENARIO DE EVALUACIÓN (POSICIÓN FIJA)
+           4. ESCENARIO DE EVALUACIÓN (CENTRALIZADO)
            ======================================================================== */
         #contenedor-maestro-vernier {
             position: absolute;
@@ -218,16 +216,10 @@
             overflow: hidden;
         }
 
-        #escenario-limites {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
         .elemento-vernier-base {
             position: absolute;
             width: 18px; 
-            height: 160px; /* Tamaño clínico solicitado */
+            height: 160px; 
             border-radius: 50px;
             transform-origin: center center;
             will-change: transform, left, top;
@@ -238,7 +230,7 @@
             opacity: 0.5;
             z-index: 10;
             left: 50%;
-            top: 40%; /* Posición fija en eje Y */
+            top: 35%; 
         }
 
         #linea-paciente-interactiva {
@@ -246,10 +238,9 @@
             box-shadow: 0 0 60px var(--clin-accent-glow);
             z-index: 100;
             left: 70%;
-            top: 65%; /* Posición fija en eje Y */
+            top: 60%; 
         }
 
-        /* Zona táctil para rotar */
         .zona-sensor-rotacion {
             position: absolute;
             width: 100%;
@@ -286,7 +277,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: 0.2s;
         }
 
         .boton-confirmacion-maestra {
@@ -307,11 +298,6 @@
             cursor: pointer;
             box-shadow: 0 12px 0 #15803d;
             z-index: 1000;
-        }
-
-        .boton-confirmacion-maestra:active {
-            transform: translate(-50%, 8px);
-            box-shadow: 0 4px 0 #15803d;
         }
 
     </style>
@@ -369,12 +355,10 @@
     </div>
 
     <div id="contenedor-maestro-vernier">
-        <div id="escenario-limites">
-            <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
-            <div id="linea-paciente-interactiva" class="elemento-vernier-base">
-                <div class="zona-sensor-rotacion sensor-top" data-action="rotar"></div>
-                <div class="zona-sensor-rotacion sensor-bottom" data-action="rotar"></div>
-            </div>
+        <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
+        <div id="linea-paciente-interactiva" class="elemento-vernier-base">
+            <div class="zona-sensor-rotacion sensor-top" data-action="rotar"></div>
+            <div class="zona-sensor-rotacion sensor-bottom" data-action="rotar"></div>
         </div>
     </div>
 
@@ -382,7 +366,7 @@
 
     <script>
         /**
-         * MOTOR LÓGICO VERNIE PRO v25.0 - ESTRUCTURA EXTENSA
+         * MOTOR LÓGICO VERNIE PRO v25.0 - RECALIBRADO GOOGLE SHEETS
          */
         const CORE = {
             active: false, 
@@ -441,13 +425,12 @@
         function resetRound() {
             CORE.active = true;
             CORE.tCurr = CORE.tBase;
-            
-            // Aleatorización
             CORE.ref.x = 30 + Math.random() * 40;
-            CORE.ref.a = CORE.nivel >= 5 ? (Math.random()*160-80) : (CORE.nivel >= 3 ? (Math.random()>0.5?90:0) : 0);
+            CORE.ref.a = CORE.nivel >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0;
+            if(CORE.nivel >= 6) CORE.ref.a = (Math.random()*160 - 80);
+            
             CORE.pac.x = CORE.ref.x + (Math.random() > 0.5 ? 25 : -25);
             CORE.pac.a = 0;
-            
             render();
 
             if (CORE.modo === 'tiempo') {
@@ -482,15 +465,10 @@
 
             const score = Math.max(0, Math.round(100 - (errX * 12 + errA * 3)));
             
-            if (score >= 90) {
-                AUDIO.win();
-            } else {
-                AUDIO.fail();
-                CORE.vidas--;
-            }
+            if (score >= 90) { AUDIO.win(); } else { AUDIO.fail(); CORE.vidas--; }
 
             actualizarHUD();
-            enviarDatos(score, errX, errA);
+            enviarDatosHaciaSheets(score, errX, errA);
 
             document.getElementById('pantalla-feedback-ui').style.display = 'flex';
             document.getElementById('score-clinico-display').innerText = score + "%";
@@ -509,7 +487,8 @@
             document.getElementById('hud-txt-vidas').innerText = CORE.vidas > 0 ? "❤️".repeat(CORE.vidas) : "💀";
         }
 
-        function enviarDatos(p, x, a) {
+        // --- FUNCIÓN DE CONEXIÓN REPARADA ---
+        function enviarDatosHaciaSheets(p, x, a) {
             const hoy = new Date().toISOString().split('T')[0];
             const form = document.createElement("form");
             form.method = "POST";
@@ -520,6 +499,8 @@
                 "entry.369874016": "ANONIMO",
                 "entry.1353470174": "VERNIER_PRO_V25",
                 "entry.721051298": p,
+                "entry.873272199": x.toFixed(2),
+                "entry.1030094511": a.toFixed(1),
                 "entry.1303309812": CORE.nivel,
                 "entry.845098414": hoy
             };
@@ -537,20 +518,16 @@
         function avanzarProtocolo() {
             AUDIO.clic();
             document.getElementById('pantalla-feedback-ui').style.display = 'none';
-            
             if (CORE.vidas <= 0) {
                 location.reload();
             } else {
                 const s = parseInt(document.getElementById('score-clinico-display').innerText);
                 if (s >= 90) CORE.nivel++;
-                actualizarHUD();
                 resetRound();
             }
         }
 
-        /* SISTEMA DE INTERACCIÓN INTEGRAL */
         let isDown = false, dragMode = null;
-        
         window.onmousedown = (e) => {
             if (!CORE.active) return;
             if (e.target.dataset.action === 'rotar') dragMode = 'rotar';
@@ -582,13 +559,11 @@
 
         function stopNudge() { clearInterval(CORE.nudgeRef); }
 
-        // Soporte Touch
         window.ontouchmove = (e) => {
             if (!CORE.active) return;
             CORE.pac.x = (e.touches[0].clientX / window.innerWidth) * 100;
             render();
         };
-
     </script>
 </body>
 </html>
