@@ -54,7 +54,7 @@
         }
 
         /* ========================================================================
-           2. CAPAS DE INTERFAZ (MENÚ ANTIGUO + SELECTOR DE TIEMPO)
+           2. CAPAS DE INTERFAZ (MENÚ + SELECTOR DE TIEMPO)
            ======================================================================== */
         .capa-interfaz-total {
             position: fixed;
@@ -124,7 +124,7 @@
         .tarjeta-modo h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
         .tarjeta-modo p { font-size: 0.85rem; color: var(--clin-text-dim); line-height: 1.4; }
 
-        /* Estilos del Selector de Tiempo Dinámico (5s a 30s) */
+        /* Contenedor del Slider de Tiempo */
         .contenedor-configuracion-tiempo {
             background: rgba(0,0,0,0.3);
             border-radius: 35px;
@@ -165,7 +165,7 @@
         }
 
         /* ========================================================================
-           3. HUD DINÁMICO (MONITORIZACIÓN Y BARRA ROJA)
+           3. HUD DINÁMICO (BARRA ROJA Y WIDGETS)
            ======================================================================== */
         #envoltura-cronometro-hud {
             position: absolute;
@@ -206,24 +206,28 @@
 
         .hud-pos-izq { left: 45px; }
         .hud-pos-der { right: 45px; }
-
         .valor-estado-hud { font-size: 2.4rem; font-weight: 900; }
-        #hud-txt-vidas { color: var(--clin-error); }
 
         /* ========================================================================
-           4. ESCENARIO CLÍNICO (BARRAS DE 160PX)
+           4. ESCENARIO DE EVALUACIÓN (POSICIÓN FIJA)
            ======================================================================== */
-        #escenario-evaluacion-clinica {
-            flex: 1;
+        #contenedor-maestro-vernier {
+            position: absolute;
+            inset: 0;
+            display: none;
+            overflow: hidden;
+        }
+
+        #escenario-limites {
             position: relative;
             width: 100%;
-            display: none;
+            height: 100%;
         }
 
         .elemento-vernier-base {
             position: absolute;
             width: 18px; 
-            height: 160px; 
+            height: 160px; /* Tamaño clínico solicitado */
             border-radius: 50px;
             transform-origin: center center;
             will-change: transform, left, top;
@@ -233,27 +237,31 @@
             background-color: #334155;
             opacity: 0.5;
             z-index: 10;
+            left: 50%;
+            top: 40%; /* Posición fija en eje Y */
         }
 
         #linea-paciente-interactiva {
             background-color: var(--clin-accent);
             box-shadow: 0 0 60px var(--clin-accent-glow);
             z-index: 100;
+            left: 70%;
+            top: 65%; /* Posición fija en eje Y */
         }
 
-        /* Sensores de Rotación */
+        /* Zona táctil para rotar */
         .zona-sensor-rotacion {
             position: absolute;
             width: 100%;
-            height: 35%;
+            height: 40%;
             left: 0;
-            z-index: 500;
+            z-index: 150;
         }
-        .sensor-extremo-superior { top: 0; }
-        .sensor-extremo-inferior { bottom: 0; }
+        .sensor-top { top: 0; }
+        .sensor-bottom { bottom: 0; }
 
         /* ========================================================================
-           5. BOTONES Y CONTROLES DE PRECISIÓN
+           5. CONTROLES Y BOTONES
            ======================================================================== */
         #cluster-controles-precision {
             position: absolute;
@@ -278,7 +286,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s var(--curva-animacion);
+            transition: all 0.2s;
         }
 
         .boton-confirmacion-maestra {
@@ -353,18 +361,20 @@
         <div id="cluster-controles-precision">
             <button class="boton-nudge-clinico" onmousedown="nudgeManual('a', -1.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('a', -1.5)" ontouchend="stopNudge()">↻</button>
             <button class="boton-nudge-clinico" onmousedown="nudgeManual('a', 1.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('a', 1.5)" ontouchend="stopNudge()">↺</button>
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', -0.3)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', -0.3)" ontouchend="stopNudge()">←</button>
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', 0.3)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', 0.3)" ontouchend="stopNudge()">→</button>
+            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', -0.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', -0.5)" ontouchend="stopNudge()">←</button>
+            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', 0.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', 0.5)" ontouchend="stopNudge()">→</button>
         </div>
         
         <button class="boton-confirmacion-maestra" onclick="evaluarPrecision()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
-    <div id="escenario-evaluacion-clinica">
-        <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
-        <div id="linea-paciente-interactiva" class="elemento-vernier-base">
-            <div class="zona-sensor-rotacion sensor-extremo-superior" data-clinical="rotar"></div>
-            <div class="zona-sensor-rotacion sensor-extremo-inferior" data-clinical="rotar"></div>
+    <div id="contenedor-maestro-vernier">
+        <div id="escenario-limites">
+            <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
+            <div id="linea-paciente-interactiva" class="elemento-vernier-base">
+                <div class="zona-sensor-rotacion sensor-top" data-action="rotar"></div>
+                <div class="zona-sensor-rotacion sensor-bottom" data-action="rotar"></div>
+            </div>
         </div>
     </div>
 
@@ -372,9 +382,7 @@
 
     <script>
         /**
-         * ========================================================================
-         * MOTOR LÓGICO VERNIE PRO v25.0 - ESTRUCTURA EXTENSA (+500 LÍNEAS)
-         * ========================================================================
+         * MOTOR LÓGICO VERNIE PRO v25.0 - ESTRUCTURA EXTENSA
          */
         const CORE = {
             active: false, 
@@ -383,8 +391,8 @@
             vidas: 3, 
             tBase: 10, 
             tCurr: 10,
-            ref: { x: 50, y: 30, a: 0 },
-            pac: { x: 75, y: 60, a: 0 },
+            ref: { x: 50, a: 0 },
+            pac: { x: 70, a: 0 },
             timerRef: null, 
             nudgeRef: null,
             formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse"
@@ -403,7 +411,7 @@
                     g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
                     o.connect(g); g.connect(this.ctx.destination);
                     o.start(); o.stop(this.ctx.currentTime + d);
-                } catch(e) { console.log("Audio no soportado"); }
+                } catch(e) {}
             },
             clic() { this.play(600, 'sine', 0.1, 0.1); },
             win() { this.play(880, 'sine', 0.4, 0.2); },
@@ -424,9 +432,9 @@
             CORE.vidas = 3;
             CORE.nivel = 1;
             document.getElementById('pantalla-inicio-ui').style.display = 'none';
-            document.getElementById('escenario-evaluacion-clinica').style.display = 'block';
+            document.getElementById('contenedor-maestro-vernier').style.display = 'block';
             document.getElementById('capa-hud').style.display = 'block';
-            actualizarInterfazHUD();
+            actualizarHUD();
             resetRound();
         }
 
@@ -434,10 +442,9 @@
             CORE.active = true;
             CORE.tCurr = CORE.tBase;
             
-            // Lógica de dificultad progresiva
+            // Aleatorización
             CORE.ref.x = 30 + Math.random() * 40;
-            CORE.ref.a = CORE.nivel >= 5 ? (Math.random()*120-60) : (CORE.nivel >= 3 ? (Math.random()>0.5?90:0) : 0);
-            
+            CORE.ref.a = CORE.nivel >= 5 ? (Math.random()*160-80) : (CORE.nivel >= 3 ? (Math.random()>0.5?90:0) : 0);
             CORE.pac.x = CORE.ref.x + (Math.random() > 0.5 ? 25 : -25);
             CORE.pac.a = 0;
             
@@ -482,8 +489,8 @@
                 CORE.vidas--;
             }
 
-            actualizarInterfazHUD();
-            enviarHaciaSheets(score, errX, errA);
+            actualizarHUD();
+            enviarDatos(score, errX, errA);
 
             document.getElementById('pantalla-feedback-ui').style.display = 'flex';
             document.getElementById('score-clinico-display').innerText = score + "%";
@@ -493,16 +500,16 @@
             document.getElementById('detalles-tecnicos-display').innerHTML = `
                 ERROR LATERAL: ${errX.toFixed(2)}%<br>
                 ERROR ANGULAR: ${errA.toFixed(1)}°<br>
-                VIDAS RESTANTES: ${CORE.vidas > 0 ? "❤️".repeat(CORE.vidas) : "💀"}
+                ESTADO CLÍNICO: ${CORE.vidas > 0 ? "ESTABLE" : "AGOTADO"}
             `;
         }
 
-        function actualizarInterfazHUD() {
+        function actualizarHUD() {
             document.getElementById('hud-txt-nivel').innerText = CORE.nivel;
             document.getElementById('hud-txt-vidas').innerText = CORE.vidas > 0 ? "❤️".repeat(CORE.vidas) : "💀";
         }
 
-        function enviarHaciaSheets(p, x, a) {
+        function enviarDatos(p, x, a) {
             const hoy = new Date().toISOString().split('T')[0];
             const form = document.createElement("form");
             form.method = "POST";
@@ -513,16 +520,14 @@
                 "entry.369874016": "ANONIMO",
                 "entry.1353470174": "VERNIER_PRO_V25",
                 "entry.721051298": p,
-                "entry.873272199": x.toFixed(2),
-                "entry.1030094511": a.toFixed(1),
                 "entry.1303309812": CORE.nivel,
                 "entry.845098414": hoy
             };
 
-            for (let key in data) {
-                const inp = document.createElement("input");
-                inp.type = "hidden"; inp.name = key; inp.value = data[key];
-                form.appendChild(inp);
+            for (let k in data) {
+                const i = document.createElement("input");
+                i.type = "hidden"; i.name = k; i.value = data[k];
+                form.appendChild(i);
             }
             document.body.appendChild(form);
             form.submit();
@@ -536,34 +541,34 @@
             if (CORE.vidas <= 0) {
                 location.reload();
             } else {
-                const ultimoScore = parseInt(document.getElementById('score-clinico-display').innerText);
-                if (ultimoScore >= 90) CORE.nivel++;
-                actualizarInterfazHUD();
+                const s = parseInt(document.getElementById('score-clinico-display').innerText);
+                if (s >= 90) CORE.nivel++;
+                actualizarHUD();
                 resetRound();
             }
         }
 
-        /* SISTEMA DE INTERACCIÓN DE ALTA PRECISIÓN */
-        let pulsado = false, modoDrag = null;
+        /* SISTEMA DE INTERACCIÓN INTEGRAL */
+        let isDown = false, dragMode = null;
         
         window.onmousedown = (e) => {
             if (!CORE.active) return;
-            if (e.target.dataset.clinical === 'rotar') modoDrag = 'rotar';
-            else if (e.target.id === 'linea-paciente-interactiva') modoDrag = 'mover';
-            if (modoDrag) pulsado = true;
+            if (e.target.dataset.action === 'rotar') dragMode = 'rotar';
+            else if (e.target.id === 'linea-paciente-interactiva') dragMode = 'mover';
+            if (dragMode) isDown = true;
         };
 
         window.onmousemove = (e) => {
-            if (!pulsado) return;
-            if (modoDrag === 'mover') {
+            if (!isDown) return;
+            if (dragMode === 'mover') {
                 CORE.pac.x = (e.clientX / window.innerWidth) * 100;
-            } else if (modoDrag === 'rotar') {
+            } else if (dragMode === 'rotar') {
                 CORE.pac.a += e.movementX * 0.8;
             }
             render();
         };
 
-        window.onmouseup = () => { pulsado = false; modoDrag = null; };
+        window.onmouseup = () => { isDown = false; dragMode = null; };
 
         function nudgeManual(prop, val) {
             if (!CORE.active) return;
@@ -577,6 +582,7 @@
 
         function stopNudge() { clearInterval(CORE.nudgeRef); }
 
+        // Soporte Touch
         window.ontouchmove = (e) => {
             if (!CORE.active) return;
             CORE.pac.x = (e.touches[0].clientX / window.innerWidth) * 100;
