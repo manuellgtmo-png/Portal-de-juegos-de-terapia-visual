@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Precision Pro v26.0 - Professional Clinical Suite</title>
+    <title>Vernier Precision Pro v24.0 - Clinical Full Suite</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         /* ========================================================================
-           1. ARQUITECTURA DE DISEÑO Y VARIABLES (ESTÉTICA INCREÍBLE PRESERVADA)
+           1. ARQUITECTURA DE DISEÑO Y VARIABLES DE SISTEMA
            ======================================================================== */
         :root {
             --clin-bg: #0b101b;
@@ -25,7 +25,7 @@
             --shadow-hd: 0 50px 100px rgba(0,0,0,0.8);
         }
 
-        /* Reset de Motor de Renderizado */
+        /* Reset de Motor de Renderizado y Bloqueo de Gestos */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -33,6 +33,7 @@
             user-select: none;
             touch-action: none;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -52,7 +53,7 @@
         }
 
         /* ========================================================================
-           2. CAPAS DE INTERFAZ (UI OVERLAYS)
+           2. CAPAS DE INTERFAZ (MENÚ ANTIGUO RESTAURADO)
            ======================================================================== */
         .capa-interfaz-total {
             position: fixed;
@@ -79,6 +80,25 @@
             position: relative;
         }
 
+        .titulo-vpro {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--clin-accent);
+            line-height: 0.8;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .subtitulo-vpro {
+            letter-spacing: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--clin-text-dim);
+            margin-bottom: 50px;
+            text-transform: uppercase;
+        }
+
+        /* Grid de Selección de Modalidad */
         .grid-modos-evaluacion {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -93,6 +113,8 @@
             border: 3px solid transparent;
             cursor: pointer;
             transition: all 0.3s var(--curva-animacion);
+            position: relative;
+            overflow: hidden;
         }
 
         .tarjeta-modo.esta-activa {
@@ -101,9 +123,45 @@
             box-shadow: 0 0 40px var(--clin-accent-glow);
         }
 
+        .tarjeta-modo h2 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--clin-text);
+        }
+
+        .tarjeta-modo p {
+            font-size: 0.85rem;
+            color: var(--clin-text-dim);
+            line-height: 1.4;
+        }
+
         /* ========================================================================
-           3. HUD DINÁMICO (MONITORIZACIÓN)
+           3. HUD DINÁMICO (BARRA DE TIEMPO Y WIDGETS)
            ======================================================================== */
+        #envoltura-cronometro-hud {
+            position: absolute;
+            top: 55px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 450px;
+            height: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 45px;
+            border: 4px solid var(--clin-card);
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        #relleno-progreso-tiempo {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--clin-error), #ff8fa3);
+            box-shadow: 0 0 20px var(--clin-error);
+            transition: width 0.1s linear;
+        }
+
         .widget-estado-hud {
             position: absolute;
             top: 35px;
@@ -126,30 +184,8 @@
             font-weight: 900;
         }
 
-        #envoltura-cronometro-hud {
-            position: absolute;
-            top: 55px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 450px;
-            height: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 45px;
-            overflow: hidden;
-            display: none;
-            z-index: 1000;
-        }
-
-        #relleno-progreso-tiempo {
-            width: 100%;
-            height: 100%;
-            background: var(--clin-error);
-            box-shadow: 0 0 20px var(--clin-error);
-            transition: width 0.1s linear;
-        }
-
         /* ========================================================================
-           4. ESCENARIO Y BARRAS (160PX PRECISIÓN)
+           4. ESCENARIO DE PRUEBA (BARRAS 160PX)
            ======================================================================== */
         #escenario-evaluacion-clinica {
             flex: 1;
@@ -161,16 +197,21 @@
         .elemento-vernier-base {
             position: absolute;
             width: 18px; 
-            height: 160px; /* Tamaño solicitado */
+            height: 160px; /* Tamaño clínico exacto */
             border-radius: 50px;
             transform-origin: center center;
             will-change: transform, left, top;
         }
 
-        #linea-referencia-estatica { background-color: #334155; opacity: 0.5; }
-        #linea-paciente-interactiva { 
-            background-color: var(--clin-accent); 
-            box-shadow: 0 0 60px var(--clin-accent-glow); 
+        #linea-referencia-estatica {
+            background-color: #334155;
+            opacity: 0.5;
+            z-index: 10;
+        }
+
+        #linea-paciente-interactiva {
+            background-color: var(--clin-accent);
+            box-shadow: 0 0 60px var(--clin-accent-glow);
             z-index: 100;
         }
 
@@ -185,7 +226,7 @@
         .sensor-extremo-inferior { bottom: 0; }
 
         /* ========================================================================
-           5. CONTROLES Y BOTONES
+           5. BOTONES Y CONTROLES DE PRECISIÓN
            ======================================================================== */
         #cluster-controles-precision {
             position: absolute;
@@ -210,6 +251,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s var(--curva-animacion);
         }
 
         .boton-confirmacion-maestra {
@@ -243,18 +285,21 @@
 
     <div id="pantalla-inicio-ui" class="capa-interfaz-total">
         <div class="panel-clinico-central">
-            <h1 style="color:var(--clin-accent); font-size: 4.5rem; font-weight: 900; line-height: 0.9;">VERNIE PRO</h1>
-            <p style="color:var(--clin-text-dim); letter-spacing: 6px; font-weight: 700; margin-bottom: 40px;">SISTEMA DE PRECISIÓN VISUAL</p>
+            <h1 class="titulo-vpro">VERNIE PRO</h1>
+            <p class="subtitulo-vpro">SISTEMA DE PRECISIÓN VISUAL v24.0</p>
             
-            <input type="text" id="input-nombre-paciente" placeholder="ID PACIENTE" 
-            style="width: 100%; background: transparent; border: none; border-bottom: 3px solid var(--clin-accent); color: white; text-align: center; font-size: 1.6rem; font-family: inherit; font-weight: 800; outline: none; padding: 10px; margin-bottom: 30px;">
-
             <div class="grid-modos-evaluacion">
-                <div id="modo-clinico-libre" class="tarjeta-modo" onclick="setModo('libre')"><h2>MODO LIBRE</h2></div>
-                <div id="modo-clinico-tiempo" class="tarjeta-modo esta-activa" onclick="setModo('tiempo')"><h2>CONTRARELOJ</h2></div>
+                <div id="modo-clinico-libre" class="tarjeta-modo" onclick="cambiarModo('libre')">
+                    <h2>MODO LIBRE</h2>
+                    <p>Calibración técnica sin presión de tiempo.</p>
+                </div>
+                <div id="modo-clinico-tiempo" class="tarjeta-modo esta-activa" onclick="cambiarModo('tiempo')">
+                    <h2>CONTRARELOJ</h2>
+                    <p>Evaluación bajo estrés temporal clínico.</p>
+                </div>
             </div>
 
-            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; transform:none; left:0;" onclick="bootSequence()">INICIAR PROTOCOLO</button>
+            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; transform:none; left:0;" onclick="iniciarProtocolo()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
@@ -263,188 +308,218 @@
             <h2 style="font-size: 2.5rem; font-weight: 900;">ANÁLISIS COMPLETADO</h2>
             <div id="feedback-score" style="font-size: 8.5rem; font-weight: 900; margin: 30px 0; color: var(--clin-accent);">0%</div>
             <div id="feedback-detalles" style="text-align:left; background:rgba(0,0,0,0.4); padding:40px; border-radius:35px; margin-bottom:40px; font-size:1.3rem; line-height:2;"></div>
-            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; left:0; transform:none;" onclick="nextLevel()">CONTINUAR</button>
+            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; left:0; transform:none;" onclick="avanzarSiguiente()">CONTINUAR</button>
         </div>
     </div>
 
+    <div id="envoltura-cronometro-hud"><div id="relleno-progreso-tiempo"></div></div>
+    
     <div id="capa-hud" style="display:none;">
-        <div class="widget-estado-hud hud-pos-izquierda"><span id="hud-nivel" class="valor-estado">1</span></div>
-        <div id="envoltura-cronometro-hud"><div id="relleno-progreso-tiempo"></div></div>
-        <div class="widget-estado-hud hud-pos-derecha"><span id="hud-vidas" class="valor-estado">❤️❤️❤️</span></div>
+        <div class="widget-estado-hud hud-pos-izquierda"><span id="valor-hud-nivel" class="valor-estado">1</span></div>
+        <div class="widget-estado-hud hud-pos-derecha"><span id="valor-hud-vidas" class="valor-estado">❤️❤️❤️</span></div>
         
         <div id="cluster-controles-precision">
-            <button class="boton-nudge-clinico" onmousedown="startNudge('a', -1.5)" onmouseup="stopNudge()">↻</button>
-            <button class="boton-nudge-clinico" onmousedown="startNudge('a', 1.5)" onmouseup="stopNudge()">↺</button>
-            <button class="boton-nudge-clinico" onmousedown="startNudge('x', -0.3)" onmouseup="stopNudge()">←</button>
-            <button class="boton-nudge-clinico" onmousedown="startNudge('x', 0.3)" onmouseup="stopNudge()">→</button>
+            <button class="boton-nudge-clinico" onmousedown="gestionarNudge('a', -1.5)" onmouseup="pararNudge()" ontouchstart="gestionarNudge('a', -1.5)" ontouchend="pararNudge()">↻</button>
+            <button class="boton-nudge-clinico" onmousedown="gestionarNudge('a', 1.5)" onmouseup="pararNudge()" ontouchstart="gestionarNudge('a', 1.5)" ontouchend="pararNudge()">↺</button>
+            <button class="boton-nudge-clinico" onmousedown="gestionarNudge('x', -0.3)" onmouseup="pararNudge()" ontouchstart="gestionarNudge('x', -0.3)" ontouchend="pararNudge()">←</button>
+            <button class="boton-nudge-clinico" onmousedown="gestionarNudge('x', 0.3)" onmouseup="pararNudge()" ontouchstart="gestionarNudge('x', 0.3)" ontouchend="pararNudge()">→</button>
         </div>
         
-        <button class="boton-confirmacion-maestra" onclick="evaluarPrecision()">CONFIRMAR ALINEACIÓN</button>
+        <button class="boton-confirmacion-maestra" onclick="ejecutarEvaluacion()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
     <div id="escenario-evaluacion-clinica">
         <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
         <div id="linea-paciente-interactiva" class="elemento-vernier-base">
-            <div class="zona-sensor-rotacion sensor-extremo-superior" data-clinical="rotar"></div>
-            <div class="zona-sensor-rotacion sensor-extremo-inferior" data-clinical="rotar"></div>
+            <div class="zona-sensor-rotacion sensor-extremo-superior" data-control="rotar"></div>
+            <div class="zona-sensor-rotacion sensor-extremo-inferior" data-control="rotar"></div>
         </div>
     </div>
 
-    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+    <iframe name="frame_envio_oculto" id="frame_envio_oculto" style="display:none;"></iframe>
 
     <script>
         /**
          * ========================================================================
-         * MOTOR LÓGICO VERNIE PRO (FULL DENSITY)
+         * MOTOR LÓGICO DE VERNIE PRO - FULL SCALE v24.0
          * ========================================================================
          */
-        const APP = {
-            active: false, mode: 'tiempo', level: 1, lives: 3, time: 10, currentTime: 10,
-            patientID: "ANÓNIMO",
-            ref: { x: 50, y: 30, a: 0 },
-            pac: { x: 75, y: 60, a: 0 },
-            timer: null, nudgeInterval: null,
-            formAction: "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse"
+        const SISTEMA = {
+            activo: false, 
+            modo: 'tiempo', 
+            nivel: 1, 
+            vidas: 3, 
+            tiempoBase: 10, 
+            tiempoRestante: 10,
+            referencia: { x: 50, y: 30, a: 0 },
+            paciente: { x: 75, y: 60, a: 0 },
+            timerRef: null, 
+            nudgeRef: null,
+            formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse"
         };
 
-        const AUDIO = {
-            ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            play(f, t, d, v) {
-                const o = this.ctx.createOscillator(); const g = this.ctx.createGain();
-                o.type = t; o.frequency.value = f; g.gain.value = v;
+        const SONIDO = {
+            ctx: null,
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            tocar(f, t, d, v) {
+                this.init();
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.type = t; o.frequency.value = f;
+                g.gain.setValueAtTime(v, this.ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
                 o.connect(g); g.connect(this.ctx.destination);
                 o.start(); o.stop(this.ctx.currentTime + d);
             },
-            clic() { this.play(600, 'sine', 0.1, 0.1); },
-            win() { this.play(880, 'sine', 0.4, 0.2); },
-            fail() { this.play(150, 'sawtooth', 0.5, 0.2); }
+            clic() { this.tocar(600, 'sine', 0.1, 0.1); },
+            exito() { this.tocar(880, 'sine', 0.4, 0.2); },
+            error() { this.tocar(150, 'sawtooth', 0.5, 0.2); }
         };
 
-        function setModo(m) {
-            AUDIO.clic();
-            APP.mode = m;
+        function cambiarModo(m) {
+            SONIDO.clic();
+            SISTEMA.modo = m;
             document.getElementById('modo-clinico-libre').classList.toggle('esta-activa', m === 'libre');
             document.getElementById('modo-clinico-tiempo').classList.toggle('esta-activa', m === 'tiempo');
         }
 
-        function bootSequence() {
-            AUDIO.clic();
-            APP.patientID = document.getElementById('input-nombre-paciente').value || "ANÓNIMO";
+        function iniciarProtocolo() {
+            SONIDO.clic();
             document.getElementById('pantalla-inicio-ui').style.display = 'none';
             document.getElementById('escenario-evaluacion-clinica').style.display = 'block';
             document.getElementById('capa-hud').style.display = 'block';
-            if (APP.mode === 'tiempo') document.getElementById('envoltura-cronometro-hud').style.display = 'block';
-            resetRound();
+            resetEscena();
         }
 
-        function resetRound() {
-            APP.active = true;
-            APP.currentTime = APP.time;
-            APP.ref.x = 30 + Math.random() * 40;
-            APP.ref.a = APP.level >= 6 ? (Math.random()*160-80) : (APP.level >= 3 ? (Math.random()>0.5?90:0) : 0);
-            APP.pac.x = APP.ref.x + (Math.random()>0.5?20:-20);
-            APP.pac.a = 0;
-            draw();
-            if (APP.mode === 'tiempo') {
-                clearInterval(APP.timer);
-                APP.timer = setInterval(() => {
-                    APP.currentTime -= 0.1;
-                    document.getElementById('relleno-progreso-tiempo').style.width = (APP.currentTime/APP.time)*100 + "%";
-                    if (APP.currentTime <= 0) evaluarPrecision();
+        function resetEscena() {
+            SISTEMA.activo = true;
+            SISTEMA.tiempoRestante = SISTEMA.tiempoBase;
+            
+            // Generación de referencia técnica
+            SISTEMA.referencia.x = 35 + Math.random() * 30;
+            SISTEMA.referencia.a = SISTEMA.nivel >= 5 ? (Math.random() * 100 - 50) : (SISTEMA.nivel >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0);
+            
+            // Posición inicial del paciente (descentrada)
+            SISTEMA.paciente.x = SISTEMA.referencia.x + (Math.random() > 0.5 ? 20 : -20);
+            SISTEMA.paciente.a = 0;
+
+            renderizar();
+
+            if (SISTEMA.modo === 'tiempo') {
+                document.getElementById('envoltura-cronometro-hud').style.display = 'block';
+                clearInterval(SISTEMA.timerRef);
+                SISTEMA.timerRef = setInterval(() => {
+                    SISTEMA.tiempoRestante -= 0.1;
+                    document.getElementById('relleno-progreso-tiempo').style.width = (SISTEMA.tiempoRestante / SISTEMA.tiempoBase) * 100 + "%";
+                    if (SISTEMA.tiempoRestante <= 0) ejecutarEvaluacion();
                 }, 100);
             }
         }
 
-        function draw() {
+        function renderizar() {
             const r = document.getElementById('linea-referencia-estatica');
             const p = document.getElementById('linea-paciente-interactiva');
-            r.style.left = APP.ref.x + "%"; r.style.top = APP.ref.y + "%";
-            r.style.transform = `translate(-50%, -50%) rotate(${APP.ref.a}deg)`;
-            p.style.left = APP.pac.x + "%"; p.style.top = APP.pac.y + "%";
-            p.style.transform = `translate(-50%, -50%) rotate(${APP.pac.a}deg)`;
+            
+            r.style.left = SISTEMA.referencia.x + "%";
+            r.style.top = SISTEMA.referencia.y + "%";
+            r.style.transform = `translate(-50%, -50%) rotate(${SISTEMA.referencia.a}deg)`;
+            
+            p.style.left = SISTEMA.paciente.x + "%";
+            p.style.top = SISTEMA.paciente.y + "%";
+            p.style.transform = `translate(-50%, -50%) rotate(${SISTEMA.paciente.a}deg)`;
         }
 
-        function evaluarPrecision() {
-            if (!APP.active) return;
-            APP.active = false;
-            clearInterval(APP.timer);
+        function ejecutarEvaluacion() {
+            if (!SISTEMA.activo) return;
+            SISTEMA.activo = false;
+            clearInterval(SISTEMA.timerRef);
 
-            const errX = Math.abs(APP.ref.x - APP.pac.x);
-            let errA = Math.abs((APP.ref.a % 180) - (APP.pac.a % 180));
+            const errX = Math.abs(SISTEMA.referencia.x - SISTEMA.paciente.x);
+            let errA = Math.abs((SISTEMA.referencia.a % 180) - (SISTEMA.paciente.a % 180));
             if (errA > 90) errA = 180 - errA;
 
             const score = Math.max(0, Math.round(100 - (errX * 12 + errA * 3)));
-            if (score >= 90) AUDIO.win(); else { AUDIO.fail(); APP.lives--; }
+            
+            if (score >= 90) SONIDO.exito(); else { SONIDO.error(); SISTEMA.vidas--; }
 
-            // ENVÍO SILENCIOSO (MÉTODO CLÁSICO QUE FUNCIONA CON TU EXCEL)
-            enviarDatos(score, errX, errA);
+            // ENVÍO SILENCIOSO (MÉTODO CLÁSICO IFRAME)
+            enviarHaciaSheets(score, errX, errA);
 
             document.getElementById('pantalla-feedback-ui').style.display = 'flex';
             document.getElementById('feedback-score').innerText = score + "%";
-            document.getElementById('feedback-detalles').innerHTML = `ERROR LATERAL: ${errX.toFixed(2)} | ERROR ANGULAR: ${errA.toFixed(1)}°`;
+            document.getElementById('feedback-detalles').innerHTML = `
+                ERROR DE POSICIÓN: ${errX.toFixed(2)}px<br>
+                ERROR ANGULAR: ${errA.toFixed(1)}°<br>
+                VIDAS RESTANTES: ${"❤️".repeat(SISTEMA.vidas)}
+            `;
         }
 
-        function enviarDatos(p, x, a) {
+        function enviarHaciaSheets(p, x, a) {
             const hoy = new Date().toISOString().split('T')[0];
             const form = document.createElement("form");
             form.method = "POST";
-            form.action = APP.formAction;
-            form.target = "hidden_iframe";
+            form.action = SISTEMA.formUrl;
+            form.target = "frame_envio_oculto";
 
-            const fields = {
-                "entry.369874016": APP.patientID,
-                "entry.1353470174": "VERNIER_PRO_LEGACY",
+            const params = {
+                "entry.369874016": "PACIENTE_ANONIMO",
+                "entry.1353470174": "VERNIER_PRO_V24",
                 "entry.721051298": p,
                 "entry.873272199": x.toFixed(2),
                 "entry.1030094511": a.toFixed(1),
-                "entry.1303309812": APP.level,
+                "entry.1303309812": SISTEMA.nivel,
                 "entry.845098414": hoy
             };
 
-            for (let key in fields) {
-                const input = document.createElement("input");
-                input.type = "hidden"; input.name = key; input.value = fields[key];
-                form.appendChild(input);
+            for (let key in params) {
+                const inp = document.createElement("input");
+                inp.type = "hidden"; inp.name = key; inp.value = params[key];
+                form.appendChild(inp);
             }
             document.body.appendChild(form);
             form.submit();
             document.body.removeChild(form);
         }
 
-        function nextLevel() {
-            AUDIO.clic();
+        function avanzarSiguiente() {
+            SONIDO.clic();
             document.getElementById('pantalla-feedback-ui').style.display = 'none';
-            if (APP.lives <= 0) location.reload();
-            else {
-                if (parseInt(document.getElementById('feedback-score').innerText) >= 90) APP.level++;
-                document.getElementById('hud-nivel').innerText = APP.level;
-                document.getElementById('hud-vidas').innerText = "❤️".repeat(APP.lives);
-                resetRound();
+            if (SISTEMA.vidas <= 0) {
+                location.reload();
+            } else {
+                if (parseInt(document.getElementById('feedback-score').innerText) >= 90) SISTEMA.nivel++;
+                document.getElementById('valor-hud-nivel').innerText = SISTEMA.nivel;
+                document.getElementById('valor-hud-vidas').innerText = "❤️".repeat(SISTEMA.vidas);
+                resetEscena();
             }
         }
 
-        // CONTROLES DE INTERACCIÓN
-        let isDragging = false, dragType = null;
+        /* MOTOR DE INTERACCIÓN INTEGRAL */
+        let pulsado = false, modoDrag = null;
         window.onmousedown = (e) => {
-            if (!APP.active) return;
-            if (e.target.dataset.clinical === 'rotar') dragType = 'rotar';
-            else if (e.target.id === 'linea-paciente-interactiva') dragType = 'mover';
-            if (dragType) isDragging = true;
+            if (!SISTEMA.activo) return;
+            if (e.target.dataset.control === 'rotar') modoDrag = 'rotar';
+            else if (e.target.id === 'linea-paciente-interactiva') modoDrag = 'mover';
+            if (modoDrag) pulsado = true;
         };
         window.onmousemove = (e) => {
-            if (!isDragging) return;
-            if (dragType === 'mover') APP.pac.x = (e.clientX / window.innerWidth) * 100;
-            else if (dragType === 'rotar') APP.pac.a += e.movementX;
-            draw();
+            if (!pulsado) return;
+            if (modoDrag === 'mover') SISTEMA.paciente.x = (e.clientX / window.innerWidth) * 100;
+            else if (modoDrag === 'rotar') SISTEMA.paciente.a += e.movementX;
+            renderizar();
         };
-        window.onmouseup = () => { isDragging = false; dragType = null; };
+        window.onmouseup = () => { pulsado = false; modoDrag = null; };
 
-        function startNudge(prop, val) {
-            if (!APP.active) return;
-            APP.pac[prop] += val; draw();
-            APP.nudgeInterval = setInterval(() => { APP.pac[prop] += val; draw(); }, 50);
+        function gestionarNudge(prop, val) {
+            if (!SISTEMA.activo) return;
+            SISTEMA.paciente[prop === 'x' ? 'x' : 'a'] += val;
+            renderizar();
+            SISTEMA.nudgeRef = setInterval(() => {
+                SISTEMA.paciente[prop === 'x' ? 'x' : 'a'] += val;
+                renderizar();
+            }, 50);
         }
-        function stopNudge() { clearInterval(APP.nudgeInterval); }
+        function pararNudge() { clearInterval(SISTEMA.nudgeRef); }
 
     </script>
 </body>
