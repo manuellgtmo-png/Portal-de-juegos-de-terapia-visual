@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Precision Pro v20.0 - Full Infrastructure Suite</title>
+    <title>Vernier Precision Pro v24.0 - High Volume Clinical Suite</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        /* ================================================================
-           1. ARQUITECTURA DE DISEÑO Y SISTEMA DE VARIABLES (CSS CORE)
-           ================================================================ */
+        /* ========================================================================
+           1. ARQUITECTURA DE DISEÑO Y VARIABLES DE SISTEMA (SISTEMA DE DISEÑO)
+           ======================================================================== */
         :root {
             --clin-bg: #0b101b;
             --clin-card: #1c2331;
@@ -22,9 +22,10 @@
             --clin-text-dim: #94a3b8;
             --fuente-primaria: 'Montserrat', sans-serif;
             --curva-animacion: cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-hd: 0 50px 100px rgba(0,0,0,0.8);
         }
 
-        /* Bloqueo absoluto de comportamientos nativos del navegador */
+        /* Reset de Motor de Renderizado y Bloqueo de Gestos Nativos */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -46,20 +47,25 @@
             display: flex;
             flex-direction: column;
             position: fixed;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 40%);
         }
 
-        /* ================================================================
-           2. CAPAS DE INTERFAZ DE USUARIO (MENÚS Y OVERLAYS)
-           ================================================================ */
+        /* ========================================================================
+           2. CAPAS DE INTERFAZ DE USUARIO (SISTEMA DE MENÚS Y OVERLAYS)
+           ======================================================================== */
         .capa-interfaz-total {
             position: fixed;
             inset: 0;
-            background: var(--clin-bg);
+            background: rgba(11, 16, 27, 0.98);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             padding: 40px;
+            backdrop-filter: blur(15px);
+            transition: opacity 0.5s var(--curva-animacion);
         }
 
         .panel-clinico-central {
@@ -69,12 +75,18 @@
             padding: 65px;
             border-radius: 60px;
             text-align: center;
-            box-shadow: 0 50px 150px rgba(0,0,0,0.95);
+            box-shadow: var(--shadow-hd);
             border: 2px solid rgba(255,255,255,0.03);
             position: relative;
+            animation: entradaPanel 0.6s var(--curva-animacion);
         }
 
-        /* Grid de Selección de Modalidad */
+        @keyframes entradaPanel {
+            from { transform: scale(0.9) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        /* Grid de Selección de Modalidad de Evaluación */
         .grid-modos-evaluacion {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -89,84 +101,75 @@
             border: 3px solid transparent;
             cursor: pointer;
             transition: all 0.3s var(--curva-animacion);
+            position: relative;
+            overflow: hidden;
         }
 
         .tarjeta-modo.esta-activa {
             border-color: var(--clin-accent);
             background: rgba(168, 85, 247, 0.1);
-            box-shadow: 0 0 35px var(--clin-accent-glow);
+            box-shadow: 0 0 40px var(--clin-accent-glow);
         }
 
-        /* Ajuste de Parámetros Temporales */
-        .contenedor-ajuste-tiempo {
-            background: rgba(0,0,0,0.3);
-            padding: 28px 45px;
-            border-radius: 35px;
-            margin-bottom: 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.06);
+        .tarjeta-modo h2 {
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            color: var(--clin-text);
         }
 
-        .selector-personalizado {
-            background: var(--clin-bg);
-            color: white;
-            border: 2px solid var(--clin-accent);
-            padding: 15px 30px;
-            border-radius: 20px;
-            font-family: inherit;
-            font-weight: 800;
-            font-size: 1.25rem;
-            cursor: pointer;
-            outline: none;
-            appearance: none;
+        .tarjeta-modo p {
+            font-size: 0.85rem;
+            color: var(--clin-text-dim);
+            line-height: 1.4;
         }
 
-        /* ================================================================
-           3. HUD (HEAD-UP DISPLAY) Y MONITORIZACIÓN
-           ================================================================ */
+        /* ========================================================================
+           3. HUD DINÁMICO (MONITORIZACIÓN EN TIEMPO REAL)
+           ======================================================================== */
         .widget-estado-hud {
             position: absolute;
             top: 35px;
             background: var(--clin-card);
-            padding: 30px 45px;
-            border-radius: 40px;
+            padding: 25px 40px;
+            border-radius: 35px;
             z-index: 1000;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .hud-pos-izquierda { left: 45px; }
         .hud-pos-derecha { right: 45px; }
 
         .etiqueta-estado {
-            display: block;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 800;
             color: var(--clin-text-dim);
             text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 12px;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
         }
 
         .valor-estado {
-            font-size: 2.5rem;
+            font-size: 2.4rem;
             font-weight: 900;
-            display: block;
+            line-height: 1;
         }
 
-        /* Barra de Tiempo (Cronómetro Dinámico) */
+        /* Barra de Tiempo (Cronómetro Visual) */
         #envoltura-cronometro-hud {
             position: absolute;
             top: 55px;
             left: 50%;
             transform: translateX(-50%);
-            width: 480px;
-            height: 22px;
+            width: 450px;
+            height: 20px;
             background: rgba(255,255,255,0.03);
             border-radius: 45px;
-            border: 5px solid var(--clin-card);
+            border: 4px solid var(--clin-card);
             overflow: hidden;
             display: none;
             z-index: 1000;
@@ -175,46 +178,14 @@
         #relleno-progreso-tiempo {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, var(--clin-error), #ff9eb0);
-            box-shadow: 0 0 25px var(--clin-error);
+            background: linear-gradient(90deg, var(--clin-error), #ff8fa3);
+            box-shadow: 0 0 20px var(--clin-error);
             transition: width 0.1s linear;
         }
 
-        /* Panel de Micro-Ajustes Laterales */
-        #cluster-controles-precision {
-            position: absolute;
-            right: 45px;
-            top: 50%;
-            transform: translateY(-50%);
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            z-index: 1000;
-        }
-
-        .boton-nudge-clinico {
-            width: 85px;
-            height: 85px;
-            background: rgba(28, 35, 49, 0.98);
-            border: 3px solid var(--clin-accent);
-            border-radius: 28px;
-            color: white;
-            font-size: 2.3rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s var(--curva-animacion);
-        }
-
-        .boton-nudge-clinico:active {
-            transform: scale(0.85);
-            background: var(--clin-accent);
-        }
-
-        /* ================================================================
-           4. ESCENARIO Y BARRAS (AJUSTE DE TAMAÑO PARA NO TOPARSE)
-           ================================================================ */
+        /* ========================================================================
+           4. ESCENARIO DE PRUEBA (BARRAS DE PRECISIÓN ANTI-TOPES)
+           ======================================================================== */
         #escenario-evaluacion-clinica {
             flex: 1;
             position: relative;
@@ -226,7 +197,7 @@
         .elemento-vernier-base {
             position: absolute;
             width: 18px; 
-            height: 160px; /* Tamaño reducido para evitar colisión */
+            height: 160px; /* Tamaño reducido para visibilidad total */
             border-radius: 50px;
             transform-origin: center center;
             will-change: transform, left, top;
@@ -234,55 +205,95 @@
 
         #linea-referencia-estatica {
             background-color: #334155;
-            opacity: 0.45;
+            opacity: 0.5;
             z-index: 10;
         }
 
         #linea-paciente-interactiva {
             background-color: var(--clin-accent);
-            box-shadow: 0 0 50px var(--clin-accent-glow);
+            box-shadow: 0 0 60px var(--clin-accent-glow);
             z-index: 100;
+            cursor: grab;
         }
 
-        /* Sensores de Rotación */
+        #linea-paciente-interactiva:active { cursor: grabbing; }
+
+        /* Sensores de Rotación en Extremos */
         .zona-sensor-rotacion {
             position: absolute;
             width: 100%;
-            height: 40%;
+            height: 35%;
             left: 0;
             z-index: 500;
-            cursor: ns-resize;
+            cursor: alias;
         }
         .sensor-extremo-superior { top: 0; }
         .sensor-extremo-inferior { bottom: 0; }
 
-        /* ================================================================
-           5. BOTÓN DE ACCIÓN FINAL (FLOTANTE DESPEJADO)
-           ================================================================ */
+        /* ========================================================================
+           5. CLUSTER DE CONTROL LATERAL (NUDGE SYSTEM)
+           ======================================================================== */
+        #cluster-controles-precision {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .boton-nudge-clinico {
+            width: 85px;
+            height: 85px;
+            background: rgba(28, 35, 49, 0.95);
+            border: 3px solid var(--clin-accent);
+            border-radius: 25px;
+            color: white;
+            font-size: 2.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s var(--curva-animacion);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .boton-nudge-clinico:active {
+            transform: scale(0.9) translateY(4px);
+            background: var(--clin-accent);
+            box-shadow: 0 0 30px var(--clin-accent-glow);
+        }
+
+        /* ========================================================================
+           6. BOTÓN DE ACCIÓN MAESTRA (UI BOTTOM)
+           ======================================================================== */
         .boton-confirmacion-maestra {
             position: absolute;
             bottom: 40px; 
             left: 50%;
             transform: translateX(-50%);
-            width: 50%;
-            max-width: 380px;
-            padding: 24px;
+            width: 55%;
+            max-width: 420px;
+            padding: 28px;
             background: var(--clin-success);
             color: #062d16;
-            border-radius: 40px;
-            font-size: 1.4rem;
+            border-radius: 45px;
+            font-size: 1.6rem;
             font-weight: 900;
             text-transform: uppercase;
+            letter-spacing: 2px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 10px 0 #15803d;
+            box-shadow: 0 12px 0 #15803d, 0 20px 40px rgba(34, 197, 94, 0.3);
             z-index: 1000;
             transition: all 0.2s var(--curva-animacion);
         }
 
         .boton-confirmacion-maestra:active {
-            transform: translate(-50%, 5px);
-            box-shadow: 0 5px 0 #15803d;
+            transform: translate(-50%, 8px);
+            box-shadow: 0 4px 0 #15803d;
         }
 
     </style>
@@ -291,53 +302,58 @@
 
     <div id="pantalla-inicio-ui" class="capa-interfaz-total">
         <div class="panel-clinico-central">
-            <h1 style="color:var(--clin-accent); font-size: 4rem; font-weight: 900; margin-bottom: 5px;">VERNIE PRO</h1>
-            <p style="color:var(--clin-text-dim); font-weight: 700; font-size: 1.2rem; letter-spacing: 5px; margin-bottom: 20px;">SISTEMA DE PRECISIÓN VISUAL</p>
+            <h1 style="color:var(--clin-accent); font-size: 4.5rem; font-weight: 900; line-height: 0.9; margin-bottom: 10px;">VERNIE PRO</h1>
+            <p style="color:var(--clin-text-dim); letter-spacing: 6px; font-weight: 700; margin-bottom: 40px;">SISTEMA DE PRECISIÓN VISUAL v24.0</p>
             
+            <div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 40px; margin-bottom: 30px; border: 1px solid rgba(255,255,255,0.05);">
+                <input type="text" id="input-nombre-paciente" placeholder="ID O NOMBRE DEL PACIENTE" 
+                style="width: 100%; background: transparent; border: none; border-bottom: 3px solid var(--clin-accent); color: white; text-align: center; font-size: 1.6rem; font-family: inherit; font-weight: 800; outline: none; padding: 10px;">
+            </div>
+
             <div class="grid-modos-evaluacion">
                 <div id="modo-clinico-libre" class="tarjeta-modo" onclick="gestionarCambioModo('libre')">
-                    <h2 style="font-size: 1.4rem; font-weight: 900; color: var(--clin-accent);">MODO LIBRE</h2>
-                    <p style="font-size: 0.85rem; color: var(--clin-text-dim); margin-top: 15px;">Calibración técnica sin límite de tiempo.</p>
+                    <h2>MODO LIBRE</h2>
+                    <p>Calibración técnica sin presión de tiempo.</p>
                 </div>
                 <div id="modo-clinico-tiempo" class="tarjeta-modo esta-activa" onclick="gestionarCambioModo('tiempo')">
-                    <h2 style="font-size: 1.4rem; font-weight: 900; color: var(--clin-accent);">CONTRARELOJ</h2>
-                    <p style="font-size: 0.85rem; color: var(--clin-text-dim); margin-top: 15px;">Evaluación diagnóstica con tiempo límite.</p>
+                    <h2>CONTRARELOJ</h2>
+                    <p>Evaluación bajo estrés temporal clínico.</p>
                 </div>
             </div>
 
-            <div id="ajuste-tiempo-wrapper" class="contenedor-ajuste-tiempo">
-                <span style="font-weight: 800; font-size: 1.1rem;">RESPUESTA:</span>
-                <select id="select-tiempo-mision" class="selector-personalizado">
-                    <option value="5">05 Seg</option>
-                    <option value="10" selected>10 Seg</option>
-                    <option value="20">20 Seg</option>
-                    <option value="40">40 Seg</option>
-                </select>
-            </div>
-
-            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; box-shadow:none; left:0; transform:none;" onclick="secuenciaDeArranque()">INICIAR PROTOCOLO</button>
+            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; transform:none; left:0; box-shadow:none;" onclick="secuenciaDeArranque()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
     <div id="pantalla-feedback-ui" class="capa-interfaz-total" style="display:none;">
-        <div class="panel-clinico-central" style="border-top: 12px solid var(--clin-accent);">
-            <h2 id="feedback-titulo-texto" style="font-size: 2.5rem; font-weight: 900;">RESULTADO</h2>
-            <div id="feedback-puntaje-grande" style="font-size: 8rem; font-weight: 900; line-height: 1; margin: 35px 0;">0%</div>
-            <div id="feedback-caja-detalles" style="text-align:left; background:rgba(0,0,0,0.3); padding:40px; border-radius:35px; margin-bottom:40px; font-size:1.15rem; line-height:2.2;"></div>
-            <button id="feedback-boton-accion" class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; left:0; transform:none;" onclick="procesarAvanceTerapia()">CONTINUAR</button>
+        <div class="panel-clinico-central" style="border-top: 15px solid var(--clin-accent);">
+            <h2 id="feedback-titulo-texto" style="font-size: 2.5rem; font-weight: 900; margin-bottom: 10px;">ANÁLISIS COMPLETADO</h2>
+            <div id="feedback-puntaje-grande" style="font-size: 8.5rem; font-weight: 900; line-height: 1; margin: 30px 0; color: var(--clin-accent);">0%</div>
+            <div id="feedback-caja-detalles" style="text-align:left; background:rgba(0,0,0,0.4); padding:40px; border-radius:35px; margin-bottom:40px; font-size:1.3rem; line-height:2; border: 1px solid rgba(255,255,255,0.05);"></div>
+            <button id="feedback-boton-accion" class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; left:0; transform:none;" onclick="procesarAvanceTerapia()">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
     <div id="capa-hud-activa" style="display:none;">
-        <div class="widget-estado-hud hud-pos-izquierda"><span class="etiqueta-estado">Misión</span><span id="valor-hud-nivel" class="valor-estado">1</span></div>
-        <div id="envoltura-cronometro-hud"><div id="relleno-progreso-tiempo"></div></div>
-        <div class="widget-estado-hud hud-pos-derecha"><span class="etiqueta-estado">Vidas</span><span id="valor-hud-vidas" class="valor-estado">❤️❤️❤️</span></div>
-        <div id="cluster-controles-precision">
-            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('angulo', -2.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('angulo', -2.5)" ontouchend="detenerMicroAjuste()">↻</button>
-            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('angulo', 2.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('angulo', 2.5)" ontouchend="detenerMicroAjuste()">↺</button>
-            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('x', -0.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('x', -0.5)" ontouchend="detenerMicroAjuste()">←</button>
-            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('x', 0.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('x', 0.5)" ontouchend="detenerMicroAjuste()">→</button>
+        <div class="widget-estado-hud hud-pos-izquierda">
+            <span class="etiqueta-estado">Nivel</span>
+            <span id="valor-hud-nivel" class="valor-estado">1</span>
         </div>
+        
+        <div id="envoltura-cronometro-hud"><div id="relleno-progreso-tiempo"></div></div>
+        
+        <div class="widget-estado-hud hud-pos-derecha">
+            <span class="etiqueta-estado">Vidas</span>
+            <span id="valor-hud-vidas" class="valor-estado">❤️❤️❤️</span>
+        </div>
+        
+        <div id="cluster-controles-precision">
+            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('angulo', -1.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('angulo', -1.5)" ontouchend="detenerMicroAjuste()">↻</button>
+            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('angulo', 1.5)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('angulo', 1.5)" ontouchend="detenerMicroAjuste()">↺</button>
+            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('x', -0.3)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('x', -0.3)" ontouchend="detenerMicroAjuste()">←</button>
+            <button class="boton-nudge-clinico" onmousedown="iniciarMicroAjuste('x', 0.3)" onmouseup="detenerMicroAjuste()" ontouchstart="iniciarMicroAjuste('x', 0.3)" ontouchend="detenerMicroAjuste()">→</button>
+        </div>
+        
         <button class="boton-confirmacion-maestra" onclick="ejecutarEvaluacionPrecision()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
@@ -351,10 +367,11 @@
 
     <script>
         /**
-         * ================================================================
-         * MOTOR LÓGICO DE VERNIE PRO v20.0 (ESTRUCTURA EXTENSA DE PRECISIÓN)
-         * ================================================================
+         * ========================================================================
+         * MOTOR LÓGICO DE VERNIE PRO v24.0 (INFRAESTRUCTURA COMPLETA)
+         * ========================================================================
          */
+        
         const SISTEMA_CORE = {
             testActivo: false,
             modalidadActual: 'tiempo',
@@ -364,17 +381,39 @@
             segundosCronometro: 10,
             referenciaTimer: null,
             referenciaNudge: null,
+            pacienteID: "ANÓNIMO",
             
-            // Vectores de posición (Coordenadas en Porcentaje)
-            // AJUSTE Y: Referencia arriba (28%), Paciente abajo (58%) para que NO SE TOPER
-            objReferencia: { x: 50, y: 28, angulo: 0 },
-            objPaciente: { x: 75, y: 58, angulo: 0 },
+            // Coordenadas Críticas (Y separadas para evitar colisión)
+            objReferencia: { x: 50, y: 30, angulo: 0 },
+            objPaciente: { x: 75, y: 60, angulo: 0 },
             
             controlMouse: {
                 estaPresionado: false,
                 modoInteraccion: null,
                 posicionInicialX: 0
             }
+        };
+
+        // --- SISTEMA DE AUDIO CLÍNICO (SINTETIZADO) ---
+        const AUDIO_ENGINE = {
+            ctx: null,
+            init() {
+                if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            },
+            osc(freq, type, dur, vol) {
+                this.init();
+                const o = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                o.type = type;
+                o.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                g.gain.setValueAtTime(vol, this.ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + dur);
+                o.connect(g); g.connect(this.ctx.destination);
+                o.start(); o.stop(this.ctx.currentTime + dur);
+            },
+            clic() { this.osc(600, 'sine', 0.1, 0.1); },
+            exito() { this.osc(880, 'sine', 0.4, 0.2); },
+            error() { this.osc(150, 'sawtooth', 0.5, 0.2); }
         };
 
         const barPaciente = document.getElementById('linea-paciente-interactiva');
@@ -388,7 +427,6 @@
             const coordXActual = e.touches ? e.touches[0].clientX : e.clientX;
             const elementoOrigen = e.target;
 
-            // INICIO DE CONTACTO
             if (e.type === 'mousedown' || e.type === 'touchstart') {
                 if (elementoOrigen.dataset.clinicalType === 'rotar') {
                     SISTEMA_CORE.controlMouse.modoInteraccion = 'rotar';
@@ -402,15 +440,14 @@
                     if (e.type === 'mousedown') e.preventDefault();
                 }
             } 
-            // MOVIMIENTO DINÁMICO
             else if ((e.type === 'mousemove' || e.type === 'touchmove') && SISTEMA_CORE.controlMouse.estaPresionado) {
                 const diferenciaX = coordXActual - SISTEMA_CORE.controlMouse.posicionInicialX;
 
                 if (SISTEMA_CORE.controlMouse.modoInteraccion === 'mover') {
-                    const porcentajeX = (coordXActual / window.innerWidth) * 100;
-                    SISTEMA_CORE.objPaciente.x = Math.max(10, Math.min(90, porcentajeX));
+                    const pctX = (coordXActual / window.innerWidth) * 100;
+                    SISTEMA_CORE.objPaciente.x = Math.max(10, Math.min(90, pctX));
                 } else if (SISTEMA_CORE.controlMouse.modoInteraccion === 'rotar') {
-                    SISTEMA_CORE.objPaciente.angulo += (diferenciaX * 0.6); 
+                    SISTEMA_CORE.objPaciente.angulo += (diferenciaX * 0.5);
                 }
                 
                 SISTEMA_CORE.controlMouse.posicionInicialX = coordXActual;
@@ -421,25 +458,27 @@
 
         window.addEventListener('mousedown', procesarInputGlobal);
         window.addEventListener('touchstart', procesarInputGlobal, {passive: false});
-        window.addEventListener('mousemove', procesarInputGlobal);
-        window.addEventListener('touchmove', procesarInputGlobal, {passive: false});
-        window.addEventListener('mouseup', () => { SISTEMA_CORE.controlMouse.estaPresionado = false; });
-        window.addEventListener('touchend', () => { SISTEMA_CORE.controlMouse.estaPresionado = false; });
+        window.addEventListener('mousemove', (e) => procesarInputGlobal(e));
+        window.addEventListener('touchmove', (e) => procesarInputGlobal(e), {passive: false});
+        window.addEventListener('mouseup', () => SISTEMA_CORE.controlMouse.estaPresionado = false);
+        window.addEventListener('touchend', () => SISTEMA_CORE.controlMouse.estaPresionado = false);
 
-        /* 2. GESTIÓN DE MODOS Y SESIÓN
+        /* 2. LÓGICA DE SESIÓN Y FLUJO DE JUEGO
            ------------------------------------------------------ */
-        function gestionarCambioModo(nuevoModo) {
-            SISTEMA_CORE.modalidadActual = nuevoModo;
-            document.getElementById('modo-clinico-libre').classList.toggle('esta-activa', nuevoModo === 'libre');
-            document.getElementById('modo-clinico-tiempo').classList.toggle('esta-activa', nuevoModo === 'tiempo');
-            
-            const bloqueTiempo = document.getElementById('ajuste-tiempo-wrapper');
-            bloqueTiempo.style.opacity = (nuevoModo === 'tiempo') ? "1" : "0.2";
-            bloqueTiempo.style.pointerEvents = (nuevoModo === 'tiempo') ? "auto" : "none";
+        function gestionarCambioModo(modo) {
+            AUDIO_ENGINE.clic();
+            SISTEMA_CORE.modalidadActual = modo;
+            document.getElementById('modo-clinico-libre').classList.toggle('esta-activa', modo === 'libre');
+            document.getElementById('modo-clinico-tiempo').classList.toggle('esta-activa', modo === 'tiempo');
         }
 
         function secuenciaDeArranque() {
-            SISTEMA_CORE.tiempoConfigurado = parseInt(document.getElementById('select-tiempo-mision').value);
+            AUDIO_ENGINE.init();
+            AUDIO_ENGINE.clic();
+            
+            const n = document.getElementById('input-nombre-paciente').value;
+            SISTEMA_CORE.pacienteID = n ? n : "ANÓNIMO";
+            
             document.getElementById('pantalla-inicio-ui').style.display = 'none';
             document.getElementById('escenario-evaluacion-clinica').style.display = 'block';
             document.getElementById('capa-hud-activa').style.display = 'block';
@@ -454,32 +493,32 @@
             SISTEMA_CORE.testActivo = true;
             SISTEMA_CORE.segundosCronometro = SISTEMA_CORE.tiempoConfigurado;
             
-            // Generación de Referencia
-            SISTEMA_CORE.objReferencia.x = 35 + (Math.random() * 30);
+            // Generación de posición de referencia aleatoria
+            SISTEMA_CORE.objReferencia.x = 30 + (Math.random() * 40);
             
-            // DIFICULTAD PROGRESIVA
-            if (SISTEMA_CORE.nivelProgresivo >= 6) {
-                SISTEMA_CORE.objReferencia.angulo = Math.floor(Math.random() * 160 - 80);
-            } else if (SISTEMA_CORE.nivelProgresivo >= 3) {
+            // DIFICULTAD SEGÚN NIVEL
+            if (SISTEMA_CORE.nivelProgresivo >= 8) {
+                SISTEMA_CORE.objReferencia.angulo = Math.floor(Math.random() * 170 - 85);
+            } else if (SISTEMA_CORE.nivelProgresivo >= 4) {
                 SISTEMA_CORE.objReferencia.angulo = (Math.random() > 0.5) ? 90 : 0;
             } else {
                 SISTEMA_CORE.objReferencia.angulo = 0;
             }
 
-            SISTEMA_CORE.objPaciente.x = SISTEMA_CORE.objReferencia.x + (Math.random() > 0.5 ? 20 : -20);
+            // El paciente aparece lejos para obligar al movimiento
+            SISTEMA_CORE.objPaciente.x = SISTEMA_CORE.objReferencia.x + (Math.random() > 0.5 ? 25 : -25);
             SISTEMA_CORE.objPaciente.angulo = 0;
 
             actualizarRenderizadoFisico();
-            if (SISTEMA_CORE.modalidadActual === 'tiempo') activarTemporizadorAltaPrecision();
+            if (SISTEMA_CORE.modalidadActual === 'tiempo') activarTemporizador();
         }
 
-        /* 3. MOTOR DEL CRONÓMETRO
-           ------------------------------------------------------ */
-        function activarTemporizadorAltaPrecision() {
+        function activarTemporizador() {
             if (SISTEMA_CORE.referenciaTimer) clearInterval(SISTEMA_CORE.referenciaTimer);
             SISTEMA_CORE.referenciaTimer = setInterval(() => {
                 SISTEMA_CORE.segundosCronometro -= 0.1;
-                document.getElementById('relleno-progreso-tiempo').style.width = (SISTEMA_CORE.segundosCronometro / SISTEMA_CORE.tiempoConfigurado) * 100 + "%";
+                const pct = (SISTEMA_CORE.segundosCronometro / SISTEMA_CORE.tiempoConfigurado) * 100;
+                document.getElementById('relleno-progreso-tiempo').style.width = pct + "%";
                 if (SISTEMA_CORE.segundosCronometro <= 0) ejecutarEvaluacionPrecision();
             }, 100);
         }
@@ -494,7 +533,7 @@
             barPaciente.style.transform = `translate(-50%, -50%) rotate(${SISTEMA_CORE.objPaciente.angulo}deg)`;
         }
 
-        /* 4. ANÁLISIS DE RESULTADOS
+        /* 3. EVALUACIÓN Y CONEXIÓN A GOOGLE SHEETS (MÉTODO CLÁSICO)
            ------------------------------------------------------ */
         function ejecutarEvaluacionPrecision() {
             if (!SISTEMA_CORE.testActivo) return;
@@ -508,19 +547,50 @@
             const puntos = Math.max(0, Math.round(100 - (errX * 12 + errA * 3)));
             const exito = puntos >= 90;
 
-            if (!exito) SISTEMA_CORE.vidasRestantes--;
+            if (exito) {
+                AUDIO_ENGINE.exito();
+            } else {
+                AUDIO_ENGINE.error();
+                SISTEMA_CORE.vidasRestantes--;
+            }
+
+            // ENVÍO DE DATOS GOOGLE SHEETS (MÉTODO ANTIGUO: WINDOW.OPEN)
+            enviarDatosGoogleSheets(puntos, errX, errA);
 
             document.getElementById('pantalla-feedback-ui').style.display = 'flex';
-            document.getElementById('feedback-titulo-texto').innerText = exito ? "¡ALINEACIÓN LOGRADA!" : "FALLO DE PRECISIÓN";
             document.getElementById('feedback-puntaje-grande').innerText = puntos + "%";
-            document.getElementById('feedback-caja-detalles').innerHTML = `Error Lateral: ${errX.toFixed(2)}px<br>Error Angular: ${errA.toFixed(1)}°<br>Estado: ${"❤️".repeat(SISTEMA_CORE.vidasRestantes)}`;
+            document.getElementById('feedback-caja-detalles').innerHTML = `
+                PACIENTE: ${SISTEMA_CORE.pacienteID}<br>
+                ERROR LATERAL: ${errX.toFixed(2)}px<br>
+                ERROR ANGULAR: ${errA.toFixed(1)}°<br>
+                VIDAS: ${"❤️".repeat(SISTEMA_CORE.vidasRestantes)}
+            `;
+        }
+
+        function enviarDatosGoogleSheets(p, x, a) {
+            const hoy = new Date().toISOString().split('T')[0];
+            const baseUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/viewform?usp=pp_url";
+            
+            // Construcción del string de parámetros según tu link pre-rellenado
+            const params = `&entry.369874016=${SISTEMA_CORE.pacienteID}` +
+                           `&entry.1353470174=VERNIER_PRO_V24` +
+                           `&entry.721051298=${p}` +
+                           `&entry.873272199=${x.toFixed(2)}` +
+                           `&entry.1030094511=${a.toFixed(1)}` +
+                           `&entry.1303309812=${SISTEMA_CORE.nivelProgresivo}` +
+                           `&entry.845098414=${hoy}`;
+
+            window.open(baseUrl + params, '_blank');
         }
 
         function procesarAvanceTerapia() {
+            AUDIO_ENGINE.clic();
             document.getElementById('pantalla-feedback-ui').style.display = 'none';
-            if (SISTEMA_CORE.vidasRestantes <= 0) location.reload();
-            else {
-                if (document.getElementById('feedback-titulo-texto').innerText === "¡ALINEACIÓN LOGRADA!") {
+            
+            if (SISTEMA_CORE.vidasRestantes <= 0) {
+                location.reload();
+            } else {
+                if (parseInt(document.getElementById('feedback-puntaje-grande').innerText) >= 90) {
                     SISTEMA_CORE.nivelProgresivo++;
                 }
                 document.getElementById('valor-hud-nivel').innerText = SISTEMA_CORE.nivelProgresivo;
@@ -529,14 +599,14 @@
             }
         }
 
-        /* 5. MICRO-AJUSTE
+        /* 4. MICRO-AJUSTE (SISTEMA DE PRECISIÓN)
            ------------------------------------------------------ */
-        function iniciarMicroAjuste(p, v) {
+        function iniciarMicroAjuste(prop, val) {
             if (!SISTEMA_CORE.testActivo) return;
-            SISTEMA_CORE.objPaciente[p] += v;
+            SISTEMA_CORE.objPaciente[prop] += val;
             actualizarRenderizadoFisico();
             SISTEMA_CORE.referenciaNudge = setInterval(() => {
-                SISTEMA_CORE.objPaciente[p] += v;
+                SISTEMA_CORE.objPaciente[prop] += val;
                 actualizarRenderizadoFisico();
             }, 60);
         }
