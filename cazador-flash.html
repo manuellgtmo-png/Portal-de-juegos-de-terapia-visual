@@ -26,7 +26,6 @@
 
         #bg-canvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5; }
 
-        /* HEADER ESTILO VERNIE */
         #header { 
             height: 80px; padding: 0 30px; 
             display: flex; justify-content: space-between; align-items: center;
@@ -40,12 +39,7 @@
         }
 
         #stage { flex: 1; position: relative; z-index: 5; overflow: hidden; width: 100%; }
-        
-        #fix-dot { 
-            position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; 
-            background: #fff; border-radius: 50%; transform: translate(-50%, -50%); 
-            display: none; z-index: 10; box-shadow: 0 0 25px #fff;
-        }
+        #fix-dot { position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); display: none; z-index: 10; box-shadow: 0 0 25px #fff; }
 
         #target-announcer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -55,64 +49,29 @@
             border: 3px solid var(--clin-accent);
         }
 
-        .flash-item { 
-            position: absolute; cursor: pointer; transform: translate(-50%, -50%); 
-            z-index: 20; transition: transform 0.1s;
-        }
+        .flash-item { position: absolute; cursor: pointer; transform: translate(-50%, -50%); z-index: 20; }
+        .flash-item svg { width: 100%; height: 100%; drop-shadow: 0 0 15px rgba(255,255,255,0.2); }
 
-        /* MODALES */
-        .overlay { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95); 
-            backdrop-filter: blur(20px); z-index: 1000; display: flex; 
-            align-items: center; justify-content: center; 
-        }
-        .modal { 
-            background: var(--clin-card); padding: 50px; border-radius: 50px; 
-            text-align: center; width: 90%; max-width: 550px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-        }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .modal { background: var(--clin-card); padding: 50px; border-radius: 50px; text-align: center; width: 90%; max-width: 550px; border: 1px solid rgba(255,255,255,0.05); }
         
         .titulo-vpro { font-size: 3rem; font-weight: 900; color: var(--clin-accent); margin-bottom: 5px; }
         .subtitulo-vpro { letter-spacing: 5px; font-size: 0.8rem; font-weight: 700; color: var(--clin-text-dim); margin-bottom: 30px; }
 
-        .instr-box { 
-            background: rgba(0,0,0,0.2); padding: 25px; border-radius: 28px; 
-            text-align: left; font-size: 0.9rem; margin-bottom: 25px; 
-            border-left: 6px solid var(--clin-accent); color: var(--clin-text-dim); line-height: 1.6;
-        }
+        .instr-box { background: rgba(0,0,0,0.2); padding: 25px; border-radius: 28px; text-align: left; font-size: 0.9rem; margin-bottom: 25px; border-left: 6px solid var(--clin-accent); color: var(--clin-text-dim); line-height: 1.6; }
 
-        .btn-toggle { 
-            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); padding: 20px; 
-            border-radius: 22px; font-weight: 900; cursor: pointer; flex: 1; color: white;
-            font-size: 0.8rem; transition: all 0.3s;
-        }
+        .btn-toggle { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 22px; font-weight: 900; cursor: pointer; flex: 1; color: white; font-size: 0.8rem; }
         .btn-toggle.active { border-color: var(--clin-accent); color: var(--clin-accent); background: rgba(168, 85, 247, 0.1); box-shadow: 0 0 20px var(--clin-accent-glow); }
         
-        .go-btn { 
-            background: var(--clin-success); color: #062d16; padding: 25px; 
-            border-radius: 25px; width: 100%; border: none; font-weight: 900; 
-            font-size: 1.3rem; margin-top: 15px; box-shadow: 0 10px 0 #15803d; 
-            cursor: pointer; text-transform: uppercase;
-        }
+        .go-btn { background: var(--clin-success); color: #062d16; padding: 25px; border-radius: 25px; width: 100%; border: none; font-weight: 900; font-size: 1.3rem; margin-top: 15px; box-shadow: 0 10px 0 #15803d; cursor: pointer; text-transform: uppercase; }
         .go-btn:active { transform: translateY(4px); box-shadow: 0 6px 0 #15803d; }
         
-        /* SELECTORES */
-        .selector-container {
-            background: rgba(0,0,0,0.2); border-radius: 30px;
-            padding: 25px; margin-bottom: 25px; transition: opacity 0.3s;
-        }
-        .selector-container.disabled { opacity: 0.15; pointer-events: none; }
+        .selector-container { background: rgba(0,0,0,0.2); border-radius: 30px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        .selector-container.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
 
-        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--clin-accent); }
+        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--clin-accent); cursor: pointer; }
 
-        #btn-next { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            padding: 30px 60px; background: var(--clin-success); color: white; 
-            border: none; border-radius: 35px; font-weight: 900; font-size: 1.4rem; 
-            display: none; z-index: 300; cursor: pointer;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-        }
+        #btn-next { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 30px 60px; background: var(--clin-success); color: white; border: none; border-radius: 35px; font-weight: 900; font-size: 1.4rem; display: none; z-index: 300; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4); }
         #err-flash { position:fixed; inset:0; background:var(--clin-error); opacity:0.4; display:none; z-index:9999; pointer-events:none; }
     </style>
 </head>
@@ -131,7 +90,7 @@
         <div id="fix-dot"></div>
         <div id="target-announcer">
             <p style="font-weight:900; color:var(--clin-accent); font-size:0.8rem; margin:0; letter-spacing:2px;">ESTÍMULO OBJETIVO🎯</p>
-            <div id="target-preview" style="margin:25px 0; display:flex; justify-content:center; filter: drop-shadow(0 0 15px var(--clin-accent-glow));"></div>
+            <div id="target-preview" style="margin:25px 0; display:flex; justify-content:center;"></div>
             <p id="target-label" style="font-weight:900; font-size:1.2rem; text-transform:uppercase; color:white; margin:0;"></p>
         </div>
         <button id="btn-next" onclick="prepareNextLvl()">¡NIVEL SUPERADO! 🚀</button>
@@ -140,17 +99,17 @@
     <div id="modal-1" class="overlay">
         <div class="modal">
             <h1 class="titulo-vpro">FLASH HUNTER</h1>
-            <p class="subtitulo-vpro">SISTEMA DE ATENCIÓN v25.0</p>
+            <p class="subtitulo-vpro">ESTIMULACIÓN PERIFÉRICA v25.0</p>
             <div class="instr-box" style="text-align: center; border: none; font-weight: 700;">
-                ¿Estás listo para poner a prueba tu visión periférica y atención dinámica?
+                Protocolo clínico de discriminación visual rápida. <br> Niveles infinitos por desempeño.
             </div>
-            <button class="go-btn" onclick="initAudio(); showModal(2)">INGRESAR AL PROTOCOLO</button>
+            <button class="go-btn" onclick="initAudio(); showModal(2)">INGRESAR</button>
         </div>
     </div>
 
     <div id="modal-2" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--clin-accent); margin-bottom:15px; font-size: 1.8rem;">MODALIDAD</h2>
+            <h2 style="color:var(--clin-accent); margin-bottom:15px; font-size: 1.8rem;">PROTOCOLOS</h2>
             
             <div style="display:flex; gap:15px; margin-bottom:25px;">
                 <button id="mode-reloj" class="btn-toggle active" onclick="setGameMode('reloj')">CONTRA RELOJ ⏱️</button>
@@ -158,34 +117,25 @@
             </div>
 
             <div id="instr-box" class="instr-box">
-                <b>Modo Contra Reloj:</b> Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡En el nivel 7 te regalamos una vida extra! ❤️
+                <b>Modo Contra Reloj:</b> Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡Vida extra en el nivel 7! ❤️
             </div>
 
             <div id="selector-tiempo-container" class="selector-container">
-                <span style="font-weight:800; color:var(--clin-text-dim); font-size:0.8rem; letter-spacing:2px;">DURACIÓN DE SESIÓN: <span id="dur-val" style="color:var(--clin-accent)">10</span>s</span>
-                <input type="range" id="dur-slider" min="5" max="30" step="1" value="10" oninput="document.getElementById('dur-val').innerText = this.value">
+                <span style="font-weight:800; color:var(--clin-text-dim); font-size:0.8rem; letter-spacing:2px;">VELOCIDAD DEL FLASH: <span id="dur-val" style="color:var(--clin-accent)">5</span>s</span>
+                <input type="range" id="flash-slider" min="5" max="30" step="1" value="5" oninput="document.getElementById('dur-val').innerText = this.value">
+                <p style="font-size: 0.65rem; color: var(--clin-text-dim); margin-top: 8px;">(Tiempo de permanencia de los estímulos en pantalla)</p>
             </div>
 
-            <button class="go-btn" onclick="showModal(3)">CONFIGURAR VELOCIDAD</button>
-        </div>
-    </div>
-
-    <div id="modal-3" class="overlay" style="display:none;">
-        <div class="modal">
-            <h2 style="color:var(--clin-accent); font-size: 1.8rem;">VELOCIDAD FLASH ⚡</h2>
-            <p style="font-weight:700; color:var(--clin-text-dim); margin-bottom:10px;">Ajusta el tiempo de exposición:</p>
-            <input type="range" id="speed-slider" min="0.2" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('speed-val').innerText = this.value + 's'">
-            <div id="speed-val" style="font-size:4rem; font-weight:900; color:var(--clin-accent); margin: 10px 0;">0.8s</div>
             <button class="go-btn" onclick="startGame()">INICIAR EVALUACIÓN</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--clin-accent); font-size: 1.8rem;">SESIÓN COMPLETADA</h2>
-            <div id="res-data" style="margin:25px 0; text-align:left; background:rgba(0,0,0,0.3); padding:30px; border-radius:30px; font-weight:800; font-size:0.9rem; line-height:2.2; border: 1px solid rgba(255,255,255,0.05);"></div>
-            <p id="sync-status" style="font-size:0.9rem; font-weight:900; color:var(--clin-accent)">Sincronizando datos...</p>
-            <button class="go-btn" onclick="location.reload()">REPETIR SESIÓN</button>
+            <h2 style="color:var(--clin-accent); font-size: 1.8rem;">SESIÓN FINALIZADA</h2>
+            <div id="res-data" style="margin:25px 0; text-align:left; background:rgba(0,0,0,0.3); padding:30px; border-radius:30px; font-weight:800; font-size:0.9rem; line-height:2.2;"></div>
+            <p id="sync-status" style="font-size:0.9rem; font-weight:900; color:var(--clin-accent)">Sincronizando con base de datos...</p>
+            <button class="go-btn" onclick="location.reload()">REPETIR</button>
         </div>
     </div>
 
@@ -194,8 +144,8 @@
         const pacienteId = urlParams.get('id') || 'SIN_ID';
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
 
-        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, fails = 0, tTotal = 0, sessionTimeLimit = 10;
-        let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 800, audioCtx;
+        let lvl = 1, lives = 3, hits = 0, lvlHits = 0, fails = 0, secondsElapsed = 0;
+        let active = false, isBlocked = true, gameMode = 'reloj', flashSpeed = 5000, audioCtx;
         let currentTarget = null;
 
         const items = [
@@ -205,46 +155,50 @@
             { id: 4, name: "Anillo Doble", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="10"/><circle cx="50" cy="50" r="19" fill="none" stroke="white" stroke-width="6"/>' }
         ];
 
-        // --- MOTOR DE PARTÍCULAS COMPLETO ---
+        // MOTOR DE PARTÍCULAS COMPLETO
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-
         function initParticles() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             particles = [];
             for(let i=0; i<85; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-                    vx: (Math.random() - 0.5) * 7.5, vy: (Math.random() - 0.5) * 7.5,
-                    size: Math.random() * 3.5 + 1,
-                    color: `rgba(168, 85, 247, ${Math.random()*0.45})`
+                particles.push({ 
+                    x: Math.random()*canvas.width, 
+                    y: Math.random()*canvas.height, 
+                    vx: (Math.random()-0.5)*7, 
+                    vy: (Math.random()-0.5)*7, 
+                    size: Math.random()*3+1, 
+                    color: `rgba(168, 85, 247, ${Math.random()*0.4})` 
                 });
             }
         }
-
         function animate() {
-            ctx.fillStyle = 'rgba(11, 16, 27, 0.28)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(11, 16, 27, 0.3)';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
             particles.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if(p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-                ctx.fillStyle = p.color; ctx.fill();
+                p.x+=p.vx; p.y+=p.vy;
+                if(p.x<0||p.x>canvas.width) p.vx*=-1;
+                if(p.y<0||p.y>canvas.height) p.vy*=-1;
+                ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+                ctx.fillStyle=p.color; ctx.fill();
             });
-            requestAnimationFrame(animate);
+            if(active || document.querySelector('.overlay[style*="flex"]')) requestAnimationFrame(animate);
         }
 
-        // --- LÓGICA DE AUDIO ---
-        function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        function playSound(f, d, type='sine') { 
-            if(!audioCtx) return; 
-            const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); 
-            o.type = type; o.frequency.setValueAtTime(f, audioCtx.currentTime); 
-            g.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
-            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d); 
+        function setGameMode(m) { 
+            gameMode = m; 
+            const box = document.getElementById('instr-box');
+            const selector = document.getElementById('selector-tiempo-container');
+            document.getElementById('mode-reloj').className = m === 'reloj' ? 'btn-toggle active' : 'btn-toggle';
+            document.getElementById('mode-cron').className = m === 'cron' ? 'btn-toggle active' : 'btn-toggle';
+            if(m === 'reloj') {
+                box.innerHTML = "<b>Modo Contra Reloj:</b> ⏱️ Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡Vida extra en el nivel 7!";
+                selector.classList.remove('disabled');
+            } else {
+                box.innerHTML = "<b>Modo Libre:</b> ♾️ Vidas infinitas y los estímulos no desaparecen. Practica tu discriminación visual sin presión.";
+                selector.classList.add('disabled');
+            }
         }
 
         function showModal(n) { 
@@ -252,43 +206,33 @@
             if(n) document.getElementById(`modal-${n}`).style.display='flex'; 
         }
 
-        function setGameMode(m) { 
-            gameMode = m; 
-            const box = document.getElementById('instr-box');
-            const selector = document.getElementById('selector-tiempo-container');
-            
-            document.getElementById('mode-reloj').className = m === 'reloj' ? 'btn-toggle active' : 'btn-toggle';
-            document.getElementById('mode-cron').className = m === 'cron' ? 'btn-toggle active' : 'btn-toggle';
-
-            if(m === 'reloj') {
-                box.innerHTML = "<b>Modo Contra Reloj:</b> ⏱️ Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡Vida extra en el nivel 7!";
-                selector.classList.remove('disabled');
-            } else {
-                box.innerHTML = "<b>Modo Libre:</b> ♾️ Vidas infinitas y tiempo ilimitado. Practica tu discriminación visual sin presión.";
-                selector.classList.add('disabled');
-            }
+        function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+        
+        function playSound(f, d, type='sine') { 
+            if(!audioCtx) return; 
+            const o = audioCtx.createOscillator(); 
+            const g = audioCtx.createGain(); 
+            o.type = type; 
+            o.frequency.setValueAtTime(f, audioCtx.currentTime); 
+            g.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+            o.connect(g); g.connect(audioCtx.destination); 
+            o.start(); o.stop(audioCtx.currentTime + d); 
         }
 
         function startGame() {
-            flashSpeed = document.getElementById('speed-slider').value * 1000;
-            sessionTimeLimit = parseInt(document.getElementById('dur-slider').value);
-            initParticles(); animate();
-            showModal(0);
+            flashSpeed = parseInt(document.getElementById('flash-slider').value) * 1000;
+            initParticles(); animate(); showModal(0);
             document.getElementById('header').style.display = 'flex';
             active = true;
             
-            if(gameMode === 'reloj') {
-                tTotal = sessionTimeLimit;
-                document.getElementById('v-timer').innerText = formatTime(tTotal);
-                const cd = setInterval(() => {
-                    if(!active) { clearInterval(cd); return; }
-                    tTotal--;
-                    document.getElementById('v-timer').innerText = formatTime(tTotal);
-                    if(tTotal <= 0) { clearInterval(cd); finishGame(); }
-                }, 1000);
-            } else {
-                document.getElementById('v-timer').innerText = "∞";
-            }
+            // Cronómetro de sesión
+            setInterval(() => {
+                if(active) {
+                    secondsElapsed++;
+                    document.getElementById('v-timer').innerText = formatTime(secondsElapsed);
+                }
+            }, 1000);
+
             prepareNewLevel();
         }
 
@@ -298,21 +242,31 @@
             if(!active) return; isBlocked = true;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
             currentTarget = items[Math.floor(Math.random()*items.length)];
-            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="110" style="background:rgba(0,0,0,0.5); border-radius:20px; padding:12px; border: 3px solid var(--clin-accent);">${currentTarget.html}</svg>`;
+            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="100" style="background:rgba(0,0,0,0.5); border-radius:20px; padding:10px; border: 2px solid var(--clin-accent);">${currentTarget.html}</svg>`;
             document.getElementById('target-label').innerText = currentTarget.name;
             document.getElementById('target-announcer').style.display = 'block';
-            setTimeout(() => { document.getElementById('target-announcer').style.display = 'none'; isBlocked = false; nextFlash(); }, 2600);
+            setTimeout(() => { 
+                document.getElementById('target-announcer').style.display = 'none'; 
+                isBlocked = false; 
+                nextFlash(); 
+            }, 2500);
         }
 
         function nextFlash() {
             if(!active || isBlocked) return;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
-            if(lvlHits >= 5) { isBlocked = true; document.getElementById('btn-next').style.display = 'block'; return; }
+            if(lvlHits >= 5) { 
+                isBlocked = true; 
+                document.getElementById('btn-next').style.display = 'block'; 
+                return; 
+            }
             document.getElementById('fix-dot').style.display = 'block';
-            setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 850);
+            setTimeout(() => { 
+                document.getElementById('fix-dot').style.display = 'none'; 
+                spawnItems(); 
+            }, 800);
         }
 
-        // --- ALGORITMO ANTI-COLISIÓN COMPLETO (469 LINE VERSION) ---
         function spawnItems() {
             if(!active || isBlocked) return;
             const stage = document.getElementById('stage'), rect = stage.getBoundingClientRect();
@@ -321,81 +275,94 @@
             const placed = [];
 
             for(let i=0; i<num; i++) {
-                const el = document.createElement('div');
-                el.className = 'flash-item';
-                const size = (48 + Math.random()*38); 
-                el.style.width = el.style.height = size + 'px';
-
+                const el = document.createElement('div'); el.className = 'flash-item';
+                const size = 75; el.style.width = el.style.height = size + 'px';
                 let x, y, tooClose, att = 0;
+                
                 do {
-                    tooClose = false;
-                    x = Math.random() * (rect.width - 130) + 65;
-                    y = Math.random() * (rect.height - 130) + 65;
-                    for(let p of placed) {
-                        const dist = Math.hypot(x - p.x, y - p.y);
-                        if(dist < (size/2 + p.s/2 + 35)) tooClose = true;
-                    }
-                    if(Math.hypot(x - rect.width/2, y - rect.height/2) < 85) tooClose = true;
+                    tooClose = false; 
+                    x = Math.random()*(rect.width-120)+60; 
+                    y = Math.random()*(rect.height-120)+60;
+                    for(let p of placed) { if(Math.hypot(x-p.x, y-p.y) < 100) tooClose = true; }
+                    if(Math.hypot(x-rect.width/2, y-rect.height/2) < 90) tooClose = true;
                     att++;
-                } while(tooClose && att < 250);
+                } while(tooClose && att < 300);
 
-                placed.push({x, y, s: size});
-                el.style.left = x + 'px'; el.style.top = y + 'px';
+                placed.push({x, y}); el.style.left = x + 'px'; el.style.top = y + 'px';
                 const isTarget = (i === targetPos);
                 const content = isTarget ? currentTarget.html : items.filter(it => it.id !== currentTarget.id)[Math.floor(Math.random()*3)].html;
-                el.innerHTML = `<svg viewBox="0 0 100 100" style="width:100%; height:100%">${content}</svg>`;
+                el.innerHTML = `<svg viewBox="0 0 100 100">${content}</svg>`;
                 
-                el.onclick = (e) => {
-                    e.stopPropagation(); if(isBlocked) return;
-                    clearTimeout(window.fT);
-                    if(isTarget) { hits++; lvlHits++; playSound(950, 0.15); isBlocked = true; setTimeout(() => { isBlocked = false; nextFlash(); }, 400); }
-                    else { fail(); }
+                el.onclick = (e) => { 
+                    e.stopPropagation(); 
+                    if(isBlocked) return; 
+                    clearTimeout(window.fT); 
+                    if(isTarget) { 
+                        hits++; lvlHits++; playSound(800, 0.1); 
+                        isBlocked = true; 
+                        setTimeout(() => { isBlocked = false; nextFlash(); }, 300); 
+                    } else fail(); 
                 };
                 stage.appendChild(el);
             }
-            window.fT = setTimeout(() => { if(!isBlocked && active) fail(); }, flashSpeed);
+
+            if(gameMode === 'reloj') {
+                window.fT = setTimeout(() => { if(!isBlocked && active) fail(); }, flashSpeed);
+            }
         }
 
         function fail() {
-            if(isBlocked || !active) return;
+            if(isBlocked || !active) return; 
             isBlocked = true; fails++; 
             if(gameMode === 'reloj') lives--;
-            playSound(110, 0.45, 'sawtooth');
+            playSound(110, 0.4, 'sawtooth'); 
             document.getElementById('err-flash').style.display = 'block';
             document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-            setTimeout(() => {
-                document.getElementById('err-flash').style.display = 'none';
-                if(lives <= 0 && gameMode === 'reloj') finishGame();
-                else { if(lives <= 0) lives = 3; isBlocked = false; nextFlash(); }
-            }, 650);
+            
+            setTimeout(() => { 
+                document.getElementById('err-flash').style.display = 'none'; 
+                if(lives <= 0 && gameMode === 'reloj') finishGame(); 
+                else { isBlocked = false; nextFlash(); } 
+            }, 600);
         }
 
-        function handleGlobalClick(e) { if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; fail(); }
+        function handleGlobalClick(e) { 
+            if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; 
+            fail(); 
+        }
 
         function prepareNextLvl() { 
-            lvl++; lvlHits = 0; document.getElementById('btn-next').style.display = 'none';
-            if(lvl % 7 === 0) { lives = Math.min(5, lives + 1); }
+            lvl++; lvlHits = 0; 
+            document.getElementById('btn-next').style.display = 'none'; 
+            if(lvl % 7 === 0) lives = Math.min(5, lives+1); 
             document.getElementById('v-lvl').innerText = lvl; 
-            document.getElementById('v-lives').innerText = "❤️".repeat(lives);
+            document.getElementById('v-lives').innerText = "❤️".repeat(lives); 
             prepareNewLevel(); 
         }
 
         function finishGame() {
             active = false; isBlocked = true;
-            document.getElementById('res-data').innerHTML = `👤 PACIENTE: ${pacienteId}<br>🏆 NIVEL: ${lvl}<br>✅ ACIERTOS: ${hits}<br>❌ ERRORES: ${fails}<br>⏱️ TIEMPO: ${sessionTimeLimit}s`;
+            document.getElementById('res-data').innerHTML = `
+                ID PACIENTE: ${pacienteId}<br>
+                NIVEL ALCANZADO: ${lvl}<br>
+                ACIERTOS TOTALES: ${hits}<br>
+                ERRORES TOTALES: ${fails}<br>
+                VELOCIDAD SELECCIONADA: ${flashSpeed/1000}s<br>
+                TIEMPO TOTAL: ${formatTime(secondsElapsed)}`;
+            
             document.getElementById('res-modal').style.display = 'flex';
+
             const fd = new URLSearchParams();
-            fd.append('entry.369874016', pacienteId);
-            fd.append('entry.1353470174', 'Flash Hunter v25 Pro');
-            fd.append('entry.721051298', lvl);
-            fd.append('entry.873272199', hits);
-            fd.append('entry.1030094511', fails);
-            fd.append('entry.1303309812', sessionTimeLimit + "s");
+            fd.append('entry.369874016', pacienteId); 
+            fd.append('entry.1353470174', 'Flash Hunter v25.0 Full'); 
+            fd.append('entry.721051298', lvl); 
+            fd.append('entry.873272199', hits); 
+            fd.append('entry.1030094511', fails); 
+            fd.append('entry.1303309812', formatTime(secondsElapsed)); 
             fd.append('entry.845098414', new Date().toISOString().split('T')[0]);
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd }).then(() => { 
-                document.getElementById('sync-status').innerText = "✓ DATOS GUARDADOS"; 
-                document.getElementById('sync-status').style.color = "var(--clin-success)";
-            });
+            
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd })
+                .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS SINCRONIZADOS CORRECTAMENTE"; });
         }
     </script>
 </body>
