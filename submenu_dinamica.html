@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocolos AVD - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b101b;
+            --card-bg: #ffffff;
+            --text-dark: #1c2331;
+            --color1: #00f2ff; /* Cyan para Barrido */
+            --color2: #7000ff; /* Morado para Túnel */
+            --color3: #ff007a; /* Rosa para Orbital */
+        }
+
+        body {
+            margin: 0; background-color: var(--bg);
+            font-family: 'Montserrat', sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 20px;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px; width: 100%; max-width: 1100px;
+        }
+
+        .card {
+            background: var(--card-bg); border-radius: 40px;
+            padding: 40px 25px; text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .card:hover { transform: translateY(-10px); }
+
+        .icon-circle { font-size: 3.5rem; margin-bottom: 20px; }
+
+        .title {
+            color: var(--text-dark); font-weight: 900;
+            font-size: 1.3rem; margin-bottom: 15px;
+        }
+
+        .description {
+            color: #64748b; font-size: 0.85rem;
+            line-height: 1.5; margin-bottom: 30px;
+            min-height: 60px;
+        }
+
+        .btn-action {
+            width: 100%; padding: 18px; border-radius: 20px;
+            border: none; color: white; font-weight: 900;
+            font-size: 0.8rem; text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        /* Colores y Líneas de fondo idénticas a tu estilo */
+        .card-1::after { content: ""; position: absolute; bottom: 0; width: 100%; height: 8px; background: var(--color1); }
+        .btn-1 { background: var(--color1); color: #00464a; }
+
+        .card-2::after { content: ""; position: absolute; bottom: 0; width: 100%; height: 8px; background: var(--color2); }
+        .btn-2 { background: var(--color2); }
+
+        .card-3::after { content: ""; position: absolute; bottom: 0; width: 100%; height: 8px; background: var(--color3); }
+        .btn-3 { background: var(--color3); }
+
+    </style>
+</head>
+<body>
+
+    <h1 style="color:white; font-weight:900; margin-bottom:40px; letter-spacing:2px; text-align:center;">AGUDEZA VISUAL DINÁMICA</h1>
+
+    <div class="container">
+        <div class="card card-1">
+            <div class="icon-circle">↔️</div>
+            <div class="title">Barrido Lineal<br>Dinámico</div>
+            <div class="description">Seguimiento de optotipos Snellen cruzando el campo visual en ejes X e Y.</div>
+            <button class="btn-action btn-1" onclick="window.location.href='avd_barrido.html'">Iniciar Protocolo</button>
+        </div>
+
+        <div class="card card-2">
+            <div class="icon-circle">🌀</div>
+            <div class="title">Efecto Túnel<br>Expansivo</div>
+            <div class="description">Estimulación de la agudeza central mediante optotipos que crecen y se acercan.</div>
+            <button class="btn-action btn-2" onclick="window.location.href='avd_tunnel.html'">Iniciar Protocolo</button>
+        </div>
+
+        <div class="card card-3">
+            <div class="icon-circle">🚀</div>
+            <div class="title">Trayectoria<br>Orbital Complex</div>
+            <div class="description">Seguimiento de precisión en órbitas elípticas y circulares impredecibles.</div>
+            <button class="btn-action btn-3" onclick="window.location.href='avd_orbital.html'">Iniciar Protocolo</button>
+        </div>
+    </div>
+
+</body>
+</html>
