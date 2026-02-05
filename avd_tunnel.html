@@ -19,12 +19,34 @@
         .control-btn:active { transform: translateY(4px); box-shadow: none; background: var(--accent); }
 
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal { background: #1c2331; padding: 30px; border-radius: 35px; border: 3px solid var(--accent); width: 100%; max-width: 400px; text-align: center; }
-        .btn-main { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 15px; border-radius: 15px; border: none; font-weight: 900; width: 100%; margin-top: 20px; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
+        .modal { background: #1c2331; padding: 35px; border-radius: 35px; border: 3px solid var(--accent); width: 100%; max-width: 450px; text-align: center; }
+        
+        /* Introducción Agrandada */
+        .modal h1 { color: var(--neon); font-weight: 900; font-size: 2.2rem; margin-bottom: 20px; }
+        .step { 
+            text-align: left; 
+            margin: 20px 0; 
+            font-size: 1.2rem; 
+            line-height: 1.6; 
+            border-left: 5px solid var(--neon); 
+            padding-left: 15px; 
+        }
+        .btn-main { 
+            background: linear-gradient(45deg, var(--accent), var(--neon)); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: none; 
+            font-weight: 900; 
+            width: 100%; 
+            margin-top: 25px; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            font-size: 1.3rem; 
+        }
         
         .flash-red { background-color: var(--error) !important; }
         .flash-green { background-color: var(--success) !important; }
-        .step { text-align: left; margin: 15px 0; font-size: 0.9rem; line-height: 1.4; border-left: 3px solid var(--neon); padding-left: 10px; }
     </style>
 </head>
 <body>
@@ -39,26 +61,26 @@
 
     <div id="intro-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--neon); font-weight:900;">TÚNEL SNELLEN</h1>
-            <div class="step"><b>1. Orientación:</b> Identifica hacia dónde apunta la letra.</div>
-            <div class="step"><b>2. Dinamismo:</b> Los botones cambian de lugar en cada turno.</div>
-            <div class="step"><b>3. Recompensa:</b> ¡Cada 4 niveles superados ganas una vida! ❤️</div>
-            <button class="btn-main" onclick="startGame()">EMPEZAR ENTRENAMIENTO</button>
+            <h1>TÚNEL SNELLEN</h1>
+            <div class="step"><b>1. Orientación:</b> Identifica hacia dónde apunta la letra "E".</div>
+            <div class="step"><b>2. Dinamismo:</b> ¡Ojo! Los botones cambian de lugar en cada turno.</div>
+            <div class="step"><b>3. Recompensa:</b> Cada 4 niveles superados recuperas una vida ❤️</div>
+            <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
         </div>
     </div>
 
     <div id="level-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 id="lvl-title" style="color:var(--neon); font-weight:900;">¡NIVEL COMPLETADO!</h2>
-            <p id="lvl-msg">Has logrado los 7 aciertos.</p>
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 1.8rem;">¡NIVEL COMPLETADO!</h2>
+            <p id="lvl-msg" style="font-size: 1.1rem; margin: 20px 0;">Has logrado los 7 aciertos.</p>
             <button class="btn-main" onclick="nextLevel()">Siguiente Nivel</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--neon); font-weight:900;">FIN</h2>
-            <div id="res-stats" style="margin:25px 0; text-align:left;"></div>
+            <h2 style="color:var(--neon); font-weight:900; font-size: 1.8rem;">ENTRENAMIENTO FINALIZADO</h2>
+            <div id="res-stats" style="margin:25px 0; text-align:left; font-size: 1.2rem; line-height: 2;"></div>
             <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
@@ -105,7 +127,8 @@
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            const speed = Math.max(650, 4200 - (lvl * 350));
+            // La velocidad aumenta en cada nivel
+            const speed = Math.max(600, 4200 - (lvl * 350));
             const anim = e.animate([
                 { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
                 { opacity: 1, offset: 0.2 },
@@ -135,12 +158,11 @@
             const title = document.getElementById('lvl-title');
             const msg = document.getElementById('lvl-msg');
             
-            // Lógica de vida extra cada 4 niveles
             if(lvl % 4 === 0 && lives < 3) {
                 lives++;
-                title.innerText = "¡VIDA EXTRA CONCEDIDA!";
+                title.innerText = "¡VIDA EXTRA!";
                 title.style.color = "var(--success)";
-                msg.innerText = "Excelente precisión. Has recuperado un ❤️ por tu constancia.";
+                msg.innerText = "Excelente precisión. Recuperas un ❤️ por tu constancia.";
                 document.body.classList.add('flash-green');
                 setTimeout(() => document.body.classList.remove('flash-green'), 500);
             } else {
