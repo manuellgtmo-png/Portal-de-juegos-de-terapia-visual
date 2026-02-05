@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -10,40 +10,58 @@
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; overflow: hidden; color: white; transition: background 0.2s; }
         
         #header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: rgba(28,35,49,0.9); border-bottom: 2px solid var(--accent); z-index: 100; }
-        #stage { position: relative; width: 100%; height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%); }
+        
+        /* Ajuste del escenario para dejar espacio a los controles flotantes */
+        #stage { 
+            position: relative; 
+            width: 100%; 
+            height: calc(100vh - 220px); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%); 
+        }
         
         .snellen-e { position: absolute; font-weight: 900; color: white; opacity: 0; pointer-events: none; text-shadow: 0 0 15px var(--neon); }
         
-        #controls { height: 140px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; background: #161b2a; }
-        .control-btn { background: #242b3d; border: 2px solid var(--accent); border-radius: 20px; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 0 var(--accent); -webkit-tap-highlight-color: transparent; }
-        .control-btn:active { transform: translateY(4px); box-shadow: none; background: var(--accent); }
+        /* CORRECCIÓN: Controles con margen de seguridad inferior */
+        #controls { 
+            height: 120px; 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 12px; 
+            padding: 15px 15px calc(15px + env(safe-area-inset-bottom)); /* Evita la barra de Android */
+            background: #161b2a; 
+            border-top: 1px solid #2e3748;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
+        .control-btn { 
+            background: #242b3d; 
+            border: 2px solid var(--accent); 
+            border-radius: 18px; 
+            color: white; 
+            font-size: 1.8rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: 0.1s; 
+            box-shadow: 0 4px 0 var(--accent); 
+            -webkit-tap-highlight-color: transparent; 
+            height: 70px; /* Altura fija para evitar deformación */
+        }
+        .control-btn:active { transform: translateY(3px); box-shadow: none; background: var(--accent); }
+
+        /* Modales */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
         .modal { background: #1c2331; padding: 35px; border-radius: 35px; border: 3px solid var(--accent); width: 100%; max-width: 450px; text-align: center; }
-        
-        /* Introducción Agrandada */
         .modal h1 { color: var(--neon); font-weight: 900; font-size: 2.2rem; margin-bottom: 20px; }
-        .step { 
-            text-align: left; 
-            margin: 20px 0; 
-            font-size: 1.2rem; 
-            line-height: 1.6; 
-            border-left: 5px solid var(--neon); 
-            padding-left: 15px; 
-        }
-        .btn-main { 
-            background: linear-gradient(45deg, var(--accent), var(--neon)); 
-            color: white; 
-            padding: 20px; 
-            border-radius: 15px; 
-            border: none; 
-            font-weight: 900; 
-            width: 100%; 
-            margin-top: 25px; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-size: 1.3rem; 
-        }
+        .step { text-align: left; margin: 15px 0; font-size: 1.2rem; line-height: 1.5; border-left: 5px solid var(--neon); padding-left: 15px; }
+        .btn-main { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 20px; border-radius: 15px; border: none; font-weight: 900; width: 100%; margin-top: 20px; cursor: pointer; text-transform: uppercase; font-size: 1.3rem; }
         
         .flash-red { background-color: var(--error) !important; }
         .flash-green { background-color: var(--success) !important; }
@@ -107,7 +125,10 @@
                 const div = document.createElement('div');
                 div.className = 'control-btn';
                 div.innerHTML = b.icon;
-                div.onclick = () => checkDir(b.rot);
+                div.onclick = (e) => {
+                    e.preventDefault();
+                    checkDir(b.rot);
+                };
                 controls.appendChild(div);
             });
         }
@@ -122,12 +143,11 @@
             const rots = [0, 90, 180, 270];
             currentRot = rots[Math.floor(Math.random()*4)];
             
-            e.style.fontSize = Math.max(25, 110 - (lvl * 4)) + 'px';
+            e.style.fontSize = Math.max(30, 130 - (lvl * 5)) + 'px';
             e.innerHTML = 'E';
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            // La velocidad aumenta en cada nivel
             const speed = Math.max(600, 4200 - (lvl * 350));
             const anim = e.animate([
                 { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
@@ -162,7 +182,7 @@
                 lives++;
                 title.innerText = "¡VIDA EXTRA!";
                 title.style.color = "var(--success)";
-                msg.innerText = "Excelente precisión. Recuperas un ❤️ por tu constancia.";
+                msg.innerText = "Excelente precisión. Recuperas un ❤️.";
                 document.body.classList.add('flash-green');
                 setTimeout(() => document.body.classList.remove('flash-green'), 500);
             } else {
@@ -170,7 +190,6 @@
                 title.style.color = "var(--neon)";
                 msg.innerText = "Has logrado los 7 aciertos.";
             }
-            
             modal.style.display = 'flex';
         }
 
@@ -199,7 +218,7 @@
             stage.innerHTML = '';
             document.getElementById('res-modal').style.display = 'flex';
             document.getElementById('res-stats').innerHTML = `
-                <b>• Nivel alcanzado:</b> ${lvl}<br>
+                <b>• Nivel final:</b> ${lvl}<br>
                 <b>• Aciertos totales:</b> ${totalHits}<br>
                 <b>• Precisión:</b> ${Math.round((totalHits/(totalHits + (3-lives)))*100) || 0}%
             `;
