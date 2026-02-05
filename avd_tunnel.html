@@ -3,100 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Túnel Snellen - Perceptum AVD</title>
+    <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0b101b; --accent: #7000ff; --neon: #bc13fe; --error: #ff4757; }
+        :root { --bg: #0b101b; --accent: #bc13fe; --neon: #00f2ff; --error: #ff4757; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; overflow: hidden; color: white; }
         
-        #header { height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; background: rgba(28,35,49,0.95); border-bottom: 3px solid var(--accent); position: relative; z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
-        
-        #stage { position: relative; width: 100%; height: calc(100vh - 180px); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%); }
-        
-        .snellen-e { position: absolute; font-weight: 900; color: white; opacity: 0; pointer-events: none; text-shadow: 0 0 20px var(--neon); }
-        
-        /* Controles Gamer */
-        #controls { height: 110px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 10px; background: #161b2a; border-top: 2px solid #2e3748; }
-        .control-btn { background: #242b3d; border: 2px solid var(--accent); border-radius: 15px; color: white; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 var(--accent); }
+        /* Header y Progreso */
+        #header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: rgba(28,35,49,0.9); border-bottom: 2px solid var(--accent); z-index: 100; }
+        #time-bar-container { width: 100%; height: 6px; background: #1a1f2c; position: absolute; top: 60px; left: 0; display: none; }
+        #time-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--neon), var(--accent)); transition: width 0.1s linear; }
+
+        /* Escenario */
+        #stage { position: relative; width: 100%; height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%); }
+        .snellen-e { position: absolute; font-weight: 900; color: white; opacity: 0; pointer-events: none; text-shadow: 0 0 15px var(--neon); }
+
+        /* Controles Táctiles */
+        #controls { height: 140px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 15px; background: #161b2a; }
+        .control-btn { background: #242b3d; border: 2px solid var(--accent); border-radius: 20px; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; box-shadow: 0 5px 0 var(--accent); -webkit-tap-highlight-color: transparent; }
         .control-btn:active { transform: translateY(4px); box-shadow: none; background: var(--accent); }
 
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; text-align: center; }
-        .modal { background: #1c2331; padding: 40px; border-radius: 40px; border: 3px solid var(--neon); width: 85%; max-width: 450px; box-shadow: 0 0 30px rgba(188, 19, 254, 0.3); }
-        .btn-start { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 18px; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; font-size: 1.2rem; }
+        /* Modales */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal { background: #1c2331; padding: 30px; border-radius: 35px; border: 3px solid var(--accent); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 0 30px rgba(188, 19, 254, 0.4); }
+        .btn-main { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 15px; border-radius: 15px; border: none; font-weight: 900; width: 100%; margin-top: 10px; cursor: pointer; text-transform: uppercase; }
+        
+        input[type="range"] { width: 100%; margin: 15px 0; accent-color: var(--neon); }
+        .res-item { display: flex; justify-content: space-between; margin: 10px 0; border-bottom: 1px dashed #3e4859; padding-bottom: 5px; }
     </style>
 </head>
 <body>
     <div id="header">
-        <div style="font-weight:900; color:var(--neon)">NIVEL: <span id="v-lvl">1</span></div>
-        <div id="v-lives" style="font-size:1.6rem;">❤️❤️❤️</div>
-        <div style="font-weight:900;">ACIERTOS: <span id="v-hits">0</span></div>
+        <div style="font-weight:900; color:var(--neon)">LVL: <span id="v-lvl">1</span></div>
+        <div id="v-lives">❤️❤️❤️</div>
+        <div style="font-weight:900;">HITS: <span id="v-hits">0</span></div>
     </div>
+    <div id="time-bar-container"><div id="time-bar"></div></div>
 
     <div id="stage"></div>
 
     <div id="controls">
-        <div class="control-btn" onclick="checkDirection(180)">⬅️</div>
-        <div class="control-btn" onclick="checkDirection(270)">⬆️</div>
-        <div class="control-btn" onclick="checkDirection(90)">⬇️</div>
-        <div class="control-btn" onclick="checkDirection(0)">➡️</div>
+        <div class="control-btn" onclick="checkDir(180)">⬅️</div>
+        <div class="control-btn" onclick="checkDir(270)">⬆️</div>
+        <div class="control-btn" onclick="checkDir(90)">⬇️</div>
+        <div class="control-btn" onclick="checkDir(0)">➡️</div>
     </div>
 
-    <div id="start-modal" class="overlay">
+    <div id="intro-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--neon); font-weight:900; font-size: 2.2rem; margin:0;">TÚNEL SNELLEN</h1>
-            <p style="margin:20px 0; font-size: 1.1rem;">¿Hacia dónde miran las patas de la E? Usa los botones inferiores.</p>
-            <button class="btn-start" onclick="startGame()">¡A JUGAR!</button>
+            <h1 style="color:var(--accent); font-weight:900; margin-bottom:5px;">TÚNEL SNELLEN</h1>
+            <p style="font-size:0.9rem; opacity:0.8;">Identifica la dirección de la "E" mientras se expande hacia ti.</p>
+            
+            <div style="margin:20px 0; text-align:left; background:#111723; padding:15px; border-radius:15px;">
+                <label style="font-size:0.8rem; font-weight:900;">TIEMPO LÍMITE (Seg): <span id="t-val" style="color:var(--neon)">15</span></label>
+                <input type="range" id="t-slider" min="5" max="30" value="15" oninput="document.getElementById('t-val').innerText=this.value">
+            </div>
+
+            <button class="btn-main" onclick="initGame('timer')">MODO CONTRARRELOJ</button>
+            <button class="btn-main" style="background:none; border:2px solid var(--accent);" onclick="initGame('free')">MODO LIBRE (VIDAS)</button>
+        </div>
+    </div>
+
+    <div id="res-modal" class="overlay" style="display:none;">
+        <div class="modal">
+            <h2 style="color:var(--neon); font-weight:900;">ENTRENAMIENTO FINALIZADO</h2>
+            <div id="res-stats" style="margin:20px 0; text-align:left;"></div>
+            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        let lvl = 1, hits = 0, lives = 3, active = false, speed = 4000;
-        let currentRotation = 0;
+        let lvl=1, hits=0, lives=3, active=false, mode='', timeLeft=15, totalTime=15;
+        let currentRot=0, timerInterval;
         const stage = document.getElementById('stage');
 
-        function startGame() {
-            document.getElementById('start-modal').style.display = 'none';
+        function initGame(m) {
+            mode = m;
+            totalTime = parseInt(document.getElementById('t-slider').value);
+            timeLeft = totalTime;
+            document.getElementById('intro-modal').style.display = 'none';
+            if(mode === 'timer') document.getElementById('time-bar-container').style.display = 'block';
             active = true;
-            spawnTarget();
+            if(mode === 'timer') startCountdown();
+            spawn();
         }
 
-        function spawnTarget() {
+        function startCountdown() {
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById('time-bar').style.width = (timeLeft/totalTime)*100 + '%';
+                if(timeLeft <= 0) end();
+            }, 100);
+        }
+
+        function spawn() {
             if(!active) return;
             stage.innerHTML = '';
             const e = document.createElement('div');
             e.className = 'snellen-e';
-            
-            const orientations = [0, 90, 180, 270]; // 0=Der, 90=Abajo, 180=Izq, 270=Arriba
-            currentRotation = orientations[Math.floor(Math.random()*4)];
-            
-            e.style.fontSize = Math.max(25, 100 - (lvl * 4)) + 'px';
+            const rots = [0, 90, 180, 270];
+            currentRot = rots[Math.floor(Math.random()*4)];
+            e.style.fontSize = Math.max(30, 120 - (lvl * 5)) + 'px';
             e.innerHTML = 'E';
-            e.style.transform = `rotate(${currentRotation}deg)`;
+            e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
+            const speed = Math.max(800, 4000 - (lvl * 250));
             const anim = e.animate([
-                { transform: `rotate(${currentRotation}deg) scale(0.1)`, opacity: 0 },
-                { opacity: 1, offset: 0.3 },
-                { transform: `rotate(${currentRotation}deg) scale(8)`, opacity: 0 }
+                { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
+                { opacity: 1, offset: 0.2 },
+                { transform: `rotate(${currentRot}deg) scale(8)`, opacity: 0 }
             ], { duration: speed, iterations: 1, easing: 'ease-in' });
 
-            anim.onfinish = () => { if(e.parentElement) { loseLive(); spawnTarget(); } };
+            anim.onfinish = () => { if(e.parentElement && active) { handleFail(); } };
         }
 
-        function checkDirection(dir) {
+        function checkDir(d) {
             if(!active) return;
-            if(dir === currentRotation) {
+            if(d === currentRot) {
                 hits++;
                 document.getElementById('v-hits').innerText = hits;
-                if(hits % 4 === 0) { lvl++; speed *= 0.9; document.getElementById('v-lvl').innerText = lvl; }
-                stage.innerHTML = '';
-                spawnTarget();
+                if(hits % 4 === 0) { lvl++; document.getElementById('v-lvl').innerText = lvl; }
+                spawn();
             } else {
-                loseLive();
-                stage.innerHTML = '';
-                spawnTarget();
+                handleFail();
             }
         }
+
+        function handleFail() {
+            if(mode === 'free') {
+                lives--;
+                document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
+                if(lives <= 0) end();
+                else spawn();
+            } else {
+                spawn(); // En modo tiempo solo pierdes el hit, no termina
+            }
+        }
+
+        function end() {
+            active = false;
+            clearInterval(timerInterval);
+            document.getElementById('res-modal').style.display = 'flex';
+            document.getElementById('res-stats').innerHTML = `
+                <div class="res-item"><span>MODO:</span> <span>${mode === 'free' ? 'Libre' : 'Contrarreloj'}</span></div>
+                <div class="res-item"><span>NIVEL:</span> <span>${lvl}</span></div>
+                <div class="res-item"><span>ACIERTOS:</span> <span>${hits}</span></div>
+                <div class="res-item"><span>PRECISIÓN:</span> <span>${Math.round((hits/(hits+ (3-lives)))*100) || 0}%</span></div>
+            `;
+        }
+    </script>
+</body>
+</html>
 
         function loseLive() {
             lives--;
