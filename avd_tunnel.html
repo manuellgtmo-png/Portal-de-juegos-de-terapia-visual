@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Efecto Túnel - Perceptum AVD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0b101b; --accent: #7000ff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; overflow: hidden; color: white; }
+        #header { height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; background: rgba(28,35,49,0.9); border-bottom: 2px solid var(--accent); position: relative; z-index: 10; }
+        #stage { position: relative; width: 100%; height: calc(100vh - 70px); perspective: 1000px; display: flex; align-items: center; justify-content: center; }
+        .snellen-e { position: absolute; font-weight: 900; cursor: pointer; user-select: none; color: white; opacity: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 1000; text-align: center; }
+        .modal { background: #1c2331; padding: 40px; border-radius: 40px; border: 2px solid var(--accent); width: 85%; max-width: 450px; }
+        .btn { background: var(--accent); color: white; padding: 18px; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 20px; font-size: 1rem; }
+        #res-data { text-align: left; margin: 25px 0; line-height: 2; font-size: 1.1rem; }
+    </style>
+</head>
+<body onclick="missClick(event)">
+    <div id="header">
+        <div style="font-weight:900; color:var(--accent)">NIVEL: <span id="v-lvl">1</span></div>
+        <div id="v-lives" style="font-size:1.6rem;">❤️❤️❤️</div>
+        <div style="font-weight:900;">ACIERTOS: <span id="v-hits">0</span></div>
+    </div>
+
+    <div id="stage"></div>
+
+    <div id="start-modal" class="overlay">
+        <div class="modal">
+            <h1 style="color:var(--accent); font-weight:900; margin:0;">EFECTO TÚNEL</h1>
+            <p style="margin:20px 0; line-height:1.6;">Atrapa la "E" mientras emerge del centro y se acerca a ti. <br><b>Requiere máxima atención central.</b></p>
+            <button class="btn" onclick="startGame()">Iniciar Protocolo</button>
+        </div>
+    </div>
+
+    <div id="res-modal" class="overlay" style="display:none;">
+        <div class="modal">
+            <h2 style="color:var(--accent); font-weight:900;">RESULTADOS AVD</h2>
+            <div id="res-data"></div>
+            <button class="btn" onclick="location.reload()">Reintentar</button>
+        </div>
+    </div>
+
+    <script>
+        let lvl = 1, hits = 0, lives = 3, active = false, speed = 3500;
+        const stage = document.getElementById('stage');
+
+        function startGame() {
+            document.getElementById('start-modal').style.display = 'none';
+            active = true;
+            spawnTarget();
+        }
+
+        function spawnTarget() {
+            if(!active) return;
+            const e = document.createElement('div');
+            e.className = 'snellen-e';
+            const orientations = [0, 90, 180, 270];
+            e.style.transform = `rotate(${orientations[Math.floor(Math.random()*4)]}deg)`;
+            e.innerHTML = 'E';
+            
+            e.onclick = (ev) => {
+                ev.stopPropagation();
+                hits++;
+                document.getElementById('v-hits').innerText = hits;
+                if(hits % 4 === 0) { lvl++; speed *= 0.92; document.getElementById('v-lvl').innerText = lvl; }
+                e.remove();
+                setTimeout(spawnTarget, 300);
+            };
+
+            stage.appendChild(e);
+
+            // Animación de escala (Efecto acercamiento)
+            const anim = e.animate([
+                { transform: e.style.transform + ' scale(0.1)', opacity: 0 },
+                { opacity: 1, offset: 0.2 },
+                { transform: e.style.transform + ' scale(5)', opacity: 0 }
+            ], { duration: speed, iterations: 1, easing: 'ease-in' });
+
+            anim.onfinish = () => {
+                if(e.parentElement) {
+                    e.remove();
+                    loseLive();
+                    spawnTarget();
+                }
+            };
+        }
+
+        function loseLive() {
+            lives--;
+            document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
+            if(lives <= 0) endGame();
+        }
+
+        function missClick(ev) {
+            if(!active || ev.target.className === 'snellen-e') return;
+            loseLive();
+        }
+
+        function endGame() {
+            active = false;
+            document.getElementById('res-modal').style.display = 'flex';
+            document.getElementById('res-data').innerHTML = `
+                <b>Protocolo:</b> Efecto Túnel Expansivo<br>
+                <b>Nivel Máximo:</b> ${lvl}<br>
+                <b>Aciertos Totales:</b> ${hits}<br>
+                <b>Persistencia:</b> Nivel Infinito
+            `;
+        }
+    </script>
+</body>
+</html>
