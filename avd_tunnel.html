@@ -6,7 +6,7 @@
     <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0b101b; --accent: #bc13fe; --neon: #00f2ff; --error: #ff4757; }
+        :root { --bg: #0b101b; --accent: #bc13fe; --neon: #00f2ff; --error: #ff4757; --success: #22c55e; }
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; overflow: hidden; color: white; transition: background 0.2s; }
         
         #header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: rgba(28,35,49,0.9); border-bottom: 2px solid var(--accent); z-index: 100; }
@@ -23,6 +23,7 @@
         .btn-main { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 15px; border-radius: 15px; border: none; font-weight: 900; width: 100%; margin-top: 20px; cursor: pointer; text-transform: uppercase; font-size: 1.1rem; }
         
         .flash-red { background-color: var(--error) !important; }
+        .flash-green { background-color: var(--success) !important; }
         .step { text-align: left; margin: 15px 0; font-size: 0.9rem; line-height: 1.4; border-left: 3px solid var(--neon); padding-left: 10px; }
     </style>
 </head>
@@ -30,40 +31,42 @@
     <div id="header">
         <div style="font-weight:900; color:var(--neon)">NIVEL: <span id="v-lvl">1</span></div>
         <div id="v-lives">❤️❤️❤️</div>
-        <div style="font-weight:900;">ACIERTOS: <span id="v-hits">0</span></div>
+        <div style="font-weight:900;">HITS: <span id="v-hits">0</span>/7</div>
     </div>
 
     <div id="stage"></div>
-
-    <div id="controls">
-        <div class="control-btn" onclick="checkDir(180)">⬅️</div>
-        <div class="control-btn" onclick="checkDir(270)">⬆️</div>
-        <div class="control-btn" onclick="checkDir(90)">⬇️</div>
-        <div class="control-btn" onclick="checkDir(0)">➡️</div>
-    </div>
+    <div id="controls"></div>
 
     <div id="intro-modal" class="overlay">
         <div class="modal">
-            <h1 style="color:var(--neon); font-weight:900; margin-bottom:10px;">CÓMO ENTRENAR</h1>
-            <div class="step"><b>1. Observa el centro:</b> Una letra "E" aparecerá y se acercará hacia ti.</div>
-            <div class="step"><b>2. Identifica:</b> Mira hacia dónde apuntan las patas de la letra.</div>
-            <div class="step"><b>3. Responde:</b> Presiona la flecha correspondiente en los botones de abajo.</div>
-            <div class="step"><b>4. Cuidado:</b> Si fallas o la letra se escapa, perderás una vida.</div>
-            <button class="btn-main" onclick="startGame()">¡ENTENDIDO, EMPEZAR!</button>
+            <h1 style="color:var(--neon); font-weight:900;">TÚNEL SNELLEN</h1>
+            <div class="step"><b>1. Orientación:</b> Identifica hacia dónde apunta la letra.</div>
+            <div class="step"><b>2. Dinamismo:</b> Los botones cambian de lugar en cada turno.</div>
+            <div class="step"><b>3. Recompensa:</b> ¡Cada 4 niveles superados ganas una vida! ❤️</div>
+            <button class="btn-main" onclick="startGame()">EMPEZAR ENTRENAMIENTO</button>
+        </div>
+    </div>
+
+    <div id="level-modal" class="overlay" style="display:none;">
+        <div class="modal">
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900;">¡NIVEL COMPLETADO!</h2>
+            <p id="lvl-msg">Has logrado los 7 aciertos.</p>
+            <button class="btn-main" onclick="nextLevel()">Siguiente Nivel</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--neon); font-weight:900;">RESULTADOS</h2>
-            <div id="res-stats" style="margin:25px 0; text-align:left; font-size: 1.2rem; line-height: 2;"></div>
+            <h2 style="color:var(--neon); font-weight:900;">FIN</h2>
+            <div id="res-stats" style="margin:25px 0; text-align:left;"></div>
             <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        let lvl=1, hits=0, lives=3, active=false, currentRot=0;
+        let lvl=1, hits=0, totalHits=0, lives=3, active=false, currentRot=0;
         const stage = document.getElementById('stage');
+        const controls = document.getElementById('controls');
 
         function startGame() {
             document.getElementById('intro-modal').style.display = 'none';
@@ -71,66 +74,102 @@
             spawn();
         }
 
+        function shuffleControls() {
+            controls.innerHTML = '';
+            const btns = [
+                { rot: 180, icon: '⬅️' }, { rot: 270, icon: '⬆️' },
+                { rot: 90, icon: '⬇️' }, { rot: 0, icon: '➡️' }
+            ];
+            btns.sort(() => Math.random() - 0.5);
+            btns.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'control-btn';
+                div.innerHTML = b.icon;
+                div.onclick = () => checkDir(b.rot);
+                controls.appendChild(div);
+            });
+        }
+
         function spawn() {
             if(!active) return;
-            
-            // LIMPIEZA TOTAL: Borramos cualquier rastro anterior
             stage.innerHTML = '';
+            shuffleControls();
             
             const e = document.createElement('div');
             e.className = 'snellen-e';
             const rots = [0, 90, 180, 270];
             currentRot = rots[Math.floor(Math.random()*4)];
             
-            // El tamaño se reduce con el nivel para mayor dificultad
             e.style.fontSize = Math.max(25, 110 - (lvl * 4)) + 'px';
             e.innerHTML = 'E';
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            const speed = Math.max(700, 4000 - (lvl * 300));
+            const speed = Math.max(650, 4200 - (lvl * 350));
             const anim = e.animate([
                 { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
                 { opacity: 1, offset: 0.2 },
                 { transform: `rotate(${currentRot}deg) scale(7)`, opacity: 0 }
             ], { duration: speed, iterations: 1, easing: 'ease-in' });
 
-            anim.onfinish = () => { 
-                if(e.parentElement && active) { 
-                    handleFail(); 
-                } 
-            };
+            anim.onfinish = () => { if(e.parentElement && active) handleFail(); };
         }
 
         function checkDir(d) {
             if(!active) return;
-            
             if(d === currentRot) {
                 hits++;
+                totalHits++;
                 document.getElementById('v-hits').innerText = hits;
-                if(hits % 4 === 0) { 
-                    lvl++; 
-                    document.getElementById('v-lvl').innerText = lvl; 
-                }
-                spawn();
+                if(hits >= 7) pauseForLevel();
+                else spawn();
             } else {
                 handleFail();
             }
         }
 
+        function pauseForLevel() {
+            active = false;
+            stage.innerHTML = '';
+            const modal = document.getElementById('level-modal');
+            const title = document.getElementById('lvl-title');
+            const msg = document.getElementById('lvl-msg');
+            
+            // Lógica de vida extra cada 4 niveles
+            if(lvl % 4 === 0 && lives < 3) {
+                lives++;
+                title.innerText = "¡VIDA EXTRA CONCEDIDA!";
+                title.style.color = "var(--success)";
+                msg.innerText = "Excelente precisión. Has recuperado un ❤️ por tu constancia.";
+                document.body.classList.add('flash-green');
+                setTimeout(() => document.body.classList.remove('flash-green'), 500);
+            } else {
+                title.innerText = "¡NIVEL COMPLETADO!";
+                title.style.color = "var(--neon)";
+                msg.innerText = "Has logrado los 7 aciertos.";
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        function nextLevel() {
+            lvl++;
+            hits = 0;
+            document.getElementById('v-lvl').innerText = lvl;
+            document.getElementById('v-hits').innerText = '0';
+            document.getElementById('v-lives').innerText = "❤️".repeat(lives);
+            document.getElementById('level-modal').style.display = 'none';
+            active = true;
+            spawn();
+        }
+
         function handleFail() {
             lives--;
-            // Feedback visual de error
             document.body.classList.add('flash-red');
             setTimeout(() => document.body.classList.remove('flash-red'), 200);
-            
             document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-            
-            if(lives <= 0) {
-                end();
-            } else {
-                spawn(); // Limpia y lanza la siguiente
-            }
+            if(lives <= 0) end();
+            else spawn();
         }
 
         function end() {
@@ -139,8 +178,8 @@
             document.getElementById('res-modal').style.display = 'flex';
             document.getElementById('res-stats').innerHTML = `
                 <b>• Nivel alcanzado:</b> ${lvl}<br>
-                <b>• Aciertos totales:</b> ${hits}<br>
-                <b>• Precisión:</b> ${Math.round((hits/(hits + (3-lives)))*100) || 0}%
+                <b>• Aciertos totales:</b> ${totalHits}<br>
+                <b>• Precisión:</b> ${Math.round((totalHits/(totalHits + (3-lives)))*100) || 0}%
             `;
         }
     </script>
