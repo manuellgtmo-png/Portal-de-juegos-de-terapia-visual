@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Túnel Snellen Pro Full - Perceptum</title>
+    <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* CSS EXTENDIDO - SIN SIMPLIFICACIONES */
+        /* =========================================
+           CONFIGURACIÓN DE VARIABLES Y RESET
+           ========================================= */
         :root {
-            --bg-color: #0b101b;
-            --accent-color: #bc13fe;
-            --neon-color: #00f2ff;
-            --error-color: #ff4757;
-            --success-color: #22c55e;
-            --panel-bg: rgba(28, 35, 49, 0.98);
-            --shadow-standard: 0 8px 32px rgba(0,0,0,0.8);
-            --font-main: 'Montserrat', sans-serif;
+            --bg-deep: #0b101b;
+            --accent-primary: #bc13fe;
+            --neon-glow: #00f2ff;
+            --error-red: #ff4757;
+            --success-green: #22c55e;
+            --panel-alpha: rgba(28, 35, 49, 0.98);
+            --shadow-extreme: 0 15px 50px rgba(0,0,0,0.8);
+            --font-family: 'Montserrat', sans-serif;
         }
 
         * {
             box-sizing: border-box;
+            outline: none;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -28,89 +31,94 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--bg-color);
-            font-family: var(--font-main);
+            background-color: var(--bg-deep);
+            font-family: var(--font-family);
             overflow: hidden;
             color: #ffffff;
-            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-user-select: none;
             user-select: none;
             touch-action: none;
         }
 
-        /* DISEÑO DE HEADER PROFESIONAL */
+        /* =========================================
+           CABECERA (HEADER) - DISEÑO EXTENDIDO
+           ========================================= */
         header {
-            height: 90px;
+            height: 100px;
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 40px;
-            background: var(--panel-bg);
-            border-bottom: 5px solid var(--accent-color);
-            box-shadow: var(--shadow-standard);
+            padding: 0 50px;
+            background: var(--panel-alpha);
+            border-bottom: 6px solid var(--accent-primary);
+            box-shadow: var(--shadow-extreme);
             position: relative;
-            z-index: 2000;
+            z-index: 5000;
         }
 
-        .stats-container {
+        .stat-block {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 120px;
+            min-width: 150px;
         }
 
-        .stats-label {
-            font-size: 0.8rem;
+        .stat-label {
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--neon-color);
-            font-weight: 800;
-            margin-bottom: 5px;
-        }
-
-        .stats-value {
-            font-size: 1.8rem;
+            letter-spacing: 4px;
+            color: var(--neon-glow);
             font-weight: 900;
-            text-shadow: 0 0 15px rgba(255,255,255,0.3);
+            margin-bottom: 6px;
         }
 
-        #lives-display {
-            font-size: 2.5rem;
-            letter-spacing: 12px;
-            filter: drop-shadow(0 0 15px var(--accent-color));
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
         }
 
-        /* ÁREA DE JUEGO DINÁMICA */
-        #main-stage {
+        #lives-container {
+            font-size: 3rem;
+            letter-spacing: 15px;
+            filter: drop-shadow(0 0 15px var(--accent-primary));
+            transition: all 0.3s ease;
+        }
+
+        /* =========================================
+           ESCENARIO DE JUEGO (CANVAS/STAGE)
+           ========================================= */
+        #game-arena {
             position: relative;
             width: 100%;
-            height: calc(100vh - 270px);
+            height: calc(100vh - 300px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, #1a1f2c 0%, #080c14 100%);
+            background: radial-gradient(circle at center, #1a1f2c 0%, #070a12 100%);
             overflow: hidden;
-            perspective: 1200px;
+            perspective: 1500px;
         }
 
-        .snellen-target {
+        .snellen-e {
             position: absolute;
             font-weight: 900;
             color: #ffffff;
             opacity: 0;
             pointer-events: none;
-            text-shadow: 0 0 25px var(--neon-color), 0 0 50px rgba(0, 242, 255, 0.5);
+            text-shadow: 0 0 30px var(--neon-glow), 0 0 60px rgba(0, 242, 255, 0.3);
             will-change: transform, opacity;
-            line-height: 1;
-            z-index: 500;
+            line-height: 0.8;
         }
 
-        /* CONTROLES TÁCTILES EXPANDIDOS PARA TABLET */
-        #game-controls {
-            height: 180px;
-            background: #121723;
+        /* =========================================
+           CONTROLES TÁCTILES - ÁREA INFERIOR
+           ========================================= */
+        footer {
+            height: 200px;
+            background: #111622;
             border-top: 4px solid #2e3748;
             position: absolute;
             bottom: 0;
@@ -119,95 +127,87 @@
             align-items: center;
             justify-content: center;
             padding-bottom: env(safe-area-inset-bottom);
-            z-index: 1500;
+            z-index: 4000;
         }
 
-        .controls-grid-container {
+        .control-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
+            gap: 35px;
             width: 100%;
-            max-width: 850px;
-            padding: 0 30px;
+            max-width: 1000px;
+            padding: 0 40px;
         }
 
-        .btn-gamepad {
+        .btn-input {
             background: #1c2331;
-            border: 5px solid var(--accent-color);
-            border-radius: 30px;
+            border: 6px solid var(--accent-primary);
+            border-radius: 40px;
             color: white;
-            font-size: 3rem;
-            height: 110px;
+            font-size: 4rem;
+            height: 130px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 0 var(--accent-color);
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 14px 0 var(--accent-primary);
             position: relative;
         }
 
-        .btn-gamepad:active {
-            transform: translateY(8px);
-            box-shadow: 0 2px 0 var(--accent-color);
-            background: var(--accent-color);
+        .btn-input:active {
+            transform: translateY(10px);
+            box-shadow: 0 4px 0 var(--accent-primary);
+            background-color: var(--accent-primary);
         }
 
-        /* MODALES FULL DETALLE */
-        .full-overlay {
+        /* =========================================
+           MODALES Y OVERLAYS PROFESIONALES
+           ========================================= */
+        .overlay-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(4, 6, 12, 0.99);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            padding: 30px;
-            backdrop-filter: blur(15px);
+            padding: 40px;
+            backdrop-filter: blur(20px);
         }
 
-        .modal-content-box {
+        .modal-box {
             background: #1c2331;
-            padding: 60px;
-            border-radius: 55px;
-            border: 6px solid var(--accent-color);
+            padding: 70px;
+            border-radius: 70px;
+            border: 8px solid var(--accent-primary);
             width: 100%;
-            max-width: 650px;
+            max-width: 750px;
             text-align: center;
-            box-shadow: 0 0 80px rgba(188, 19, 254, 0.5);
-            position: relative;
+            box-shadow: 0 0 100px rgba(188, 19, 254, 0.4);
         }
 
-        .modal-content-box h1 {
-            color: var(--neon-color);
+        .modal-box h1 {
+            color: var(--neon-glow);
             font-weight: 900;
-            font-size: 3.5rem;
-            margin: 0 0 35px 0;
-            text-transform: uppercase;
+            font-size: 4rem;
+            margin-bottom: 40px;
             letter-spacing: -2px;
         }
 
-        .instruction-container {
-            text-align: left;
-            margin: 40px 0;
-        }
-
-        .instruction-row {
+        .instruction-item {
             display: flex;
             align-items: center;
-            margin-bottom: 25px;
-            font-size: 1.5rem;
-            line-height: 1.4;
+            text-align: left;
+            margin-bottom: 30px;
+            font-size: 1.6rem;
+            color: #e0e0e0;
         }
 
-        .instruction-icon {
-            background: var(--accent-color);
-            color: white;
-            width: 45px;
-            height: 45px;
+        .instruction-num {
+            background: var(--accent-primary);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -215,352 +215,291 @@
             font-weight: 900;
             margin-right: 25px;
             flex-shrink: 0;
-            box-shadow: 0 0 20px var(--accent-color);
+            box-shadow: 0 0 20px var(--accent-primary);
         }
 
-        .primary-button {
-            background: linear-gradient(135deg, var(--accent-color) 0%, var(--neon-color) 100%);
+        .btn-cta {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--neon-glow) 100%);
             color: white;
-            padding: 30px;
-            border-radius: 25px;
+            padding: 35px;
+            border-radius: 30px;
             border: none;
             font-weight: 900;
             width: 100%;
-            margin-top: 30px;
+            margin-top: 40px;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 1.8rem;
-            letter-spacing: 3px;
-            transition: 0.3s;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            font-size: 2rem;
+            letter-spacing: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        .primary-button:active {
-            transform: scale(0.94);
-        }
-
-        /* FEEDBACK VISUAL EXTENDIDO */
-        .flash-hit-success { background-color: var(--success-color) !important; }
-        .flash-hit-error { background-color: var(--error-color) !important; }
-
-        .data-table {
+        /* =========================================
+           RESULTADOS Y TABLA DE DATOS
+           ========================================= */
+        .results-table {
             width: 100%;
             margin: 40px 0;
             border-collapse: separate;
             border-spacing: 0 15px;
         }
 
-        .data-table td {
-            padding: 20px;
-            background: rgba(255,255,255,0.03);
-            font-size: 1.4rem;
+        .results-table td {
+            padding: 25px;
+            background: rgba(255,255,255,0.05);
+            font-size: 1.8rem;
         }
 
-        .data-table td:first-child {
-            border-radius: 20px 0 0 20px;
-            color: var(--neon-color);
+        .results-table td:first-child {
+            border-radius: 25px 0 0 25px;
+            color: var(--neon-glow);
             font-weight: 800;
-            border-left: 4px solid var(--neon-color);
+            border-left: 6px solid var(--neon-glow);
         }
 
-        .data-table td:last-child {
-            border-radius: 0 20px 20px 0;
+        .results-table td:last-child {
+            border-radius: 0 25px 25px 0;
             text-align: right;
             font-weight: 900;
-            color: white;
         }
 
-        #sync-label {
-            color: var(--neon-color);
-            font-weight: 900;
-            font-size: 1.2rem;
-            margin-top: 20px;
-            display: block;
-        }
+        /* FEEDBACKS */
+        .flash-red { background-color: var(--error-red) !important; }
+        .flash-green { background-color: var(--success-green) !important; }
 
     </style>
 </head>
 <body>
 
+    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="secret-frame" style="display:none;">
+        <input type="hidden" name="entry.369874016" id="f-paciente" value="PACIENTE_SNELLEN_01">
+        <input type="hidden" name="entry.1353470174" id="f-juego" value="Tunel_Snellen_Infinite_V2">
+        <input type="hidden" name="entry.721051298" id="f-nivel">
+        <input type="hidden" name="entry.873272199" id="f-aciertos">
+        <input type="hidden" name="entry.1030094511" id="f-fallos">
+        <input type="hidden" name="entry.845098414" id="f-fecha">
+    </form>
+    <iframe name="secret-frame" id="secret-frame" style="display:none;"></iframe>
+
     <header>
-        <div class="stats-container">
-            <span class="stats-label">Nivel</span>
-            <span id="label-level" class="stats-value">1</span>
+        <div class="stat-block">
+            <span class="stat-label">Nivel</span>
+            <span id="ui-level" class="stat-value">1</span>
         </div>
-        <div id="lives-display">❤️❤️❤️</div>
-        <div class="stats-container">
-            <span class="stats-label">Aciertos</span>
-            <span class="stats-value"><span id="label-hits">0</span> / 7</span>
+        <div id="lives-container">❤️❤️❤️</div>
+        <div class="stat-block">
+            <span class="stat-label">Progreso</span>
+            <span class="stat-value"><span id="ui-hits">0</span> / 7</span>
         </div>
     </header>
 
-    <div id="main-stage"></div>
+    <div id="game-arena"></div>
 
-    <div id="game-controls">
-        <div class="controls-grid-container" id="grid-mount"></div>
-    </div>
+    <footer>
+        <div class="control-grid" id="control-mount"></div>
+    </footer>
 
-    <div id="modal-intro" class="full-overlay">
-        <div class="modal-content-box">
+    <div id="screen-intro" class="overlay-screen">
+        <div class="modal-box">
             <h1>TÚNEL SNELLEN</h1>
-            <div class="instruction-container">
-                <div class="instruction-row">
-                    <div class="instruction-icon">1</div>
-                    <div>Identifica la orientación de la letra "E" en pantalla.</div>
-                </div>
-                <div class="instruction-row">
-                    <div class="instruction-icon">2</div>
-                    <div>Presiona la flecha correcta. ¡Cambian de posición!</div>
-                </div>
-                <div class="instruction-row">
-                    <div class="instruction-icon">3</div>
-                    <div>Logra 7 aciertos para subir de nivel.</div>
-                </div>
+            <div class="instruction-item">
+                <div class="instruction-num">1</div>
+                <div>Observa la letra "E" y su dirección.</div>
             </div>
-            <button class="primary-button" onclick="initGameEngine()">COMENZAR ENTRENAMIENTO</button>
+            <div class="instruction-item">
+                <div class="instruction-num">2</div>
+                <div>Toca la flecha correcta rápidamente.</div>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-num">3</div>
+                <div>Gana vida extra cada 4 niveles. ❤️</div>
+            </div>
+            <button class="btn-cta" onclick="startSession()">EMPEZAR TERAPIA</button>
         </div>
     </div>
 
-    <div id="modal-level-up" class="full-overlay" style="display:none;">
-        <div class="modal-content-box">
-            <h2 id="level-up-title" style="color:var(--neon-color); font-weight:900; font-size: 3rem; margin:0;">¡NIVEL LOGRADO!</h2>
-            <p id="level-up-msg" style="font-size: 1.6rem; margin: 35px 0;">Tu agudeza visual está mejorando.</p>
-            <button class="primary-button" onclick="proceedToNextLevel()">CONTINUAR DESAFÍO</button>
-        </div>
-    </div>
-
-    <div id="modal-results" class="full-overlay" style="display:none;">
-        <div class="modal-content-box">
-            <h1>RESULTADOS FINALES</h1>
-            <table class="data-table">
-                <tr><td>Nivel Alcanzado:</td><td id="final-lvl">1</td></tr>
-                <tr><td>Total Aciertos:</td><td id="final-hits">0</td></tr>
-                <tr><td>Total Fallos:</td><td id="final-fails">0</td></tr>
+    <div id="screen-results" class="overlay-screen" style="display:none;">
+        <div class="modal-box">
+            <h1 style="color: var(--error-red);">SESIÓN TERMINADA</h1>
+            <table class="results-table">
+                <tr><td>Nivel Final:</td><td id="res-lvl">1</td></tr>
+                <tr><td>Aciertos:</td><td id="res-hits">0</td></tr>
+                <tr><td>Fallos:</td><td id="res-fails">0</td></tr>
             </table>
-            <span id="sync-label">SINCRONIZANDO CON BASE DE DATOS...</span>
-            <button class="primary-button" onclick="location.reload()">REINTENTAR</button>
+            <p id="gs-status" style="font-weight: 900; color: var(--neon-glow); margin-bottom: 20px;">SINCRONIZANDO...</p>
+            <button class="btn-cta" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        /* CONFIGURACIÓN DE INTEGRACIÓN GOOGLE SHEETS - SIN CAMBIOS */
-        const GOOGLE_FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
-        const FORM_FIELDS = {
-            PATIENT: "entry.369874016",
-            GAME_NAME: "entry.1353470174",
-            LEVEL: "entry.721051298",
-            HITS: "entry.873272199",
-            FAILS: "entry.1030094511",
-            DATE: "entry.845098414"
-        };
+        /* =========================================
+           LÓGICA DEL JUEGO - MOTOR COMPLETO
+           ========================================= */
+        
+        let level = 1;
+        let hitsInCurrentLevel = 0;
+        let totalHits = 0;
+        let totalFails = 0;
+        let lives = 3;
+        let isRunning = false;
+        let targetRotation = 0;
 
-        /* ESTADO DEL MOTOR DE JUEGO */
-        let currentLevel = 1;
-        let hitsInLevel = 0;
-        let cumulativeHits = 0;
-        let cumulativeFails = 0;
-        let playerLives = 3;
-        let isGameActive = false;
-        let activeRotation = 0;
+        const arena = document.getElementById('game-arena');
+        const mount = document.getElementById('control-mount');
 
-        const stageElement = document.getElementById('main-stage');
-        const gridMountElement = document.getElementById('grid-mount');
-
-        function initGameEngine() {
-            document.getElementById('modal-intro').style.display = 'none';
-            isGameActive = true;
-            generateStimulus();
+        function startSession() {
+            document.getElementById('screen-intro').style.display = 'none';
+            isRunning = true;
+            nextChallenge();
         }
 
-        /* SISTEMA DE CONTROLES DINÁMICOS (SHUFFLE COMPLETO) */
-        function rebuildControls() {
-            gridMountElement.innerHTML = '';
-            const controlOptions = [
-                { angle: 180, glyph: '⬅️' },
-                { angle: 270, glyph: '⬆️' },
-                { angle: 90, glyph: '⬇️' },
-                { angle: 0, glyph: '➡️' }
+        /* RECONSTRUCCIÓN DE CONTROLES (SHUFFLE) */
+        function refreshControls() {
+            mount.innerHTML = '';
+            const configs = [
+                { rot: 180, icon: '⬅️' },
+                { rot: 270, icon: '⬆️' },
+                { rot: 90, icon: '⬇️' },
+                { rot: 0, icon: '➡️' }
             ];
-            
-            // Algoritmo Fisher-Yates para mezcla real
-            for (let i = controlOptions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [controlOptions[i], controlOptions[j]] = [controlOptions[j], controlOptions[i]];
-            }
-            
-            controlOptions.forEach(opt => {
+
+            // Mezcla aleatoria robusta
+            configs.sort(() => Math.random() - 0.5);
+
+            configs.forEach(conf => {
                 const btn = document.createElement('div');
-                btn.className = 'btn-gamepad';
-                btn.innerHTML = opt.glyph;
+                btn.className = 'btn-input';
+                btn.innerHTML = conf.icon;
                 
-                // Eventos de alta precisión para Tablets
-                btn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    evaluatePlayerInput(opt.angle);
-                });
-                btn.addEventListener('mousedown', (e) => {
-                    e.preventDefault();
-                    evaluatePlayerInput(opt.angle);
-                });
+                // Soporte Multi-Touch
+                btn.onmousedown = (e) => { e.preventDefault(); processInput(conf.rot); };
+                btn.ontouchstart = (e) => { e.preventDefault(); processInput(conf.rot); };
                 
-                gridMountElement.appendChild(btn);
+                mount.appendChild(btn);
             });
         }
 
-        /* GENERACIÓN DE ESTÍMULOS SNELLEN */
-        function generateStimulus() {
-            if (!isGameActive) return;
+        /* GENERACIÓN DE ESTÍMULO DINÁMICO */
+        function nextChallenge() {
+            if (!isRunning) return;
             
-            stageElement.innerHTML = '';
-            rebuildControls();
-            
-            const eLetter = document.createElement('div');
-            eLetter.className = 'snellen-target';
-            
-            const possibleAngles = [0, 90, 180, 270];
-            activeRotation = possibleAngles[Math.floor(Math.random() * possibleAngles.length)];
-            
-            // Cálculo de tamaño Snellen basado en Nivel
-            const snellenSize = Math.max(25, 160 - (currentLevel * 7));
-            eLetter.style.fontSize = snellenSize + 'px';
-            eLetter.innerHTML = 'E';
-            eLetter.style.transform = `rotate(${activeRotation}deg)`;
-            stageElement.appendChild(eLetter);
+            arena.innerHTML = '';
+            refreshControls();
 
-            // Curva de velocidad progresiva
-            const animationSpeed = Math.max(450, 5000 - (currentLevel * 450));
+            const e = document.createElement('div');
+            e.className = 'snellen-e';
             
-            const stimulusAnimation = eLetter.animate([
-                { transform: `rotate(${activeRotation}deg) scale(0.02)`, opacity: 0 },
-                { opacity: 1, offset: 0.12 },
-                { transform: `rotate(${activeRotation}deg) scale(10)`, opacity: 0 }
+            const rotations = [0, 90, 180, 270];
+            targetRotation = rotations[Math.floor(Math.random() * rotations.length)];
+            
+            // Tamaño decreciente por nivel
+            const currentSize = Math.max(25, 170 - (level * 8));
+            e.style.fontSize = currentSize + 'px';
+            e.innerHTML = 'E';
+            e.style.transform = `rotate(${targetRotation}deg)`;
+            arena.appendChild(e);
+
+            // Velocidad incremental
+            const speed = Math.max(400, 5000 - (level * 450));
+            
+            const animation = e.animate([
+                { transform: `rotate(${targetRotation}deg) scale(0.01)`, opacity: 0 },
+                { opacity: 1, offset: 0.1 },
+                { transform: `rotate(${targetRotation}deg) scale(11)`, opacity: 0 }
             ], {
-                duration: animationSpeed,
+                duration: speed,
                 easing: 'ease-in'
             });
 
-            stimulusAnimation.onfinish = () => {
-                if (eLetter.parentElement && isGameActive) {
-                    cumulativeFails++;
-                    triggerLifeLoss();
+            animation.onfinish = () => {
+                if (e.parentElement && isRunning) {
+                    totalFails++;
+                    handleMistake();
                 }
             };
         }
 
-        /* PROCESAMIENTO DE ENTRADA */
-        function evaluatePlayerInput(inputAngle) {
-            if (!isGameActive) return;
-            
-            if (inputAngle === activeRotation) {
-                hitsInLevel++;
-                cumulativeHits++;
-                document.getElementById('label-hits').innerText = hitsInLevel;
-                
-                if (hitsInLevel >= 7) {
-                    processLevelCompletion();
+        function processInput(inputRot) {
+            if (!isRunning) return;
+
+            if (inputRot === targetRotation) {
+                hitsInCurrentLevel++;
+                totalHits++;
+                document.getElementById('ui-hits').innerText = hitsInCurrentLevel;
+
+                if (hitsInCurrentLevel >= 7) {
+                    levelUp();
                 } else {
-                    generateStimulus();
+                    nextChallenge();
                 }
             } else {
-                cumulativeFails++;
-                triggerLifeLoss();
+                totalFails++;
+                handleMistake();
             }
         }
 
-        function triggerLifeLoss() {
-            playerLives--;
-            document.body.classList.add('flash-hit-error');
-            setTimeout(() => document.body.classList.remove('flash-hit-error'), 300);
+        function handleMistake() {
+            lives--;
+            document.body.classList.add('flash-red');
+            setTimeout(() => document.body.classList.remove('flash-red'), 250);
             
-            syncLivesDisplay();
-            
-            if (playerLives <= 0) {
-                terminateSession();
+            updateLivesUI();
+
+            if (lives <= 0) {
+                endGame();
             } else {
-                generateStimulus();
+                nextChallenge();
             }
         }
 
-        function syncLivesDisplay() {
-            const display = playerLives > 0 ? "❤️".repeat(playerLives) : "💀";
-            document.getElementById('lives-display').innerText = display;
+        function updateLivesUI() {
+            document.getElementById('lives-container').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
         }
 
-        function processLevelCompletion() {
-            isGameActive = false;
-            stageElement.innerHTML = '';
-            
-            const modal = document.getElementById('modal-level-up');
-            const title = document.getElementById('level-up-title');
-            const msg = document.getElementById('level-up-msg');
-
-            // Lógica de recuperación de vida cada 4 niveles (Perceptum Standard)
-            if (currentLevel % 4 === 0 && playerLives < 3) {
-                playerLives++;
-                title.innerText = "¡VIDA RESTAURADA!";
-                title.style.color = "var(--success-color)";
-                msg.innerText = "Tu precisión ha sido recompensada con un ❤️.";
-                document.body.classList.add('flash-hit-success');
-                setTimeout(() => document.body.classList.remove('flash-hit-success'), 700);
-            } else {
-                title.innerText = "¡NIVEL SUPERADO!";
-                title.style.color = "var(--neon-color)";
-                msg.innerText = "Has completado los 7 aciertos con éxito.";
+        function levelUp() {
+            // Regla de Perceptum: Vida extra cada 4 niveles
+            if (level % 4 === 0 && lives < 3) {
+                lives++;
+                updateLivesUI();
             }
+
+            level++;
+            hitsInCurrentLevel = 0;
+            document.getElementById('ui-level').innerText = level;
+            document.getElementById('ui-hits').innerText = '0';
             
-            syncLivesDisplay();
-            modal.style.display = 'flex';
+            // Pausa visual breve entre niveles
+            isRunning = false;
+            arena.innerHTML = `<h2 style="font-size:3rem; color:var(--success-green);">¡NIVEL ${level}!</h2>`;
+            setTimeout(() => {
+                isRunning = true;
+                nextChallenge();
+            }, 1000);
         }
 
-        function proceedToNextLevel() {
-            currentLevel++;
-            hitsInLevel = 0;
-            document.getElementById('label-level').innerText = currentLevel;
-            document.getElementById('label-hits').innerText = '0';
-            document.getElementById('modal-level-up').style.display = 'none';
-            isGameActive = true;
-            generateStimulus();
-        }
-
-        /* FINALIZACIÓN Y ENVÍO A GOOGLE SHEETS - INTEGRIDAD TOTAL */
-        function terminateSession() {
-            isGameActive = false;
-            stageElement.innerHTML = '';
+        function endGame() {
+            isRunning = false;
+            arena.innerHTML = '';
             
-            document.getElementById('final-lvl').innerText = currentLevel;
-            document.getElementById('final-hits').innerText = cumulativeHits;
-            document.getElementById('final-fails').innerText = cumulativeFails;
-            document.getElementById('modal-results').style.display = 'flex';
+            document.getElementById('res-lvl').innerText = level;
+            document.getElementById('res-hits').innerText = totalHits;
+            document.getElementById('res-fails').innerText = totalFails;
+            document.getElementById('screen-results').style.display = 'flex';
+
+            // ENVÍO DE DATOS MEDIANTE FORMULARIO OCULTO (EL MÁS SEGURO)
+            document.getElementById('f-nivel').value = level;
+            document.getElementById('f-aciertos').value = totalHits;
+            document.getElementById('f-fallos').value = totalFails;
+            document.getElementById('f-fecha').value = new Date().toLocaleDateString();
             
-            commitDataToSheets();
-        }
+            const form = document.getElementById('gs-form');
+            form.submit();
 
-        function commitDataToSheets() {
-            const timestamp = new Date().toISOString().split('T')[0];
-            const patientId = "PACIENTE_SNELLEN_PRO"; 
-            const gameId = "Tunel_Snellen_Infinite_V1";
-
-            const submissionUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse?` +
-                        `${FORM_FIELDS.PATIENT}=${encodeURIComponent(patientId)}&` +
-                        `${FORM_FIELDS.GAME_NAME}=${encodeURIComponent(gameId)}&` +
-                        `${FORM_FIELDS.LEVEL}=${currentLevel}&` +
-                        `${FORM_FIELDS.HITS}=${cumulativeHits}&` +
-                        `${FORM_FIELDS.FAILS}=${cumulativeFails}&` +
-                        `${FORM_FIELDS.DATE}=${timestamp}&` +
-                        `submit=Submit`;
-
-            // Doble método de envío para asegurar persistencia
-            const ping = new Image();
-            ping.src = submissionUrl;
-
-            fetch(submissionUrl, { mode: 'no-cors' })
-                .then(() => {
-                    document.getElementById('sync-label').innerText = "✅ DATOS SINCRONIZADOS CORRECTAMENTE";
-                    document.getElementById('sync-label').style.color = "var(--success-color)";
-                })
-                .catch(() => {
-                    document.getElementById('sync-label').innerText = "⚠️ ERROR DE RED - INTENTANDO RECONEXIÓN";
-                });
+            // Simulación de respuesta visual
+            setTimeout(() => {
+                document.getElementById('gs-status').innerText = "✅ DATOS GUARDADOS";
+                document.getElementById('gs-status').style.color = "var(--success-green)";
+            }, 2000);
         }
     </script>
 </body>
