@@ -6,133 +6,345 @@
     <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0b101b; --accent: #bc13fe; --neon: #00f2ff; --error: #ff4757; --success: #22c55e; }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); font-family: 'Montserrat', sans-serif; overflow: hidden; color: white; transition: background 0.2s; }
-        
-        #header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: rgba(28,35,49,0.9); border-bottom: 2px solid var(--accent); z-index: 100; }
-        
-        /* Ajuste del escenario para dejar espacio a los controles flotantes */
-        #stage { 
-            position: relative; 
-            width: 100%; 
-            height: calc(100vh - 220px); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%); 
+        :root {
+            --bg: #0b101b;
+            --accent: #bc13fe;
+            --neon: #00f2ff;
+            --error: #ff4757;
+            --success: #22c55e;
+            --panel: rgba(28, 35, 49, 0.95);
         }
-        
-        .snellen-e { position: absolute; font-weight: 900; color: white; opacity: 0; pointer-events: none; text-shadow: 0 0 15px var(--neon); }
-        
-        /* CORRECCIÓN: Controles con margen de seguridad inferior */
-        #controls { 
-            height: 120px; 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 12px; 
-            padding: 15px 15px calc(15px + env(safe-area-inset-bottom)); /* Evita la barra de Android */
-            background: #161b2a; 
-            border-top: 1px solid #2e3748;
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            color: white;
+            transition: background 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* HEADER DETALLADO */
+        #header {
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            background: var(--panel);
+            border-bottom: 3px solid var(--accent);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--neon);
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 900;
+        }
+
+        /* ESCENARIO DE JUEGO */
+        #stage {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 210px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%);
+            perspective: 1000px;
+        }
+
+        .snellen-e {
+            position: absolute;
+            font-weight: 900;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.3);
+            will-change: transform, opacity;
+        }
+
+        /* CONTROLES TÁCTILES PROFESIONALES */
+        #controls-container {
+            height: 140px;
+            background: #161b2a;
+            border-top: 2px solid #2e3748;
             position: absolute;
             bottom: 0;
             width: 100%;
-            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .control-btn { 
-            background: #242b3d; 
-            border: 2px solid var(--accent); 
-            border-radius: 18px; 
-            color: white; 
-            font-size: 1.8rem; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            transition: 0.1s; 
-            box-shadow: 0 4px 0 var(--accent); 
-            -webkit-tap-highlight-color: transparent; 
-            height: 70px; /* Altura fija para evitar deformación */
+        #controls-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            padding: 0 15px;
         }
-        .control-btn:active { transform: translateY(3px); box-shadow: none; background: var(--accent); }
 
-        /* Modales */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal { background: #1c2331; padding: 35px; border-radius: 35px; border: 3px solid var(--accent); width: 100%; max-width: 450px; text-align: center; }
-        .modal h1 { color: var(--neon); font-weight: 900; font-size: 2.2rem; margin-bottom: 20px; }
-        .step { text-align: left; margin: 15px 0; font-size: 1.2rem; line-height: 1.5; border-left: 5px solid var(--neon); padding-left: 15px; }
-        .btn-main { background: linear-gradient(45deg, var(--accent), var(--neon)); color: white; padding: 20px; border-radius: 15px; border: none; font-weight: 900; width: 100%; margin-top: 20px; cursor: pointer; text-transform: uppercase; font-size: 1.3rem; }
-        
+        .control-btn {
+            background: #242b3d;
+            border: 3px solid var(--accent);
+            border-radius: 20px;
+            color: white;
+            font-size: 2rem;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 0 var(--accent);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .control-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--accent);
+            background: var(--accent);
+        }
+
+        /* MODALES Y OVERLAYS COMPLETO */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 8, 15, 0.98);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal {
+            background: #1c2331;
+            padding: 40px;
+            border-radius: 40px;
+            border: 4px solid var(--accent);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(188, 19, 254, 0.3);
+        }
+
+        .modal h1 {
+            color: var(--neon);
+            font-weight: 900;
+            font-size: 2.8rem;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+        }
+
+        .instruction-box {
+            text-align: left;
+            margin: 25px 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            font-size: 1.25rem;
+            line-height: 1.4;
+        }
+
+        .step-num {
+            background: var(--accent);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .btn-main {
+            background: linear-gradient(45deg, var(--accent), var(--neon));
+            color: white;
+            padding: 22px;
+            border-radius: 20px;
+            border: none;
+            font-weight: 900;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-main:active {
+            transform: scale(0.95);
+        }
+
+        /* FEEDBACK VISUAL */
         .flash-red { background-color: var(--error) !important; }
         .flash-green { background-color: var(--success) !important; }
+
+        #result-table {
+            width: 100%;
+            margin: 25px 0;
+            border-collapse: collapse;
+        }
+
+        #result-table td {
+            padding: 12px;
+            border-bottom: 1px solid #3e4859;
+            font-size: 1.2rem;
+        }
+
+        .label-cell { font-weight: 700; color: var(--neon); }
+        .value-cell { text-align: right; font-weight: 900; }
+
     </style>
 </head>
 <body>
+
     <div id="header">
-        <div style="font-weight:900; color:var(--neon)">NIVEL: <span id="v-lvl">1</span></div>
-        <div id="v-lives">❤️❤️❤️</div>
-        <div style="font-weight:900;">HITS: <span id="v-hits">0</span>/7</div>
+        <div class="stat-box">
+            <span class="stat-label">Nivel</span>
+            <span id="v-lvl" class="stat-value">1</span>
+        </div>
+        <div id="v-lives" style="font-size: 2rem; letter-spacing: 5px;">❤️❤️❤️</div>
+        <div class="stat-box">
+            <span class="stat-label">Aciertos</span>
+            <span class="stat-value"><span id="v-hits">0</span>/7</span>
+        </div>
     </div>
 
     <div id="stage"></div>
-    <div id="controls"></div>
+
+    <div id="controls-container">
+        <div id="controls-grid"></div>
+    </div>
 
     <div id="intro-modal" class="overlay">
         <div class="modal">
             <h1>TÚNEL SNELLEN</h1>
-            <div class="step"><b>1. Orientación:</b> Identifica hacia dónde apunta la letra "E".</div>
-            <div class="step"><b>2. Dinamismo:</b> ¡Ojo! Los botones cambian de lugar en cada turno.</div>
-            <div class="step"><b>3. Recompensa:</b> Cada 4 niveles superados recuperas una vida ❤️</div>
-            <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
+            <div class="instruction-box">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div>Identifica la orientación de la letra "E" mientras se acerca.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div>Presiona la flecha correcta. ¡Cuidado! Los botones cambian de lugar.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div>Completa 7 aciertos para subir de nivel y recuperar vidas.</div>
+                </div>
+            </div>
+            <button class="btn-main" onclick="startGame()">¡EMPEZAR JUEGO!</button>
         </div>
     </div>
 
     <div id="level-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 1.8rem;">¡NIVEL COMPLETADO!</h2>
-            <p id="lvl-msg" style="font-size: 1.1rem; margin: 20px 0;">Has logrado los 7 aciertos.</p>
-            <button class="btn-main" onclick="nextLevel()">Siguiente Nivel</button>
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2rem; margin:0;">¡NIVEL SUPERADO!</h2>
+            <p id="lvl-msg" style="font-size: 1.3rem; margin: 25px 0;">Preparando el siguiente desafío...</p>
+            <button class="btn-main" onclick="nextLevel()">CONTINUAR</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--neon); font-weight:900; font-size: 1.8rem;">ENTRENAMIENTO FINALIZADO</h2>
-            <div id="res-stats" style="margin:25px 0; text-align:left; font-size: 1.2rem; line-height: 2;"></div>
+            <h1>FIN DEL JUEGO</h1>
+            <table id="result-table">
+                <tr><td class="label-cell">Nivel Final:</td><td id="res-lvl" class="value-cell">0</td></tr>
+                <tr><td class="label-cell">Aciertos:</td><td id="res-hits" class="value-cell">0</td></tr>
+                <tr><td class="label-cell">Fallos:</td><td id="res-fails" class="value-cell">0</td></tr>
+            </table>
+            <p id="status-msg" style="color: var(--neon); font-weight: 700;">Enviando datos al servidor...</p>
             <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        let lvl=1, hits=0, totalHits=0, lives=3, active=false, currentRot=0;
-        const stage = document.getElementById('stage');
-        const controls = document.getElementById('controls');
+        // --- CONFIGURACIÓN DE CONEXIÓN (Google Forms) ---
+        const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
+        const ENTRY_PACIENTE = "entry.369874016";
+        const ENTRY_JUEGO = "entry.1353470174";
+        const ENTRY_NIVEL = "entry.721051298";
+        const ENTRY_ACIERTOS = "entry.873272199";
+        const ENTRY_FALLOS = "entry.1030094511";
+        const ENTRY_EXTRA = "entry.1303309812";
+        const ENTRY_FECHA = "entry.845098414";
 
+        // --- VARIABLES DE ESTADO ---
+        let lvl = 1;
+        let hits = 0;
+        let totalHits = 0;
+        let totalFails = 0;
+        let lives = 3;
+        let active = false;
+        let currentRot = 0;
+        const stage = document.getElementById('stage');
+        const controlsGrid = document.getElementById('controls-grid');
+
+        // --- LÓGICA DE INICIO ---
         function startGame() {
             document.getElementById('intro-modal').style.display = 'none';
             active = true;
             spawn();
         }
 
+        // --- SISTEMA ANTIMEMORIA (SHUFFLE) ---
         function shuffleControls() {
-            controls.innerHTML = '';
+            controlsGrid.innerHTML = '';
             const btns = [
-                { rot: 180, icon: '⬅️' }, { rot: 270, icon: '⬆️' },
-                { rot: 90, icon: '⬇️' }, { rot: 0, icon: '➡️' }
+                { rot: 180, icon: '⬅️' },
+                { rot: 270, icon: '⬆️' },
+                { rot: 90, icon: '⬇️' },
+                { rot: 0, icon: '➡️' }
             ];
+            
             btns.sort(() => Math.random() - 0.5);
+            
             btns.forEach(b => {
                 const div = document.createElement('div');
                 div.className = 'control-btn';
                 div.innerHTML = b.icon;
-                div.onclick = (e) => {
-                    e.preventDefault();
-                    checkDir(b.rot);
-                };
-                controls.appendChild(div);
+                div.onmousedown = (e) => { e.preventDefault(); checkDir(b.rot); };
+                div.ontouchstart = (e) => { e.preventDefault(); checkDir(b.rot); };
+                controlsGrid.appendChild(div);
             });
         }
 
+        // --- GENERACIÓN DE TARGETS ---
         function spawn() {
             if(!active) return;
             stage.innerHTML = '';
@@ -140,56 +352,98 @@
             
             const e = document.createElement('div');
             e.className = 'snellen-e';
-            const rots = [0, 90, 180, 270];
-            currentRot = rots[Math.floor(Math.random()*4)];
+            const orientations = [0, 90, 180, 270];
+            currentRot = orientations[Math.floor(Math.random() * orientations.length)];
             
-            e.style.fontSize = Math.max(30, 130 - (lvl * 5)) + 'px';
+            // Tamaño dinámico basado en nivel
+            const baseSize = Math.max(30, 140 - (lvl * 5));
+            e.style.fontSize = baseSize + 'px';
             e.innerHTML = 'E';
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            const speed = Math.max(600, 4200 - (lvl * 350));
-            const anim = e.animate([
+            // Velocidad progresiva
+            const duration = Math.max(550, 4500 - (lvl * 400));
+            
+            const animation = e.animate([
                 { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
-                { opacity: 1, offset: 0.2 },
-                { transform: `rotate(${currentRot}deg) scale(7)`, opacity: 0 }
-            ], { duration: speed, iterations: 1, easing: 'ease-in' });
+                { opacity: 1, offset: 0.15 },
+                { transform: `rotate(${currentRot}deg) scale(8)`, opacity: 0 }
+            ], {
+                duration: duration,
+                easing: 'ease-in'
+            });
 
-            anim.onfinish = () => { if(e.parentElement && active) handleFail(); };
+            animation.onfinish = () => {
+                if(e.parentElement && active) {
+                    totalFails++;
+                    handleFail();
+                }
+            };
         }
 
-        function checkDir(d) {
+        // --- VALIDACIÓN ---
+        function checkDir(userSelection) {
             if(!active) return;
-            if(d === currentRot) {
+            
+            if(userSelection === currentRot) {
                 hits++;
                 totalHits++;
                 document.getElementById('v-hits').innerText = hits;
-                if(hits >= 7) pauseForLevel();
-                else spawn();
+                
+                if(hits >= 7) {
+                    pauseForLevel();
+                } else {
+                    spawn();
+                }
             } else {
+                totalFails++;
                 handleFail();
             }
         }
 
+        function handleFail() {
+            lives--;
+            document.body.classList.add('flash-red');
+            setTimeout(() => document.body.classList.remove('flash-red'), 200);
+            
+            updateLivesUI();
+            
+            if(lives <= 0) {
+                endGame();
+            } else {
+                spawn();
+            }
+        }
+
+        function updateLivesUI() {
+            const display = lives > 0 ? "❤️".repeat(lives) : "💀";
+            document.getElementById('v-lives').innerText = display;
+        }
+
+        // --- GESTIÓN DE NIVELES ---
         function pauseForLevel() {
             active = false;
             stage.innerHTML = '';
+            
             const modal = document.getElementById('level-modal');
             const title = document.getElementById('lvl-title');
             const msg = document.getElementById('lvl-msg');
-            
+
             if(lvl % 4 === 0 && lives < 3) {
                 lives++;
-                title.innerText = "¡VIDA EXTRA!";
+                title.innerText = "¡BONUS DE VIDA!";
                 title.style.color = "var(--success)";
-                msg.innerText = "Excelente precisión. Recuperas un ❤️.";
+                msg.innerText = "Tu constancia ha restaurado un ❤️.";
                 document.body.classList.add('flash-green');
-                setTimeout(() => document.body.classList.remove('flash-green'), 500);
+                setTimeout(() => document.body.classList.remove('flash-green'), 600);
             } else {
-                title.innerText = "¡NIVEL COMPLETADO!";
+                title.innerText = "¡NIVEL SUPERADO!";
                 title.style.color = "var(--neon)";
-                msg.innerText = "Has logrado los 7 aciertos.";
+                msg.innerText = "Has completado los 7 aciertos.";
             }
+            
+            updateLivesUI();
             modal.style.display = 'flex';
         }
 
@@ -198,30 +452,46 @@
             hits = 0;
             document.getElementById('v-lvl').innerText = lvl;
             document.getElementById('v-hits').innerText = '0';
-            document.getElementById('v-lives').innerText = "❤️".repeat(lives);
             document.getElementById('level-modal').style.display = 'none';
             active = true;
             spawn();
         }
 
-        function handleFail() {
-            lives--;
-            document.body.classList.add('flash-red');
-            setTimeout(() => document.body.classList.remove('flash-red'), 200);
-            document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-            if(lives <= 0) end();
-            else spawn();
-        }
-
-        function end() {
+        // --- FINALIZACIÓN Y ENVÍO ---
+        function endGame() {
             active = false;
             stage.innerHTML = '';
+            
+            document.getElementById('res-lvl').innerText = lvl;
+            document.getElementById('res-hits').innerText = totalHits;
+            document.getElementById('res-fails').innerText = totalFails;
             document.getElementById('res-modal').style.display = 'flex';
-            document.getElementById('res-stats').innerHTML = `
-                <b>• Nivel final:</b> ${lvl}<br>
-                <b>• Aciertos totales:</b> ${totalHits}<br>
-                <b>• Precisión:</b> ${Math.round((totalHits/(totalHits + (3-lives)))*100) || 0}%
-            `;
+            
+            registrarEnSheets();
+        }
+
+        function registrarEnSheets() {
+            const fecha = new Date().toISOString().split('T')[0];
+            const paciente = "PACIENTE_SNELLEN"; // O capturar de variable global si existe
+            const juego = "Tunel_Snellen_Dinamico";
+
+            const url = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
+                        `${ENTRY_PACIENTE}=${encodeURIComponent(paciente)}&` +
+                        `${ENTRY_JUEGO}=${encodeURIComponent(juego)}&` +
+                        `${ENTRY_NIVEL}=${lvl}&` +
+                        `${ENTRY_ACIERTOS}=${totalHits}&` +
+                        `${ENTRY_FALLOS}=${totalFails}&` +
+                        `${ENTRY_EXTRA}=N/A&` +
+                        `${ENTRY_FECHA}=${fecha}&` +
+                        `submit=Submit`;
+
+            fetch(url, { mode: 'no-cors' })
+                .then(() => {
+                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados con éxito.";
+                })
+                .catch(() => {
+                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión, datos no guardados.";
+                });
         }
     </script>
 </body>
