@@ -13,6 +13,7 @@
             --error: #ff4757;
             --success: #22c55e;
             --panel: rgba(28, 35, 49, 0.95);
+            --shadow: rgba(0, 0, 0, 0.6);
         }
 
         body, html {
@@ -27,51 +28,62 @@
             transition: background 0.3s ease;
             -webkit-user-select: none;
             user-select: none;
+            touch-action: manipulation;
         }
 
-        /* HEADER DETALLADO */
+        /* HEADER SUPERIOR DETALLADO */
         #header {
-            height: 70px;
+            height: 80px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 25px;
+            padding: 0 30px;
             background: var(--panel);
-            border-bottom: 3px solid var(--accent);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border-bottom: 4px solid var(--accent);
+            box-shadow: 0 5px 20px var(--shadow);
             position: relative;
             z-index: 1000;
+            box-sizing: border-box;
         }
 
-        .stat-box {
+        .stat-group {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             color: var(--neon);
-            font-weight: 700;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
 
         .stat-value {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 900;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
-        /* ESCENARIO DE JUEGO */
+        #v-lives {
+            font-size: 2.2rem;
+            letter-spacing: 8px;
+            filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.4));
+        }
+
+        /* ÁREA DE JUEGO (TÚNEL) */
         #stage {
             position: relative;
             width: 100%;
-            height: calc(100vh - 210px);
+            height: calc(100vh - 240px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%);
-            perspective: 1000px;
+            background: radial-gradient(circle at center, #1a1f2c 0%, #0b101b 100%);
+            overflow: hidden;
         }
 
         .snellen-e {
@@ -80,15 +92,16 @@
             color: white;
             opacity: 0;
             pointer-events: none;
-            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.3);
+            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.4);
             will-change: transform, opacity;
+            line-height: 1;
         }
 
-        /* CONTROLES TÁCTILES PROFESIONALES */
-        #controls-container {
-            height: 140px;
+        /* CONTENEDOR DE CONTROLES TÁCTILES */
+        #controls-wrapper {
+            height: 160px;
             background: #161b2a;
-            border-top: 2px solid #2e3748;
+            border-top: 3px solid #2e3748;
             position: absolute;
             bottom: 0;
             width: 100%;
@@ -96,215 +109,231 @@
             align-items: center;
             justify-content: center;
             padding-bottom: env(safe-area-inset-bottom);
+            box-sizing: border-box;
         }
 
-        #controls-grid {
+        #controls-layout {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 20px;
             width: 100%;
-            max-width: 600px;
-            padding: 0 15px;
+            max-width: 700px;
+            padding: 0 20px;
         }
 
         .control-btn {
             background: #242b3d;
-            border: 3px solid var(--accent);
-            border-radius: 20px;
+            border: 4px solid var(--accent);
+            border-radius: 25px;
             color: white;
-            font-size: 2rem;
-            height: 85px;
+            font-size: 2.5rem;
+            height: 90px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 6px 0 var(--accent);
+            box-shadow: 0 8px 0 var(--accent);
             -webkit-tap-highlight-color: transparent;
         }
 
         .control-btn:active {
-            transform: translateY(4px);
+            transform: translateY(6px);
             box-shadow: 0 2px 0 var(--accent);
             background: var(--accent);
         }
 
-        /* MODALES Y OVERLAYS COMPLETO */
+        /* MODALES PROFESIONALES */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(5, 8, 15, 0.98);
+            background: rgba(5, 8, 15, 0.99);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 5000;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+            padding: 25px;
+            backdrop-filter: blur(10px);
         }
 
-        .modal {
+        .modal-card {
             background: #1c2331;
-            padding: 40px;
-            border-radius: 40px;
-            border: 4px solid var(--accent);
+            padding: 45px;
+            border-radius: 45px;
+            border: 5px solid var(--accent);
             width: 100%;
-            max-width: 500px;
+            max-width: 550px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(188, 19, 254, 0.3);
+            box-shadow: 0 0 60px rgba(188, 19, 254, 0.4);
         }
 
-        .modal h1 {
+        .modal-card h1 {
             color: var(--neon);
             font-weight: 900;
-            font-size: 2.8rem;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+            font-size: 3rem;
+            margin: 0 0 25px 0;
+            letter-spacing: -1px;
         }
 
-        .instruction-box {
+        .instruction-list {
             text-align: left;
-            margin: 25px 0;
+            margin: 30px 0;
         }
 
-        .step {
+        .instruction-item {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 18px;
-            font-size: 1.25rem;
-            line-height: 1.4;
+            margin-bottom: 22px;
+            font-size: 1.3rem;
+            line-height: 1.5;
         }
 
-        .step-num {
+        .bullet {
             background: var(--accent);
             color: white;
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            margin-right: 15px;
+            margin-right: 18px;
             flex-shrink: 0;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px var(--accent);
         }
 
-        .btn-main {
+        .btn-action {
             background: linear-gradient(45deg, var(--accent), var(--neon));
             color: white;
-            padding: 22px;
-            border-radius: 20px;
+            padding: 25px;
+            border-radius: 22px;
             border: none;
             font-weight: 900;
             width: 100%;
-            margin-top: 20px;
+            margin-top: 25px;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             letter-spacing: 2px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+            transition: 0.2s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
-        .btn-main:active {
-            transform: scale(0.95);
-        }
+        .btn-action:active { transform: scale(0.96); }
 
-        /* FEEDBACK VISUAL */
-        .flash-red { background-color: var(--error) !important; }
-        .flash-green { background-color: var(--success) !important; }
-
-        #result-table {
+        /* TABLA DE RESULTADOS */
+        .results-display {
             width: 100%;
-            margin: 25px 0;
-            border-collapse: collapse;
+            margin: 30px 0;
+            border-collapse: separate;
+            border-spacing: 0 10px;
         }
 
-        #result-table td {
-            padding: 12px;
-            border-bottom: 1px solid #3e4859;
-            font-size: 1.2rem;
+        .results-display td {
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            font-size: 1.3rem;
         }
 
-        .label-cell { font-weight: 700; color: var(--neon); }
-        .value-cell { text-align: right; font-weight: 900; }
+        .results-display td:first-child {
+            border-radius: 15px 0 0 15px;
+            color: var(--neon);
+            font-weight: 700;
+        }
+
+        .results-display td:last-child {
+            border-radius: 0 15px 15px 0;
+            text-align: right;
+            font-weight: 900;
+        }
+
+        /* ANIMACIONES DE FEEDBACK */
+        .flash-error { background-color: var(--error) !important; }
+        .flash-success { background-color: var(--success) !important; }
 
     </style>
 </head>
 <body>
 
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/audio/2021/11/23/audio_323fd3998b.mp3" type="audio/mpeg">
+    </audio>
+
     <div id="header">
-        <div class="stat-box">
+        <div class="stat-group">
             <span class="stat-label">Nivel</span>
             <span id="v-lvl" class="stat-value">1</span>
         </div>
-        <div id="v-lives" style="font-size: 2rem; letter-spacing: 5px;">❤️❤️❤️</div>
-        <div class="stat-box">
-            <span class="stat-label">Aciertos</span>
-            <span class="stat-value"><span id="v-hits">0</span>/7</span>
+        <div id="v-lives">❤️❤️❤️</div>
+        <div class="stat-group">
+            <span class="stat-label">Progreso</span>
+            <span class="stat-value"><span id="v-hits">0</span> / 7</span>
         </div>
     </div>
 
     <div id="stage"></div>
 
-    <div id="controls-container">
-        <div id="controls-grid"></div>
+    <div id="controls-wrapper">
+        <div id="controls-layout"></div>
     </div>
 
     <div id="intro-modal" class="overlay">
-        <div class="modal">
+        <div class="modal-card">
             <h1>TÚNEL SNELLEN</h1>
-            <div class="instruction-box">
-                <div class="step">
-                    <div class="step-num">1</div>
-                    <div>Identifica la orientación de la letra "E" mientras se acerca.</div>
+            <div class="instruction-list">
+                <div class="instruction-item">
+                    <div class="bullet">1</div>
+                    <div>Observa la orientación de la letra "E" en movimiento.</div>
                 </div>
-                <div class="step">
-                    <div class="step-num">2</div>
-                    <div>Presiona la flecha correcta. ¡Cuidado! Los botones cambian de lugar.</div>
+                <div class="instruction-item">
+                    <div class="bullet">2</div>
+                    <div>Presiona la flecha correcta. ¡Los botones cambian de lugar!</div>
                 </div>
-                <div class="step">
-                    <div class="step-num">3</div>
-                    <div>Completa 7 aciertos para subir de nivel y recuperar vidas.</div>
+                <div class="instruction-item">
+                    <div class="bullet">3</div>
+                    <div>Cada 4 niveles superados, recuperas una vida. ❤️</div>
                 </div>
             </div>
-            <button class="btn-main" onclick="startGame()">¡EMPEZAR JUEGO!</button>
+            <button class="btn-action" onclick="startGame()">INICIAR TERAPIA</button>
         </div>
     </div>
 
     <div id="level-modal" class="overlay" style="display:none;">
-        <div class="modal">
-            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2rem; margin:0;">¡NIVEL SUPERADO!</h2>
-            <p id="lvl-msg" style="font-size: 1.3rem; margin: 25px 0;">Preparando el siguiente desafío...</p>
-            <button class="btn-main" onclick="nextLevel()">CONTINUAR</button>
+        <div class="modal-card">
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2.5rem; margin:0;">¡EXCELENTE!</h2>
+            <p id="lvl-msg" style="font-size: 1.4rem; margin: 30px 0;">Nivel completado con éxito.</p>
+            <button class="btn-action" onclick="nextLevel()">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
     <div id="res-modal" class="overlay" style="display:none;">
-        <div class="modal">
-            <h1>FIN DEL JUEGO</h1>
-            <table id="result-table">
-                <tr><td class="label-cell">Nivel Final:</td><td id="res-lvl" class="value-cell">0</td></tr>
-                <tr><td class="label-cell">Aciertos:</td><td id="res-hits" class="value-cell">0</td></tr>
-                <tr><td class="label-cell">Fallos:</td><td id="res-fails" class="value-cell">0</td></tr>
+        <div class="modal-card">
+            <h1>RESULTADOS</h1>
+            <table class="results-display">
+                <tr><td>Nivel Máximo:</td><td id="res-lvl">1</td></tr>
+                <tr><td>Aciertos Totales:</td><td id="res-hits">0</td></tr>
+                <tr><td>Fallos Totales:</td><td id="res-fails">0</td></tr>
             </table>
-            <p id="status-msg" style="color: var(--neon); font-weight: 700;">Enviando datos al servidor...</p>
-            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
+            <p id="sync-status" style="color: var(--neon); font-weight: 800; font-size: 1.1rem;">Sincronizando con Perceptum Cloud...</p>
+            <button class="btn-action" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE CONEXIÓN (Google Forms) ---
+        // --- CONFIGURACIÓN DE INTEGRACIÓN ---
         const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
-        const ENTRY_PACIENTE = "entry.369874016";
-        const ENTRY_JUEGO = "entry.1353470174";
-        const ENTRY_NIVEL = "entry.721051298";
-        const ENTRY_ACIERTOS = "entry.873272199";
-        const ENTRY_FALLOS = "entry.1030094511";
-        const ENTRY_EXTRA = "entry.1303309812";
-        const ENTRY_FECHA = "entry.845098414";
+        const ENTRIES = {
+            PACIENTE: "entry.369874016",
+            JUEGO: "entry.1353470174",
+            NIVEL: "entry.721051298",
+            ACIERTOS: "entry.873272199",
+            FALLOS: "entry.1030094511",
+            FECHA: "entry.845098414"
+        };
 
-        // --- VARIABLES DE ESTADO ---
+        // --- ESTADO DEL JUEGO ---
         let lvl = 1;
         let hits = 0;
         let totalHits = 0;
@@ -312,117 +341,126 @@
         let lives = 3;
         let active = false;
         let currentRot = 0;
-        const stage = document.getElementById('stage');
-        const controlsGrid = document.getElementById('controls-grid');
 
-        // --- LÓGICA DE INICIO ---
+        const stage = document.getElementById('stage');
+        const controlsLayout = document.getElementById('controls-layout');
+        const music = document.getElementById('bgMusic');
+
         function startGame() {
             document.getElementById('intro-modal').style.display = 'none';
+            
+            // Gestión de Audio
+            music.volume = 0.3;
+            music.play().catch(() => console.log("Audio esperando interacción"));
+            
             active = true;
-            spawn();
+            spawnTarget();
         }
 
-        // --- SISTEMA ANTIMEMORIA (SHUFFLE) ---
-        function shuffleControls() {
-            controlsGrid.innerHTML = '';
-            const btns = [
+        // --- SISTEMA SHUFFLE DE BOTONES ---
+        function updateControls() {
+            controlsLayout.innerHTML = '';
+            const buttons = [
                 { rot: 180, icon: '⬅️' },
                 { rot: 270, icon: '⬆️' },
                 { rot: 90, icon: '⬇️' },
                 { rot: 0, icon: '➡️' }
             ];
             
-            btns.sort(() => Math.random() - 0.5);
+            // Mezcla aleatoria
+            buttons.sort(() => Math.random() - 0.5);
             
-            btns.forEach(b => {
+            buttons.forEach(btn => {
                 const div = document.createElement('div');
                 div.className = 'control-btn';
-                div.innerHTML = b.icon;
-                div.onmousedown = (e) => { e.preventDefault(); checkDir(b.rot); };
-                div.ontouchstart = (e) => { e.preventDefault(); checkDir(b.rot); };
-                controlsGrid.appendChild(div);
+                div.innerHTML = btn.icon;
+                
+                // Eventos duales para máxima respuesta táctil
+                div.onmousedown = (e) => { e.preventDefault(); handleSelection(btn.rot); };
+                div.ontouchstart = (e) => { e.preventDefault(); handleSelection(btn.rot); };
+                
+                controlsLayout.appendChild(div);
             });
         }
 
-        // --- GENERACIÓN DE TARGETS ---
-        function spawn() {
+        // --- LÓGICA DE APARICIÓN ---
+        function spawnTarget() {
             if(!active) return;
             stage.innerHTML = '';
-            shuffleControls();
+            updateControls();
             
-            const e = document.createElement('div');
-            e.className = 'snellen-e';
-            const orientations = [0, 90, 180, 270];
-            currentRot = orientations[Math.floor(Math.random() * orientations.length)];
+            const target = document.createElement('div');
+            target.className = 'snellen-e';
             
-            // Tamaño dinámico basado en nivel
-            const baseSize = Math.max(30, 140 - (lvl * 5));
-            e.style.fontSize = baseSize + 'px';
-            e.innerHTML = 'E';
-            e.style.transform = `rotate(${currentRot}deg)`;
-            stage.appendChild(e);
+            const directions = [0, 90, 180, 270];
+            currentRot = directions[Math.floor(Math.random() * directions.length)];
+            
+            // Cálculo de tamaño Snellen dinámico
+            const size = Math.max(30, 150 - (lvl * 6));
+            target.style.fontSize = size + 'px';
+            target.innerHTML = 'E';
+            target.style.transform = `rotate(${currentRot}deg)`;
+            stage.appendChild(target);
 
-            // Velocidad progresiva
-            const duration = Math.max(550, 4500 - (lvl * 400));
+            // Ajuste de velocidad por nivel
+            const time = Math.max(500, 4800 - (lvl * 450));
             
-            const animation = e.animate([
-                { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
+            const anim = target.animate([
+                { transform: `rotate(${currentRot}deg) scale(0.05)`, opacity: 0 },
                 { opacity: 1, offset: 0.15 },
-                { transform: `rotate(${currentRot}deg) scale(8)`, opacity: 0 }
+                { transform: `rotate(${currentRot}deg) scale(9)`, opacity: 0 }
             ], {
-                duration: duration,
+                duration: time,
                 easing: 'ease-in'
             });
 
-            animation.onfinish = () => {
-                if(e.parentElement && active) {
+            anim.onfinish = () => {
+                if(target.parentElement && active) {
                     totalFails++;
-                    handleFail();
+                    registerError();
                 }
             };
         }
 
-        // --- VALIDACIÓN ---
-        function checkDir(userSelection) {
+        function handleSelection(selectedRot) {
             if(!active) return;
             
-            if(userSelection === currentRot) {
+            if(selectedRot === currentRot) {
                 hits++;
                 totalHits++;
                 document.getElementById('v-hits').innerText = hits;
                 
                 if(hits >= 7) {
-                    pauseForLevel();
+                    completeLevel();
                 } else {
-                    spawn();
+                    spawnTarget();
                 }
             } else {
                 totalFails++;
-                handleFail();
+                registerError();
             }
         }
 
-        function handleFail() {
+        function registerError() {
             lives--;
-            document.body.classList.add('flash-red');
-            setTimeout(() => document.body.classList.remove('flash-red'), 200);
+            document.body.classList.add('flash-error');
+            setTimeout(() => document.body.classList.remove('flash-error'), 250);
             
-            updateLivesUI();
+            refreshLivesUI();
             
             if(lives <= 0) {
-                endGame();
+                finishSession();
             } else {
-                spawn();
+                spawnTarget();
             }
         }
 
-        function updateLivesUI() {
-            const display = lives > 0 ? "❤️".repeat(lives) : "💀";
-            document.getElementById('v-lives').innerText = display;
+        function refreshLivesUI() {
+            const ui = lives > 0 ? "❤️".repeat(lives) : "💀";
+            document.getElementById('v-lives').innerText = ui;
         }
 
-        // --- GESTIÓN DE NIVELES ---
-        function pauseForLevel() {
+        function completeLevel() {
             active = false;
             stage.innerHTML = '';
             
@@ -430,20 +468,21 @@
             const title = document.getElementById('lvl-title');
             const msg = document.getElementById('lvl-msg');
 
+            // Regla de Vida Extra cada 4 niveles
             if(lvl % 4 === 0 && lives < 3) {
                 lives++;
-                title.innerText = "¡BONUS DE VIDA!";
+                title.innerText = "¡VIDA REGENERADA!";
                 title.style.color = "var(--success)";
-                msg.innerText = "Tu constancia ha restaurado un ❤️.";
-                document.body.classList.add('flash-green');
-                setTimeout(() => document.body.classList.remove('flash-green'), 600);
+                msg.innerText = "Tu precisión te ha otorgado un ❤️ extra.";
+                document.body.classList.add('flash-success');
+                setTimeout(() => document.body.classList.remove('flash-success'), 600);
             } else {
                 title.innerText = "¡NIVEL SUPERADO!";
                 title.style.color = "var(--neon)";
-                msg.innerText = "Has completado los 7 aciertos.";
+                msg.innerText = "Has alcanzado los 7 aciertos requeridos.";
             }
             
-            updateLivesUI();
+            refreshLivesUI();
             modal.style.display = 'flex';
         }
 
@@ -454,43 +493,41 @@
             document.getElementById('v-hits').innerText = '0';
             document.getElementById('level-modal').style.display = 'none';
             active = true;
-            spawn();
+            spawnTarget();
         }
 
-        // --- FINALIZACIÓN Y ENVÍO ---
-        function endGame() {
+        // --- FINALIZACIÓN Y ENVÍO A GOOGLE SHEETS ---
+        function finishSession() {
             active = false;
-            stage.innerHTML = '';
+            music.pause();
             
             document.getElementById('res-lvl').innerText = lvl;
             document.getElementById('res-hits').innerText = totalHits;
             document.getElementById('res-fails').innerText = totalFails;
             document.getElementById('res-modal').style.display = 'flex';
             
-            registrarEnSheets();
+            enviarResultados();
         }
 
-        function registrarEnSheets() {
-            const fecha = new Date().toISOString().split('T')[0];
-            const paciente = "PACIENTE_SNELLEN"; // O capturar de variable global si existe
-            const juego = "Tunel_Snellen_Dinamico";
+        function enviarResultados() {
+            const hoy = new Date().toISOString().split('T')[0];
+            const paciente = "PACIENTE_SNELLEN"; 
+            const nombreJuego = "Tunel_Snellen_Dinamico";
 
-            const url = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
-                        `${ENTRY_PACIENTE}=${encodeURIComponent(paciente)}&` +
-                        `${ENTRY_JUEGO}=${encodeURIComponent(juego)}&` +
-                        `${ENTRY_NIVEL}=${lvl}&` +
-                        `${ENTRY_ACIERTOS}=${totalHits}&` +
-                        `${ENTRY_FALLOS}=${totalFails}&` +
-                        `${ENTRY_EXTRA}=N/A&` +
-                        `${ENTRY_FECHA}=${fecha}&` +
-                        `submit=Submit`;
+            const query = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
+                        `${ENTRIES.PACIENTE}=${encodeURIComponent(paciente)}&` +
+                        `${ENTRIES.JUEGO}=${encodeURIComponent(nombreJuego)}&` +
+                        `${ENTRIES.NIVEL}=${lvl}&` +
+                        `${ENTRIES.ACIERTOS}=${totalHits}&` +
+                        `${ENTRIES.FALLOS}=${totalFails}&` +
+                        `${ENTRIES.FECHA}=${hoy}&submit=Submit`;
 
-            fetch(url, { mode: 'no-cors' })
+            fetch(query, { mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados con éxito.";
+                    document.getElementById('sync-status').innerText = "✅ Sincronización completa.";
                 })
                 .catch(() => {
-                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión, datos no guardados.";
+                    document.getElementById('sync-status').innerText = "⚠️ Error de red. Datos locales.";
                 });
         }
     </script>
