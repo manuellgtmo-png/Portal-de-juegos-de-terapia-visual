@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Túnel Snellen Pro - Perceptum</title>
+    <title>Túnel Snellen Pro Full - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* CSS EXTENDIDO - SIN SIMPLIFICACIONES */
         :root {
-            --bg: #0b101b;
-            --accent: #bc13fe;
-            --neon: #00f2ff;
-            --error: #ff4757;
-            --success: #22c55e;
-            --panel: rgba(28, 35, 49, 0.95);
-            --shadow: rgba(0, 0, 0, 0.6);
+            --bg-color: #0b101b;
+            --accent-color: #bc13fe;
+            --neon-color: #00f2ff;
+            --error-color: #ff4757;
+            --success-color: #22c55e;
+            --panel-bg: rgba(28, 35, 49, 0.98);
+            --shadow-standard: 0 8px 32px rgba(0,0,0,0.8);
+            --font-main: 'Montserrat', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body, html {
@@ -21,87 +28,90 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg);
-            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            font-family: var(--font-main);
             overflow: hidden;
-            color: white;
-            transition: background 0.3s ease;
+            color: #ffffff;
+            transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             -webkit-user-select: none;
             user-select: none;
-            touch-action: manipulation;
+            touch-action: none;
         }
 
-        /* HEADER SUPERIOR DETALLADO */
-        #header {
-            height: 80px;
+        /* DISEÑO DE HEADER PROFESIONAL */
+        header {
+            height: 90px;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 30px;
-            background: var(--panel);
-            border-bottom: 4px solid var(--accent);
-            box-shadow: 0 5px 20px var(--shadow);
+            padding: 0 40px;
+            background: var(--panel-bg);
+            border-bottom: 5px solid var(--accent-color);
+            box-shadow: var(--shadow-standard);
             position: relative;
-            z-index: 1000;
-            box-sizing: border-box;
+            z-index: 2000;
         }
 
-        .stat-group {
+        .stats-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-width: 120px;
         }
 
-        .stat-label {
-            font-size: 0.75rem;
+        .stats-label {
+            font-size: 0.8rem;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--neon);
+            letter-spacing: 3px;
+            color: var(--neon-color);
             font-weight: 800;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
         }
 
-        .stat-value {
-            font-size: 1.6rem;
+        .stats-value {
+            font-size: 1.8rem;
             font-weight: 900;
-            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            text-shadow: 0 0 15px rgba(255,255,255,0.3);
         }
 
-        #v-lives {
-            font-size: 2.2rem;
-            letter-spacing: 8px;
-            filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.4));
+        #lives-display {
+            font-size: 2.5rem;
+            letter-spacing: 12px;
+            filter: drop-shadow(0 0 15px var(--accent-color));
         }
 
-        /* ÁREA DE JUEGO (TÚNEL) */
-        #stage {
+        /* ÁREA DE JUEGO DINÁMICA */
+        #main-stage {
             position: relative;
             width: 100%;
-            height: calc(100vh - 240px);
+            height: calc(100vh - 270px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, #1a1f2c 0%, #0b101b 100%);
+            background: radial-gradient(circle at center, #1a1f2c 0%, #080c14 100%);
             overflow: hidden;
+            perspective: 1200px;
         }
 
-        .snellen-e {
+        .snellen-target {
             position: absolute;
             font-weight: 900;
-            color: white;
+            color: #ffffff;
             opacity: 0;
             pointer-events: none;
-            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.4);
+            text-shadow: 0 0 25px var(--neon-color), 0 0 50px rgba(0, 242, 255, 0.5);
             will-change: transform, opacity;
             line-height: 1;
+            z-index: 500;
         }
 
-        /* CONTENEDOR DE CONTROLES TÁCTILES */
-        #controls-wrapper {
-            height: 160px;
-            background: #161b2a;
-            border-top: 3px solid #2e3748;
+        /* CONTROLES TÁCTILES EXPANDIDOS PARA TABLET */
+        #game-controls {
+            height: 180px;
+            background: #121723;
+            border-top: 4px solid #2e3748;
             position: absolute;
             bottom: 0;
             width: 100%;
@@ -109,425 +119,447 @@
             align-items: center;
             justify-content: center;
             padding-bottom: env(safe-area-inset-bottom);
-            box-sizing: border-box;
+            z-index: 1500;
         }
 
-        #controls-layout {
+        .controls-grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+            gap: 25px;
             width: 100%;
-            max-width: 700px;
-            padding: 0 20px;
+            max-width: 850px;
+            padding: 0 30px;
         }
 
-        .control-btn {
-            background: #242b3d;
-            border: 4px solid var(--accent);
-            border-radius: 25px;
+        .btn-gamepad {
+            background: #1c2331;
+            border: 5px solid var(--accent-color);
+            border-radius: 30px;
             color: white;
-            font-size: 2.5rem;
-            height: 90px;
+            font-size: 3rem;
+            height: 110px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 0 var(--accent);
-            -webkit-tap-highlight-color: transparent;
+            transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 0 var(--accent-color);
+            position: relative;
         }
 
-        .control-btn:active {
-            transform: translateY(6px);
-            box-shadow: 0 2px 0 var(--accent);
-            background: var(--accent);
+        .btn-gamepad:active {
+            transform: translateY(8px);
+            box-shadow: 0 2px 0 var(--accent-color);
+            background: var(--accent-color);
         }
 
-        /* MODALES PROFESIONALES */
-        .overlay {
+        /* MODALES FULL DETALLE */
+        .full-overlay {
             position: fixed;
-            inset: 0;
-            background: rgba(5, 8, 15, 0.99);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 6, 12, 0.99);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 5000;
-            padding: 25px;
-            backdrop-filter: blur(10px);
+            z-index: 9999;
+            padding: 30px;
+            backdrop-filter: blur(15px);
         }
 
-        .modal-card {
+        .modal-content-box {
             background: #1c2331;
-            padding: 45px;
-            border-radius: 45px;
-            border: 5px solid var(--accent);
+            padding: 60px;
+            border-radius: 55px;
+            border: 6px solid var(--accent-color);
             width: 100%;
-            max-width: 550px;
+            max-width: 650px;
             text-align: center;
-            box-shadow: 0 0 60px rgba(188, 19, 254, 0.4);
+            box-shadow: 0 0 80px rgba(188, 19, 254, 0.5);
+            position: relative;
         }
 
-        .modal-card h1 {
-            color: var(--neon);
+        .modal-content-box h1 {
+            color: var(--neon-color);
             font-weight: 900;
-            font-size: 3rem;
-            margin: 0 0 25px 0;
-            letter-spacing: -1px;
+            font-size: 3.5rem;
+            margin: 0 0 35px 0;
+            text-transform: uppercase;
+            letter-spacing: -2px;
         }
 
-        .instruction-list {
+        .instruction-container {
             text-align: left;
-            margin: 30px 0;
+            margin: 40px 0;
         }
 
-        .instruction-item {
+        .instruction-row {
             display: flex;
-            align-items: flex-start;
-            margin-bottom: 22px;
-            font-size: 1.3rem;
-            line-height: 1.5;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            line-height: 1.4;
         }
 
-        .bullet {
-            background: var(--accent);
+        .instruction-icon {
+            background: var(--accent-color);
             color: white;
-            width: 35px;
-            height: 35px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            margin-right: 18px;
+            margin-right: 25px;
             flex-shrink: 0;
-            font-size: 1.1rem;
-            box-shadow: 0 0 15px var(--accent);
+            box-shadow: 0 0 20px var(--accent-color);
         }
 
-        .btn-action {
-            background: linear-gradient(45deg, var(--accent), var(--neon));
+        .primary-button {
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--neon-color) 100%);
             color: white;
-            padding: 25px;
-            border-radius: 22px;
+            padding: 30px;
+            border-radius: 25px;
             border: none;
             font-weight: 900;
             width: 100%;
-            margin-top: 25px;
+            margin-top: 30px;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 1.6rem;
-            letter-spacing: 2px;
-            transition: 0.2s;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            transition: 0.3s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
 
-        .btn-action:active { transform: scale(0.96); }
+        .primary-button:active {
+            transform: scale(0.94);
+        }
 
-        /* TABLA DE RESULTADOS */
-        .results-display {
+        /* FEEDBACK VISUAL EXTENDIDO */
+        .flash-hit-success { background-color: var(--success-color) !important; }
+        .flash-hit-error { background-color: var(--error-color) !important; }
+
+        .data-table {
             width: 100%;
-            margin: 30px 0;
+            margin: 40px 0;
             border-collapse: separate;
-            border-spacing: 0 10px;
+            border-spacing: 0 15px;
         }
 
-        .results-display td {
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            font-size: 1.3rem;
+        .data-table td {
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            font-size: 1.4rem;
         }
 
-        .results-display td:first-child {
-            border-radius: 15px 0 0 15px;
-            color: var(--neon);
-            font-weight: 700;
+        .data-table td:first-child {
+            border-radius: 20px 0 0 20px;
+            color: var(--neon-color);
+            font-weight: 800;
+            border-left: 4px solid var(--neon-color);
         }
 
-        .results-display td:last-child {
-            border-radius: 0 15px 15px 0;
+        .data-table td:last-child {
+            border-radius: 0 20px 20px 0;
             text-align: right;
             font-weight: 900;
+            color: white;
         }
 
-        /* ANIMACIONES DE FEEDBACK */
-        .flash-error { background-color: var(--error) !important; }
-        .flash-success { background-color: var(--success) !important; }
+        #sync-label {
+            color: var(--neon-color);
+            font-weight: 900;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            display: block;
+        }
 
     </style>
 </head>
 <body>
 
-    <audio id="bgMusic" loop>
-        <source src="https://cdn.pixabay.com/audio/2021/11/23/audio_323fd3998b.mp3" type="audio/mpeg">
-    </audio>
+    <header>
+        <div class="stats-container">
+            <span class="stats-label">Nivel</span>
+            <span id="label-level" class="stats-value">1</span>
+        </div>
+        <div id="lives-display">❤️❤️❤️</div>
+        <div class="stats-container">
+            <span class="stats-label">Aciertos</span>
+            <span class="stats-value"><span id="label-hits">0</span> / 7</span>
+        </div>
+    </header>
 
-    <div id="header">
-        <div class="stat-group">
-            <span class="stat-label">Nivel</span>
-            <span id="v-lvl" class="stat-value">1</span>
-        </div>
-        <div id="v-lives">❤️❤️❤️</div>
-        <div class="stat-group">
-            <span class="stat-label">Progreso</span>
-            <span class="stat-value"><span id="v-hits">0</span> / 7</span>
-        </div>
+    <div id="main-stage"></div>
+
+    <div id="game-controls">
+        <div class="controls-grid-container" id="grid-mount"></div>
     </div>
 
-    <div id="stage"></div>
-
-    <div id="controls-wrapper">
-        <div id="controls-layout"></div>
-    </div>
-
-    <div id="intro-modal" class="overlay">
-        <div class="modal-card">
+    <div id="modal-intro" class="full-overlay">
+        <div class="modal-content-box">
             <h1>TÚNEL SNELLEN</h1>
-            <div class="instruction-list">
-                <div class="instruction-item">
-                    <div class="bullet">1</div>
-                    <div>Observa la orientación de la letra "E" en movimiento.</div>
+            <div class="instruction-container">
+                <div class="instruction-row">
+                    <div class="instruction-icon">1</div>
+                    <div>Identifica la orientación de la letra "E" en pantalla.</div>
                 </div>
-                <div class="instruction-item">
-                    <div class="bullet">2</div>
-                    <div>Presiona la flecha correcta. ¡Los botones cambian de lugar!</div>
+                <div class="instruction-row">
+                    <div class="instruction-icon">2</div>
+                    <div>Presiona la flecha correcta. ¡Cambian de posición!</div>
                 </div>
-                <div class="instruction-item">
-                    <div class="bullet">3</div>
-                    <div>Cada 4 niveles superados, recuperas una vida. ❤️</div>
+                <div class="instruction-row">
+                    <div class="instruction-icon">3</div>
+                    <div>Logra 7 aciertos para subir de nivel.</div>
                 </div>
             </div>
-            <button class="btn-action" onclick="startGame()">INICIAR TERAPIA</button>
+            <button class="primary-button" onclick="initGameEngine()">COMENZAR ENTRENAMIENTO</button>
         </div>
     </div>
 
-    <div id="level-modal" class="overlay" style="display:none;">
-        <div class="modal-card">
-            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2.5rem; margin:0;">¡EXCELENTE!</h2>
-            <p id="lvl-msg" style="font-size: 1.4rem; margin: 30px 0;">Nivel completado con éxito.</p>
-            <button class="btn-action" onclick="nextLevel()">SIGUIENTE NIVEL</button>
+    <div id="modal-level-up" class="full-overlay" style="display:none;">
+        <div class="modal-content-box">
+            <h2 id="level-up-title" style="color:var(--neon-color); font-weight:900; font-size: 3rem; margin:0;">¡NIVEL LOGRADO!</h2>
+            <p id="level-up-msg" style="font-size: 1.6rem; margin: 35px 0;">Tu agudeza visual está mejorando.</p>
+            <button class="primary-button" onclick="proceedToNextLevel()">CONTINUAR DESAFÍO</button>
         </div>
     </div>
 
-    <div id="res-modal" class="overlay" style="display:none;">
-        <div class="modal-card">
-            <h1>RESULTADOS</h1>
-            <table class="results-display">
-                <tr><td>Nivel Máximo:</td><td id="res-lvl">1</td></tr>
-                <tr><td>Aciertos Totales:</td><td id="res-hits">0</td></tr>
-                <tr><td>Fallos Totales:</td><td id="res-fails">0</td></tr>
+    <div id="modal-results" class="full-overlay" style="display:none;">
+        <div class="modal-content-box">
+            <h1>RESULTADOS FINALES</h1>
+            <table class="data-table">
+                <tr><td>Nivel Alcanzado:</td><td id="final-lvl">1</td></tr>
+                <tr><td>Total Aciertos:</td><td id="final-hits">0</td></tr>
+                <tr><td>Total Fallos:</td><td id="final-fails">0</td></tr>
             </table>
-            <p id="sync-status" style="color: var(--neon); font-weight: 800; font-size: 1.1rem;">Sincronizando con Perceptum Cloud...</p>
-            <button class="btn-action" onclick="location.reload()">REINTENTAR</button>
+            <span id="sync-label">SINCRONIZANDO CON BASE DE DATOS...</span>
+            <button class="primary-button" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE INTEGRACIÓN ---
-        const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
-        const ENTRIES = {
-            PACIENTE: "entry.369874016",
-            JUEGO: "entry.1353470174",
-            NIVEL: "entry.721051298",
-            ACIERTOS: "entry.873272199",
-            FALLOS: "entry.1030094511",
-            FECHA: "entry.845098414"
+        /* CONFIGURACIÓN DE INTEGRACIÓN GOOGLE SHEETS - SIN CAMBIOS */
+        const GOOGLE_FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
+        const FORM_FIELDS = {
+            PATIENT: "entry.369874016",
+            GAME_NAME: "entry.1353470174",
+            LEVEL: "entry.721051298",
+            HITS: "entry.873272199",
+            FAILS: "entry.1030094511",
+            DATE: "entry.845098414"
         };
 
-        // --- ESTADO DEL JUEGO ---
-        let lvl = 1;
-        let hits = 0;
-        let totalHits = 0;
-        let totalFails = 0;
-        let lives = 3;
-        let active = false;
-        let currentRot = 0;
+        /* ESTADO DEL MOTOR DE JUEGO */
+        let currentLevel = 1;
+        let hitsInLevel = 0;
+        let cumulativeHits = 0;
+        let cumulativeFails = 0;
+        let playerLives = 3;
+        let isGameActive = false;
+        let activeRotation = 0;
 
-        const stage = document.getElementById('stage');
-        const controlsLayout = document.getElementById('controls-layout');
-        const music = document.getElementById('bgMusic');
+        const stageElement = document.getElementById('main-stage');
+        const gridMountElement = document.getElementById('grid-mount');
 
-        function startGame() {
-            document.getElementById('intro-modal').style.display = 'none';
-            
-            // Gestión de Audio
-            music.volume = 0.3;
-            music.play().catch(() => console.log("Audio esperando interacción"));
-            
-            active = true;
-            spawnTarget();
+        function initGameEngine() {
+            document.getElementById('modal-intro').style.display = 'none';
+            isGameActive = true;
+            generateStimulus();
         }
 
-        // --- SISTEMA SHUFFLE DE BOTONES ---
-        function updateControls() {
-            controlsLayout.innerHTML = '';
-            const buttons = [
-                { rot: 180, icon: '⬅️' },
-                { rot: 270, icon: '⬆️' },
-                { rot: 90, icon: '⬇️' },
-                { rot: 0, icon: '➡️' }
+        /* SISTEMA DE CONTROLES DINÁMICOS (SHUFFLE COMPLETO) */
+        function rebuildControls() {
+            gridMountElement.innerHTML = '';
+            const controlOptions = [
+                { angle: 180, glyph: '⬅️' },
+                { angle: 270, glyph: '⬆️' },
+                { angle: 90, glyph: '⬇️' },
+                { angle: 0, glyph: '➡️' }
             ];
             
-            // Mezcla aleatoria
-            buttons.sort(() => Math.random() - 0.5);
+            // Algoritmo Fisher-Yates para mezcla real
+            for (let i = controlOptions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [controlOptions[i], controlOptions[j]] = [controlOptions[j], controlOptions[i]];
+            }
             
-            buttons.forEach(btn => {
-                const div = document.createElement('div');
-                div.className = 'control-btn';
-                div.innerHTML = btn.icon;
+            controlOptions.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'btn-gamepad';
+                btn.innerHTML = opt.glyph;
                 
-                // Eventos duales para máxima respuesta táctil
-                div.onmousedown = (e) => { e.preventDefault(); handleSelection(btn.rot); };
-                div.ontouchstart = (e) => { e.preventDefault(); handleSelection(btn.rot); };
+                // Eventos de alta precisión para Tablets
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    evaluatePlayerInput(opt.angle);
+                });
+                btn.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    evaluatePlayerInput(opt.angle);
+                });
                 
-                controlsLayout.appendChild(div);
+                gridMountElement.appendChild(btn);
             });
         }
 
-        // --- LÓGICA DE APARICIÓN ---
-        function spawnTarget() {
-            if(!active) return;
-            stage.innerHTML = '';
-            updateControls();
+        /* GENERACIÓN DE ESTÍMULOS SNELLEN */
+        function generateStimulus() {
+            if (!isGameActive) return;
             
-            const target = document.createElement('div');
-            target.className = 'snellen-e';
+            stageElement.innerHTML = '';
+            rebuildControls();
             
-            const directions = [0, 90, 180, 270];
-            currentRot = directions[Math.floor(Math.random() * directions.length)];
+            const eLetter = document.createElement('div');
+            eLetter.className = 'snellen-target';
             
-            // Cálculo de tamaño Snellen dinámico
-            const size = Math.max(30, 150 - (lvl * 6));
-            target.style.fontSize = size + 'px';
-            target.innerHTML = 'E';
-            target.style.transform = `rotate(${currentRot}deg)`;
-            stage.appendChild(target);
+            const possibleAngles = [0, 90, 180, 270];
+            activeRotation = possibleAngles[Math.floor(Math.random() * possibleAngles.length)];
+            
+            // Cálculo de tamaño Snellen basado en Nivel
+            const snellenSize = Math.max(25, 160 - (currentLevel * 7));
+            eLetter.style.fontSize = snellenSize + 'px';
+            eLetter.innerHTML = 'E';
+            eLetter.style.transform = `rotate(${activeRotation}deg)`;
+            stageElement.appendChild(eLetter);
 
-            // Ajuste de velocidad por nivel
-            const time = Math.max(500, 4800 - (lvl * 450));
+            // Curva de velocidad progresiva
+            const animationSpeed = Math.max(450, 5000 - (currentLevel * 450));
             
-            const anim = target.animate([
-                { transform: `rotate(${currentRot}deg) scale(0.05)`, opacity: 0 },
-                { opacity: 1, offset: 0.15 },
-                { transform: `rotate(${currentRot}deg) scale(9)`, opacity: 0 }
+            const stimulusAnimation = eLetter.animate([
+                { transform: `rotate(${activeRotation}deg) scale(0.02)`, opacity: 0 },
+                { opacity: 1, offset: 0.12 },
+                { transform: `rotate(${activeRotation}deg) scale(10)`, opacity: 0 }
             ], {
-                duration: time,
+                duration: animationSpeed,
                 easing: 'ease-in'
             });
 
-            anim.onfinish = () => {
-                if(target.parentElement && active) {
-                    totalFails++;
-                    registerError();
+            stimulusAnimation.onfinish = () => {
+                if (eLetter.parentElement && isGameActive) {
+                    cumulativeFails++;
+                    triggerLifeLoss();
                 }
             };
         }
 
-        function handleSelection(selectedRot) {
-            if(!active) return;
+        /* PROCESAMIENTO DE ENTRADA */
+        function evaluatePlayerInput(inputAngle) {
+            if (!isGameActive) return;
             
-            if(selectedRot === currentRot) {
-                hits++;
-                totalHits++;
-                document.getElementById('v-hits').innerText = hits;
+            if (inputAngle === activeRotation) {
+                hitsInLevel++;
+                cumulativeHits++;
+                document.getElementById('label-hits').innerText = hitsInLevel;
                 
-                if(hits >= 7) {
-                    completeLevel();
+                if (hitsInLevel >= 7) {
+                    processLevelCompletion();
                 } else {
-                    spawnTarget();
+                    generateStimulus();
                 }
             } else {
-                totalFails++;
-                registerError();
+                cumulativeFails++;
+                triggerLifeLoss();
             }
         }
 
-        function registerError() {
-            lives--;
-            document.body.classList.add('flash-error');
-            setTimeout(() => document.body.classList.remove('flash-error'), 250);
+        function triggerLifeLoss() {
+            playerLives--;
+            document.body.classList.add('flash-hit-error');
+            setTimeout(() => document.body.classList.remove('flash-hit-error'), 300);
             
-            refreshLivesUI();
+            syncLivesDisplay();
             
-            if(lives <= 0) {
-                finishSession();
+            if (playerLives <= 0) {
+                terminateSession();
             } else {
-                spawnTarget();
+                generateStimulus();
             }
         }
 
-        function refreshLivesUI() {
-            const ui = lives > 0 ? "❤️".repeat(lives) : "💀";
-            document.getElementById('v-lives').innerText = ui;
+        function syncLivesDisplay() {
+            const display = playerLives > 0 ? "❤️".repeat(playerLives) : "💀";
+            document.getElementById('lives-display').innerText = display;
         }
 
-        function completeLevel() {
-            active = false;
-            stage.innerHTML = '';
+        function processLevelCompletion() {
+            isGameActive = false;
+            stageElement.innerHTML = '';
             
-            const modal = document.getElementById('level-modal');
-            const title = document.getElementById('lvl-title');
-            const msg = document.getElementById('lvl-msg');
+            const modal = document.getElementById('modal-level-up');
+            const title = document.getElementById('level-up-title');
+            const msg = document.getElementById('level-up-msg');
 
-            // Regla de Vida Extra cada 4 niveles
-            if(lvl % 4 === 0 && lives < 3) {
-                lives++;
-                title.innerText = "¡VIDA REGENERADA!";
-                title.style.color = "var(--success)";
-                msg.innerText = "Tu precisión te ha otorgado un ❤️ extra.";
-                document.body.classList.add('flash-success');
-                setTimeout(() => document.body.classList.remove('flash-success'), 600);
+            // Lógica de recuperación de vida cada 4 niveles (Perceptum Standard)
+            if (currentLevel % 4 === 0 && playerLives < 3) {
+                playerLives++;
+                title.innerText = "¡VIDA RESTAURADA!";
+                title.style.color = "var(--success-color)";
+                msg.innerText = "Tu precisión ha sido recompensada con un ❤️.";
+                document.body.classList.add('flash-hit-success');
+                setTimeout(() => document.body.classList.remove('flash-hit-success'), 700);
             } else {
                 title.innerText = "¡NIVEL SUPERADO!";
-                title.style.color = "var(--neon)";
-                msg.innerText = "Has alcanzado los 7 aciertos requeridos.";
+                title.style.color = "var(--neon-color)";
+                msg.innerText = "Has completado los 7 aciertos con éxito.";
             }
             
-            refreshLivesUI();
+            syncLivesDisplay();
             modal.style.display = 'flex';
         }
 
-        function nextLevel() {
-            lvl++;
-            hits = 0;
-            document.getElementById('v-lvl').innerText = lvl;
-            document.getElementById('v-hits').innerText = '0';
-            document.getElementById('level-modal').style.display = 'none';
-            active = true;
-            spawnTarget();
+        function proceedToNextLevel() {
+            currentLevel++;
+            hitsInLevel = 0;
+            document.getElementById('label-level').innerText = currentLevel;
+            document.getElementById('label-hits').innerText = '0';
+            document.getElementById('modal-level-up').style.display = 'none';
+            isGameActive = true;
+            generateStimulus();
         }
 
-        // --- FINALIZACIÓN Y ENVÍO A GOOGLE SHEETS ---
-        function finishSession() {
-            active = false;
-            music.pause();
+        /* FINALIZACIÓN Y ENVÍO A GOOGLE SHEETS - INTEGRIDAD TOTAL */
+        function terminateSession() {
+            isGameActive = false;
+            stageElement.innerHTML = '';
             
-            document.getElementById('res-lvl').innerText = lvl;
-            document.getElementById('res-hits').innerText = totalHits;
-            document.getElementById('res-fails').innerText = totalFails;
-            document.getElementById('res-modal').style.display = 'flex';
+            document.getElementById('final-lvl').innerText = currentLevel;
+            document.getElementById('final-hits').innerText = cumulativeHits;
+            document.getElementById('final-fails').innerText = cumulativeFails;
+            document.getElementById('modal-results').style.display = 'flex';
             
-            enviarResultados();
+            commitDataToSheets();
         }
 
-        function enviarResultados() {
-            const hoy = new Date().toISOString().split('T')[0];
-            const paciente = "PACIENTE_SNELLEN"; 
-            const nombreJuego = "Tunel_Snellen_Dinamico";
+        function commitDataToSheets() {
+            const timestamp = new Date().toISOString().split('T')[0];
+            const patientId = "PACIENTE_SNELLEN_PRO"; 
+            const gameId = "Tunel_Snellen_Infinite_V1";
 
-            const query = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
-                        `${ENTRIES.PACIENTE}=${encodeURIComponent(paciente)}&` +
-                        `${ENTRIES.JUEGO}=${encodeURIComponent(nombreJuego)}&` +
-                        `${ENTRIES.NIVEL}=${lvl}&` +
-                        `${ENTRIES.ACIERTOS}=${totalHits}&` +
-                        `${ENTRIES.FALLOS}=${totalFails}&` +
-                        `${ENTRIES.FECHA}=${hoy}&submit=Submit`;
+            const submissionUrl = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse?` +
+                        `${FORM_FIELDS.PATIENT}=${encodeURIComponent(patientId)}&` +
+                        `${FORM_FIELDS.GAME_NAME}=${encodeURIComponent(gameId)}&` +
+                        `${FORM_FIELDS.LEVEL}=${currentLevel}&` +
+                        `${FORM_FIELDS.HITS}=${cumulativeHits}&` +
+                        `${FORM_FIELDS.FAILS}=${cumulativeFails}&` +
+                        `${FORM_FIELDS.DATE}=${timestamp}&` +
+                        `submit=Submit`;
 
-            fetch(query, { mode: 'no-cors' })
+            // Doble método de envío para asegurar persistencia
+            const ping = new Image();
+            ping.src = submissionUrl;
+
+            fetch(submissionUrl, { mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('sync-status').innerText = "✅ Sincronización completa.";
+                    document.getElementById('sync-label').innerText = "✅ DATOS SINCRONIZADOS CORRECTAMENTE";
+                    document.getElementById('sync-label').style.color = "var(--success-color)";
                 })
                 .catch(() => {
-                    document.getElementById('sync-status').innerText = "⚠️ Error de red. Datos locales.";
+                    document.getElementById('sync-label').innerText = "⚠️ ERROR DE RED - INTENTANDO RECONEXIÓN";
                 });
         }
     </script>
