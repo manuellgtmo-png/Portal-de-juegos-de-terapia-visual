@@ -6,24 +6,13 @@
     <title>Túnel Snellen Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* =========================================
-           CONFIGURACIÓN DE VARIABLES Y RESET
-           ========================================= */
         :root {
-            --bg-deep: #0b101b;
-            --accent-primary: #bc13fe;
-            --neon-glow: #00f2ff;
-            --error-red: #ff4757;
-            --success-green: #22c55e;
-            --panel-alpha: rgba(28, 35, 49, 0.98);
-            --shadow-extreme: 0 15px 50px rgba(0,0,0,0.8);
-            --font-family: 'Montserrat', sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
+            --bg: #0b101b;
+            --accent: #bc13fe;
+            --neon: #00f2ff;
+            --error: #ff4757;
+            --success: #22c55e;
+            --panel: rgba(28, 35, 49, 0.95);
         }
 
         body, html {
@@ -31,95 +20,75 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--bg-deep);
-            font-family: var(--font-family);
+            background: var(--bg);
+            font-family: 'Montserrat', sans-serif;
             overflow: hidden;
-            color: #ffffff;
+            color: white;
+            transition: background 0.3s ease;
             -webkit-user-select: none;
             user-select: none;
-            touch-action: none;
         }
 
-        /* =========================================
-           CABECERA (HEADER) - DISEÑO EXTENDIDO
-           ========================================= */
-        header {
-            height: 100px;
-            width: 100%;
+        /* HEADER DETALLADO */
+        #header {
+            height: 70px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 50px;
-            background: var(--panel-alpha);
-            border-bottom: 6px solid var(--accent-primary);
-            box-shadow: var(--shadow-extreme);
+            padding: 0 25px;
+            background: var(--panel);
+            border-bottom: 3px solid var(--accent);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             position: relative;
-            z-index: 5000;
+            z-index: 1000;
         }
 
-        .stat-block {
+        .stat-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-width: 150px;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--neon-glow);
-            font-weight: 900;
-            margin-bottom: 6px;
+            letter-spacing: 1px;
+            color: var(--neon);
+            font-weight: 700;
         }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 1.4rem;
             font-weight: 900;
-            text-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
         }
 
-        #lives-container {
-            font-size: 3rem;
-            letter-spacing: 15px;
-            filter: drop-shadow(0 0 15px var(--accent-primary));
-            transition: all 0.3s ease;
-        }
-
-        /* =========================================
-           ESCENARIO DE JUEGO (CANVAS/STAGE)
-           ========================================= */
-        #game-arena {
+        /* ESCENARIO DE JUEGO */
+        #stage {
             position: relative;
             width: 100%;
-            height: calc(100vh - 300px);
+            height: calc(100vh - 210px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at center, #1a1f2c 0%, #070a12 100%);
-            overflow: hidden;
-            perspective: 1500px;
+            background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%);
+            perspective: 1000px;
         }
 
         .snellen-e {
             position: absolute;
             font-weight: 900;
-            color: #ffffff;
+            color: white;
             opacity: 0;
             pointer-events: none;
-            text-shadow: 0 0 30px var(--neon-glow), 0 0 60px rgba(0, 242, 255, 0.3);
+            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.3);
             will-change: transform, opacity;
-            line-height: 0.8;
         }
 
-        /* =========================================
-           CONTROLES TÁCTILES - ÁREA INFERIOR
-           ========================================= */
-        footer {
-            height: 200px;
-            background: #111622;
-            border-top: 4px solid #2e3748;
+        /* CONTROLES TÁCTILES PROFESIONALES */
+        #controls-container {
+            height: 140px;
+            background: #161b2a;
+            border-top: 2px solid #2e3748;
             position: absolute;
             bottom: 0;
             width: 100%;
@@ -127,379 +96,402 @@
             align-items: center;
             justify-content: center;
             padding-bottom: env(safe-area-inset-bottom);
-            z-index: 4000;
         }
 
-        .control-grid {
+        #controls-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 35px;
+            gap: 15px;
             width: 100%;
-            max-width: 1000px;
-            padding: 0 40px;
+            max-width: 600px;
+            padding: 0 15px;
         }
 
-        .btn-input {
-            background: #1c2331;
-            border: 6px solid var(--accent-primary);
-            border-radius: 40px;
+        .control-btn {
+            background: #242b3d;
+            border: 3px solid var(--accent);
+            border-radius: 20px;
             color: white;
-            font-size: 4rem;
-            height: 130px;
+            font-size: 2rem;
+            height: 85px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 14px 0 var(--accent-primary);
-            position: relative;
+            box-shadow: 0 6px 0 var(--accent);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn-input:active {
-            transform: translateY(10px);
-            box-shadow: 0 4px 0 var(--accent-primary);
-            background-color: var(--accent-primary);
+        .control-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 var(--accent);
+            background: var(--accent);
         }
 
-        /* =========================================
-           MODALES Y OVERLAYS PROFESIONALES
-           ========================================= */
-        .overlay-screen {
+        /* MODALES Y OVERLAYS COMPLETO */
+        .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(4, 6, 12, 0.99);
+            background: rgba(5, 8, 15, 0.98);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            padding: 40px;
-            backdrop-filter: blur(20px);
+            z-index: 5000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
         }
 
-        .modal-box {
+        .modal {
             background: #1c2331;
-            padding: 70px;
-            border-radius: 70px;
-            border: 8px solid var(--accent-primary);
+            padding: 40px;
+            border-radius: 40px;
+            border: 4px solid var(--accent);
             width: 100%;
-            max-width: 750px;
+            max-width: 500px;
             text-align: center;
-            box-shadow: 0 0 100px rgba(188, 19, 254, 0.4);
+            box-shadow: 0 0 50px rgba(188, 19, 254, 0.3);
         }
 
-        .modal-box h1 {
-            color: var(--neon-glow);
+        .modal h1 {
+            color: var(--neon);
             font-weight: 900;
-            font-size: 4rem;
-            margin-bottom: 40px;
-            letter-spacing: -2px;
+            font-size: 2.8rem;
+            margin: 0 0 20px 0;
+            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
         }
 
-        .instruction-item {
-            display: flex;
-            align-items: center;
+        .instruction-box {
             text-align: left;
-            margin-bottom: 30px;
-            font-size: 1.6rem;
-            color: #e0e0e0;
+            margin: 25px 0;
         }
 
-        .instruction-num {
-            background: var(--accent-primary);
-            width: 50px;
-            height: 50px;
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            font-size: 1.25rem;
+            line-height: 1.4;
+        }
+
+        .step-num {
+            background: var(--accent);
+            color: white;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            margin-right: 25px;
+            margin-right: 15px;
             flex-shrink: 0;
-            box-shadow: 0 0 20px var(--accent-primary);
+            font-size: 1rem;
         }
 
-        .btn-cta {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--neon-glow) 100%);
+        .btn-main {
+            background: linear-gradient(45deg, var(--accent), var(--neon));
             color: white;
-            padding: 35px;
-            border-radius: 30px;
+            padding: 22px;
+            border-radius: 20px;
             border: none;
             font-weight: 900;
             width: 100%;
-            margin-top: 40px;
+            margin-top: 20px;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
         }
 
-        /* =========================================
-           RESULTADOS Y TABLA DE DATOS
-           ========================================= */
-        .results-table {
+        .btn-main:active {
+            transform: scale(0.95);
+        }
+
+        /* FEEDBACK VISUAL */
+        .flash-red { background-color: var(--error) !important; }
+        .flash-green { background-color: var(--success) !important; }
+
+        #result-table {
             width: 100%;
-            margin: 40px 0;
-            border-collapse: separate;
-            border-spacing: 0 15px;
+            margin: 25px 0;
+            border-collapse: collapse;
         }
 
-        .results-table td {
-            padding: 25px;
-            background: rgba(255,255,255,0.05);
-            font-size: 1.8rem;
+        #result-table td {
+            padding: 12px;
+            border-bottom: 1px solid #3e4859;
+            font-size: 1.2rem;
         }
 
-        .results-table td:first-child {
-            border-radius: 25px 0 0 25px;
-            color: var(--neon-glow);
-            font-weight: 800;
-            border-left: 6px solid var(--neon-glow);
-        }
-
-        .results-table td:last-child {
-            border-radius: 0 25px 25px 0;
-            text-align: right;
-            font-weight: 900;
-        }
-
-        /* FEEDBACKS */
-        .flash-red { background-color: var(--error-red) !important; }
-        .flash-green { background-color: var(--success-green) !important; }
+        .label-cell { font-weight: 700; color: var(--neon); }
+        .value-cell { text-align: right; font-weight: 900; }
 
     </style>
 </head>
 <body>
 
-    <form id="gs-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse" method="POST" target="secret-frame" style="display:none;">
-        <input type="hidden" name="entry.369874016" id="f-paciente" value="PACIENTE_SNELLEN_01">
-        <input type="hidden" name="entry.1353470174" id="f-juego" value="Tunel_Snellen_Infinite_V2">
-        <input type="hidden" name="entry.721051298" id="f-nivel">
-        <input type="hidden" name="entry.873272199" id="f-aciertos">
-        <input type="hidden" name="entry.1030094511" id="f-fallos">
-        <input type="hidden" name="entry.845098414" id="f-fecha">
-    </form>
-    <iframe name="secret-frame" id="secret-frame" style="display:none;"></iframe>
-
-    <header>
-        <div class="stat-block">
+    <div id="header">
+        <div class="stat-box">
             <span class="stat-label">Nivel</span>
-            <span id="ui-level" class="stat-value">1</span>
+            <span id="v-lvl" class="stat-value">1</span>
         </div>
-        <div id="lives-container">❤️❤️❤️</div>
-        <div class="stat-block">
-            <span class="stat-label">Progreso</span>
-            <span class="stat-value"><span id="ui-hits">0</span> / 7</span>
-        </div>
-    </header>
-
-    <div id="game-arena"></div>
-
-    <footer>
-        <div class="control-grid" id="control-mount"></div>
-    </footer>
-
-    <div id="screen-intro" class="overlay-screen">
-        <div class="modal-box">
-            <h1>TÚNEL SNELLEN</h1>
-            <div class="instruction-item">
-                <div class="instruction-num">1</div>
-                <div>Observa la letra "E" y su dirección.</div>
-            </div>
-            <div class="instruction-item">
-                <div class="instruction-num">2</div>
-                <div>Toca la flecha correcta rápidamente.</div>
-            </div>
-            <div class="instruction-item">
-                <div class="instruction-num">3</div>
-                <div>Gana vida extra cada 4 niveles. ❤️</div>
-            </div>
-            <button class="btn-cta" onclick="startSession()">EMPEZAR TERAPIA</button>
+        <div id="v-lives" style="font-size: 2rem; letter-spacing: 5px;">❤️❤️❤️</div>
+        <div class="stat-box">
+            <span class="stat-label">Aciertos</span>
+            <span class="stat-value"><span id="v-hits">0</span>/7</span>
         </div>
     </div>
 
-    <div id="screen-results" class="overlay-screen" style="display:none;">
-        <div class="modal-box">
-            <h1 style="color: var(--error-red);">SESIÓN TERMINADA</h1>
-            <table class="results-table">
-                <tr><td>Nivel Final:</td><td id="res-lvl">1</td></tr>
-                <tr><td>Aciertos:</td><td id="res-hits">0</td></tr>
-                <tr><td>Fallos:</td><td id="res-fails">0</td></tr>
+    <div id="stage"></div>
+
+    <div id="controls-container">
+        <div id="controls-grid"></div>
+    </div>
+
+    <div id="intro-modal" class="overlay">
+        <div class="modal">
+            <h1>TÚNEL SNELLEN</h1>
+            <div class="instruction-box">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div>Identifica la orientación de la letra "E" mientras se acerca.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div>Presiona la flecha correcta. ¡Cuidado! Los botones cambian de lugar.</div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div>Completa 7 aciertos para subir de nivel y recuperar vidas.</div>
+                </div>
+            </div>
+            <button class="btn-main" onclick="startGame()">¡EMPEZAR JUEGO!</button>
+        </div>
+    </div>
+
+    <div id="level-modal" class="overlay" style="display:none;">
+        <div class="modal">
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2rem; margin:0;">¡NIVEL SUPERADO!</h2>
+            <p id="lvl-msg" style="font-size: 1.3rem; margin: 25px 0;">Preparando el siguiente desafío...</p>
+            <button class="btn-main" onclick="nextLevel()">CONTINUAR</button>
+        </div>
+    </div>
+
+    <div id="res-modal" class="overlay" style="display:none;">
+        <div class="modal">
+            <h1>FIN DEL JUEGO</h1>
+            <table id="result-table">
+                <tr><td class="label-cell">Nivel Final:</td><td id="res-lvl" class="value-cell">0</td></tr>
+                <tr><td class="label-cell">Aciertos:</td><td id="res-hits" class="value-cell">0</td></tr>
+                <tr><td class="label-cell">Fallos:</td><td id="res-fails" class="value-cell">0</td></tr>
             </table>
-            <p id="gs-status" style="font-weight: 900; color: var(--neon-glow); margin-bottom: 20px;">SINCRONIZANDO...</p>
-            <button class="btn-cta" onclick="location.reload()">REINTENTAR</button>
+            <p id="status-msg" style="color: var(--neon); font-weight: 700;">Enviando datos al servidor...</p>
+            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        /* =========================================
-           LÓGICA DEL JUEGO - MOTOR COMPLETO
-           ========================================= */
-        
-        let level = 1;
-        let hitsInCurrentLevel = 0;
+        // --- CONFIGURACIÓN DE CONEXIÓN (Google Forms) ---
+        const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
+        const ENTRY_PACIENTE = "entry.369874016";
+        const ENTRY_JUEGO = "entry.1353470174";
+        const ENTRY_NIVEL = "entry.721051298";
+        const ENTRY_ACIERTOS = "entry.873272199";
+        const ENTRY_FALLOS = "entry.1030094511";
+        const ENTRY_EXTRA = "entry.1303309812";
+        const ENTRY_FECHA = "entry.845098414";
+
+        // --- VARIABLES DE ESTADO ---
+        let lvl = 1;
+        let hits = 0;
         let totalHits = 0;
         let totalFails = 0;
         let lives = 3;
-        let isRunning = false;
-        let targetRotation = 0;
+        let active = false;
+        let currentRot = 0;
+        const stage = document.getElementById('stage');
+        const controlsGrid = document.getElementById('controls-grid');
 
-        const arena = document.getElementById('game-arena');
-        const mount = document.getElementById('control-mount');
-
-        function startSession() {
-            document.getElementById('screen-intro').style.display = 'none';
-            isRunning = true;
-            nextChallenge();
+        // --- LÓGICA DE INICIO ---
+        function startGame() {
+            document.getElementById('intro-modal').style.display = 'none';
+            active = true;
+            spawn();
         }
 
-        /* RECONSTRUCCIÓN DE CONTROLES (SHUFFLE) */
-        function refreshControls() {
-            mount.innerHTML = '';
-            const configs = [
+        // --- SISTEMA ANTIMEMORIA (SHUFFLE) ---
+        function shuffleControls() {
+            controlsGrid.innerHTML = '';
+            const btns = [
                 { rot: 180, icon: '⬅️' },
                 { rot: 270, icon: '⬆️' },
                 { rot: 90, icon: '⬇️' },
                 { rot: 0, icon: '➡️' }
             ];
-
-            // Mezcla aleatoria robusta
-            configs.sort(() => Math.random() - 0.5);
-
-            configs.forEach(conf => {
-                const btn = document.createElement('div');
-                btn.className = 'btn-input';
-                btn.innerHTML = conf.icon;
-                
-                // Soporte Multi-Touch
-                btn.onmousedown = (e) => { e.preventDefault(); processInput(conf.rot); };
-                btn.ontouchstart = (e) => { e.preventDefault(); processInput(conf.rot); };
-                
-                mount.appendChild(btn);
+            
+            btns.sort(() => Math.random() - 0.5);
+            
+            btns.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'control-btn';
+                div.innerHTML = b.icon;
+                div.onmousedown = (e) => { e.preventDefault(); checkDir(b.rot); };
+                div.ontouchstart = (e) => { e.preventDefault(); checkDir(b.rot); };
+                controlsGrid.appendChild(div);
             });
         }
 
-        /* GENERACIÓN DE ESTÍMULO DINÁMICO */
-        function nextChallenge() {
-            if (!isRunning) return;
+        // --- GENERACIÓN DE TARGETS ---
+        function spawn() {
+            if(!active) return;
+            stage.innerHTML = '';
+            shuffleControls();
             
-            arena.innerHTML = '';
-            refreshControls();
-
             const e = document.createElement('div');
             e.className = 'snellen-e';
+            const orientations = [0, 90, 180, 270];
+            currentRot = orientations[Math.floor(Math.random() * orientations.length)];
             
-            const rotations = [0, 90, 180, 270];
-            targetRotation = rotations[Math.floor(Math.random() * rotations.length)];
-            
-            // Tamaño decreciente por nivel
-            const currentSize = Math.max(25, 170 - (level * 8));
-            e.style.fontSize = currentSize + 'px';
+            // Tamaño dinámico basado en nivel
+            const baseSize = Math.max(30, 140 - (lvl * 5));
+            e.style.fontSize = baseSize + 'px';
             e.innerHTML = 'E';
-            e.style.transform = `rotate(${targetRotation}deg)`;
-            arena.appendChild(e);
+            e.style.transform = `rotate(${currentRot}deg)`;
+            stage.appendChild(e);
 
-            // Velocidad incremental
-            const speed = Math.max(400, 5000 - (level * 450));
+            // Velocidad progresiva
+            const duration = Math.max(550, 4500 - (lvl * 400));
             
             const animation = e.animate([
-                { transform: `rotate(${targetRotation}deg) scale(0.01)`, opacity: 0 },
-                { opacity: 1, offset: 0.1 },
-                { transform: `rotate(${targetRotation}deg) scale(11)`, opacity: 0 }
+                { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
+                { opacity: 1, offset: 0.15 },
+                { transform: `rotate(${currentRot}deg) scale(8)`, opacity: 0 }
             ], {
-                duration: speed,
+                duration: duration,
                 easing: 'ease-in'
             });
 
             animation.onfinish = () => {
-                if (e.parentElement && isRunning) {
+                if(e.parentElement && active) {
                     totalFails++;
-                    handleMistake();
+                    handleFail();
                 }
             };
         }
 
-        function processInput(inputRot) {
-            if (!isRunning) return;
-
-            if (inputRot === targetRotation) {
-                hitsInCurrentLevel++;
+        // --- VALIDACIÓN ---
+        function checkDir(userSelection) {
+            if(!active) return;
+            
+            if(userSelection === currentRot) {
+                hits++;
                 totalHits++;
-                document.getElementById('ui-hits').innerText = hitsInCurrentLevel;
-
-                if (hitsInCurrentLevel >= 7) {
-                    levelUp();
+                document.getElementById('v-hits').innerText = hits;
+                
+                if(hits >= 7) {
+                    pauseForLevel();
                 } else {
-                    nextChallenge();
+                    spawn();
                 }
             } else {
                 totalFails++;
-                handleMistake();
+                handleFail();
             }
         }
 
-        function handleMistake() {
+        function handleFail() {
             lives--;
             document.body.classList.add('flash-red');
-            setTimeout(() => document.body.classList.remove('flash-red'), 250);
+            setTimeout(() => document.body.classList.remove('flash-red'), 200);
             
             updateLivesUI();
-
-            if (lives <= 0) {
+            
+            if(lives <= 0) {
                 endGame();
             } else {
-                nextChallenge();
+                spawn();
             }
         }
 
         function updateLivesUI() {
-            document.getElementById('lives-container').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
+            const display = lives > 0 ? "❤️".repeat(lives) : "💀";
+            document.getElementById('v-lives').innerText = display;
         }
 
-        function levelUp() {
-            // Regla de Perceptum: Vida extra cada 4 niveles
-            if (level % 4 === 0 && lives < 3) {
+        // --- GESTIÓN DE NIVELES ---
+        function pauseForLevel() {
+            active = false;
+            stage.innerHTML = '';
+            
+            const modal = document.getElementById('level-modal');
+            const title = document.getElementById('lvl-title');
+            const msg = document.getElementById('lvl-msg');
+
+            if(lvl % 4 === 0 && lives < 3) {
                 lives++;
-                updateLivesUI();
+                title.innerText = "¡BONUS DE VIDA!";
+                title.style.color = "var(--success)";
+                msg.innerText = "Tu constancia ha restaurado un ❤️.";
+                document.body.classList.add('flash-green');
+                setTimeout(() => document.body.classList.remove('flash-green'), 600);
+            } else {
+                title.innerText = "¡NIVEL SUPERADO!";
+                title.style.color = "var(--neon)";
+                msg.innerText = "Has completado los 7 aciertos.";
             }
-
-            level++;
-            hitsInCurrentLevel = 0;
-            document.getElementById('ui-level').innerText = level;
-            document.getElementById('ui-hits').innerText = '0';
             
-            // Pausa visual breve entre niveles
-            isRunning = false;
-            arena.innerHTML = `<h2 style="font-size:3rem; color:var(--success-green);">¡NIVEL ${level}!</h2>`;
-            setTimeout(() => {
-                isRunning = true;
-                nextChallenge();
-            }, 1000);
+            updateLivesUI();
+            modal.style.display = 'flex';
         }
 
+        function nextLevel() {
+            lvl++;
+            hits = 0;
+            document.getElementById('v-lvl').innerText = lvl;
+            document.getElementById('v-hits').innerText = '0';
+            document.getElementById('level-modal').style.display = 'none';
+            active = true;
+            spawn();
+        }
+
+        // --- FINALIZACIÓN Y ENVÍO ---
         function endGame() {
-            isRunning = false;
-            arena.innerHTML = '';
+            active = false;
+            stage.innerHTML = '';
             
-            document.getElementById('res-lvl').innerText = level;
+            document.getElementById('res-lvl').innerText = lvl;
             document.getElementById('res-hits').innerText = totalHits;
             document.getElementById('res-fails').innerText = totalFails;
-            document.getElementById('screen-results').style.display = 'flex';
-
-            // ENVÍO DE DATOS MEDIANTE FORMULARIO OCULTO (EL MÁS SEGURO)
-            document.getElementById('f-nivel').value = level;
-            document.getElementById('f-aciertos').value = totalHits;
-            document.getElementById('f-fallos').value = totalFails;
-            document.getElementById('f-fecha').value = new Date().toLocaleDateString();
+            document.getElementById('res-modal').style.display = 'flex';
             
-            const form = document.getElementById('gs-form');
-            form.submit();
+            registrarEnSheets();
+        }
 
-            // Simulación de respuesta visual
-            setTimeout(() => {
-                document.getElementById('gs-status').innerText = "✅ DATOS GUARDADOS";
-                document.getElementById('gs-status').style.color = "var(--success-green)";
-            }, 2000);
+        function registrarEnSheets() {
+            const fecha = new Date().toISOString().split('T')[0];
+            const paciente = "PACIENTE_SNELLEN"; // O capturar de variable global si existe
+            const juego = "Tunel_Snellen_Dinamico";
+
+            const url = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
+                        `${ENTRY_PACIENTE}=${encodeURIComponent(paciente)}&` +
+                        `${ENTRY_JUEGO}=${encodeURIComponent(juego)}&` +
+                        `${ENTRY_NIVEL}=${lvl}&` +
+                        `${ENTRY_ACIERTOS}=${totalHits}&` +
+                        `${ENTRY_FALLOS}=${totalFails}&` +
+                        `${ENTRY_EXTRA}=N/A&` +
+                        `${ENTRY_FECHA}=${fecha}&` +
+                        `submit=Submit`;
+
+            fetch(url, { mode: 'no-cors' })
+                .then(() => {
+                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados con éxito.";
+                })
+                .catch(() => {
+                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión, datos no guardados.";
+                });
         }
     </script>
 </body>
