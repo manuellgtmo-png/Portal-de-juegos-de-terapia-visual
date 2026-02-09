@@ -3,134 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Trayectoria Orbital Complex - Perceptum</title>
+    <title>Saccadic Orbital Tracking - Perceptum Terapia Visual</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* --- PERCEPTUM DESIGN SYSTEM: PILAR 3 --- */
         :root {
-            --bg: #05080a;
-            --accent: #ff007f; /* Color distintivo para el 3er pilar */
-            --secondary: #bc13fe;
-            --error: #ff4757;
-            --success: #2ed573;
-            --panel: rgba(15, 25, 35, 0.95);
+            --bg-color: #05080a;
+            --accent-color: #ff007f;
+            --secondary-color: #bc13fe;
+            --error-color: #ff4757;
+            --success-color: #2ed573;
+            --panel-bg: rgba(15, 25, 35, 0.98);
+            --neon-glow: 0 0 30px rgba(255, 0, 127, 0.7);
+            --inner-glow: inset 0 0 15px rgba(255, 0, 127, 0.5);
+            --font-main: 'Montserrat', sans-serif;
         }
 
-        * { box-sizing: border-box; outline: none; }
+        * { 
+            box-sizing: border-box; 
+            outline: none; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
         body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg); font-family: 'Montserrat', sans-serif;
-            overflow: hidden; color: white; -webkit-user-select: none;
-            touch-action: none;
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%;
+            background: var(--bg-color); 
+            font-family: var(--font-main);
+            overflow: hidden; 
+            color: white; 
+            -webkit-user-select: none;
+            touch-action: none; 
+            transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* HEADER */
-        #header {
-            height: 100px; display: flex; justify-content: space-between;
-            align-items: center; padding: 0 50px; background: var(--panel);
-            border-bottom: 5px solid var(--accent); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            position: relative; z-index: 1000;
+        /* --- HEADER DE ALTO IMPACTO --- */
+        #main-header {
+            height: 115px; 
+            width: 100%; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center; 
+            padding: 0 65px; 
+            background: var(--panel-bg);
+            border-bottom: 7px solid var(--accent-color);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.95);
+            position: relative; 
+            z-index: 5000;
         }
 
-        .stat-group { display: flex; flex-direction: column; align-items: center; min-width: 120px; }
-        .stat-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); font-weight: 800; }
-        .stat-value { font-size: 2.4rem; font-weight: 900; }
-        #v-lives { font-size: 3rem; letter-spacing: 12px; filter: drop-shadow(0 0 15px var(--accent)); }
+        .stat-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-width: 150px; 
+        }
 
-        /* AREA DE JUEGO */
-        #game-area {
-            position: relative; width: 100%; height: calc(100vh - 100px);
-            background: radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%);
+        .label-text { 
+            font-size: 1.1rem; 
+            text-transform: uppercase; 
+            letter-spacing: 5px; 
+            color: var(--accent-color); 
+            font-weight: 800; 
+            margin-bottom: 10px; 
+        }
+
+        .value-text { 
+            font-size: 2.8rem; 
+            font-weight: 900; 
+            text-shadow: var(--neon-glow); 
+            transition: transform 0.3s ease;
+        }
+        
+        #lives-render { 
+            font-size: 3.4rem; 
+            letter-spacing: 20px; 
+            filter: drop-shadow(0 0 25px var(--accent-color)); 
+        }
+
+        #timer-render { 
+            color: var(--error-color); 
+        }
+
+        /* --- ESCENARIO ORBITAL --- */
+        #stage-area {
+            position: relative; 
+            width: 100%; 
+            height: calc(100vh - 115px);
+            background-image: 
+                radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%),
+                linear-gradient(rgba(255, 0, 127, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 127, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 75px 75px, 75px 75px;
             overflow: hidden;
         }
 
-        .orbital-target {
-            position: absolute; width: 85px; height: 85px;
-            background: #1a1a2e; border: 4px solid var(--accent);
-            border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-weight: 900; font-size: 2.3rem;
-            box-shadow: 0 0 25px rgba(255, 0, 127, 0.4);
-            cursor: pointer; z-index: 500; transition: transform 0.2s, opacity 0.2s;
+        /* --- NODOS DE SEGUIMIENTO --- */
+        .node-obj {
+            position: absolute; 
+            width: 95px; 
+            height: 95px;
+            background: #1a1a2e; 
+            border: 6px solid var(--accent-color);
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            font-weight: 900; 
+            font-size: 2.7rem;
+            box-shadow: var(--neon-glow), var(--inner-glow); 
+            cursor: pointer;
+            z-index: 1000; 
+            color: white;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
         }
 
-        .orbital-target.hit {
-            transform: scale(1.6); opacity: 0; pointer-events: none;
-            border-color: var(--success); box-shadow: 0 0 50px var(--success);
+        .node-obj.success-hit {
+            border-color: var(--success-color);
+            box-shadow: 0 0 70px var(--success-color), inset 0 0 30px var(--success-color);
+            transform: scale(2.2); 
+            opacity: 0; 
+            pointer-events: none;
         }
 
-        /* MODALES */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.97);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 9000; backdrop-filter: blur(20px);
+        /* --- ARQUITECTURA DE MODALES --- */
+        .master-overlay {
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.99);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            z-index: 9999; 
+            backdrop-filter: blur(35px);
         }
 
-        .modal {
-            background: #0f1923; padding: 60px; border-radius: 70px;
-            border: 6px solid var(--accent); width: 90%; max-width: 700px;
-            text-align: center; box-shadow: 0 0 100px rgba(255, 0, 127, 0.3);
+        .modal-ui {
+            background: #0f1923; 
+            padding: 70px; 
+            border-radius: 90px;
+            border: 10px solid var(--accent-color); 
+            width: 92%; 
+            max-width: 800px;
+            text-align: center; 
+            box-shadow: 0 0 200px rgba(255, 0, 127, 0.45);
         }
 
-        .modal h1 { font-size: 3.5rem; color: var(--accent); margin-bottom: 20px; font-weight: 900; }
+        .modal-ui h1 { 
+            font-size: 4.5rem; 
+            color: var(--accent-color); 
+            margin: 0 0 25px 0; 
+            text-shadow: 0 0 50px var(--accent-color); 
+            font-weight: 900; 
+        }
+
+        .modal-ui p { 
+            font-size: 2rem; 
+            margin-bottom: 50px; 
+            color: rgba(255,255,255,0.85); 
+            line-height: 1.5;
+        }
+
+        /* --- INTERFAZ DE CONTROL --- */
+        .selector-box { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 40px; 
+            margin: 50px 0; 
+        }
+
+        .card-option {
+            background: #1a2632; 
+            border: 6px solid #3e4859; 
+            padding: 40px;
+            border-radius: 45px; 
+            cursor: pointer; 
+            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .card-option.active { 
+            border-color: var(--accent-color); 
+            background: rgba(255, 0, 127, 0.2); 
+            transform: translateY(-15px); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7); 
+        }
+
+        .card-option h3 { 
+            margin: 0 0 15px 0; 
+            font-size: 2rem; 
+            color: var(--accent-color); 
+            text-transform: uppercase;
+        }
+
+        .main-btn {
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            color: white; 
+            padding: 35px; 
+            border-radius: 40px; 
+            border: none;
+            width: 100%; 
+            font-size: 2.8rem; 
+            font-weight: 900; 
+            cursor: pointer;
+            letter-spacing: 8px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            transition: all 0.4s;
+        }
+
+        .main-btn:hover { filter: brightness(1.2); }
+        .main-btn:active { transform: scale(0.95); }
+
+        /* --- TABLA DE RESULTADOS --- */
+        .data-table { 
+            width: 100%; 
+            margin: 50px 0; 
+            border-collapse: separate; 
+            border-spacing: 0 25px; 
+        }
+
+        .data-table td { 
+            padding: 35px; 
+            background: rgba(255,255,255,0.08); 
+            font-size: 2.5rem; 
+        }
+
+        .key-cell { 
+            border-radius: 40px 0 0 40px; 
+            color: var(--accent-color); 
+            font-weight: 800; 
+            text-align: left; 
+            padding-left: 50px !important; 
+        }
+
+        .val-cell { 
+            border-radius: 0 40px 40px 0; 
+            text-align: right; 
+            font-weight: 900; 
+            padding-right: 50px !important; 
+        }
+
+        .damage-flash { background-color: var(--error-color) !important; }
         
-        .btn-main {
-            background: linear-gradient(135deg, var(--accent), var(--secondary));
-            color: white; padding: 25px; border-radius: 30px; border: none;
-            width: 100%; font-size: 2.2rem; font-weight: 900; cursor: pointer;
-            letter-spacing: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-            margin-top: 30px;
+        input[type="range"] { 
+            width: 100%; 
+            height: 25px; 
+            border-radius: 15px; 
+            accent-color: var(--accent-color); 
+            margin: 30px 0; 
+            cursor: pointer;
         }
-
-        /* TABLA */
-        .res-table { width: 100%; margin: 35px 0; border-collapse: separate; border-spacing: 0 15px; }
-        .res-table td { padding: 25px; background: rgba(255,255,255,0.06); font-size: 1.8rem; }
-        .res-l { border-radius: 25px 0 0 25px; color: var(--accent); font-weight: 800; text-align: left; }
-        .res-r { border-radius: 0 25px 25px 0; text-align: right; font-weight: 900; }
-
-        .flash-err { background-color: var(--error) !important; }
     </style>
 </head>
-<body onmousedown="handleMiss(event)">
+<body onmousedown="detectStageMiss(event)">
 
-    <header id="header">
-        <div class="stat-group"><span class="stat-label">Nivel</span><span id="v-lvl" class="stat-value">1</span></div>
-        <div id="v-lives">❤️❤️❤️</div>
-        <div class="stat-group"><span class="stat-label">Progreso</span><span id="v-prog" class="stat-value">0%</span></div>
+    <header id="main-header">
+        <div class="stat-container"><span class="label-text">Nivel</span><span id="v-lvl" class="value-text">1</span></div>
+        <div id="lives-render">❤️❤️❤️</div>
+        <div class="stat-container"><span class="label-text" id="mode-label">Modo Libre</span><span id="v-timer" class="value-text">--</span></div>
     </header>
 
-    <div id="game-area"></div>
+    <div id="stage-area"></div>
 
-    <div id="modal-start" class="overlay">
-        <div class="modal">
-            <h1>TRAYECTORIA ORBITAL</h1>
-            <p style="font-size: 1.5rem; color: rgba(255,255,255,0.7);">Sigue y captura los objetivos en órbitas elípticas complejas.</p>
-            <button class="btn-main" onclick="startApp()">INICIAR PROTOCOLO</button>
+    <div id="modal-start" class="master-overlay">
+        <div class="modal-ui">
+            <h1>SACCADIC ORBITAL</h1>
+            <p>Protocolo de seguimiento dinámico. Toca los números en secuencia mientras orbitan el centro visual.</p>
+            <div class="selector-box">
+                <div class="card-option active" id="c-libre" onclick="toggleAppMode('libre')">
+                    <h3>MODO LIBRE</h3>
+                    <small style="font-size: 1.2rem;">Sin restricción temporal</small>
+                </div>
+                <div class="card-option" id="c-flash" onclick="toggleAppMode('flash')">
+                    <h3>CAZADOR FLASH</h3>
+                    <small style="font-size: 1.2rem;">Seguimiento bajo presión</small>
+                </div>
+            </div>
+            <div id="config-timer" style="display:none; margin: 40px 0; padding: 40px; background: rgba(0,0,0,0.4); border-radius: 45px;">
+                <label style="font-size: 1.8rem; font-weight: 800;">RELOJ DE NIVEL: <span id="label-t" style="color:var(--accent-color)">20</span>s</label>
+                <input type="range" id="slider-t" min="10" max="60" value="20" oninput="document.getElementById('label-t').innerText=this.value">
+            </div>
+            <button class="main-btn" onclick="initializeProtocol()">INICIAR TERAPIA</button>
         </div>
     </div>
 
-    <div id="modal-next" class="overlay" style="display:none;">
-        <div class="modal" style="border-color: var(--success);">
-            <h1 style="color: var(--success);">¡ÓRBITA COMPLETADA!</h1>
-            <p style="font-size: 1.6rem;">Precisión de seguimiento óptima.</p>
-            <button class="btn-main" onclick="nextLvl()" style="background: var(--success);">CONTINUAR</button>
+    <div id="modal-next" class="master-overlay" style="display:none;">
+        <div class="modal-ui" style="border-color: var(--success-color);">
+            <h1 style="color: var(--success-color);">¡NIVEL LOGRADO!</h1>
+            <p style="font-size: 2rem;">Seguimiento orbital completado. ¿Continuar al siguiente desafío?</p>
+            <button class="main-btn" onclick="advanceLevel()" style="background: var(--success-color);">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
-    <div id="modal-res" class="overlay" style="display:none;">
-        <div class="modal">
-            <h1 style="color: var(--error);">FIN DE SESIÓN</h1>
-            <table class="res-table">
-                <tr><td class="res-l">Nivel:</td><td id="res-lvl" class="res-r">1</td></tr>
-                <tr><td class="res-l">Aciertos:</td><td id="res-hits" class="res-r">0</td></tr>
+    <div id="modal-end" class="master-overlay" style="display:none;">
+        <div class="modal-ui">
+            <h1 style="color: var(--error-color);">SESIÓN FINALIZADA</h1>
+            <table class="data-table">
+                <tr><td class="key-cell">Nivel Alcanzado:</td><td id="res-lvl" class="val-cell">1</td></tr>
+                <tr><td class="key-cell">Aciertos Totales:</td><td id="res-hits" class="val-cell">0</td></tr>
             </table>
-            <p id="cloud-status" style="color: var(--accent); font-weight: 900;">SINCRONIZANDO...</p>
-            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
+            <p id="cloud-log" style="color: var(--accent-color); font-weight: 900; letter-spacing: 4px; text-transform: uppercase;">Sincronizando con base de datos...</p>
+            <button class="main-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN GOOGLE SHEETS (IDÉNTICA) ---
-        const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
-        const ENTRIES = {
+        // --- CONFIGURACIÓN DE NUBE PERCEPTUM (ESTRICTA) ---
+        const CLOUD_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const SCHEMA = {
             paciente: "entry.369874016",
             juego: "entry.1353470174",
             nivel: "entry.721051298",
@@ -140,135 +321,195 @@
             fecha: "entry.845098414"
         };
 
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        let lvl = 1, lives = 3, hits = 0, fails = 0, active = false;
-        let targets = [], step = 1;
-
-        function sfx(f, t, d, v) {
-            const o = ctx.createOscillator(); const g = ctx.createGain();
-            o.type = t; o.frequency.setValueAtTime(f, ctx.currentTime);
-            g.gain.setValueAtTime(v, ctx.currentTime);
-            o.connect(g); g.connect(ctx.destination);
-            o.start(); o.stop(ctx.currentTime + d);
+        // --- MOTOR DE AUDIO TERAPÉUTICO ---
+        const audioEngine = new (window.AudioContext || window.webkitAudioContext)();
+        function emitTone(frequency, waveType, duration, volume) {
+            try {
+                const oscillator = audioEngine.createOscillator();
+                const gainNode = audioEngine.createGain();
+                oscillator.type = waveType;
+                oscillator.frequency.setValueAtTime(frequency, audioEngine.currentTime);
+                gainNode.gain.setValueAtTime(volume, audioEngine.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioEngine.currentTime + duration);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioEngine.destination);
+                oscillator.start();
+                oscillator.stop(audioEngine.currentTime + duration);
+            } catch(error) { console.error("Audio Error:", error); }
         }
 
-        function startApp() {
-            if(ctx.state === 'suspended') ctx.resume();
+        // --- VARIABLES DE ESTADO ---
+        let protocolLevel = 1, currentLives = 3, targetStep = 1;
+        let hitsRegister = 0, failsRegister = 0;
+        let isRunning = false, appMode = 'libre', baseTime = 20, remainingTime = 0, timerClock = null;
+        let activeNodes = [];
+
+        function toggleAppMode(selection) {
+            appMode = selection;
+            document.getElementById('c-libre').classList.toggle('active', selection === 'libre');
+            document.getElementById('c-flash').classList.toggle('active', selection === 'flash');
+            document.getElementById('config-timer').style.display = selection === 'flash' ? 'block' : 'none';
+            document.getElementById('mode-label').innerText = selection === 'flash' ? "Cronómetro" : "Modo Libre";
+        }
+
+        function initializeProtocol() {
+            if (audioEngine.state === 'suspended') audioEngine.resume();
+            if (appMode === 'flash') baseTime = parseInt(document.getElementById('slider-t').value);
             document.getElementById('modal-start').style.display = 'none';
-            active = true;
-            spawn();
+            isRunning = true;
+            buildOrbitalLayer();
         }
 
-        function spawn() {
-            const area = document.getElementById('game-area');
-            area.innerHTML = '';
-            targets = [];
-            step = 1;
-            const count = 3 + Math.floor(lvl / 2);
-            updateProgress();
+        function buildOrbitalLayer() {
+            if (!isRunning) return;
+            const stage = document.getElementById('stage-area');
+            stage.innerHTML = '';
+            activeNodes = [];
+            targetStep = 1;
+            const nodeCount = 2 + protocolLevel;
 
-            for(let i=1; i<=count; i++) {
-                const el = document.createElement('div');
-                el.className = 'orbital-target';
-                el.innerText = i;
-                
-                // Parámetros orbitales únicos
-                const orbit = {
-                    el,
+            for (let i = 1; i <= nodeCount; i++) {
+                const div = document.createElement('div');
+                div.className = 'node-obj';
+                div.innerText = i;
+
+                const nodeLogic = {
+                    dom: div,
                     id: i,
                     angle: Math.random() * Math.PI * 2,
-                    speed: (0.02 + (lvl * 0.005)) * (Math.random() > 0.5 ? 1 : -1),
-                    radiusX: 100 + Math.random() * (window.innerWidth / 3),
-                    radiusY: 100 + Math.random() * (window.innerHeight / 3),
+                    // VELOCIDAD REDUCIDA PARA SEGUIMIENTO TERAPÉUTICO DE CALIDAD
+                    rotationSpeed: (0.006 + (protocolLevel * 0.0012)) * (Math.random() > 0.5 ? 1 : -1),
+                    radX: 140 + Math.random() * (window.innerWidth / 3.3),
+                    radY: 120 + Math.random() * (window.innerHeight / 3.3),
                     centerX: window.innerWidth / 2,
-                    centerY: (window.innerHeight - 100) / 2
+                    centerY: (window.innerHeight - 115) / 2
                 };
 
-                el.onmousedown = (e) => { e.stopPropagation(); hit(orbit); };
-                area.appendChild(el);
-                targets.push(orbit);
+                div.onmousedown = (event) => { 
+                    event.stopPropagation(); 
+                    processInteraction(nodeLogic); 
+                };
+                
+                stage.appendChild(div);
+                activeNodes.push(nodeLogic);
             }
-            requestAnimationFrame(animate);
+            
+            if (appMode === 'flash') runCountdown();
+            requestAnimationFrame(updateOrbitalMotion);
         }
 
-        function animate() {
-            if(!active) return;
-            targets.forEach(t => {
-                t.angle += t.speed;
-                const x = t.centerX + Math.cos(t.angle) * t.radiusX - 42;
-                const y = t.centerY + Math.sin(t.angle) * t.radiusY - 42;
-                t.el.style.left = x + 'px';
-                t.el.style.top = y + 'px';
+        function updateOrbitalMotion() {
+            if (!isRunning) return;
+            activeNodes.forEach(node => {
+                node.angle += node.rotationSpeed;
+                const posX = node.centerX + Math.cos(node.angle) * node.radX - 47;
+                const posY = node.centerY + Math.sin(node.angle) * node.radY - 47;
+                node.dom.style.left = `${posX}px`;
+                node.dom.style.top = `${posY}px`;
             });
-            requestAnimationFrame(animate);
+            requestAnimationFrame(updateOrbitalMotion);
         }
 
-        function hit(obj) {
-            if(obj.id === step) {
-                sfx(900, 'sine', 0.2, 0.1);
-                obj.el.classList.add('hit');
-                hits++; step++;
-                updateProgress();
-                if(step > targets.length) win();
+        function processInteraction(node) {
+            if (!isRunning) return;
+            if (node.id === targetStep) {
+                emitTone(900, 'sine', 0.25, 0.15);
+                node.dom.classList.add('success-hit');
+                hitsRegister++;
+                targetStep++;
+                if (targetStep > activeNodes.length) {
+                    clearInterval(timerClock);
+                    triggerTransition();
+                }
             } else {
-                fail();
+                handleMistake();
             }
         }
 
-        function handleMiss(e) {
-            if(active && !e.target.classList.contains('orbital-target')) fail();
+        function detectStageMiss(e) {
+            if (isRunning && !e.target.classList.contains('node-obj')) {
+                handleMistake();
+            }
         }
 
-        function fail() {
-            sfx(150, 'sawtooth', 0.4, 0.2);
-            lives--; fails++;
-            document.body.classList.add('flash-err');
-            setTimeout(() => document.body.classList.remove('flash-err'), 200);
-            document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-            if(lives <= 0) end(); else spawn();
+        function handleMistake() {
+            emitTone(130, 'sawtooth', 0.45, 0.25);
+            currentLives--;
+            failsRegister++;
+            document.body.classList.add('damage-flash');
+            setTimeout(() => document.body.classList.remove('damage-flash'), 250);
+            refreshLivesUI();
+            if (currentLives <= 0) finalizeProtocol(); else buildOrbitalLayer();
         }
 
-        function updateProgress() {
-            const p = Math.floor(((step - 1) / targets.length) * 100);
-            document.getElementById('v-prog').innerText = p + "%";
+        function runCountdown() {
+            clearInterval(timerClock);
+            remainingTime = baseTime;
+            document.getElementById('v-timer').innerText = remainingTime + "s";
+            timerClock = setInterval(() => {
+                remainingTime--;
+                document.getElementById('v-timer').innerText = remainingTime + "s";
+                if (remainingTime <= 0) { 
+                    clearInterval(timerClock); 
+                    handleMistake(); 
+                }
+            }, 1000);
         }
 
-        function win() {
-            active = false;
-            sfx(1100, 'sine', 0.5, 0.1);
+        function triggerTransition() {
+            isRunning = false;
+            emitTone(1100, 'sine', 0.5, 0.12);
             document.getElementById('modal-next').style.display = 'flex';
         }
 
-        function nextLvl() {
-            lvl++;
-            document.getElementById('v-lvl').innerText = lvl;
+        function advanceLevel() {
+            protocolLevel++;
+            document.getElementById('v-lvl').innerText = protocolLevel;
             document.getElementById('modal-next').style.display = 'none';
-            active = true;
-            spawn();
+            if (protocolLevel % 4 === 0 && currentLives < 3) {
+                currentLives++; 
+                refreshLivesUI();
+            }
+            isRunning = true;
+            buildOrbitalLayer();
         }
 
-        function end() {
-            active = false;
-            document.getElementById('res-lvl').innerText = lvl;
-            document.getElementById('res-hits').innerText = hits;
-            document.getElementById('modal-res').style.display = 'flex';
-            sendToCloud();
+        function refreshLivesUI() {
+            const ui = document.getElementById('lives-render');
+            ui.innerText = currentLives > 0 ? "❤️".repeat(currentLives) : "💀";
         }
 
-        function sendToCloud() {
-            const fecha = new Date().toISOString().split('T')[0];
-            const query = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
-                `${ENTRIES.paciente}=PACIENTE_PERCEPTUM&${ENTRIES.juego}=Trayectoria_Orbital_Complex&` +
-                `${ENTRIES.nivel}=${lvl}&${ENTRIES.aciertos}=${hits}&` +
-                `${ENTRIES.fallos}=${fails}&${ENTRIES.tiempo}=N/A&${ENTRIES.fecha}=${fecha}&submit=Submit`;
-            
-            const img = new Image();
-            img.src = query;
-            img.onload = img.onerror = () => {
-                const s = document.getElementById('cloud-status');
-                s.innerText = "✅ DATOS SINCRONIZADOS";
-                s.style.color = "var(--success)";
-            };
+        function finalizeProtocol() {
+            isRunning = false;
+            clearInterval(timerClock);
+            document.getElementById('res-lvl').innerText = protocolLevel;
+            document.getElementById('res-hits').innerText = hitsRegister;
+            document.getElementById('modal-end').style.display = 'flex';
+            uploadToCloud();
+        }
+
+        function uploadToCloud() {
+            const stamp = new Date().toISOString().split('T')[0];
+            const payload = new URLSearchParams();
+            payload.append(SCHEMA.paciente, "PACIENTE_ORBITAL_PRO");
+            payload.append(SCHEMA.juego, "Saccadic_Orbital_Tracking_V3");
+            payload.append(SCHEMA.nivel, protocolLevel);
+            payload.append(SCHEMA.aciertos, hitsRegister);
+            payload.append(SCHEMA.fallos, failsRegister);
+            payload.append(SCHEMA.tiempo, baseTime + "s");
+            payload.append(SCHEMA.fecha, stamp);
+
+            fetch(CLOUD_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: payload
+            }).then(() => {
+                const log = document.getElementById('cloud-log');
+                log.innerText = "✅ PROTOCOLO SINCRONIZADO";
+                log.style.color = "var(--success-color)";
+            }).catch(() => {
+                document.getElementById('cloud-log').innerText = "⚠️ ERROR DE SINCRONIZACIÓN";
+            });
         }
     </script>
 </body>
