@@ -3,32 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Saccadic Orbital Tracking - Perceptum Medical Analytics</title>
+    <title>Saccadic Orbital Tracking - Perceptum Medical System</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
-           SISTEMA DE DISEÑO PERCEPTUM - V.3.0 (ALTO IMPACTO)
+           PERCEPTUM DESIGN SYSTEM - V.4.0 (HIGH-END MEDICAL UI)
            ================================================================
         */
         :root {
-            --bg-ultra-dark: #05080a;
-            --pink-neon-primary: #ff007f;
-            --pink-glow: rgba(255, 0, 127, 0.6);
-            --purple-neon: #bc13fe;
-            --cyan-neon: #00f2ff;
-            --success-neon: #2ed573;
+            --bg-color: #05080a;
+            --accent-pink: #ff007f;
+            --accent-glow: rgba(255, 0, 127, 0.6);
+            --secondary-purple: #bc13fe;
+            --cyan-active: #00f2ff;
+            --success-green: #2ed573;
             --error-red: #ff4757;
-            --panel-glass: rgba(15, 25, 35, 0.98);
+            --panel-bg: rgba(15, 25, 35, 0.98);
+            --glass-border: rgba(255, 255, 255, 0.1);
             
-            /* Unidades de Proporción Adaptable */
-            --header-height: 12vh;
-            --node-size-base: 11vh;
-            --font-node: 4.5vh;
-            --modal-radius: 40px;
+            /* Escalamiento Responsivo */
+            --header-h: 120px;
+            --node-dim: 100px;
+            --node-font: 2.8rem;
         }
 
-        /* Reset y Estructura Base */
         * {
             box-sizing: border-box;
             outline: none;
@@ -40,7 +39,7 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: var(--bg-ultra-dark);
+            background-color: var(--bg-color);
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
             color: #ffffff;
@@ -50,525 +49,575 @@
         }
 
         /* ----------------------------------------------------------------
-           HEADER DINÁMICO (RESPONSIVE)
+           CABECERA PROFESIONAL (HEADER)
            ----------------------------------------------------------------
         */
-        #master-header {
-            height: var(--header-height);
+        #main-header {
+            height: var(--header-h);
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 6%;
-            background: var(--panel-glass);
-            border-bottom: 5px solid var(--pink-neon-primary);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            padding: 0 60px;
+            background: var(--panel-bg);
+            border-bottom: 8px solid var(--accent-pink);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9);
             position: relative;
-            z-index: 9000;
+            z-index: 9999;
         }
 
-        .stat-component {
+        .header-stat {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 120px;
+            min-width: 150px;
         }
 
-        .stat-component .label {
-            font-size: 1.4vh;
+        .header-stat .label {
+            font-size: 1.1rem;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            color: var(--pink-neon-primary);
+            letter-spacing: 5px;
+            color: var(--accent-pink);
             font-weight: 800;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
-        .stat-component .value {
-            font-size: 4vh;
+        .header-stat .value {
+            font-size: 2.8rem;
             font-weight: 900;
-            text-shadow: 0 0 15px var(--pink-glow);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
 
-        #lives-render {
-            font-size: 4.5vh;
-            letter-spacing: 12px;
-            filter: drop-shadow(0 0 10px var(--pink-neon-primary));
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        #lives-container {
+            font-size: 3.5rem;
+            letter-spacing: 20px;
+            filter: drop-shadow(0 0 20px var(--accent-pink));
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         /* ----------------------------------------------------------------
-           ESCENARIO DE SEGUIMIENTO (TRACKING STAGE)
+           ESCENARIO DE TERAPIA (STAGE)
            ----------------------------------------------------------------
         */
-        #tracking-area {
+        #therapy-stage {
             position: relative;
             width: 100%;
-            height: calc(100vh - var(--header-height));
-            background: radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%);
-            overflow: hidden;
-            background-image: 
+            height: calc(100vh - var(--header-h));
+            background: 
                 radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%),
-                linear-gradient(rgba(255, 0, 127, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 127, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 50px 50px, 50px 50px;
+                linear-gradient(rgba(255, 0, 127, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 80px 80px, 80px 80px;
+            overflow: hidden;
         }
 
-        .node-element {
+        .node-obj {
             position: absolute;
-            width: var(--node-size-base);
-            height: var(--node-size-base);
-            background: #0a0a10;
-            border: 0.6vh solid var(--pink-neon-primary);
+            width: var(--node-dim);
+            height: var(--node-dim);
+            background: #0a0a1a;
+            border: 6px solid var(--accent-pink);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: var(--font-node);
-            color: #ffffff;
-            box-shadow: 0 0 25px var(--pink-glow), inset 0 0 15px rgba(255, 0, 127, 0.2);
-            z-index: 500;
+            font-size: var(--node-font);
+            box-shadow: 0 0 30px var(--accent-glow), inset 0 0 15px rgba(255, 0, 127, 0.3);
+            z-index: 1000;
             cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.3s ease;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
         }
 
-        .node-element.captured {
-            border-color: var(--cyan-neon);
-            box-shadow: 0 0 50px var(--cyan-neon);
-            transform: scale(1.6);
+        .node-obj.success-hit {
+            border-color: var(--cyan-active);
+            box-shadow: 0 0 60px var(--cyan-active), inset 0 0 20px var(--cyan-active);
+            transform: scale(1.8);
             opacity: 0;
             pointer-events: none;
         }
 
         /* ----------------------------------------------------------------
-           MODALES Y OVERLAYS (ESTILO IMAGEN 8)
+           MODALES Y OVERLAYS
            ----------------------------------------------------------------
         */
-        .master-overlay {
+        .full-overlay {
             position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.97);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px);
         }
 
-        .modal-container {
+        .modal-box {
             background: #0f1923;
+            padding: 70px;
+            border-radius: 80px;
+            border: 10px solid var(--accent-pink);
             width: 90%;
-            max-width: 650px;
-            padding: 60px 30px;
-            border-radius: var(--modal-radius);
-            border: 8px solid var(--pink-neon-primary);
+            max-width: 850px;
             text-align: center;
-            box-shadow: 0 0 100px rgba(255, 0, 127, 0.4);
-            animation: modalIn 0.5s ease-out;
+            box-shadow: 0 0 150px rgba(255, 0, 127, 0.4);
+            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        @keyframes modalIn {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-container h1 {
-            font-size: 6vh;
-            color: var(--pink-neon-primary);
-            margin-bottom: 20px;
+        .modal-box h1 {
+            font-size: 4.5rem;
+            color: var(--accent-pink);
+            margin: 0 0 30px 0;
+            text-shadow: 0 0 40px var(--accent-pink);
             font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         }
 
-        .modal-container p {
-            font-size: 2.2vh;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 40px;
-            padding: 0 5%;
+        .modal-box p {
+            font-size: 1.8rem;
             line-height: 1.4;
+            margin-bottom: 50px;
+            color: rgba(255,255,255,0.7);
         }
 
-        /* ----------------------------------------------------------------
-           SELECTORES DE MODO Y BOTONES
-           ----------------------------------------------------------------
-        */
-        .mode-grid {
+        /* Selectores de Modo */
+        .mode-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
+            gap: 40px;
+            margin: 50px 0;
         }
 
-        .mode-box {
+        .mode-card {
             background: #1a2632;
-            border: 4px solid #2d3844;
-            border-radius: 30px;
-            padding: 30px 15px;
+            border: 6px solid #3e4859;
+            padding: 40px;
+            border-radius: 45px;
             cursor: pointer;
             transition: all 0.4s ease;
         }
 
-        .mode-box.active {
-            border-color: var(--pink-neon-primary);
-            background: rgba(255, 0, 127, 0.12);
-            transform: translateY(-5px);
+        .mode-card.active {
+            border-color: var(--accent-pink);
+            background: rgba(255, 0, 127, 0.15);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        .mode-box h3 {
-            font-size: 2.4vh;
-            color: var(--pink-neon-primary);
-            margin-bottom: 8px;
+        .mode-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            color: var(--accent-pink);
             text-transform: uppercase;
         }
 
-        .mode-box span {
-            font-size: 1.6vh;
-            color: #88929b;
-            font-weight: 600;
-        }
-
-        .action-button {
-            background: linear-gradient(135deg, var(--pink-neon-primary), var(--purple-neon));
-            color: #ffffff;
-            padding: 25px;
-            border-radius: 25px;
+        /* Botones de Acción */
+        .btn-call {
+            background: linear-gradient(135deg, var(--accent-pink), var(--secondary-purple));
+            color: white;
+            padding: 35px;
+            border-radius: 40px;
             border: none;
             width: 100%;
-            font-size: 3.5vh;
+            font-size: 2.8rem;
             font-weight: 900;
             cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            letter-spacing: 8px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
             transition: all 0.3s ease;
+            text-transform: uppercase;
         }
 
-        .action-button:active {
-            transform: scale(0.96);
+        .btn-call:active { transform: scale(0.96); }
+
+        .btn-next {
+            background: var(--success-green);
+            box-shadow: 0 20px 40px rgba(46, 213, 115, 0.3);
         }
 
-        #config-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 25px;
-            padding: 25px;
-            margin-bottom: 30px;
+        /* Configuración Flash */
+        #flash-settings {
+            margin: 40px 0;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 40px;
+            border: 2px dashed rgba(255, 0, 127, 0.3);
         }
 
         input[type="range"] {
             width: 100%;
-            height: 15px;
-            border-radius: 10px;
-            accent-color: var(--pink-neon-primary);
-            margin-top: 20px;
+            height: 25px;
+            border-radius: 15px;
+            accent-color: var(--accent-pink);
+            margin: 30px 0;
         }
 
         /* ----------------------------------------------------------------
-           ESTADOS Y ANIMACIONES ADICIONALES
+           ELEMENTOS DE RESPONSIVIDAD (MOBILE)
            ----------------------------------------------------------------
         */
-        .flash-error {
-            background-color: var(--error-red) !important;
-            transition: background 0.1s ease;
+        @media (max-width: 900px) {
+            :root {
+                --header-h: 100px;
+                --node-dim: 80px;
+                --node-font: 2rem;
+            }
+            #main-header { padding: 0 30px; }
+            .modal-box { padding: 40px 20px; border-radius: 40px; }
+            .modal-box h1 { font-size: 3rem; }
+            .mode-container { grid-template-columns: 1fr; gap: 20px; }
+            .header-stat .value { font-size: 2rem; }
+            #lives-container { font-size: 2.5rem; letter-spacing: 10px; }
         }
 
-        @media (max-width: 600px) {
-            :root {
-                --node-size-base: 9vh;
-                --header-height: 10vh;
-            }
-            .modal-container { width: 95%; padding: 40px 20px; }
-            .modal-container h1 { font-size: 4.5vh; }
-            .mode-grid { grid-template-columns: 1fr; }
-        }
+        .flash-fail { background-color: var(--error-red) !important; transition: 0.1s; }
     </style>
 </head>
-<body onmousedown="detectStageClick(event)">
+<body onmousedown="handleStageClick(event)">
 
-    <header id="master-header">
-        <div class="stat-component">
+    <header id="main-header">
+        <div class="header-stat">
             <span class="label">Nivel</span>
-            <span id="lvl-val" class="value">1</span>
+            <span id="lvl-display" class="value">1</span>
         </div>
         
-        <div id="lives-render">❤️❤️❤️</div>
+        <div id="lives-container">❤️❤️❤️</div>
         
-        <div class="stat-component">
-            <span class="label" id="timer-desc">Modo Libre</span>
-            <span id="timer-val" class="value">--</span>
+        <div class="header-stat">
+            <span class="label" id="timer-label">Modo Libre</span>
+            <span id="timer-display" class="value">--</span>
         </div>
     </header>
 
-    <div id="tracking-area"></div>
+    <div id="therapy-stage"></div>
 
-    <div id="overlay-init" class="master-overlay">
-        <div class="modal-container">
-            <h1>Saccadic Orbital</h1>
-            <p>Protocolo Avanzado de Seguimiento Dinámico. Mantenga la fijación y capture los objetivos en secuencia numérica.</p>
+    <div id="overlay-start" class="full-overlay">
+        <div class="modal-box">
+            <h1>SACCADIC ORBITAL</h1>
+            <p>Protocolo de Seguimiento Dinámico Complex. Sigue la órbita y captura los números en orden secuencial.</p>
             
-            <div class="mode-grid">
-                <div class="mode-box active" id="mode-free" onclick="switchMode('libre')">
+            <div class="mode-container">
+                <div class="mode-card active" id="mode-free" onclick="selectMode('libre')">
                     <h3>MODO LIBRE</h3>
-                    <span>Sin límite temporal</span>
+                    <span style="font-size:1.4rem; color:#888;">Sin límite de tiempo</span>
                 </div>
-                <div class="mode-box" id="mode-timed" onclick="switchMode('flash')">
-                    <h3>MODO FLASH</h3>
-                    <span>Reto cronometrado</span>
+                <div class="mode-card" id="mode-flash" onclick="selectMode('flash')">
+                    <h3>CAZADOR FLASH</h3>
+                    <span style="font-size:1.4rem; color:#888;">Reto cronometrado</span>
                 </div>
             </div>
 
-            <div id="config-panel" style="display: none;">
-                <label style="font-size: 2vh; font-weight: 700;">TIEMPO POR NIVEL: <span id="val-range" style="color:var(--pink-neon-primary)">20</span>s</label>
-                <input type="range" id="input-range" min="10" max="60" value="20" oninput="document.getElementById('val-range').innerText = this.value">
+            <div id="flash-settings" style="display: none;">
+                <label style="font-size: 1.8rem; font-weight: 800;">DURACIÓN POR NIVEL: <span id="val-slider" style="color:var(--accent-pink)">20</span>s</label>
+                <input type="range" id="timer-slider" min="10" max="60" value="20" oninput="document.getElementById('val-slider').innerText = this.value">
             </div>
 
-            <button class="action-button" onclick="startSession()">Iniciar Sesión</button>
+            <button class="btn-call" onclick="startTherapy()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
-    <div id="overlay-stats" class="master-overlay" style="display: none;">
-        <div class="modal-container">
-            <h1 style="color: var(--error-red);">Sesión Concluida</h1>
-            <div style="margin: 40px 0;">
-                <p style="font-size: 3vh;">Nivel Alcanzado: <span id="res-lvl" style="color: var(--pink-neon-primary); font-weight: 900;">1</span></p>
-                <p style="font-size: 3vh;">Aciertos Totales: <span id="res-hits" style="color: var(--cyan-neon); font-weight: 900;">0</span></p>
+    <div id="overlay-next" class="full-overlay" style="display: none;">
+        <div class="modal-box" style="border-color: var(--success-green);">
+            <h1 style="color: var(--success-green);">¡OBJETIVO LOGRADO!</h1>
+            <p>Control óculo-motor estabilizado en trayectoria orbital.</p>
+            <button class="btn-call btn-next" onclick="nextLevel()">Siguiente Nivel</button>
+        </div>
+    </div>
+
+    <div id="overlay-results" class="full-overlay" style="display: none;">
+        <div class="modal-box">
+            <h1 style="color: var(--error-red);">SESIÓN FINALIZADA</h1>
+            <div style="margin: 40px 0; font-size: 2.5rem; display: flex; justify-content: space-around;">
+                <div>Nivel: <span id="final-lvl" style="color:var(--accent-pink); font-weight:900;">1</span></div>
+                <div>Aciertos: <span id="final-hits" style="color:var(--cyan-active); font-weight:900;">0</span></div>
             </div>
-            <p id="cloud-log" style="color: var(--cyan-neon); font-weight: 800; text-transform: uppercase;">Sincronizando con Perceptum Cloud...</p>
-            <button class="action-button" onclick="location.reload()" style="margin-top: 20px;">Reintentar</button>
+            <p id="cloud-status" style="color: var(--cyan-active); font-weight: 800; letter-spacing: 3px;">SINCRONIZANDO CON PERCEPTUM CLOUD...</p>
+            <button class="btn-call" onclick="location.reload()">REINTENTAR SESIÓN</button>
         </div>
     </div>
 
     <script>
         /* ================================================================
-           MOTOR LÓGICO PERCEPTUM (TRACKING ENGINE)
+           MOTOR DE TERAPIA VISUAL - LOGICA EXTENDIDA
            ================================================================
         */
 
-        const audioManager = new (window.AudioContext || window.webkitAudioContext)();
+        // Configuración de Google Sheets (IGUAL A TODOS TUS JUEGOS)
+        const SHEET_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const FIELD_IDS = {
+            paciente: "entry.369874016",
+            juego: "entry.1353470174",
+            nivel: "entry.721051298",
+            aciertos: "entry.873272199",
+            fallos: "entry.1030094511",
+            tiempo: "entry.1303309812",
+            fecha: "entry.845098414"
+        };
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Estado Global
-        let currentLvl = 1;
-        let lives = 3;
+        let currentLevel = 1;
+        let livesRemaining = 3;
         let nextTarget = 1;
-        let hitsCount = 0;
-        let failsCount = 0;
-        let sessionActive = false;
-        let selectedMode = 'libre';
-        let levelTimeLimit = 20;
-        let levelTimeLeft = 0;
-        let sessionTimer = null;
-        let orbitalNodes = [];
+        let totalHits = 0;
+        let totalFails = 0;
+        let isGameActive = false;
+        let gameMode = 'libre';
+        let baseTime = 20;
+        let timeLeft = 0;
+        let mainTimer = null;
+        let nodesArray = [];
 
         /**
-         * Generador de SFX Médico
+         * Generador de Audio Perceptum
          */
         function playSfx(freq, type, dur, vol) {
             try {
-                const osc = audioManager.createOscillator();
-                const gain = audioManager.createGain();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioManager.currentTime);
-                gain.gain.setValueAtTime(vol, audioManager.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioManager.currentTime + dur);
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
                 osc.connect(gain);
-                gain.connect(audioManager.destination);
+                gain.connect(audioCtx.destination);
                 osc.start();
-                osc.stop(audioManager.currentTime + dur);
-            } catch(e) { console.warn("Audio Context Error"); }
+                osc.stop(audioCtx.currentTime + dur);
+            } catch(e) { console.error("Audio Context Fail"); }
         }
 
         /**
-         * Cambio de modo de interfaz
+         * Selección de Modo
          */
-        function switchMode(m) {
-            selectedMode = m;
+        function selectMode(m) {
+            gameMode = m;
             document.getElementById('mode-free').classList.toggle('active', m === 'libre');
-            document.getElementById('mode-timed').classList.toggle('active', m === 'flash');
-            document.getElementById('config-panel').style.display = (m === 'flash') ? 'block' : 'none';
-            document.getElementById('timer-desc').innerText = (m === 'flash') ? "Reloj Nivel" : "Modo Libre";
+            document.getElementById('mode-flash').classList.toggle('active', m === 'flash');
+            document.getElementById('flash-settings').style.display = (m === 'flash') ? 'block' : 'none';
+            document.getElementById('timer-label').innerText = (m === 'flash') ? "Cazador Flash" : "Modo Libre";
         }
 
         /**
-         * Inicio de Sesión
+         * Inicialización de Sesión
          */
-        function startSession() {
-            if (audioManager.state === 'suspended') audioManager.resume();
-            if (selectedMode === 'flash') levelTimeLimit = parseInt(document.getElementById('input-range').value);
+        function startTherapy() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (gameMode === 'flash') baseTime = parseInt(document.getElementById('timer-slider').value);
             
-            document.getElementById('overlay-init').style.display = 'none';
-            sessionActive = true;
-            generateOrbitalLevel();
+            document.getElementById('overlay-start').style.display = 'none';
+            isGameActive = true;
+            setupLevelNodes();
         }
 
         /**
-         * Generador de Órbitas Adaptables
+         * Generador de Objetos Orbitales
          */
-        function generateOrbitalLevel() {
-            if (!sessionActive) return;
+        function setupLevelNodes() {
+            if (!isGameActive) return;
             
-            const area = document.getElementById('tracking-area');
-            area.innerHTML = '';
-            orbitalNodes = [];
+            const stage = document.getElementById('therapy-stage');
+            stage.innerHTML = '';
+            nodesArray = [];
             nextTarget = 1;
             
-            const totalNodes = 2 + currentLvl;
+            const nodesCount = 2 + currentLevel; // Incremento infinito
 
-            for (let i = 1; i <= totalNodes; i++) {
-                const div = document.createElement('div');
-                div.className = 'node-element';
-                div.innerText = i;
+            for (let i = 1; i <= nodesCount; i++) {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node-obj';
+                nodeDiv.innerText = i;
 
-                // Parámetros de órbita elíptica escalables
+                // Configuración de trayectoria orbital compleja
                 const config = {
-                    dom: div,
+                    dom: nodeDiv,
                     id: i,
                     angle: Math.random() * Math.PI * 2,
-                    // VELOCIDAD TERAPÉUTICA (ULTRA LENTA)
-                    speed: (0.003 + (currentLvl * 0.0006)) * (Math.random() > 0.5 ? 1 : -1),
+                    // VELOCIDAD ULTRA LENTA (Ajustado para seguimiento ocular real)
+                    speed: (0.003 + (currentLevel * 0.0006)) * (Math.random() > 0.5 ? 1 : -1),
                     radiusX: (window.innerWidth * 0.15) + Math.random() * (window.innerWidth * 0.22),
                     radiusY: (window.innerHeight * 0.1) + Math.random() * (window.innerHeight * 0.22),
                     centerX: window.innerWidth / 2,
-                    centerY: (window.innerHeight - (window.innerHeight * 0.12)) / 2
+                    centerY: (window.innerHeight - 120) / 2
                 };
 
-                div.onmousedown = (e) => {
+                nodeDiv.onmousedown = (e) => {
                     e.stopPropagation();
-                    validateNodeCapture(config);
+                    processNodeCapture(config);
                 };
 
-                area.appendChild(div);
-                orbitalNodes.push(config);
+                stage.appendChild(nodeDiv);
+                nodesArray.push(config);
             }
 
-            if (selectedMode === 'flash') runLevelTimer();
-            requestAnimationFrame(animateFrame);
+            if (gameMode === 'flash') launchTimer();
+            requestAnimationFrame(animateNodes);
         }
 
         /**
-         * Loop de Animación (Suavizado)
+         * Motor de Animación
          */
-        function animateFrame() {
-            if (!sessionActive) return;
+        function animateNodes() {
+            if (!isGameActive) return;
 
-            orbitalNodes.forEach(node => {
+            nodesArray.forEach(node => {
                 node.angle += node.speed;
-                const posX = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
-                const posY = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
+                const x = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
+                const y = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
                 
-                node.dom.style.left = `${posX}px`;
-                node.dom.style.top = `${posY}px`;
+                node.dom.style.left = `${x}px`;
+                node.dom.style.top = `${y}px`;
             });
 
-            requestAnimationFrame(animateFrame);
+            requestAnimationFrame(animateNodes);
         }
 
         /**
-         * Validación de Acierto
+         * Lógica de Captura
          */
-        function validateNodeCapture(node) {
-            if (!sessionActive) return;
+        function processNodeCapture(node) {
+            if (!isGameActive) return;
 
             if (node.id === nextTarget) {
                 playSfx(850, 'sine', 0.2, 0.1);
-                node.dom.classList.add('captured');
-                hitsCount++;
+                node.dom.classList.add('success-hit');
+                totalHits++;
                 nextTarget++;
 
-                if (nextTarget > orbitalNodes.length) {
-                    clearInterval(sessionTimer);
-                    completeLevel();
+                if (nextTarget > nodesArray.length) {
+                    levelCleared();
                 }
             } else {
-                registerFail();
+                triggerPenalty();
             }
         }
 
         /**
          * Click fallido en el escenario
          */
-        function detectStageClick(e) {
-            if (sessionActive && !e.target.classList.contains('node-element')) {
-                registerFail();
+        function handleStageClick(e) {
+            if (isGameActive && !e.target.classList.contains('node-obj')) {
+                triggerPenalty();
             }
         }
 
         /**
-         * Penalización y Vidas
+         * Penalización de Vida
          */
-        function registerFail() {
+        function triggerPenalty() {
             playSfx(140, 'sawtooth', 0.4, 0.2);
-            lives--;
-            failsCount++;
+            livesRemaining--;
+            totalFails++;
             
-            // Efecto Visual de Error
-            document.body.classList.add('flash-error');
-            setTimeout(() => document.body.classList.remove('flash-error'), 150);
+            // Efecto Visual
+            document.body.classList.add('flash-fail');
+            setTimeout(() => document.body.classList.remove('flash-fail'), 150);
             
-            // Actualizar UI de Vidas
-            const lDisplay = document.getElementById('lives-render');
-            lDisplay.innerText = (lives > 0) ? "❤️".repeat(lives) : "💀";
-            lDisplay.style.transform = "scale(1.3)";
-            setTimeout(() => lDisplay.style.transform = "scale(1)", 300);
+            const lUI = document.getElementById('lives-container');
+            lUI.innerText = (livesRemaining > 0) ? "❤️".repeat(livesRemaining) : "💀";
+            lUI.style.transform = "scale(1.2)";
+            setTimeout(() => lUI.style.transform = "scale(1)", 200);
 
-            if (lives <= 0) {
-                terminateSession();
+            if (livesRemaining <= 0) {
+                gameOver();
             } else {
-                generateOrbitalLevel();
+                setupLevelNodes();
             }
         }
 
         /**
          * Cronómetro
          */
-        function runLevelTimer() {
-            clearInterval(sessionTimer);
-            levelTimeLeft = levelTimeLimit;
-            document.getElementById('timer-val').innerText = levelTimeLeft + "s";
+        function launchTimer() {
+            clearInterval(mainTimer);
+            timeLeft = baseTime;
+            document.getElementById('timer-display').innerText = timeLeft + "s";
             
-            sessionTimer = setInterval(() => {
-                levelTimeLeft--;
-                document.getElementById('timer-val').innerText = levelTimeLeft + "s";
+            mainTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-display').innerText = timeLeft + "s";
                 
-                if (levelTimeLeft <= 0) {
-                    clearInterval(sessionTimer);
-                    registerFail();
+                if (timeLeft <= 0) {
+                    clearInterval(mainTimer);
+                    triggerPenalty();
                 }
             }, 1000);
         }
 
         /**
-         * Nivel Completado
+         * Fin de Nivel (Pausa Terapéutica)
          */
-        function completeLevel() {
-            currentLvl++;
-            document.getElementById('lvl-val').innerText = currentLvl;
-            
-            // Recuperación de vida por progreso
-            if (currentLvl % 4 === 0 && lives < 3) {
-                lives++;
-                document.getElementById('lives-render').innerText = "❤️".repeat(lives);
-            }
-            
-            generateOrbitalLevel();
+        function levelCleared() {
+            isGameActive = false;
+            clearInterval(mainTimer);
+            playSfx(1000, 'sine', 0.5, 0.1);
+            document.getElementById('overlay-next').style.display = 'flex';
         }
 
         /**
-         * Finalización y Sincronización
+         * Avance de Nivel
          */
-        function terminateSession() {
-            sessionActive = false;
-            clearInterval(sessionTimer);
+        function nextLevel() {
+            currentLevel++;
+            document.getElementById('lvl-display').innerText = currentLevel;
+            document.getElementById('overlay-next').style.display = 'none';
             
-            document.getElementById('res-lvl').innerText = currentLvl;
-            document.getElementById('res-hits').innerText = hitsCount;
-            document.getElementById('overlay-stats').style.display = 'flex';
+            // Regalo de vida cada 4 niveles
+            if (currentLevel % 4 === 0 && livesRemaining < 3) {
+                livesRemaining++;
+                document.getElementById('lives-container').innerText = "❤️".repeat(livesRemaining);
+            }
             
-            // Simulación de envío a Sheets (Estructura lista para integración)
-            setTimeout(() => {
-                document.getElementById('cloud-log').innerText = "✅ PROTOCOLO SINCRONIZADO CORRECTAMENTE";
-                document.getElementById('cloud-log').style.color = "var(--success-neon)";
-            }, 1800);
+            isGameActive = true;
+            setupLevelNodes();
+        }
+
+        /**
+         * Fin del Juego y Envío de Datos
+         */
+        function gameOver() {
+            isGameActive = false;
+            clearInterval(mainTimer);
+            
+            document.getElementById('final-lvl').innerText = currentLevel;
+            document.getElementById('final-hits').innerText = totalHits;
+            document.getElementById('overlay-results').style.display = 'flex';
+            
+            syncToSheets();
+        }
+
+        /**
+         * Conexión con Google Sheets (Lógica Real)
+         */
+        function syncToSheets() {
+            const date = new Date().toLocaleDateString();
+            const formData = new FormData();
+            
+            formData.append(FIELD_IDS.paciente, "PACIENTE_PERCEPTUM_ORBITAL");
+            formData.append(FIELD_IDS.juego, "Orbital_Tracking_V4");
+            formData.append(FIELD_IDS.nivel, currentLevel);
+            formData.append(FIELD_IDS.aciertos, totalHits);
+            formData.append(FIELD_IDS.fallos, totalFails);
+            formData.append(FIELD_IDS.tiempo, gameMode === 'flash' ? baseTime + "s" : "Libre");
+            formData.append(FIELD_IDS.fecha, date);
+
+            fetch(SHEET_URL, {
+                method: "POST",
+                mode: "no-cors",
+                body: formData
+            }).then(() => {
+                document.getElementById('cloud-status').innerText = "✅ CONEXIÓN EXITOSA CON LA NUBE";
+                document.getElementById('cloud-status').style.color = "var(--success-green)";
+            }).catch(() => {
+                document.getElementById('cloud-status').innerText = "⚠️ ERROR DE SINCRONIZACIÓN";
+                document.getElementById('cloud-status').style.color = "var(--error-red)";
+            });
         }
     </script>
 </body>
