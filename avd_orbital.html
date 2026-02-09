@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Saccadic Orbital Tracking - Perceptum Medical System v4.5</title>
+    <title>Saccadic Orbital Tracking - Perceptum Medical System v4.6</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
@@ -21,9 +21,9 @@
             --perceptum-error: #ff4757;
             --perceptum-panel: rgba(15, 25, 35, 0.98);
             
-            /* Escalamiento Responsivo basado en Viewport (Evita desproporción) */
+            /* Unidades Proporcionales */
             --header-height: 12vh;
-            --node-diameter: 10vh; /* Ajustado para que no sea gigante en móvil */
+            --node-diameter: 10vh; 
             --font-size-node: 3.5vh;
             --font-size-label: 1.3vh;
             --font-size-value: 3.8vh;
@@ -179,7 +179,6 @@
             line-height: 1.5;
         }
 
-        /* Selectores */
         .p-mode-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -219,7 +218,6 @@
             background: var(--perceptum-success);
         }
 
-        /* Utilidades */
         .p-flash-fail {
             background-color: var(--perceptum-error) !important;
         }
@@ -283,8 +281,8 @@
     </div>
 
     <div id="p-modal-end" class="p-overlay" style="display: none;">
-        <div class="p-modal">
-            <h1 style="color: var(--perceptum-error);">SESIÓN FINALIZADA</h1>
+        <div class="modal-container p-modal">
+            <h1 style="color: var(--perceptum-error);">FIN DE SESIÓN</h1>
             <div style="margin: 3vh 0;">
                 <p style="font-size: 3vh;">Nivel: <span id="p-res-lvl" style="color:var(--perceptum-pink); font-weight:900;">1</span></p>
                 <p style="font-size: 3vh;">Aciertos: <span id="p-res-hits" style="color:var(--perceptum-cyan); font-weight:900;">0</span></p>
@@ -296,11 +294,10 @@
 
     <script>
         /* ================================================================
-           MOTOR LÓGICO COMPLETO - SIN OMISIONES
+           MOTOR LÓGICO COMPLETO - v4.6 (PROGRESIVO)
            ================================================================
         */
 
-        // 1. CONFIGURACIÓN DE DATOS (IDs EXACTOS DE TU LINK)
         const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         const ENTRY_IDS = {
             paciente: "entry.369874016",
@@ -312,7 +309,6 @@
             fecha: "entry.845098414"
         };
 
-        // 2. VARIABLES DE ESTADO PROFESIONAL
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         let currentLvl = 1;
         let currentLives = 3;
@@ -325,7 +321,6 @@
         let timerClock = null;
         let nodesCollection = [];
 
-        // 3. GENERADOR DE SONIDO (SFX)
         function playMedicalSound(freq, type, dur, vol) {
             try {
                 const osc = audioContext.createOscillator();
@@ -338,10 +333,9 @@
                 gain.connect(audioContext.destination);
                 osc.start();
                 osc.stop(audioContext.currentTime + dur);
-            } catch(e) { console.warn("Audio disabled by browser"); }
+            } catch(e) {}
         }
 
-        // 4. CONTROL DE MODOS
         function updateMode(m) {
             sessionMode = m;
             document.getElementById('p-m-free').classList.toggle('active', m === 'libre');
@@ -350,38 +344,38 @@
             document.getElementById('p-timer-label').innerText = (m === 'flash') ? "Reloj" : "Modo Libre";
         }
 
-        // 5. INICIO DE EJECUCIÓN
         function startExecution() {
             if (audioContext.state === 'suspended') audioContext.resume();
             if (sessionMode === 'flash') timerLimit = parseInt(document.getElementById('p-range-input').value);
-            
             document.getElementById('p-modal-intro').style.display = 'none';
             isRunning = true;
             renderLevel();
         }
 
-        // 6. RENDERIZADO DE NODOS (ORBITAL)
         function renderLevel() {
             if (!isRunning) return;
-            
             const canvas = document.getElementById('p-canvas');
             canvas.innerHTML = '';
             nodesCollection = [];
             currentTargetId = 1;
             
-            const nodesToSpawn = 2 + currentLvl; // Niveles infinitos
+            const nodesToSpawn = 2 + currentLvl; 
 
             for (let i = 1; i <= nodesToSpawn; i++) {
                 const nodeDiv = document.createElement('div');
                 nodeDiv.className = 'p-node';
                 nodeDiv.innerText = i;
 
+                // AJUSTE DE VELOCIDAD SUAVE: Base 0.003 + incremento de 0.0003 por nivel
+                const baseSpeed = 0.003;
+                const increment = (currentLvl - 1) * 0.0003; 
+                const finalSpeed = (baseSpeed + increment) * (Math.random() > 0.5 ? 1 : -1);
+
                 const nodeData = {
                     dom: nodeDiv,
                     id: i,
                     angle: Math.random() * (Math.PI * 2),
-                    // Velocidad calibrada para seguimiento visual
-                    speed: (0.003 + (currentLvl * 0.0005)) * (Math.random() > 0.5 ? 1 : -1),
+                    speed: finalSpeed,
                     radiusX: (window.innerWidth * 0.18) + Math.random() * (window.innerWidth * 0.15),
                     radiusY: (window.innerHeight * 0.12) + Math.random() * (window.innerHeight * 0.15),
                     centerX: window.innerWidth / 2,
@@ -401,30 +395,24 @@
             requestAnimationFrame(physicsLoop);
         }
 
-        // 7. MOTOR DE FÍSICA ORBITAL
         function physicsLoop() {
             if (!isRunning) return;
-
             nodesCollection.forEach(node => {
                 node.angle += node.speed;
                 const posX = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
                 const posY = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
-                
                 node.dom.style.left = posX + 'px';
                 node.dom.style.top = posY + 'px';
             });
-
             requestAnimationFrame(physicsLoop);
         }
 
-        // 8. LOGICA DE CAPTURA
         function handleNodeClick(node) {
             if (node.id === currentTargetId) {
                 playMedicalSound(800, 'sine', 0.2, 0.1);
                 node.dom.classList.add('hit');
                 sessionHits++;
                 currentTargetId++;
-
                 if (currentTargetId > nodesCollection.length) {
                     processWin();
                 }
@@ -433,37 +421,30 @@
             }
         }
 
-        // 9. FALLO FUERA DE NODO
         function triggerMiss(e) {
             if (isRunning && !e.target.classList.contains('p-node')) {
                 processFail();
             }
         }
 
-        // 10. PENALIZACIONES
         function processFail() {
             playMedicalSound(150, 'sawtooth', 0.4, 0.2);
             currentLives--;
             sessionFails++;
-            
             document.body.classList.add('p-flash-fail');
             setTimeout(() => document.body.classList.remove('p-flash-fail'), 150);
-            
             document.getElementById('p-lives').innerText = (currentLives > 0) ? "❤️".repeat(currentLives) : "💀";
-
             if (currentLives <= 0) {
                 processGameOver();
             } else {
-                renderLevel(); // Reinicia el nivel actual
+                renderLevel();
             }
         }
 
-        // 11. SISTEMA DE CRONÓMETRO
         function startTimerSystem() {
             clearInterval(timerClock);
             let timeRemains = timerLimit;
             document.getElementById('p-timer-val').innerText = timeRemains + "s";
-            
             timerClock = setInterval(() => {
                 timeRemains--;
                 document.getElementById('p-timer-val').innerText = timeRemains + "s";
@@ -474,7 +455,6 @@
             }, 1000);
         }
 
-        // 12. VICTORIA DE NIVEL
         function processWin() {
             isRunning = false;
             clearInterval(timerClock);
@@ -486,35 +466,28 @@
             currentLvl++;
             document.getElementById('p-lvl-val').innerText = currentLvl;
             document.getElementById('p-modal-next').style.display = 'none';
-            
-            // Regalo de vida cada 4 niveles
             if (currentLvl % 4 === 0 && currentLives < 3) {
                 currentLives++;
                 document.getElementById('p-lives').innerText = "❤️".repeat(currentLives);
             }
-            
             isRunning = true;
             renderLevel();
         }
 
-        // 13. FIN DE SESIÓN Y ENVÍO REAL
         function processGameOver() {
             isRunning = false;
             clearInterval(timerClock);
-            
             document.getElementById('p-res-lvl').innerText = currentLvl;
             document.getElementById('p-res-hits').innerText = sessionHits;
             document.getElementById('p-modal-end').style.display = 'flex';
-            
             sendDataToGoogle();
         }
 
         function sendDataToGoogle() {
             const dateStr = new Date().toISOString().split('T')[0];
             const formData = new FormData();
-            
             formData.append(ENTRY_IDS.paciente, "PACIENTE_PERCEPTUM_ORBITAL");
-            formData.append(ENTRY_IDS.juego, "Saccadic_Orbital_v4.5_Full");
+            formData.append(ENTRY_IDS.juego, "Saccadic_Orbital_v4.6_Final");
             formData.append(ENTRY_IDS.nivel, currentLvl);
             formData.append(ENTRY_IDS.aciertos, sessionHits);
             formData.append(ENTRY_IDS.fallos, sessionFails);
