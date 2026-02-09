@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Saccadic Orbital Tracking - Perceptum Medical System</title>
+    <title>Saccadic Orbital Tracking - Perceptum Medical System v4.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
         /* ================================================================
-           PERCEPTUM DESIGN SYSTEM - V.4.0 (HIGH-END MEDICAL UI)
+           SISTEMA DE DISEÑO PERCEPTUM - ARQUITECTURA COMPLETA
            ================================================================
         */
         :root {
-            --bg-color: #05080a;
-            --accent-pink: #ff007f;
-            --accent-glow: rgba(255, 0, 127, 0.6);
-            --secondary-purple: #bc13fe;
-            --cyan-active: #00f2ff;
-            --success-green: #2ed573;
-            --error-red: #ff4757;
-            --panel-bg: rgba(15, 25, 35, 0.98);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --perceptum-bg: #05080a;
+            --perceptum-pink: #ff007f;
+            --perceptum-pink-glow: rgba(255, 0, 127, 0.6);
+            --perceptum-purple: #bc13fe;
+            --perceptum-cyan: #00f2ff;
+            --perceptum-success: #2ed573;
+            --perceptum-error: #ff4757;
+            --perceptum-panel: rgba(15, 25, 35, 0.98);
             
-            /* Escalamiento Responsivo */
-            --header-h: 120px;
-            --node-dim: 100px;
-            --node-font: 2.8rem;
+            /* Escalamiento Responsivo basado en Viewport (Evita desproporción) */
+            --header-height: 12vh;
+            --node-diameter: 10vh; /* Ajustado para que no sea gigante en móvil */
+            --font-size-node: 3.5vh;
+            --font-size-label: 1.3vh;
+            --font-size-value: 3.8vh;
         }
 
         * {
@@ -39,7 +40,7 @@
         body, html {
             width: 100%;
             height: 100%;
-            background-color: var(--bg-color);
+            background-color: var(--perceptum-bg);
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
             color: #ffffff;
@@ -49,309 +50,259 @@
         }
 
         /* ----------------------------------------------------------------
-           CABECERA PROFESIONAL (HEADER)
+           CABECERA TÉCNICA (HEADER)
            ----------------------------------------------------------------
         */
-        #main-header {
-            height: var(--header-h);
+        #p-header {
+            height: var(--header-height);
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 60px;
-            background: var(--panel-bg);
-            border-bottom: 8px solid var(--accent-pink);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+            padding: 0 6%;
+            background: var(--perceptum-panel);
+            border-bottom: 0.7vh solid var(--perceptum-pink);
+            box-shadow: 0 1vh 4vh rgba(0,0,0,0.9);
             position: relative;
             z-index: 9999;
         }
 
-        .header-stat {
+        .p-stat-box {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 150px;
+            min-width: 100px;
         }
 
-        .header-stat .label {
-            font-size: 1.1rem;
+        .p-stat-label {
+            font-size: var(--font-size-label);
             text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--accent-pink);
+            letter-spacing: 0.3em;
+            color: var(--perceptum-pink);
             font-weight: 800;
-            margin-bottom: 8px;
+            margin-bottom: 0.4vh;
         }
 
-        .header-stat .value {
-            font-size: 2.8rem;
+        .p-stat-value {
+            font-size: var(--font-size-value);
             font-weight: 900;
-            text-shadow: 0 0 20px var(--accent-glow);
+            text-shadow: 0 0 1.5vh var(--perceptum-pink-glow);
         }
 
-        #lives-container {
-            font-size: 3.5rem;
-            letter-spacing: 20px;
-            filter: drop-shadow(0 0 20px var(--accent-pink));
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        #p-lives {
+            font-size: 4vh;
+            letter-spacing: 1.2vw;
+            filter: drop-shadow(0 0 1vh var(--perceptum-pink));
         }
 
         /* ----------------------------------------------------------------
-           ESCENARIO DE TERAPIA (STAGE)
+           ZONA DE ENTRENAMIENTO (CANVAS)
            ----------------------------------------------------------------
         */
-        #therapy-stage {
+        #p-canvas {
             position: relative;
             width: 100%;
-            height: calc(100vh - var(--header-h));
+            height: calc(100vh - var(--header-height));
             background: 
                 radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%),
-                linear-gradient(rgba(255, 0, 127, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
-            background-size: 100% 100%, 80px 80px, 80px 80px;
+                linear-gradient(rgba(255, 0, 127, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 127, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 5vh 5vh, 5vh 5vh;
             overflow: hidden;
         }
 
-        .node-obj {
+        .p-node {
             position: absolute;
-            width: var(--node-dim);
-            height: var(--node-dim);
+            width: var(--node-diameter);
+            height: var(--node-diameter);
             background: #0a0a1a;
-            border: 6px solid var(--accent-pink);
+            border: 0.5vh solid var(--perceptum-pink);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            font-size: var(--node-font);
-            box-shadow: 0 0 30px var(--accent-glow), inset 0 0 15px rgba(255, 0, 127, 0.3);
+            font-size: var(--font-size-node);
+            box-shadow: 0 0 2vh var(--perceptum-pink-glow);
             z-index: 1000;
             cursor: pointer;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            transition: transform 0.2s cubic-bezier(0.17, 0.88, 0.32, 1.28), opacity 0.3s ease;
         }
 
-        .node-obj.success-hit {
-            border-color: var(--cyan-active);
-            box-shadow: 0 0 60px var(--cyan-active), inset 0 0 20px var(--cyan-active);
-            transform: scale(1.8);
+        .p-node.hit {
+            border-color: var(--perceptum-cyan);
+            box-shadow: 0 0 5vh var(--perceptum-cyan);
+            transform: scale(1.6);
             opacity: 0;
             pointer-events: none;
         }
 
         /* ----------------------------------------------------------------
-           MODALES Y OVERLAYS
+           MODALES INTEGRALES
            ----------------------------------------------------------------
         */
-        .full-overlay {
+        .p-overlay {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.98);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(20px);
         }
 
-        .modal-box {
+        .p-modal {
             background: #0f1923;
-            padding: 70px;
-            border-radius: 80px;
-            border: 10px solid var(--accent-pink);
             width: 90%;
-            max-width: 850px;
+            max-width: 600px;
+            padding: 5vh;
+            border-radius: 4vh;
+            border: 0.7vh solid var(--perceptum-pink);
             text-align: center;
-            box-shadow: 0 0 150px rgba(255, 0, 127, 0.4);
-            animation: modalPop 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            box-shadow: 0 0 8vh rgba(255, 0, 127, 0.4);
         }
 
-        @keyframes modalPop {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-box h1 {
-            font-size: 4.5rem;
-            color: var(--accent-pink);
-            margin: 0 0 30px 0;
-            text-shadow: 0 0 40px var(--accent-pink);
+        .p-modal h1 {
+            font-size: 4.5vh;
+            color: var(--perceptum-pink);
+            margin-bottom: 2vh;
             font-weight: 900;
-            letter-spacing: -2px;
+            text-transform: uppercase;
         }
 
-        .modal-box p {
-            font-size: 1.8rem;
-            line-height: 1.4;
-            margin-bottom: 50px;
-            color: rgba(255,255,255,0.7);
+        .p-modal p {
+            font-size: 2vh;
+            color: #ccc;
+            margin-bottom: 4vh;
+            line-height: 1.5;
         }
 
-        /* Selectores de Modo */
-        .mode-container {
+        /* Selectores */
+        .p-mode-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin: 50px 0;
+            gap: 2vh;
+            margin-bottom: 4vh;
         }
 
-        .mode-card {
+        .p-mode-card {
             background: #1a2632;
-            border: 6px solid #3e4859;
-            padding: 40px;
-            border-radius: 45px;
+            border: 0.3vh solid #3e4859;
+            padding: 2.5vh;
+            border-radius: 2.5vh;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: 0.3s;
         }
 
-        .mode-card.active {
-            border-color: var(--accent-pink);
+        .p-mode-card.active {
+            border-color: var(--perceptum-pink);
             background: rgba(255, 0, 127, 0.15);
-            transform: translateY(-12px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        .mode-card h3 {
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
-            color: var(--accent-pink);
-            text-transform: uppercase;
-        }
-
-        /* Botones de Acción */
-        .btn-call {
-            background: linear-gradient(135deg, var(--accent-pink), var(--secondary-purple));
+        .p-btn {
+            background: linear-gradient(135deg, var(--perceptum-pink), var(--perceptum-purple));
             color: white;
-            padding: 35px;
-            border-radius: 40px;
+            padding: 2.5vh;
+            border-radius: 2.5vh;
             border: none;
             width: 100%;
-            font-size: 2.8rem;
+            font-size: 3vh;
             font-weight: 900;
             cursor: pointer;
-            letter-spacing: 8px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-            transition: all 0.3s ease;
             text-transform: uppercase;
+            box-shadow: 0 1vh 3vh rgba(0,0,0,0.5);
         }
 
-        .btn-call:active { transform: scale(0.96); }
-
-        .btn-next {
-            background: var(--success-green);
-            box-shadow: 0 20px 40px rgba(46, 213, 115, 0.3);
+        .p-btn-next {
+            background: var(--perceptum-success);
         }
 
-        /* Configuración Flash */
-        #flash-settings {
-            margin: 40px 0;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 40px;
-            border: 2px dashed rgba(255, 0, 127, 0.3);
+        /* Utilidades */
+        .p-flash-fail {
+            background-color: var(--perceptum-error) !important;
+        }
+
+        #p-timer-config {
+            background: rgba(0,0,0,0.3);
+            padding: 2vh;
+            border-radius: 2vh;
+            margin-bottom: 3vh;
         }
 
         input[type="range"] {
             width: 100%;
-            height: 25px;
-            border-radius: 15px;
-            accent-color: var(--accent-pink);
-            margin: 30px 0;
+            accent-color: var(--perceptum-pink);
+            margin-top: 1.5vh;
         }
-
-        /* ----------------------------------------------------------------
-           ELEMENTOS DE RESPONSIVIDAD (MOBILE)
-           ----------------------------------------------------------------
-        */
-        @media (max-width: 900px) {
-            :root {
-                --header-h: 100px;
-                --node-dim: 80px;
-                --node-font: 2rem;
-            }
-            #main-header { padding: 0 30px; }
-            .modal-box { padding: 40px 20px; border-radius: 40px; }
-            .modal-box h1 { font-size: 3rem; }
-            .mode-container { grid-template-columns: 1fr; gap: 20px; }
-            .header-stat .value { font-size: 2rem; }
-            #lives-container { font-size: 2.5rem; letter-spacing: 10px; }
-        }
-
-        .flash-fail { background-color: var(--error-red) !important; transition: 0.1s; }
     </style>
 </head>
-<body onmousedown="handleStageClick(event)">
+<body onmousedown="triggerMiss(event)">
 
-    <header id="main-header">
-        <div class="header-stat">
-            <span class="label">Nivel</span>
-            <span id="lvl-display" class="value">1</span>
+    <header id="p-header">
+        <div class="p-stat-box">
+            <span class="p-stat-label">Nivel</span>
+            <span id="p-lvl-val" class="p-stat-value">1</span>
         </div>
-        
-        <div id="lives-container">❤️❤️❤️</div>
-        
-        <div class="header-stat">
-            <span class="label" id="timer-label">Modo Libre</span>
-            <span id="timer-display" class="value">--</span>
+        <div id="p-lives">❤️❤️❤️</div>
+        <div class="p-stat-box">
+            <span class="p-stat-label" id="p-timer-label">Modo Libre</span>
+            <span id="p-timer-val" class="p-stat-value">--</span>
         </div>
     </header>
 
-    <div id="therapy-stage"></div>
+    <div id="p-canvas"></div>
 
-    <div id="overlay-start" class="full-overlay">
-        <div class="modal-box">
-            <h1>SACCADIC ORBITAL</h1>
-            <p>Protocolo de Seguimiento Dinámico Complex. Sigue la órbita y captura los números en orden secuencial.</p>
-            
-            <div class="mode-container">
-                <div class="mode-card active" id="mode-free" onclick="selectMode('libre')">
-                    <h3>MODO LIBRE</h3>
-                    <span style="font-size:1.4rem; color:#888;">Sin límite de tiempo</span>
+    <div id="p-modal-intro" class="p-overlay">
+        <div class="p-modal">
+            <h1>Saccadic Orbital</h1>
+            <p>Protocolo de Seguimiento Dinámico. Capture los objetivos en secuencia numérica.</p>
+            <div class="p-mode-grid">
+                <div class="p-mode-card active" id="p-m-free" onclick="updateMode('libre')">
+                    <h3 style="font-size: 2vh; color: var(--perceptum-pink);">LIBRE</h3>
                 </div>
-                <div class="mode-card" id="mode-flash" onclick="selectMode('flash')">
-                    <h3>CAZADOR FLASH</h3>
-                    <span style="font-size:1.4rem; color:#888;">Reto cronometrado</span>
+                <div class="p-mode-card" id="p-m-flash" onclick="updateMode('flash')">
+                    <h3 style="font-size: 2vh; color: var(--perceptum-pink);">FLASH</h3>
                 </div>
             </div>
-
-            <div id="flash-settings" style="display: none;">
-                <label style="font-size: 1.8rem; font-weight: 800;">DURACIÓN POR NIVEL: <span id="val-slider" style="color:var(--accent-pink)">20</span>s</label>
-                <input type="range" id="timer-slider" min="10" max="60" value="20" oninput="document.getElementById('val-slider').innerText = this.value">
+            <div id="p-timer-config" style="display: none;">
+                <label style="font-size: 1.8vh;">TIEMPO: <span id="p-range-txt" style="color:var(--perceptum-pink)">20</span>s</label>
+                <input type="range" id="p-range-input" min="10" max="60" value="20" oninput="document.getElementById('p-range-txt').innerText=this.value">
             </div>
-
-            <button class="btn-call" onclick="startTherapy()">INICIAR PROTOCOLO</button>
+            <button class="p-btn" onclick="startExecution()">Iniciar Protocolo</button>
         </div>
     </div>
 
-    <div id="overlay-next" class="full-overlay" style="display: none;">
-        <div class="modal-box" style="border-color: var(--success-green);">
-            <h1 style="color: var(--success-green);">¡OBJETIVO LOGRADO!</h1>
-            <p>Control óculo-motor estabilizado en trayectoria orbital.</p>
-            <button class="btn-call btn-next" onclick="nextLevel()">Siguiente Nivel</button>
+    <div id="p-modal-next" class="p-overlay" style="display: none;">
+        <div class="p-modal" style="border-color: var(--perceptum-success);">
+            <h1 style="color: var(--perceptum-success);">¡LOGRADO!</h1>
+            <p>Se ha validado el control orbital. ¿Continuar al siguiente nivel?</p>
+            <button class="p-btn p-btn-next" onclick="goToNextLevel()">Siguiente Nivel</button>
         </div>
     </div>
 
-    <div id="overlay-results" class="full-overlay" style="display: none;">
-        <div class="modal-box">
-            <h1 style="color: var(--error-red);">SESIÓN FINALIZADA</h1>
-            <div style="margin: 40px 0; font-size: 2.5rem; display: flex; justify-content: space-around;">
-                <div>Nivel: <span id="final-lvl" style="color:var(--accent-pink); font-weight:900;">1</span></div>
-                <div>Aciertos: <span id="final-hits" style="color:var(--cyan-active); font-weight:900;">0</span></div>
+    <div id="p-modal-end" class="p-overlay" style="display: none;">
+        <div class="p-modal">
+            <h1 style="color: var(--perceptum-error);">SESIÓN FINALIZADA</h1>
+            <div style="margin: 3vh 0;">
+                <p style="font-size: 3vh;">Nivel: <span id="p-res-lvl" style="color:var(--perceptum-pink); font-weight:900;">1</span></p>
+                <p style="font-size: 3vh;">Aciertos: <span id="p-res-hits" style="color:var(--perceptum-cyan); font-weight:900;">0</span></p>
             </div>
-            <p id="cloud-status" style="color: var(--cyan-active); font-weight: 800; letter-spacing: 3px;">SINCRONIZANDO CON PERCEPTUM CLOUD...</p>
-            <button class="btn-call" onclick="location.reload()">REINTENTAR SESIÓN</button>
+            <p id="p-sync-txt" style="color: var(--perceptum-cyan); font-weight: 800; font-size: 1.8vh;">SINCRONIZANDO CON GOOGLE SHEETS...</p>
+            <button class="p-btn" onclick="location.reload()" style="margin-top: 2vh;">Reintentar</button>
         </div>
     </div>
 
     <script>
         /* ================================================================
-           MOTOR DE TERAPIA VISUAL - LOGICA EXTENDIDA
+           MOTOR LÓGICO COMPLETO - SIN OMISIONES
            ================================================================
         */
 
-        // Configuración de Google Sheets (IGUAL A TODOS TUS JUEGOS)
-        const SHEET_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const FIELD_IDS = {
+        // 1. CONFIGURACIÓN DE DATOS (IDs EXACTOS DE TU LINK)
+        const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const ENTRY_IDS = {
             paciente: "entry.369874016",
             juego: "entry.1353470174",
             nivel: "entry.721051298",
@@ -361,262 +312,225 @@
             fecha: "entry.845098414"
         };
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        let currentLevel = 1;
-        let livesRemaining = 3;
-        let nextTarget = 1;
-        let totalHits = 0;
-        let totalFails = 0;
-        let isGameActive = false;
-        let gameMode = 'libre';
-        let baseTime = 20;
-        let timeLeft = 0;
-        let mainTimer = null;
-        let nodesArray = [];
+        // 2. VARIABLES DE ESTADO PROFESIONAL
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let currentLvl = 1;
+        let currentLives = 3;
+        let currentTargetId = 1;
+        let sessionHits = 0;
+        let sessionFails = 0;
+        let isRunning = false;
+        let sessionMode = 'libre';
+        let timerLimit = 20;
+        let timerClock = null;
+        let nodesCollection = [];
 
-        /**
-         * Generador de Audio Perceptum
-         */
-        function playSfx(freq, type, dur, vol) {
+        // 3. GENERADOR DE SONIDO (SFX)
+        function playMedicalSound(freq, type, dur, vol) {
             try {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
                 osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+                osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                gain.gain.setValueAtTime(vol, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + dur);
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                gain.connect(audioContext.destination);
                 osc.start();
-                osc.stop(audioCtx.currentTime + dur);
-            } catch(e) { console.error("Audio Context Fail"); }
+                osc.stop(audioContext.currentTime + dur);
+            } catch(e) { console.warn("Audio disabled by browser"); }
         }
 
-        /**
-         * Selección de Modo
-         */
-        function selectMode(m) {
-            gameMode = m;
-            document.getElementById('mode-free').classList.toggle('active', m === 'libre');
-            document.getElementById('mode-flash').classList.toggle('active', m === 'flash');
-            document.getElementById('flash-settings').style.display = (m === 'flash') ? 'block' : 'none';
-            document.getElementById('timer-label').innerText = (m === 'flash') ? "Cazador Flash" : "Modo Libre";
+        // 4. CONTROL DE MODOS
+        function updateMode(m) {
+            sessionMode = m;
+            document.getElementById('p-m-free').classList.toggle('active', m === 'libre');
+            document.getElementById('p-m-flash').classList.toggle('active', m === 'flash');
+            document.getElementById('p-timer-config').style.display = (m === 'flash') ? 'block' : 'none';
+            document.getElementById('p-timer-label').innerText = (m === 'flash') ? "Reloj" : "Modo Libre";
         }
 
-        /**
-         * Inicialización de Sesión
-         */
-        function startTherapy() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            if (gameMode === 'flash') baseTime = parseInt(document.getElementById('timer-slider').value);
+        // 5. INICIO DE EJECUCIÓN
+        function startExecution() {
+            if (audioContext.state === 'suspended') audioContext.resume();
+            if (sessionMode === 'flash') timerLimit = parseInt(document.getElementById('p-range-input').value);
             
-            document.getElementById('overlay-start').style.display = 'none';
-            isGameActive = true;
-            setupLevelNodes();
+            document.getElementById('p-modal-intro').style.display = 'none';
+            isRunning = true;
+            renderLevel();
         }
 
-        /**
-         * Generador de Objetos Orbitales
-         */
-        function setupLevelNodes() {
-            if (!isGameActive) return;
+        // 6. RENDERIZADO DE NODOS (ORBITAL)
+        function renderLevel() {
+            if (!isRunning) return;
             
-            const stage = document.getElementById('therapy-stage');
-            stage.innerHTML = '';
-            nodesArray = [];
-            nextTarget = 1;
+            const canvas = document.getElementById('p-canvas');
+            canvas.innerHTML = '';
+            nodesCollection = [];
+            currentTargetId = 1;
             
-            const nodesCount = 2 + currentLevel; // Incremento infinito
+            const nodesToSpawn = 2 + currentLvl; // Niveles infinitos
 
-            for (let i = 1; i <= nodesCount; i++) {
+            for (let i = 1; i <= nodesToSpawn; i++) {
                 const nodeDiv = document.createElement('div');
-                nodeDiv.className = 'node-obj';
+                nodeDiv.className = 'p-node';
                 nodeDiv.innerText = i;
 
-                // Configuración de trayectoria orbital compleja
-                const config = {
+                const nodeData = {
                     dom: nodeDiv,
                     id: i,
-                    angle: Math.random() * Math.PI * 2,
-                    // VELOCIDAD ULTRA LENTA (Ajustado para seguimiento ocular real)
-                    speed: (0.003 + (currentLevel * 0.0006)) * (Math.random() > 0.5 ? 1 : -1),
-                    radiusX: (window.innerWidth * 0.15) + Math.random() * (window.innerWidth * 0.22),
-                    radiusY: (window.innerHeight * 0.1) + Math.random() * (window.innerHeight * 0.22),
+                    angle: Math.random() * (Math.PI * 2),
+                    // Velocidad calibrada para seguimiento visual
+                    speed: (0.003 + (currentLvl * 0.0005)) * (Math.random() > 0.5 ? 1 : -1),
+                    radiusX: (window.innerWidth * 0.18) + Math.random() * (window.innerWidth * 0.15),
+                    radiusY: (window.innerHeight * 0.12) + Math.random() * (window.innerHeight * 0.15),
                     centerX: window.innerWidth / 2,
-                    centerY: (window.innerHeight - 120) / 2
+                    centerY: (window.innerHeight - (window.innerHeight * 0.12)) / 2
                 };
 
                 nodeDiv.onmousedown = (e) => {
                     e.stopPropagation();
-                    processNodeCapture(config);
+                    handleNodeClick(nodeData);
                 };
 
-                stage.appendChild(nodeDiv);
-                nodesArray.push(config);
+                canvas.appendChild(nodeDiv);
+                nodesCollection.push(nodeData);
             }
 
-            if (gameMode === 'flash') launchTimer();
-            requestAnimationFrame(animateNodes);
+            if (sessionMode === 'flash') startTimerSystem();
+            requestAnimationFrame(physicsLoop);
         }
 
-        /**
-         * Motor de Animación
-         */
-        function animateNodes() {
-            if (!isGameActive) return;
+        // 7. MOTOR DE FÍSICA ORBITAL
+        function physicsLoop() {
+            if (!isRunning) return;
 
-            nodesArray.forEach(node => {
+            nodesCollection.forEach(node => {
                 node.angle += node.speed;
-                const x = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
-                const y = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
+                const posX = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
+                const posY = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
                 
-                node.dom.style.left = `${x}px`;
-                node.dom.style.top = `${y}px`;
+                node.dom.style.left = posX + 'px';
+                node.dom.style.top = posY + 'px';
             });
 
-            requestAnimationFrame(animateNodes);
+            requestAnimationFrame(physicsLoop);
         }
 
-        /**
-         * Lógica de Captura
-         */
-        function processNodeCapture(node) {
-            if (!isGameActive) return;
+        // 8. LOGICA DE CAPTURA
+        function handleNodeClick(node) {
+            if (node.id === currentTargetId) {
+                playMedicalSound(800, 'sine', 0.2, 0.1);
+                node.dom.classList.add('hit');
+                sessionHits++;
+                currentTargetId++;
 
-            if (node.id === nextTarget) {
-                playSfx(850, 'sine', 0.2, 0.1);
-                node.dom.classList.add('success-hit');
-                totalHits++;
-                nextTarget++;
-
-                if (nextTarget > nodesArray.length) {
-                    levelCleared();
+                if (currentTargetId > nodesCollection.length) {
+                    processWin();
                 }
             } else {
-                triggerPenalty();
+                processFail();
             }
         }
 
-        /**
-         * Click fallido en el escenario
-         */
-        function handleStageClick(e) {
-            if (isGameActive && !e.target.classList.contains('node-obj')) {
-                triggerPenalty();
+        // 9. FALLO FUERA DE NODO
+        function triggerMiss(e) {
+            if (isRunning && !e.target.classList.contains('p-node')) {
+                processFail();
             }
         }
 
-        /**
-         * Penalización de Vida
-         */
-        function triggerPenalty() {
-            playSfx(140, 'sawtooth', 0.4, 0.2);
-            livesRemaining--;
-            totalFails++;
+        // 10. PENALIZACIONES
+        function processFail() {
+            playMedicalSound(150, 'sawtooth', 0.4, 0.2);
+            currentLives--;
+            sessionFails++;
             
-            // Efecto Visual
-            document.body.classList.add('flash-fail');
-            setTimeout(() => document.body.classList.remove('flash-fail'), 150);
+            document.body.classList.add('p-flash-fail');
+            setTimeout(() => document.body.classList.remove('p-flash-fail'), 150);
             
-            const lUI = document.getElementById('lives-container');
-            lUI.innerText = (livesRemaining > 0) ? "❤️".repeat(livesRemaining) : "💀";
-            lUI.style.transform = "scale(1.2)";
-            setTimeout(() => lUI.style.transform = "scale(1)", 200);
+            document.getElementById('p-lives').innerText = (currentLives > 0) ? "❤️".repeat(currentLives) : "💀";
 
-            if (livesRemaining <= 0) {
-                gameOver();
+            if (currentLives <= 0) {
+                processGameOver();
             } else {
-                setupLevelNodes();
+                renderLevel(); // Reinicia el nivel actual
             }
         }
 
-        /**
-         * Cronómetro
-         */
-        function launchTimer() {
-            clearInterval(mainTimer);
-            timeLeft = baseTime;
-            document.getElementById('timer-display').innerText = timeLeft + "s";
+        // 11. SISTEMA DE CRONÓMETRO
+        function startTimerSystem() {
+            clearInterval(timerClock);
+            let timeRemains = timerLimit;
+            document.getElementById('p-timer-val').innerText = timeRemains + "s";
             
-            mainTimer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer-display').innerText = timeLeft + "s";
-                
-                if (timeLeft <= 0) {
-                    clearInterval(mainTimer);
-                    triggerPenalty();
+            timerClock = setInterval(() => {
+                timeRemains--;
+                document.getElementById('p-timer-val').innerText = timeRemains + "s";
+                if (timeRemains <= 0) {
+                    clearInterval(timerClock);
+                    processFail();
                 }
             }, 1000);
         }
 
-        /**
-         * Fin de Nivel (Pausa Terapéutica)
-         */
-        function levelCleared() {
-            isGameActive = false;
-            clearInterval(mainTimer);
-            playSfx(1000, 'sine', 0.5, 0.1);
-            document.getElementById('overlay-next').style.display = 'flex';
+        // 12. VICTORIA DE NIVEL
+        function processWin() {
+            isRunning = false;
+            clearInterval(timerClock);
+            playMedicalSound(1000, 'sine', 0.5, 0.1);
+            document.getElementById('p-modal-next').style.display = 'flex';
         }
 
-        /**
-         * Avance de Nivel
-         */
-        function nextLevel() {
-            currentLevel++;
-            document.getElementById('lvl-display').innerText = currentLevel;
-            document.getElementById('overlay-next').style.display = 'none';
+        function goToNextLevel() {
+            currentLvl++;
+            document.getElementById('p-lvl-val').innerText = currentLvl;
+            document.getElementById('p-modal-next').style.display = 'none';
             
             // Regalo de vida cada 4 niveles
-            if (currentLevel % 4 === 0 && livesRemaining < 3) {
-                livesRemaining++;
-                document.getElementById('lives-container').innerText = "❤️".repeat(livesRemaining);
+            if (currentLvl % 4 === 0 && currentLives < 3) {
+                currentLives++;
+                document.getElementById('p-lives').innerText = "❤️".repeat(currentLives);
             }
             
-            isGameActive = true;
-            setupLevelNodes();
+            isRunning = true;
+            renderLevel();
         }
 
-        /**
-         * Fin del Juego y Envío de Datos
-         */
-        function gameOver() {
-            isGameActive = false;
-            clearInterval(mainTimer);
+        // 13. FIN DE SESIÓN Y ENVÍO REAL
+        function processGameOver() {
+            isRunning = false;
+            clearInterval(timerClock);
             
-            document.getElementById('final-lvl').innerText = currentLevel;
-            document.getElementById('final-hits').innerText = totalHits;
-            document.getElementById('overlay-results').style.display = 'flex';
+            document.getElementById('p-res-lvl').innerText = currentLvl;
+            document.getElementById('p-res-hits').innerText = sessionHits;
+            document.getElementById('p-modal-end').style.display = 'flex';
             
-            syncToSheets();
+            sendDataToGoogle();
         }
 
-        /**
-         * Conexión con Google Sheets (Lógica Real)
-         */
-        function syncToSheets() {
-            const date = new Date().toLocaleDateString();
+        function sendDataToGoogle() {
+            const dateStr = new Date().toISOString().split('T')[0];
             const formData = new FormData();
             
-            formData.append(FIELD_IDS.paciente, "PACIENTE_PERCEPTUM_ORBITAL");
-            formData.append(FIELD_IDS.juego, "Orbital_Tracking_V4");
-            formData.append(FIELD_IDS.nivel, currentLevel);
-            formData.append(FIELD_IDS.aciertos, totalHits);
-            formData.append(FIELD_IDS.fallos, totalFails);
-            formData.append(FIELD_IDS.tiempo, gameMode === 'flash' ? baseTime + "s" : "Libre");
-            formData.append(FIELD_IDS.fecha, date);
+            formData.append(ENTRY_IDS.paciente, "PACIENTE_PERCEPTUM_ORBITAL");
+            formData.append(ENTRY_IDS.juego, "Saccadic_Orbital_v4.5_Full");
+            formData.append(ENTRY_IDS.nivel, currentLvl);
+            formData.append(ENTRY_IDS.aciertos, sessionHits);
+            formData.append(ENTRY_IDS.fallos, sessionFails);
+            formData.append(ENTRY_IDS.tiempo, sessionMode === 'flash' ? timerLimit + "s" : "Libre");
+            formData.append(ENTRY_IDS.fecha, dateStr);
 
-            fetch(SHEET_URL, {
+            fetch(GOOGLE_FORM_ACTION, {
                 method: "POST",
                 mode: "no-cors",
                 body: formData
             }).then(() => {
-                document.getElementById('cloud-status').innerText = "✅ CONEXIÓN EXITOSA CON LA NUBE";
-                document.getElementById('cloud-status').style.color = "var(--success-green)";
+                document.getElementById('p-sync-txt').innerText = "✅ CONEXIÓN EXITOSA CON PERCEPTUM CLOUD";
+                document.getElementById('p-sync-txt').style.color = "var(--perceptum-success)";
             }).catch(() => {
-                document.getElementById('cloud-status').innerText = "⚠️ ERROR DE SINCRONIZACIÓN";
-                document.getElementById('cloud-status').style.color = "var(--error-red)";
+                document.getElementById('p-sync-txt').innerText = "⚠️ ERROR DE SINCRONIZACIÓN";
+                document.getElementById('p-sync-txt').style.color = "var(--perceptum-error)";
             });
         }
     </script>
