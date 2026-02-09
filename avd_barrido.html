@@ -12,78 +12,106 @@
             --secondary: #bc13fe;
             --error: #ff4757;
             --success: #2ed573;
-            --panel: rgba(15, 25, 35, 0.95);
+            --panel: rgba(15, 25, 35, 0.98);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             background: var(--bg); font-family: 'Montserrat', sans-serif;
             overflow: hidden; color: white; -webkit-user-select: none;
-            touch-action: none;
+            touch-action: none; transition: background 0.15s ease;
         }
 
+        /* HEADER PREMIUM */
         #header {
-            height: 90px; display: flex; justify-content: space-between;
-            align-items: center; padding: 0 40px; background: var(--panel);
-            border-bottom: 4px solid var(--secondary); box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+            height: 100px; display: flex; justify-content: space-between;
+            align-items: center; padding: 0 45px; background: var(--panel);
+            border-bottom: 5px solid var(--secondary); box-shadow: 0 8px 30px rgba(0,0,0,0.9);
             position: relative; z-index: 1000;
         }
 
         .stat-group { display: flex; flex-direction: column; align-items: center; }
-        .stat-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); font-weight: 800; }
-        .stat-value { font-size: 2rem; font-weight: 900; }
-        #v-lives { font-size: 2.5rem; letter-spacing: 10px; filter: drop-shadow(0 0 10px var(--secondary)); }
-        #timer-display { color: var(--error); font-variant-numeric: tabular-nums; }
+        .stat-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); font-weight: 800; }
+        .stat-value { font-size: 2.2rem; font-weight: 900; filter: drop-shadow(0 0 5px var(--accent)); }
+        #v-lives { font-size: 2.8rem; letter-spacing: 12px; filter: drop-shadow(0 0 15px var(--secondary)); }
+        #timer-display { color: var(--error); transition: all 0.3s; }
 
+        /* ESCENARIO DE ALTO CONTRASTE */
         #game-area {
-            position: relative; width: 100%; height: calc(100vh - 90px);
-            background: radial-gradient(circle at center, #0a141d 0%, #05080a 100%);
+            position: relative; width: 100%; height: calc(100vh - 100px);
+            background: 
+                radial-gradient(circle at 50% 50%, #101a24 0%, #05080a 100%),
+                linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 60px 60px, 60px 60px;
         }
 
+        /* OBJETIVOS SECUENCIALES */
         .target {
-            position: absolute; width: 70px; height: 70px;
-            background: var(--panel); border: 3px solid var(--secondary);
+            position: absolute; width: 85px; height: 85px;
+            background: #161b2a; border: 4px solid var(--secondary);
             border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; font-weight: 900; font-size: 1.8rem;
-            box-shadow: 0 0 20px rgba(188, 19, 254, 0.4);
-            cursor: pointer; transition: all 0.2s; z-index: 500;
-            color: white;
+            justify-content: center; font-weight: 900; font-size: 2.2rem;
+            box-shadow: 0 0 25px rgba(188, 19, 254, 0.5);
+            cursor: pointer; transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 500; color: white;
         }
 
-        .target.next { border-color: var(--accent); box-shadow: 0 0 30px var(--accent); transform: scale(1.1); }
-        .target.clicked { opacity: 0; transform: scale(0); pointer-events: none; }
+        .target.next { 
+            border-color: var(--accent); 
+            box-shadow: 0 0 40px var(--accent), inset 0 0 15px var(--accent); 
+            transform: scale(1.15);
+            z-index: 600;
+        }
 
-        /* MODALES */
+        .target.clicked { opacity: 0; transform: scale(0) rotate(180deg); pointer-events: none; }
+
+        /* MODALES DETALLADOS */
         .overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.97);
             display: flex; align-items: center; justify-content: center;
-            z-index: 5000; backdrop-filter: blur(15px);
+            z-index: 5000; backdrop-filter: blur(20px);
         }
 
         .modal {
-            background: #0f1923; padding: 40px; border-radius: 40px;
-            border: 5px solid var(--secondary); width: 90%; max-width: 550px;
-            text-align: center;
+            background: #0f1923; padding: 50px; border-radius: 60px;
+            border: 6px solid var(--secondary); width: 90%; max-width: 650px;
+            text-align: center; box-shadow: 0 0 100px rgba(188, 19, 254, 0.3);
         }
 
-        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 30px 0; }
+        .modal h1 { font-size: 3.5rem; color: var(--accent); margin-top: 0; text-shadow: 0 0 20px var(--accent); }
+
+        .mode-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 40px 0; }
         .mode-btn {
-            background: #1a2632; border: 2px solid #3e4859; padding: 20px;
-            border-radius: 20px; cursor: pointer; transition: 0.3s; color: white;
+            background: #1a2632; border: 3px solid #3e4859; padding: 25px;
+            border-radius: 30px; cursor: pointer; transition: all 0.3s; color: white;
         }
-        .mode-btn.active { border-color: var(--accent); background: rgba(0, 242, 255, 0.1); }
-        .mode-btn h3 { margin: 0 0 10px 0; color: var(--accent); }
+        .mode-btn.active { border-color: var(--accent); background: rgba(0, 242, 255, 0.15); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+        .mode-btn h3 { margin: 0 0 10px 0; font-size: 1.4rem; color: var(--accent); }
 
         .btn-play {
             background: linear-gradient(135deg, var(--secondary), var(--accent));
-            color: white; padding: 20px; border-radius: 20px; border: none;
-            width: 100%; font-size: 1.8rem; font-weight: 900; cursor: pointer;
+            color: white; padding: 25px; border-radius: 25px; border: none;
+            width: 100%; font-size: 2.2rem; font-weight: 900; cursor: pointer;
+            letter-spacing: 4px; box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
         }
 
-        input[type="range"] { width: 100%; margin: 15px 0; accent-color: var(--accent); }
-        
-        .flash-red { animation: flashError 0.3s; }
-        @keyframes flashError { 50% { background: var(--error); } }
+        .btn-play:active { transform: scale(0.95); }
+
+        /* TABLA DE RESULTADOS */
+        .results-table { width: 100%; margin: 35px 0; border-spacing: 0 15px; border-collapse: separate; }
+        .results-table td { padding: 22px; background: rgba(255,255,255,0.05); font-size: 1.8rem; }
+        .td-label { border-radius: 25px 0 0 25px; color: var(--accent); font-weight: 700; text-align: left; }
+        .td-val { border-radius: 0 25px 25px 0; text-align: right; font-weight: 900; }
+
+        .flash-red { background-color: var(--error) !important; }
+
+        /* RANGO PERSONALIZADO */
+        input[type="range"] { 
+            width: 100%; height: 12px; border-radius: 10px;
+            accent-color: var(--accent); margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -91,32 +119,29 @@
     <header id="header">
         <div class="stat-group"><span class="stat-label">Nivel</span><span id="v-lvl" class="stat-value">1</span></div>
         <div id="v-lives">❤️❤️❤️</div>
-        <div class="stat-group">
-            <span class="stat-label" id="timer-label">Modo Libre</span>
-            <span id="timer-display" class="stat-value">--</span>
-        </div>
+        <div class="stat-group"><span class="stat-label" id="timer-label">Modo Libre</span><span id="timer-display" class="stat-value">--</span></div>
     </header>
 
     <div id="game-area"></div>
 
     <div id="modal-start" class="overlay">
         <div class="modal">
-            <h1 style="color: var(--accent); margin-bottom: 10px;">BARRIDO LINEAL</h1>
-            <p>Toca los números en orden secuencial.</p>
+            <h1>BARRIDO LINEAL</h1>
+            <p style="font-size: 1.4rem; opacity: 0.9;">Toca los números en orden secuencial.</p>
             
             <div class="mode-selector">
                 <div class="mode-btn active" id="btn-libre" onclick="setMode('libre')">
                     <h3>MODO LIBRE</h3>
-                    <small>Sin tiempo, ideal para precisión.</small>
+                    <small>Sin presión de tiempo.</small>
                 </div>
                 <div class="mode-btn" id="btn-flash" onclick="setMode('flash')">
-                    <h3>CAZADOR FLASH</h3>
-                    <small>Completa la serie antes que el reloj llegue a 0.</small>
+                    <h3>FLASH</h3>
+                    <small>Modo cronometrado.</small>
                 </div>
             </div>
 
-            <div id="config-flash" style="display:none; margin-bottom: 25px;">
-                <label>Tiempo por nivel: <b id="val-time">15</b>s</label><br>
+            <div id="config-flash" style="display:none; margin: 30px 0; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 20px;">
+                <label style="font-size: 1.3rem;">Tiempo por nivel: <b id="val-time" style="color:var(--accent)">15</b>s</label><br>
                 <input type="range" id="input-time" min="5" max="30" value="15" oninput="document.getElementById('val-time').innerText=this.value">
             </div>
 
@@ -126,32 +151,46 @@
 
     <div id="modal-res" class="overlay" style="display:none;">
         <div class="modal">
-            <h1 id="res-title" style="color: var(--error);">FIN DEL JUEGO</h1>
-            <div style="font-size: 1.5rem; margin: 30px 0;">
-                <p>Nivel alcanzado: <b id="res-lvl" style="color:var(--accent)">1</b></p>
-                <p>Aciertos totales: <b id="res-hits" style="color:var(--accent)">0</b></p>
-            </div>
+            <h1 style="color: var(--error);">FIN DEL JUEGO</h1>
+            <table class="results-table">
+                <tr><td class="td-label">Nivel Alcanzado:</td><td id="res-lvl" class="td-val">1</td></tr>
+                <tr><td class="td-label">Aciertos Totales:</td><td id="res-hits" class="td-val">0</td></tr>
+            </table>
             <button class="btn-play" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
+        // --- MOTOR DE AUDIO ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(freq, type, dur, vol) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + dur);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + dur);
+            } catch(e) {}
+        }
+
+        // --- ESTADO DEL JUEGO ---
         let lvl = 1, lives = 3, currentStep = 1, totalHits = 0;
         let active = false, mode = 'libre', timeLimit = 15, timeLeft = 0, timerInt = null;
-        const area = document.getElementById('game-area');
 
         function setMode(m) {
             mode = m;
             document.getElementById('btn-libre').classList.toggle('active', m === 'libre');
             document.getElementById('btn-flash').classList.toggle('active', m === 'flash');
             document.getElementById('config-flash').style.display = m === 'flash' ? 'block' : 'none';
+            document.getElementById('timer-label').innerText = m === 'flash' ? "Tiempo" : "Modo Libre";
         }
 
         function startGame() {
-            if(mode === 'flash') {
-                timeLimit = parseInt(document.getElementById('input-time').value);
-                document.getElementById('timer-label').innerText = "Tiempo Restante";
-            }
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(mode === 'flash') timeLimit = parseInt(document.getElementById('input-time').value);
             document.getElementById('modal-start').style.display = 'none';
             active = true;
             spawnSequence();
@@ -159,23 +198,26 @@
 
         function spawnSequence() {
             if(!active) return;
+            const area = document.getElementById('game-area');
             area.innerHTML = '';
             currentStep = 1;
-            const count = 2 + lvl; // Nivel 1 = 3 números, Nivel 2 = 4, etc.
+            const count = 2 + lvl; // Incremento de números por nivel
 
             for(let i = 1; i <= count; i++) {
                 const t = document.createElement('div');
                 t.className = 'target';
                 if(i === 1) t.classList.add('next');
                 
-                const x = 50 + Math.random() * (window.innerWidth - 150);
-                const y = 50 + Math.random() * (area.offsetHeight - 150);
+                // Posicionamiento inteligente con márgenes
+                const margin = 100;
+                const x = margin + Math.random() * (window.innerWidth - margin * 2.5);
+                const y = margin + Math.random() * (area.offsetHeight - margin * 2.5);
                 
                 t.style.left = `${x}px`;
                 t.style.top = `${y}px`;
                 t.innerText = i;
                 
-                t.onclick = () => handleTouch(i, t);
+                t.onclick = (e) => { e.stopPropagation(); handleTouch(i, t); };
                 area.appendChild(t);
             }
 
@@ -186,22 +228,42 @@
             if(!active) return;
 
             if(num === currentStep) {
+                // ACIERTO
+                playSfx(880, 'sine', 0.15, 0.1); 
                 el.classList.add('clicked');
                 totalHits++;
                 currentStep++;
                 
-                // Resaltar el siguiente
+                // Activar visualmente el siguiente número
                 const targets = document.querySelectorAll('.target');
                 targets.forEach(t => {
                     if(parseInt(t.innerText) === currentStep) t.classList.add('next');
                 });
 
+                // Verificar si terminó la secuencia del nivel
                 if(currentStep > (2 + lvl)) {
                     clearInterval(timerInt);
                     levelUp();
                 }
             } else {
-                fail("¡Número incorrecto!");
+                // ERROR DE SECUENCIA
+                fail("Orden incorrecto");
+            }
+        }
+
+        function fail(reason) {
+            playSfx(120, 'sawtooth', 0.4, 0.2);
+            lives--;
+            document.body.classList.add('flash-red');
+            setTimeout(() => document.body.classList.remove('flash-red'), 250);
+            
+            updateLivesUI();
+            
+            if(lives <= 0) {
+                endGame();
+            } else {
+                // Reinicia la secuencia del mismo nivel
+                spawnSequence();
             }
         }
 
@@ -213,37 +275,39 @@
             timerInt = setInterval(() => {
                 timeLeft--;
                 document.getElementById('timer-display').innerText = timeLeft + "s";
+                
+                if(timeLeft <= 5) document.getElementById('timer-display').style.color = "#ff4757";
+                else document.getElementById('timer-display').style.color = "var(--error)";
+
                 if(timeLeft <= 0) {
                     clearInterval(timerInt);
-                    fail("¡Se acabó el tiempo!");
+                    fail("Tiempo agotado");
                 }
             }, 1000);
         }
 
-        function fail(msg) {
-            lives--;
-            document.body.classList.add('flash-red');
-            setTimeout(() => document.body.classList.remove('flash-red'), 300);
-            updateLives();
-            
-            if(lives <= 0) {
-                endGame();
-            } else {
-                spawnSequence(); // Reiniciar el nivel actual
-            }
-        }
-
         function levelUp() {
+            playSfx(1200, 'sine', 0.3, 0.05);
             lvl++;
             document.getElementById('v-lvl').innerText = lvl;
+            
+            // Vida extra cada 4 niveles
             if(lvl % 4 === 0 && lives < 3) {
                 lives++;
-                updateLives();
+                updateLivesUI();
             }
-            spawnSequence();
+            
+            // Pequeña pausa de éxito antes del siguiente nivel
+            active = false;
+            setTimeout(() => {
+                if(lives > 0) {
+                    active = true;
+                    spawnSequence();
+                }
+            }, 800);
         }
 
-        function updateLives() {
+        function updateLivesUI() {
             document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
         }
 
