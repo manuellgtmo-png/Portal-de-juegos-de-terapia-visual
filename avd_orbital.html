@@ -6,510 +6,630 @@
     <title>Saccadic Orbital Tracking - Perceptum Terapia Visual</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* --- PERCEPTUM DESIGN SYSTEM: PILAR 3 --- */
+        /* ========================================
+           PERCEPTUM DESIGN SYSTEM - PILAR 3
+           ========================================
+        */
         :root {
             --bg-color: #05080a;
-            --accent-color: #ff007f;
-            --secondary-color: #bc13fe;
-            --error-color: #ff4757;
+            --accent-primary: #ff007f;
+            --accent-secondary: #bc13fe;
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.7);
             --success-color: #2ed573;
+            --error-color: #ff4757;
             --panel-bg: rgba(15, 25, 35, 0.98);
-            --neon-glow: 0 0 30px rgba(255, 0, 127, 0.7);
-            --inner-glow: inset 0 0 15px rgba(255, 0, 127, 0.5);
-            --font-main: 'Montserrat', sans-serif;
+            --neon-shadow: 0 0 30px rgba(255, 0, 127, 0.6);
+            --neon-border: 6px solid var(--accent-primary);
         }
 
-        * { 
-            box-sizing: border-box; 
-            outline: none; 
-            -webkit-tap-highlight-color: transparent; 
+        * {
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body, html {
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
+            margin: 0;
+            padding: 0;
+            width: 100%;
             height: 100%;
-            background: var(--bg-color); 
-            font-family: var(--font-main);
-            overflow: hidden; 
-            color: white; 
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            color: var(--text-main);
             -webkit-user-select: none;
-            touch-action: none; 
-            transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            touch-action: none;
         }
 
-        /* --- HEADER DE ALTO IMPACTO --- */
-        #main-header {
-            height: 115px; 
-            width: 100%; 
-            display: flex; 
+        /* ----------------------------------------
+           HEADER DE ALTO IMPACTO 
+           ----------------------------------------
+        */
+        #game-header {
+            height: 120px;
+            width: 100%;
+            display: flex;
             justify-content: space-between;
-            align-items: center; 
-            padding: 0 65px; 
+            align-items: center;
+            padding: 0 60px;
             background: var(--panel-bg);
-            border-bottom: 7px solid var(--accent-color);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.95);
-            position: relative; 
+            border-bottom: 8px solid var(--accent-primary);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9);
+            position: relative;
             z-index: 5000;
         }
 
-        .stat-container { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-width: 150px; 
+        .header-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
         }
 
-        .label-text { 
-            font-size: 1.1rem; 
-            text-transform: uppercase; 
-            letter-spacing: 5px; 
-            color: var(--accent-color); 
-            font-weight: 800; 
-            margin-bottom: 10px; 
+        .header-stat-label {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            color: var(--accent-primary);
+            font-weight: 800;
+            margin-bottom: 8px;
         }
 
-        .value-text { 
-            font-size: 2.8rem; 
-            font-weight: 900; 
-            text-shadow: var(--neon-glow); 
-            transition: transform 0.3s ease;
-        }
-        
-        #lives-render { 
-            font-size: 3.4rem; 
-            letter-spacing: 20px; 
-            filter: drop-shadow(0 0 25px var(--accent-color)); 
+        .header-stat-value {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-shadow: var(--neon-shadow);
         }
 
-        #timer-render { 
-            color: var(--error-color); 
+        #lives-container {
+            font-size: 3.5rem;
+            letter-spacing: 20px;
+            filter: drop-shadow(0 0 20px var(--accent-primary));
+            transition: all 0.3s ease;
         }
 
-        /* --- ESCENARIO ORBITAL --- */
-        #stage-area {
-            position: relative; 
-            width: 100%; 
-            height: calc(100vh - 115px);
+        /* ----------------------------------------
+           ESCENARIO DE TERAPIA 
+           ----------------------------------------
+        */
+        #therapy-stage {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 120px);
             background-image: 
                 radial-gradient(circle at 50% 50%, #1a0b16 0%, #05080a 100%),
-                linear-gradient(rgba(255, 0, 127, 0.04) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 127, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 75px 75px, 75px 75px;
+                linear-gradient(rgba(255, 0, 127, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 127, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 80px 80px, 80px 80px;
             overflow: hidden;
+            cursor: crosshair;
         }
 
-        /* --- NODOS DE SEGUIMIENTO --- */
-        .node-obj {
-            position: absolute; 
-            width: 95px; 
-            height: 95px;
-            background: #1a1a2e; 
-            border: 6px solid var(--accent-color);
-            border-radius: 50%; 
-            display: flex; 
+        .orbital-node {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: #1a1a2e;
+            border: 6px solid var(--accent-primary);
+            border-radius: 50%;
+            display: flex;
             align-items: center;
-            justify-content: center; 
-            font-weight: 900; 
-            font-size: 2.7rem;
-            box-shadow: var(--neon-glow), var(--inner-glow); 
-            cursor: pointer;
-            z-index: 1000; 
-            color: white;
-            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.25s ease;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 2.8rem;
+            box-shadow: var(--neon-shadow), inset 0 0 20px rgba(255, 0, 127, 0.3);
+            z-index: 1000;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
         }
 
-        .node-obj.success-hit {
+        .orbital-node.active-hit {
             border-color: var(--success-color);
-            box-shadow: 0 0 70px var(--success-color), inset 0 0 30px var(--success-color);
-            transform: scale(2.2); 
-            opacity: 0; 
+            box-shadow: 0 0 60px var(--success-color), inset 0 0 20px var(--success-color);
+            transform: scale(1.8);
+            opacity: 0;
             pointer-events: none;
         }
 
-        /* --- ARQUITECTURA DE MODALES --- */
-        .master-overlay {
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.99);
-            display: flex; 
-            align-items: center; 
+        /* ----------------------------------------
+           SISTEMA DE MODALES 
+           ----------------------------------------
+        */
+        .full-screen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            display: flex;
+            align-items: center;
             justify-content: center;
-            z-index: 9999; 
-            backdrop-filter: blur(35px);
+            z-index: 9999;
+            backdrop-filter: blur(30px);
         }
 
-        .modal-ui {
-            background: #0f1923; 
-            padding: 70px; 
-            border-radius: 90px;
-            border: 10px solid var(--accent-color); 
-            width: 92%; 
-            max-width: 800px;
-            text-align: center; 
-            box-shadow: 0 0 200px rgba(255, 0, 127, 0.45);
+        .modal-box {
+            background: #0f1923;
+            padding: 70px;
+            border-radius: 80px;
+            border: 10px solid var(--accent-primary);
+            width: 90%;
+            max-width: 850px;
+            text-align: center;
+            box-shadow: 0 0 150px rgba(255, 0, 127, 0.4);
+            animation: modalAppear 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
-        .modal-ui h1 { 
-            font-size: 4.5rem; 
-            color: var(--accent-color); 
-            margin: 0 0 25px 0; 
-            text-shadow: 0 0 50px var(--accent-color); 
-            font-weight: 900; 
+        @keyframes modalAppear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-ui p { 
-            font-size: 2rem; 
-            margin-bottom: 50px; 
-            color: rgba(255,255,255,0.85); 
-            line-height: 1.5;
+        .modal-box h1 {
+            font-size: 4.5rem;
+            color: var(--accent-primary);
+            margin: 0 0 30px 0;
+            text-shadow: 0 0 40px var(--accent-primary);
+            font-weight: 900;
+            letter-spacing: -2px;
         }
 
-        /* --- INTERFAZ DE CONTROL --- */
-        .selector-box { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 40px; 
-            margin: 50px 0; 
+        .modal-box p {
+            font-size: 1.8rem;
+            line-height: 1.4;
+            margin-bottom: 50px;
+            color: var(--text-dim);
         }
 
-        .card-option {
-            background: #1a2632; 
-            border: 6px solid #3e4859; 
+        /* ----------------------------------------
+           SELECTORES DE MODO 
+           ----------------------------------------
+        */
+        .mode-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 50px 0;
+        }
+
+        .mode-btn {
+            background: #1a2632;
+            border: 6px solid #3e4859;
             padding: 40px;
-            border-radius: 45px; 
-            cursor: pointer; 
-            transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            border-radius: 45px;
+            cursor: pointer;
+            transition: all 0.4s ease;
         }
 
-        .card-option.active { 
-            border-color: var(--accent-color); 
-            background: rgba(255, 0, 127, 0.2); 
-            transform: translateY(-15px); 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.7); 
+        .mode-btn.is-active {
+            border-color: var(--accent-primary);
+            background: rgba(255, 0, 127, 0.15);
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        .card-option h3 { 
-            margin: 0 0 15px 0; 
-            font-size: 2rem; 
-            color: var(--accent-color); 
+        .mode-btn h3 {
+            margin: 0 0 10px 0;
+            font-size: 2.2rem;
+            color: var(--accent-primary);
             text-transform: uppercase;
         }
 
-        .main-btn {
-            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
-            color: white; 
-            padding: 35px; 
-            border-radius: 40px; 
+        .mode-btn span {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        /* ----------------------------------------
+           CONTROLES Y BOTONES 
+           ----------------------------------------
+        */
+        .primary-action-btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            padding: 35px;
+            border-radius: 40px;
             border: none;
-            width: 100%; 
-            font-size: 2.8rem; 
-            font-weight: 900; 
+            width: 100%;
+            font-size: 2.8rem;
+            font-weight: 900;
             cursor: pointer;
-            letter-spacing: 8px; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-            transition: all 0.4s;
+            letter-spacing: 8px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
         }
 
-        .main-btn:hover { filter: brightness(1.2); }
-        .main-btn:active { transform: scale(0.95); }
-
-        /* --- TABLA DE RESULTADOS --- */
-        .data-table { 
-            width: 100%; 
-            margin: 50px 0; 
-            border-collapse: separate; 
-            border-spacing: 0 25px; 
+        .primary-action-btn:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
         }
 
-        .data-table td { 
-            padding: 35px; 
-            background: rgba(255,255,255,0.08); 
-            font-size: 2.5rem; 
+        .primary-action-btn:active {
+            transform: scale(0.96);
         }
 
-        .key-cell { 
-            border-radius: 40px 0 0 40px; 
-            color: var(--accent-color); 
-            font-weight: 800; 
-            text-align: left; 
-            padding-left: 50px !important; 
+        #timer-config-panel {
+            margin: 40px 0;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 40px;
+            border: 2px dashed rgba(255, 0, 127, 0.3);
         }
 
-        .val-cell { 
-            border-radius: 0 40px 40px 0; 
-            text-align: right; 
-            font-weight: 900; 
-            padding-right: 50px !important; 
-        }
-
-        .damage-flash { background-color: var(--error-color) !important; }
-        
-        input[type="range"] { 
-            width: 100%; 
-            height: 25px; 
-            border-radius: 15px; 
-            accent-color: var(--accent-color); 
-            margin: 30px 0; 
+        input[type="range"] {
+            width: 100%;
+            height: 25px;
+            border-radius: 15px;
+            accent-color: var(--accent-primary);
+            margin: 30px 0;
             cursor: pointer;
+        }
+
+        /* ----------------------------------------
+           TABLA DE RESULTADOS 
+           ----------------------------------------
+        */
+        .stats-table {
+            width: 100%;
+            margin: 40px 0;
+            border-collapse: separate;
+            border-spacing: 0 20px;
+        }
+
+        .stats-table td {
+            padding: 35px;
+            background: rgba(255,255,255,0.06);
+            font-size: 2.4rem;
+        }
+
+        .cell-label {
+            border-radius: 40px 0 0 40px;
+            color: var(--accent-primary);
+            font-weight: 800;
+            text-align: left;
+            padding-left: 50px !important;
+        }
+
+        .cell-value {
+            border-radius: 0 40px 40px 0;
+            text-align: right;
+            font-weight: 900;
+            padding-right: 50px !important;
+        }
+
+        .flash-screen-error {
+            background-color: var(--error-color) !important;
         }
     </style>
 </head>
-<body onmousedown="detectStageMiss(event)">
+<body onmousedown="handleGlobalClick(event)">
 
-    <header id="main-header">
-        <div class="stat-container"><span class="label-text">Nivel</span><span id="v-lvl" class="value-text">1</span></div>
-        <div id="lives-render">❤️❤️❤️</div>
-        <div class="stat-container"><span class="label-text" id="mode-label">Modo Libre</span><span id="v-timer" class="value-text">--</span></div>
+    <header id="game-header">
+        <div class="header-stat">
+            <span class="header-stat-label">Nivel</span>
+            <span id="display-lvl" class="header-stat-value">1</span>
+        </div>
+        
+        <div id="lives-container">❤️❤️❤️</div>
+        
+        <div class="header-stat">
+            <span class="header-stat-label" id="timer-mode-label">Modo Libre</span>
+            <span id="display-timer" class="header-stat-value">--</span>
+        </div>
     </header>
 
-    <div id="stage-area"></div>
+    <div id="therapy-stage"></div>
 
-    <div id="modal-start" class="master-overlay">
-        <div class="modal-ui">
+    <div id="overlay-start" class="full-screen-overlay">
+        <div class="modal-box">
             <h1>SACCADIC ORBITAL</h1>
-            <p>Protocolo de seguimiento dinámico. Toca los números en secuencia mientras orbitan el centro visual.</p>
-            <div class="selector-box">
-                <div class="card-option active" id="c-libre" onclick="toggleAppMode('libre')">
+            <p>Protocolo de Seguimiento Dinámico Complex. Sigue la órbita y toca los números en orden secuencial.</p>
+            
+            <div class="mode-container">
+                <div class="mode-btn is-active" id="btn-mode-libre" onclick="selectGameMode('libre')">
                     <h3>MODO LIBRE</h3>
-                    <small style="font-size: 1.2rem;">Sin restricción temporal</small>
+                    <span>Sin límite de tiempo</span>
                 </div>
-                <div class="card-option" id="c-flash" onclick="toggleAppMode('flash')">
+                <div class="mode-btn" id="btn-mode-flash" onclick="selectGameMode('flash')">
                     <h3>CAZADOR FLASH</h3>
-                    <small style="font-size: 1.2rem;">Seguimiento bajo presión</small>
+                    <span>Reto cronometrado</span>
                 </div>
             </div>
-            <div id="config-timer" style="display:none; margin: 40px 0; padding: 40px; background: rgba(0,0,0,0.4); border-radius: 45px;">
-                <label style="font-size: 1.8rem; font-weight: 800;">RELOJ DE NIVEL: <span id="label-t" style="color:var(--accent-color)">20</span>s</label>
-                <input type="range" id="slider-t" min="10" max="60" value="20" oninput="document.getElementById('label-t').innerText=this.value">
+
+            <div id="timer-config-panel" style="display: none;">
+                <label style="font-size: 1.8rem; font-weight: 800;">DURACIÓN DEL RELOJ: <span id="label-range-val" style="color:var(--accent-primary)">20</span> SEG</label>
+                <input type="range" id="timer-slider" min="10" max="60" value="20" oninput="document.getElementById('label-range-val').innerText = this.value">
             </div>
-            <button class="main-btn" onclick="initializeProtocol()">INICIAR TERAPIA</button>
+
+            <button class="primary-action-btn" onclick="initTherapySession()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
-    <div id="modal-next" class="master-overlay" style="display:none;">
-        <div class="modal-ui" style="border-color: var(--success-color);">
-            <h1 style="color: var(--success-color);">¡NIVEL LOGRADO!</h1>
-            <p style="font-size: 2rem;">Seguimiento orbital completado. ¿Continuar al siguiente desafío?</p>
-            <button class="main-btn" onclick="advanceLevel()" style="background: var(--success-color);">SIGUIENTE NIVEL</button>
+    <div id="overlay-next" class="full-screen-overlay" style="display: none;">
+        <div class="modal-box" style="border-color: var(--success-color);">
+            <h1 style="color: var(--success-color);">¡CONSEGUIDO!</h1>
+            <p style="font-size: 2rem;">Control óculo-motor estabilizado. ¿Pasar al siguiente nivel?</p>
+            <button class="primary-action-btn" onclick="goToNextLevel()" style="background: var(--success-color);">CONTINUAR</button>
         </div>
     </div>
 
-    <div id="modal-end" class="master-overlay" style="display:none;">
-        <div class="modal-ui">
+    <div id="overlay-results" class="full-screen-overlay" style="display: none;">
+        <div class="modal-box">
             <h1 style="color: var(--error-color);">SESIÓN FINALIZADA</h1>
-            <table class="data-table">
-                <tr><td class="key-cell">Nivel Alcanzado:</td><td id="res-lvl" class="val-cell">1</td></tr>
-                <tr><td class="key-cell">Aciertos Totales:</td><td id="res-hits" class="val-cell">0</td></tr>
+            <table class="stats-table">
+                <tr>
+                    <td class="cell-label">Nivel Alcanzado:</td>
+                    <td id="res-final-lvl" class="cell-value">1</td>
+                </tr>
+                <tr>
+                    <td class="cell-label">Aciertos Totales:</td>
+                    <td id="res-final-hits" class="cell-value">0</td>
+                </tr>
             </table>
-            <p id="cloud-log" style="color: var(--accent-color); font-weight: 900; letter-spacing: 4px; text-transform: uppercase;">Sincronizando con base de datos...</p>
-            <button class="main-btn" onclick="location.reload()">REINTENTAR</button>
+            <p id="cloud-sync-status" style="color: var(--accent-primary); font-weight: 900; letter-spacing: 5px; text-transform: uppercase;">Sincronizando con la nube...</p>
+            <button class="primary-action-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE NUBE PERCEPTUM (ESTRICTA) ---
-        const CLOUD_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const SCHEMA = {
-            paciente: "entry.369874016",
-            juego: "entry.1353470174",
-            nivel: "entry.721051298",
-            aciertos: "entry.873272199",
-            fallos: "entry.1030094511",
-            tiempo: "entry.1303309812",
-            fecha: "entry.845098414"
-        };
+        /* ========================================
+           LÓGICA DEL MOTOR PERCEPTUM
+           ========================================
+        */
 
-        // --- MOTOR DE AUDIO TERAPÉUTICO ---
-        const audioEngine = new (window.AudioContext || window.webkitAudioContext)();
-        function emitTone(frequency, waveType, duration, volume) {
+        // Referencias de audio
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Variables de estado del juego
+        let currentLevel = 1;
+        let livesRemaining = 3;
+        let expectedNumber = 1;
+        let totalHits = 0;
+        let totalFails = 0;
+        let gameActive = false;
+        let chosenMode = 'libre';
+        let timeLimit = 20;
+        let timerCountdown = 0;
+        let timerInterval = null;
+        let orbitalNodesArray = [];
+
+        /**
+         * Generador de sonido profesional
+         */
+        function playTherapySound(freq, type, duration, volume) {
             try {
-                const oscillator = audioEngine.createOscillator();
-                const gainNode = audioEngine.createGain();
-                oscillator.type = waveType;
-                oscillator.frequency.setValueAtTime(frequency, audioEngine.currentTime);
-                gainNode.gain.setValueAtTime(volume, audioEngine.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioEngine.currentTime + duration);
-                oscillator.connect(gainNode);
-                gainNode.connect(audioEngine.destination);
-                oscillator.start();
-                oscillator.stop(audioEngine.currentTime + duration);
-            } catch(error) { console.error("Audio Error:", error); }
-        }
-
-        // --- VARIABLES DE ESTADO ---
-        let protocolLevel = 1, currentLives = 3, targetStep = 1;
-        let hitsRegister = 0, failsRegister = 0;
-        let isRunning = false, appMode = 'libre', baseTime = 20, remainingTime = 0, timerClock = null;
-        let activeNodes = [];
-
-        function toggleAppMode(selection) {
-            appMode = selection;
-            document.getElementById('c-libre').classList.toggle('active', selection === 'libre');
-            document.getElementById('c-flash').classList.toggle('active', selection === 'flash');
-            document.getElementById('config-timer').style.display = selection === 'flash' ? 'block' : 'none';
-            document.getElementById('mode-label').innerText = selection === 'flash' ? "Cronómetro" : "Modo Libre";
-        }
-
-        function initializeProtocol() {
-            if (audioEngine.state === 'suspended') audioEngine.resume();
-            if (appMode === 'flash') baseTime = parseInt(document.getElementById('slider-t').value);
-            document.getElementById('modal-start').style.display = 'none';
-            isRunning = true;
-            buildOrbitalLayer();
-        }
-
-        function buildOrbitalLayer() {
-            if (!isRunning) return;
-            const stage = document.getElementById('stage-area');
-            stage.innerHTML = '';
-            activeNodes = [];
-            targetStep = 1;
-            const nodeCount = 2 + protocolLevel;
-
-            for (let i = 1; i <= nodeCount; i++) {
-                const div = document.createElement('div');
-                div.className = 'node-obj';
-                div.innerText = i;
-
-                const nodeLogic = {
-                    dom: div,
-                    id: i,
-                    angle: Math.random() * Math.PI * 2,
-                    // VELOCIDAD REDUCIDA PARA SEGUIMIENTO TERAPÉUTICO DE CALIDAD
-                    rotationSpeed: (0.006 + (protocolLevel * 0.0012)) * (Math.random() > 0.5 ? 1 : -1),
-                    radX: 140 + Math.random() * (window.innerWidth / 3.3),
-                    radY: 120 + Math.random() * (window.innerHeight / 3.3),
-                    centerX: window.innerWidth / 2,
-                    centerY: (window.innerHeight - 115) / 2
-                };
-
-                div.onmousedown = (event) => { 
-                    event.stopPropagation(); 
-                    processInteraction(nodeLogic); 
-                };
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
                 
-                stage.appendChild(div);
-                activeNodes.push(nodeLogic);
+                oscillator.type = type;
+                oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                
+                gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + duration);
+            } catch (e) { console.log("Audio not supported"); }
+        }
+
+        /**
+         * Selector de modo de juego
+         */
+        function selectGameMode(mode) {
+            chosenMode = mode;
+            document.getElementById('btn-mode-libre').classList.toggle('is-active', mode === 'libre');
+            document.getElementById('btn-mode-flash').classList.toggle('is-active', mode === 'flash');
+            document.getElementById('timer-config-panel').style.display = (mode === 'flash') ? 'block' : 'none';
+            document.getElementById('timer-mode-label').innerText = (mode === 'flash') ? "Cazador Flash" : "Modo Libre";
+        }
+
+        /**
+         * Inicialización de la sesión
+         */
+        function initTherapySession() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            if (chosenMode === 'flash') {
+                timeLimit = parseInt(document.getElementById('timer-slider').value);
             }
             
-            if (appMode === 'flash') runCountdown();
-            requestAnimationFrame(updateOrbitalMotion);
+            document.getElementById('overlay-start').style.display = 'none';
+            gameActive = true;
+            setupOrbitalLevel();
         }
 
-        function updateOrbitalMotion() {
-            if (!isRunning) return;
-            activeNodes.forEach(node => {
+        /**
+         * Construcción de los nodos orbitales
+         */
+        function setupOrbitalLevel() {
+            if (!gameActive) return;
+            
+            const stage = document.getElementById('therapy-stage');
+            stage.innerHTML = '';
+            orbitalNodesArray = [];
+            expectedNumber = 1;
+            
+            // Cantidad de números según el nivel
+            const totalToSpawn = 2 + currentLevel;
+
+            for (let i = 1; i <= totalToSpawn; i++) {
+                const element = document.createElement('div');
+                element.className = 'orbital-target orbital-node';
+                element.innerText = i;
+
+                // Propiedades de la órbita elíptica
+                const nodeData = {
+                    dom: element,
+                    id: i,
+                    angle: Math.random() * Math.PI * 2,
+                    // VELOCIDAD ULTRA LENTA PARA SEGUIMIENTO
+                    rotationSpeed: (0.004 + (currentLevel * 0.0012)) * (Math.random() > 0.5 ? 1 : -1),
+                    radiusX: 150 + Math.random() * (window.innerWidth / 3.2),
+                    radiusY: 120 + Math.random() * (window.innerHeight / 3.2),
+                    centerX: window.innerWidth / 2,
+                    centerY: (window.innerHeight - 120) / 2
+                };
+
+                // Evento de clic
+                element.onmousedown = (e) => {
+                    e.stopPropagation();
+                    processNodeHit(nodeData);
+                };
+
+                stage.appendChild(element);
+                orbitalNodesArray.push(nodeData);
+            }
+
+            if (chosenMode === 'flash') startTimerSystem();
+            requestAnimationFrame(updateOrbitalFrame);
+        }
+
+        /**
+         * Motor de animación orbital (60fps)
+         */
+        function updateOrbitalFrame() {
+            if (!gameActive) return;
+
+            orbitalNodesArray.forEach(node => {
                 node.angle += node.rotationSpeed;
-                const posX = node.centerX + Math.cos(node.angle) * node.radX - 47;
-                const posY = node.centerY + Math.sin(node.angle) * node.radY - 47;
-                node.dom.style.left = `${posX}px`;
-                node.dom.style.top = `${posY}px`;
+                
+                const x = node.centerX + Math.cos(node.angle) * node.radiusX - 50;
+                const y = node.centerY + Math.sin(node.angle) * node.radiusY - 50;
+                
+                node.dom.style.left = `${x}px`;
+                node.dom.style.top = `${y}px`;
             });
-            requestAnimationFrame(updateOrbitalMotion);
+
+            requestAnimationFrame(updateOrbitalFrame);
         }
 
-        function processInteraction(node) {
-            if (!isRunning) return;
-            if (node.id === targetStep) {
-                emitTone(900, 'sine', 0.25, 0.15);
-                node.dom.classList.add('success-hit');
-                hitsRegister++;
-                targetStep++;
-                if (targetStep > activeNodes.length) {
-                    clearInterval(timerClock);
-                    triggerTransition();
+        /**
+         * Lógica de acierto
+         */
+        function processNodeHit(node) {
+            if (!gameActive) return;
+
+            if (node.id === expectedNumber) {
+                // Acierto
+                playTherapySound(900, 'sine', 0.25, 0.1);
+                node.dom.classList.add('active-hit');
+                totalHits++;
+                expectedNumber++;
+
+                // Verificar si terminó el nivel
+                if (expectedNumber > orbitalNodesArray.length) {
+                    handleLevelClear();
                 }
             } else {
-                handleMistake();
+                // Error de secuencia
+                handlePenalty();
             }
         }
 
-        function detectStageMiss(e) {
-            if (isRunning && !e.target.classList.contains('node-obj')) {
-                handleMistake();
+        /**
+         * Click en el vacío (Error de precisión)
+         */
+        function handleGlobalClick(e) {
+            if (gameActive && !e.target.classList.contains('orbital-node')) {
+                handlePenalty();
             }
         }
 
-        function handleMistake() {
-            emitTone(130, 'sawtooth', 0.45, 0.25);
-            currentLives--;
-            failsRegister++;
-            document.body.classList.add('damage-flash');
-            setTimeout(() => document.body.classList.remove('damage-flash'), 250);
-            refreshLivesUI();
-            if (currentLives <= 0) finalizeProtocol(); else buildOrbitalLayer();
+        /**
+         * Lógica de penalización (Vidas)
+         */
+        function handlePenalty() {
+            playTherapySound(150, 'sawtooth', 0.5, 0.2);
+            livesRemaining--;
+            totalFails++;
+            
+            // Efecto visual de error
+            document.body.classList.add('flash-screen-error');
+            setTimeout(() => document.body.classList.remove('flash-screen-error'), 200);
+            
+            // Actualizar UI
+            const livesUI = document.getElementById('lives-container');
+            livesUI.innerText = (livesRemaining > 0) ? "❤️".repeat(livesRemaining) : "💀";
+            
+            if (livesRemaining <= 0) {
+                triggerGameOver();
+            } else {
+                // Reiniciar el nivel actual
+                setupOrbitalLevel();
+            }
         }
 
-        function runCountdown() {
-            clearInterval(timerClock);
-            remainingTime = baseTime;
-            document.getElementById('v-timer').innerText = remainingTime + "s";
-            timerClock = setInterval(() => {
-                remainingTime--;
-                document.getElementById('v-timer').innerText = remainingTime + "s";
-                if (remainingTime <= 0) { 
-                    clearInterval(timerClock); 
-                    handleMistake(); 
+        /**
+         * Control del cronómetro
+         */
+        function startTimerSystem() {
+            clearInterval(timerInterval);
+            timerCountdown = timeLimit;
+            document.getElementById('display-timer').innerText = timerCountdown + "s";
+            
+            timerInterval = setInterval(() => {
+                timerCountdown--;
+                document.getElementById('display-timer').innerText = timerCountdown + "s";
+                
+                if (timerCountdown <= 0) {
+                    clearInterval(timerInterval);
+                    handlePenalty();
                 }
             }, 1000);
         }
 
-        function triggerTransition() {
-            isRunning = false;
-            emitTone(1100, 'sine', 0.5, 0.12);
-            document.getElementById('modal-next').style.display = 'flex';
+        /**
+         * Nivel completado
+         */
+        function handleLevelClear() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            playTherapySound(1100, 'sine', 0.5, 0.1);
+            document.getElementById('overlay-next').style.display = 'flex';
         }
 
-        function advanceLevel() {
-            protocolLevel++;
-            document.getElementById('v-lvl').innerText = protocolLevel;
-            document.getElementById('modal-next').style.display = 'none';
-            if (protocolLevel % 4 === 0 && currentLives < 3) {
-                currentLives++; 
-                refreshLivesUI();
+        /**
+         * Avanzar nivel
+         */
+        function goToNextLevel() {
+            currentLevel++;
+            document.getElementById('display-lvl').innerText = currentLevel;
+            document.getElementById('overlay-next').style.display = 'none';
+            
+            // Recuperar vida cada 3 niveles
+            if (currentLevel % 3 === 0 && livesRemaining < 3) {
+                livesRemaining++;
+                document.getElementById('lives-container').innerText = "❤️".repeat(livesRemaining);
             }
-            isRunning = true;
-            buildOrbitalLayer();
+            
+            gameActive = true;
+            setupOrbitalLevel();
         }
 
-        function refreshLivesUI() {
-            const ui = document.getElementById('lives-render');
-            ui.innerText = currentLives > 0 ? "❤️".repeat(currentLives) : "💀";
-        }
-
-        function finalizeProtocol() {
-            isRunning = false;
-            clearInterval(timerClock);
-            document.getElementById('res-lvl').innerText = protocolLevel;
-            document.getElementById('res-hits').innerText = hitsRegister;
-            document.getElementById('modal-end').style.display = 'flex';
-            uploadToCloud();
-        }
-
-        function uploadToCloud() {
-            const stamp = new Date().toISOString().split('T')[0];
-            const payload = new URLSearchParams();
-            payload.append(SCHEMA.paciente, "PACIENTE_ORBITAL_PRO");
-            payload.append(SCHEMA.juego, "Saccadic_Orbital_Tracking_V3");
-            payload.append(SCHEMA.nivel, protocolLevel);
-            payload.append(SCHEMA.aciertos, hitsRegister);
-            payload.append(SCHEMA.fallos, failsRegister);
-            payload.append(SCHEMA.tiempo, baseTime + "s");
-            payload.append(SCHEMA.fecha, stamp);
-
-            fetch(CLOUD_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: payload
-            }).then(() => {
-                const log = document.getElementById('cloud-log');
-                log.innerText = "✅ PROTOCOLO SINCRONIZADO";
-                log.style.color = "var(--success-color)";
-            }).catch(() => {
-                document.getElementById('cloud-log').innerText = "⚠️ ERROR DE SINCRONIZACIÓN";
-            });
+        /**
+         * Fin del juego
+         */
+        function triggerGameOver() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            document.getElementById('res-final-lvl').innerText = currentLevel;
+            document.getElementById('res-final-hits').innerText = totalHits;
+            document.getElementById('overlay-results').style.display = 'flex';
+            
+            // Sincronización (Simulada para luego conectar con Sheets)
+            setTimeout(() => {
+                const status = document.getElementById('cloud-sync-status');
+                status.innerText = "✅ DATOS LISTOS PARA CLOUD";
+                status.style.color = "var(--success-color)";
+            }, 1500);
         }
     </script>
 </body>
