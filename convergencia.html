@@ -11,161 +11,197 @@
             --card-bg: #1e293b;
             --accent-color: #38bdf8;
             --text-color: #f8fafc;
+            --success: #10b981;
+            --danger: #f472b6;
         }
         body {
             margin: 0; font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-color); color: var(--text-color);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 100vh; overflow-x: hidden;
+            min-height: 100vh; overflow: hidden;
         }
 
-        /* --- INTRODUCCIÓN --- */
+        /* --- PANTALLA DE INTRODUCCIÓN --- */
         #intro-screen {
             background: var(--card-bg); padding: 40px; border-radius: 40px;
             border: 2px solid var(--accent-color); text-align: center; 
-            max-width: 600px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-width: 700px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-height: 90vh; overflow-y: auto;
         }
 
-        .tutorial-box {
-            background: white; color: #000; border-radius: 20px; padding: 25px; margin: 20px 0;
-            display: flex; flex-direction: column; align-items: center;
+        .distancia-alerta {
+            background: rgba(56, 189, 248, 0.15); border: 2px dashed var(--accent-color);
+            padding: 15px; border-radius: 20px; margin: 15px 0; font-weight: 900;
+            color: var(--accent-color); font-size: 1.1rem;
         }
 
-        .preview-image {
-            display: flex; align-items: center; gap: 15px; margin-top: 15px;
+        .tutorial-area {
+            background: rgba(255, 255, 255, 0.03); border-radius: 25px; 
+            padding: 25px; margin: 20px 0; border: 1px solid rgba(56, 189, 248, 0.2);
         }
 
-        .box-preview {
-            width: 80px; height: 100px; border: 2px solid #000; border-radius: 10px;
+        .preview-flex {
+            display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px;
+        }
+
+        .box-mini {
+            width: 80px; height: 110px; border: 1px solid var(--accent-color); border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            padding: 10px 0; font-weight: 900; font-size: 20px;
+            padding: 10px 0; background: rgba(255,255,255,0.05); font-size: 18px; color: white;
         }
-        .box-preview.main { border: 4px solid var(--accent-color); background: #f0f9ff; transform: scale(1.1); }
+        .box-mini.target { 
+            border: 3px solid var(--success); background: rgba(16, 185, 129, 0.15); 
+            transform: scale(1.15); box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
 
-        .config-group { margin: 20px 0; text-align: left; }
-        .config-group label { display: block; margin-bottom: 8px; font-weight: 900; color: var(--accent-color); font-size: 0.9rem; }
+        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .config-group { text-align: left; }
+        .config-group label { display: block; margin-bottom: 8px; font-weight: 900; color: var(--accent-color); font-size: 0.8rem; letter-spacing: 1px; }
         input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent-color); }
         .val-display { font-weight: bold; float: right; color: white; }
 
-        /* --- ÁREA DE JUEGO --- */
+        /* --- ÁREA DE ENTRENAMIENTO --- */
         #game-area { display: none; width: 100%; height: 100vh; flex-direction: column; align-items: center; }
-        #timer-display { font-size: 4rem; font-weight: 900; color: var(--accent-color); margin-top: 20px; }
-        
+        #timer-display { font-size: 5rem; font-weight: 900; color: var(--accent-color); margin-top: 10px; }
+        #phase-name { font-weight: 900; text-transform: uppercase; letter-spacing: 3px; font-size: 1.2rem; margin-bottom: 5px; }
+        #series-info { opacity: 0.6; font-size: 0.9rem; margin-bottom: 20px; }
+
         #stimulus-container {
-            flex-grow: 1; width: 100%; display: flex; align-items: center; justify-content: center; gap: 20px;
+            flex-grow: 1; width: 100%; display: flex; align-items: center; justify-content: center;
         }
 
         .target-card {
-            width: 200px; height: 260px; background: white; border-radius: 30px;
-            border: 5px solid var(--accent-color); display: flex; flex-direction: column;
-            align-items: center; justify-content: space-between; padding: 20px 0;
-            position: relative; transition: transform 0.1s linear;
+            width: 220px; height: 320px; background: white; border-radius: 40px;
+            border: 6px solid var(--accent-color); display: flex; flex-direction: column;
+            align-items: center; justify-content: space-between; padding: 30px 0;
+            position: relative; transition: transform 0.1s linear; box-shadow: 0 0 40px rgba(56, 189, 248, 0.2);
         }
 
-        .main-shape {
-            flex-grow: 1; display: flex; align-items: center; justify-content: center; position: relative;
-        }
+        .glyph { font-size: 90px; filter: grayscale(1); user-select: none; }
+        .mark { font-size: 50px; font-weight: 900; color: #000; line-height: 1; user-select: none; }
 
-        /* Figuras Negras */
-        .circle { width: 100px; height: 100px; border: 10px solid #000; border-radius: 50%; }
-        .cross-v { width: 100px; height: 10px; background: #000; position: absolute; }
-        .cross-h { width: 10px; height: 100px; background: #000; position: absolute; }
-        
-        .mark { font-size: 40px; font-weight: 900; color: #000; }
-
+        /* --- UI INFERIOR --- */
         .bottom-ui {
-            background: var(--card-bg); padding: 25px 60px; border-radius: 40px 40px 0 0;
-            border: 2px solid var(--accent-color); text-align: center; width: 100%; max-width: 600px;
+            background: var(--card-bg); padding: 25px 60px; border-radius: 45px 45px 0 0;
+            border: 2px solid var(--accent-color); border-bottom: none; text-align: center; width: 100%; max-width: 650px;
         }
 
-        .btn-primary {
+        .btn-main {
             background: var(--accent-color); color: var(--bg-color); border: none;
-            padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; font-weight: 900; cursor: pointer;
+            padding: 20px 60px; border-radius: 50px; font-size: 1.3rem; font-weight: 900; cursor: pointer; transition: 0.3s;
         }
+        .btn-main:hover { transform: scale(1.05); box-shadow: 0 0 25px var(--accent-color); }
+
+        .controls { display: flex; justify-content: center; gap: 20px; align-items: center; }
         .controls button {
-            padding: 10px 25px; font-size: 1.5rem; cursor: pointer;
-            border-radius: 15px; border: none; background: var(--accent-color); font-weight: bold; margin: 0 10px;
+            width: 80px; height: 60px; border-radius: 20px; border: none; 
+            background: var(--accent-color); font-weight: 900; cursor: pointer; font-size: 2rem;
+            display: flex; align-items: center; justify-content: center;
         }
+        .btn-exit { background: var(--danger) !important; color: white !important; font-size: 1rem !important; width: auto !important; padding: 0 30px !important; }
+
     </style>
 </head>
 <body>
 
     <div id="intro-screen">
-        <h1 style="margin: 0; font-size: 2.5rem;">CONVERGENCIA</h1>
+        <h1 style="margin: 0; color: var(--accent-color); font-size: 2.5rem;">CONVERGENCIA PRO</h1>
+        <p style="margin: 10px 0; opacity: 0.8;">Entrenamiento de reserva fusional positiva y coordinación binocular.</p>
         
-        <div class="tutorial-box">
-            <span style="font-weight: 900; font-size: 0.9rem;">OBJETIVO VISUAL:</span>
-            <div class="preview-image">
-                <div class="box-preview"><div>+</div><div>○</div><div> </div></div>
-                <div class="box-preview main"><div>+</div><div>⊕</div><div>-</div></div>
-                <div class="box-preview"><div> </div><div>+</div><div>-</div></div>
-            </div>
-            <p style="font-size: 0.8rem; margin-top: 20px;">Cruza la vista hasta ver la <b>imagen central combinada</b>.<br>Si falta un signo, hay supresión.</p>
-        </div>
-        
-        <div class="config-group">
-            <label>SERIES: <span id="v-series" class="val-display">3</span></label>
-            <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateLabels()">
-        </div>
-        <div class="config-group">
-            <label>TRABAJO (Seg): <span id="v-work" class="val-display">20</span></label>
-            <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateLabels()">
-        </div>
-        <div class="config-group">
-            <label>DESCANSO (Seg): <span id="v-rest" class="val-display">10</span></label>
-            <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateLabels()">
+        <div class="distancia-alerta">
+            📏 REALIZAR TAREA A 40 CM DE DISTANCIA
         </div>
 
-        <button class="btn-primary" onclick="startSession()">INICIAR SESIÓN</button>
+        <div class="tutorial-area">
+            <p style="font-size: 0.85rem; line-height: 1.6; margin: 0;">
+                La <b>convergencia</b> permite enfocar objetos cercanos coordinando ambos ojos. 
+                Cruza la vista lentamente hasta que las figuras laterales se unan en una <b>tercera imagen central</b>.
+            </p>
+            <div class="preview-flex">
+                <div class="box-mini"><div>+</div><div>🦁</div><div>&nbsp;</div></div>
+                <div class="box-mini target"><div>+</div><div>🏠</div><div>-</div></div>
+                <div class="box-mini"><div>&nbsp;</div><div>🗼</div><div>-</div></div>
+            </div>
+            <p style="font-size: 0.75rem; margin-top: 15px; color: var(--accent-color);">
+                Asegúrate de ver el signo <b>(+) arriba</b> y el <b>(-) abajo</b> en la imagen central.
+            </p>
+        </div>
+        
+        <div class="config-grid">
+            <div class="config-group">
+                <label>Nº DE SERIES: <span id="v-series" class="val-display">3</span></label>
+                <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateLabels()">
+            </div>
+            <div class="config-group">
+                <label>TRABAJO (SEG): <span id="v-work" class="val-display">20</span></label>
+                <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateLabels()">
+            </div>
+        </div>
+
+        <button class="btn-main" onclick="startSession()">COMENZAR SESIÓN</button>
     </div>
 
     <div id="game-area">
         <div id="timer-display">00</div>
-        <div id="phase-name" style="font-weight:900; letter-spacing: 2px;">PREPARADO</div>
+        <div id="phase-name">PREPARADO</div>
+        <div id="series-info">Serie 1 de X</div>
 
         <div id="stimulus-container">
             <div id="left-box" class="target-card">
                 <div class="mark">+</div>
-                <div class="main-shape"><div class="circle"></div></div>
+                <div id="img-left" class="glyph">🦁</div>
                 <div class="mark" style="visibility: hidden;">-</div>
             </div>
             
-            <div id="right-box" class="target-card">
+            <div id="right-box" class="target-card" style="margin-left: 20px;">
                 <div class="mark" style="visibility: hidden;">+</div>
-                <div class="main-shape">
-                    <div class="cross-v"></div>
-                    <div class="cross-h"></div>
-                </div>
+                <div id="img-right" class="glyph">🗼</div>
                 <div class="mark">-</div>
             </div>
         </div>
 
         <div class="bottom-ui">
-            <div style="font-size: 1.2rem; font-weight: 900; margin-bottom: 15px;">SEPARACIÓN: <span id="sep-val">0</span> px</div>
+            <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 20px; letter-spacing: 1px;">
+                DEMANDA: <span id="sep-val" style="color:var(--accent-color)">0</span> Δ
+            </div>
             <div class="controls">
-                <button onclick="changeSep(-5)">-</button>
-                <button onclick="changeSep(5)">+</button>
-                <button onclick="location.reload()" style="background:#f472b6; font-size: 1rem;">SALIR</button>
+                <button onclick="changeSep(-4)">-</button>
+                <button onclick="changeSep(4)">+</button>
+                <button onclick="location.reload()" class="btn-exit">SALIR</button>
             </div>
         </div>
     </div>
 
     <script>
-        let separation = 30; 
+        let separation = 20; 
         let currentSerie = 1;
-        let timer;
         let isWorkPhase = true;
+        let timerInterval;
+        
+        const pairs = [
+            {l: '🦁', r: '🗼'}, {l: '🏠', r: '🌳'}, {l: '🔔', r: '⏰'},
+            {l: '🍎', r: '🍐'}, {l: '🐱', r: '🐶'}, {l: '🚗', r: '🚲'},
+            {l: '🌙', r: '☀️'}, {l: '🎈', r: '🎁'}
+        ];
 
         function updateLabels() {
             document.getElementById('v-series').innerText = document.getElementById('i-series').value;
             document.getElementById('v-work').innerText = document.getElementById('i-work').value;
-            document.getElementById('v-rest').innerText = document.getElementById('i-rest').value;
         }
 
         function updatePosition() {
             document.getElementById('left-box').style.transform = `translateX(${-separation}px)`;
             document.getElementById('right-box').style.transform = `translateX(${separation}px)`;
-            document.getElementById('sep-val').innerText = separation * 2;
+            
+            // Cálculo de Dioptrías Prismáticas estimado para 40cm
+            let dioptrias = Math.floor(separation / 3.2);
+            document.getElementById('sep-val').innerText = dioptrias;
+        }
+
+        function changeImg() {
+            const randomPair = pairs[Math.floor(Math.random() * pairs.length)];
+            document.getElementById('img-left').innerText = randomPair.l;
+            document.getElementById('img-right').innerText = randomPair.r;
         }
 
         function changeSep(val) {
@@ -182,16 +218,20 @@
 
         function runPhase() {
             let totalSeries = parseInt(document.getElementById('i-series').value);
-            let timeLeft = isWorkPhase ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
+            let workTime = parseInt(document.getElementById('i-work').value);
+            let timeLeft = isWorkPhase ? workTime : 10;
             
-            document.getElementById('phase-name').innerText = isWorkPhase ? "¡FUSIONA!" : "DESCANSA";
-            document.getElementById('phase-name').style.color = isWorkPhase ? "#10b981" : "#f472b6";
+            document.getElementById('phase-name').innerText = isWorkPhase ? "¡MANTÉN LA FUSIÓN!" : "DESCANSO - RELAJA";
+            document.getElementById('phase-name').style.color = isWorkPhase ? "var(--success)" : "var(--danger)";
+            document.getElementById('series-info').innerText = `Serie ${currentSerie} de ${totalSeries}`;
             document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.1";
 
-            timer = setInterval(() => {
+            if(isWorkPhase) changeImg();
+
+            timerInterval = setInterval(() => {
                 document.getElementById('timer-display').innerText = timeLeft < 10 ? "0" + timeLeft : timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(timer);
+                    clearInterval(timerInterval);
                     if (isWorkPhase) {
                         isWorkPhase = false;
                         runPhase();
@@ -201,7 +241,7 @@
                             isWorkPhase = true;
                             runPhase();
                         } else {
-                            alert("Sesión Completada");
+                            alert("¡Sesión completada con éxito!");
                             location.reload();
                         }
                     }
@@ -210,6 +250,7 @@
             }, 1000);
         }
 
+        // Soporte para teclado
         document.addEventListener('keydown', (e) => {
             if(e.key === 'ArrowRight') changeSep(2);
             if(e.key === 'ArrowLeft') changeSep(-2);
