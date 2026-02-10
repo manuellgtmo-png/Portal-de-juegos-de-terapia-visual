@@ -8,153 +8,337 @@
     <style>
         :root {
             --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.9);
+            --card-bg: rgba(30, 41, 59, 0.95);
             --accent-color: #38bdf8;
             --text-color: #f8fafc;
             --success: #10b981;
             --danger: #f472b6;
         }
+
         body {
-            margin: 0; font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-color); color: var(--text-color);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; overflow: hidden;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        /* CONTENEDORES PRINCIPALES */
-        #setup-screen, #summary-screen {
-            background: var(--card-bg); padding: 30px; border-radius: 30px;
-            border: 2px solid var(--accent-color); text-align: center; 
-            max-width: 600px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px); position: absolute; z-index: 10;
+        /* --- ESTILOS DE PANTALLAS (MODALES) --- */
+        .screen-container {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 40px;
+            border: 3px solid var(--accent-color);
+            text-align: center;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            backdrop-filter: blur(15px);
+            display: none; /* Se activan por JS */
+            position: absolute;
+            z-index: 100;
         }
 
-        /* DEFINICIÓN Y GUÍA VISUAL */
-        .info-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin: 15px 0; font-size: 0.85rem; line-height: 1.4; }
-        .visual-guide { display: flex; justify-content: center; gap: 15px; margin: 15px 0; align-items: center; }
-        .guide-item { border: 1px solid #444; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; }
-        .guide-item.target { border: 2px solid var(--success); transform: scale(1.1); }
-
-        .distancia-banner {
-            background: rgba(56, 189, 248, 0.2); border: 1px dashed var(--accent-color);
-            padding: 10px; border-radius: 12px; margin-bottom: 15px;
-            font-weight: 900; color: var(--accent-color); text-transform: uppercase;
+        .active-screen {
+            display: block;
+            animation: fadeIn 0.5s ease;
         }
 
-        /* CONFIGURACIÓN */
-        .config-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-        .config-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; }
-        .config-card label { display: block; font-size: 0.65rem; font-weight: 900; color: var(--accent-color); margin-bottom: 5px; }
-        input[type="range"] { width: 100%; accent-color: var(--accent-color); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        /* ÁREA DE JUEGO XXL */
-        #game-area { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; align-items: center; }
-        .timer-header { text-align: center; margin-top: 20px; }
-        .timer-val { font-size: 5rem; font-weight: 900; color: var(--accent-color); line-height: 1; }
+        h1, h2 { color: var(--accent-color); font-weight: 900; margin-top: 0; }
         
-        #stimulus-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 100px; width: 100%; }
-        .target-box { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 50vh; width: 250px; }
-        .glyph { font-size: 200px; color: #fff; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-        .mark { font-size: 70px; font-weight: 900; color: #fff; }
-
-        /* BARRA INFERIOR */
-        .bottom-nav {
-            background: var(--card-bg); padding: 20px 40px; border-radius: 40px 40px 0 0;
-            border: 2px solid var(--accent-color); border-bottom: none;
-            width: 85%; max-width: 900px; display: flex; justify-content: space-between; align-items: center;
+        .definition-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: justify;
         }
-        .delta-display { font-size: 2.5rem; font-weight: 900; color: var(--accent-color); }
-        .btn-group { display: flex; gap: 15px; }
-        button { border: none; border-radius: 15px; font-family: 'Montserrat'; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .btn-plus-minus { background: var(--accent-color); width: 60px; height: 55px; font-size: 1.8rem; }
-        .btn-finish { background: var(--danger); color: white; padding: 0 20px; font-size: 0.8rem; }
-        .btn-start { background: var(--success); width: 100%; padding: 18px; font-size: 1.2rem; border-radius: 20px; }
+
+        .distancia-alerta {
+            background: rgba(56, 189, 248, 0.15);
+            border: 2px dashed var(--accent-color);
+            padding: 15px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-weight: 900;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+
+        /* --- CONFIGURACIÓN --- */
+        .config-box {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .config-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        .config-item label {
+            display: block;
+            font-weight: 900;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .val-num { float: right; color: white; font-size: 1.1rem; }
+
+        input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+        }
+
+        /* --- GUÍA VISUAL --- */
+        .visual-guide-container {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            display: inline-flex;
+            gap: 30px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .guide-card {
+            color: black;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 1rem;
+        }
+
+        .guide-card.fusion-target {
+            border: 4px solid var(--success);
+            transform: scale(1.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* --- ÁREA DE JUEGO --- */
+        #game-area {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #stimulus-container {
+            position: absolute;
+            top: 50%;
+            left: 45%; /* Desplazado un poco a la izquierda por la barra lateral */
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 80px;
+        }
+
+        .target-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 55vh;
+            width: 200px;
+            transition: transform 0.1s linear;
+        }
+
+        .glyph {
+            font-size: 180px;
+            color: #FFFFFF !important; /* BLANCO PURO */
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.4));
+            user-select: none;
+        }
+
+        .mark {
+            font-size: 80px;
+            font-weight: 900;
+            color: #FFFFFF !important; /* BLANCO PURO */
+            user-select: none;
+        }
+
+        /* --- BARRA LATERAL VERTICAL --- */
+        .sidebar-controls {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--card-bg);
+            border: 3px solid var(--accent-color);
+            padding: 30px 20px;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .btn-side {
+            width: 80px;
+            height: 80px;
+            border-radius: 25px;
+            border: none;
+            font-size: 2.5rem;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-up { background: var(--accent-color); color: var(--bg-color); }
+        .btn-down { background: var(--accent-color); color: var(--bg-color); }
+        .btn-end { 
+            background: var(--danger); 
+            color: white; 
+            font-size: 0.8rem; 
+            height: auto; 
+            padding: 15px 10px; 
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        .btn-side:hover { transform: scale(1.1); }
+
+        .btn-next {
+            background: var(--success);
+            color: black;
+            border: none;
+            padding: 20px;
+            width: 100%;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 1.3rem;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .timer-display-top {
+            position: absolute;
+            top: 40px;
+            left: 45%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .timer-val { font-size: 6rem; font-weight: 900; color: var(--accent-color); line-height: 1; }
+        .phase-txt { font-weight: 900; letter-spacing: 5px; text-transform: uppercase; margin-top: 10px; }
+
     </style>
 </head>
 <body>
 
-    <div id="setup-screen">
-        <h2 style="margin: 0; color: var(--accent-color);">CONVERGENCIA PRO</h2>
-        <div class="info-box">
-            La <b>convergencia</b> permite enfocar objetos cercanos coordinando ambos ojos. 
-            Cruza la vista lentamente hasta que las figuras laterales se unan en una tercera imagen central.
+    <div id="screen-1" class="screen-container active-screen">
+        <h1>CONVERGENCIA VISUAL</h1>
+        <div class="definition-text">
+            La <b>convergencia</b> es la capacidad de coordinar ambos ojos para dirigirlos simultáneamente hacia un objeto cercano. 
+            Este movimiento es esencial para mantener una visión binocular única y nítida. 
+            Un entrenamiento adecuado de la convergencia ayuda a eliminar la fatiga visual, las cefaleas y la visión doble durante la lectura o el uso de pantallas.
         </div>
-        
-        <div class="distancia-banner">📏 Realizar tarea a 40 cm de distancia</div>
-
-        <div class="visual-guide">
-            <div class="guide-item">🏠<br>+</div>
-            <div class="guide-item target"><b>+<br>🏠<br>-</b><br><small>OBJETIVO</small></div>
-            <div class="guide-item">🏠<br>-</div>
-        </div>
-
-        <div class="config-row">
-            <div class="config-card">
-                <label>SERIES: <span id="l-series">3</span></label>
-                <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateL()">
-            </div>
-            <div class="config-card">
-                <label>TRABAJO: <span id="l-work">20</span>s</label>
-                <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateL()">
-            </div>
-            <div class="config-card">
-                <label>DESCANSO: <span id="l-rest">10</span>s</label>
-                <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateL()">
-            </div>
-        </div>
-
-        <button class="btn-start" onclick="startSession()">¡COMENZAR SESIÓN!</button>
+        <button class="btn-next" onclick="goToScreen(2)">CONFIGURAR EJERCICIO</button>
     </div>
 
-    <div id="summary-screen" style="display: none;">
-        <h1 style="font-size: 4rem; margin: 0;">🥳</h1>
-        <h2 style="color: var(--success);">¡ENTRENAMIENTO EXITOSO!</h2>
-        <p>Lograste una demanda máxima de:</p>
-        <div style="font-size: 3rem; font-weight: 900; color: var(--accent-color); margin: 10px 0;"><span id="res-delta">0</span> Δ</div>
-        <button class="btn-start" style="background: var(--accent-color);" onclick="resetToSetup()">REPETIR CONFIGURACIÓN</button>
+    <div id="screen-2" class="screen-container">
+        <h2>AJUSTES DE SESIÓN</h2>
+        <div class="distancia-alerta">📏 REALIZAR TAREA A 40 CM DE DISTANCIA</div>
+        
+        <div class="config-box">
+            <div class="config-item">
+                <label>Número de Series <span id="l-series" class="val-num">3</span></label>
+                <input type="range" id="i-series" min="1" max="10" value="3" oninput="syncLabels()">
+            </div>
+            <div class="config-item">
+                <label>Tiempo de Trabajo (s) <span id="l-work" class="val-num">20</span></label>
+                <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="syncLabels()">
+            </div>
+            <div class="config-item">
+                <label>Tiempo de Descanso (s) <span id="l-rest" class="val-num">10</span></label>
+                <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="syncLabels()">
+            </div>
+        </div>
+        <button class="btn-next" onclick="goToScreen(3)">SIGUIENTE</button>
+    </div>
+
+    <div id="screen-3" class="screen-container">
+        <h2>OBJETIVO VISUAL</h2>
+        <p>Al cruzar la vista, las dos figuras deben fusionarse en una sola imagen central perfecta.</p>
+        
+        <div class="visual-guide-container">
+            <div class="guide-card">🏠<br>+</div>
+            <div class="guide-card fusion-target">
+                <b>+</b><br>
+                <span style="font-size: 2rem;">🏠</span><br>
+                <b>-</b><br>
+                <small>IMAGEN FUSIONADA</small>
+            </div>
+            <div class="guide-card">🏠<br>-</div>
+        </div>
+        <p style="font-size: 0.9rem; opacity: 0.8;">Asegúrate de ver ambos signos de control (+ y -) en la figura central.</p>
+        <button class="btn-next" onclick="startGame()" style="background: var(--accent-color);">¡EMPEZAR AHORA!</button>
     </div>
 
     <div id="game-area">
-        <div class="timer-header">
-            <div id="timer-display" class="timer-val">00</div>
-            <div id="status-label" style="letter-spacing: 4px; font-weight: 900; font-size: 1.2rem;">¡FUSIONA!</div>
+        <div class="timer-display-top">
+            <div id="timer-val" class="timer-val">00</div>
+            <div id="phase-label" class="phase-txt">PREPARADO</div>
+            <div id="series-label" style="opacity: 0.5; margin-top: 5px;">Serie 1</div>
         </div>
 
         <div id="stimulus-container">
-            <div id="box-l" class="target-box">
+            <div id="box-l" class="target-column">
                 <div class="mark">+</div>
                 <div id="fig-l" class="glyph">🏠</div>
                 <div class="mark" style="visibility: hidden;">-</div>
             </div>
-            <div id="box-r" class="target-box">
+            <div id="box-r" class="target-column">
                 <div class="mark" style="visibility: hidden;">+</div>
                 <div id="fig-r" class="glyph">🏠</div>
                 <div class="mark">-</div>
             </div>
         </div>
 
-        <div class="bottom-nav">
-            <div>
-                <div style="font-size: 0.7rem; opacity: 0.6; font-weight: 900;">DEMANDA</div>
-                <div class="delta-display"><span id="demand-val">0</span> <small style="font-size: 1rem;">Δ</small></div>
+        <div class="sidebar-controls">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <div style="font-size: 0.7rem; font-weight: 900; opacity: 0.6;">DEMANDA</div>
+                <div style="font-size: 2rem; font-weight: 900; color: var(--accent-color);"><span id="demand-val">0</span> Δ</div>
             </div>
-            <div class="btn-group">
-                <button class="btn-plus-minus" onclick="adjust( -6 )">-</button>
-                <button class="btn-plus-minus" onclick="adjust( 6 )">+</button>
-                <button class="btn-finish" onclick="endEarly()">TERMINAR</button>
-            </div>
+            <button class="btn-side btn-up" onclick="adjust(6)">+</button>
+            <button class="btn-side btn-down" onclick="adjust(-6)">-</button>
+            <button class="btn-side btn-end" onclick="location.reload()">TERMINAR<br>EJERCICIO</button>
         </div>
     </div>
 
     <script>
-        let separation = 30;
-        let seriesCount = 1;
+        let separation = 25;
+        let currentSerie = 1;
         let isWorkPhase = true;
-        let clock;
-        let maxReached = 0;
-        const figuras = ['🏠', '🦁', '⭐', '🔔', '🌳', '🐱', '🍎', '🌙'];
+        let timerClock;
+        const iconBank = ['🏠', '🦁', '⭐', '🍎', '🔔', '🌙', '🌳', '🐱'];
 
-        function updateL() {
+        function goToScreen(n) {
+            document.querySelectorAll('.screen-container').forEach(s => s.classList.remove('active-screen'));
+            document.getElementById(`screen-${n}`).classList.add('active-screen');
+        }
+
+        function syncLabels() {
             document.getElementById('l-series').innerText = document.getElementById('i-series').value;
             document.getElementById('l-work').innerText = document.getElementById('i-work').value;
             document.getElementById('l-rest').innerText = document.getElementById('i-rest').value;
@@ -163,79 +347,62 @@
         function adjust(val) {
             separation += val;
             if(separation < 0) separation = 0;
-            let d = Math.floor(separation / 3.2);
-            if(d > maxReached) maxReached = d;
             draw();
         }
 
         function draw() {
             document.getElementById('box-l').style.transform = `translateX(${-separation}px)`;
             document.getElementById('box-r').style.transform = `translateX(${separation}px)`;
+            // Cálculo de Dioptrías Prismáticas (Estimado a 40cm)
             document.getElementById('demand-val').innerText = Math.floor(separation / 3.2);
         }
 
-        function resetToSetup() {
-            document.getElementById('summary-screen').style.display = 'none';
-            document.getElementById('setup-screen').style.display = 'block';
-            seriesCount = 1;
-            maxReached = 0;
+        function startGame() {
+            document.getElementById('screen-3').classList.remove('active-screen');
+            document.getElementById('game-area').style.display = 'block';
+            runSession();
         }
 
-        function endEarly() {
-            if(confirm("¿Deseas finalizar y ver resultados?")) {
-                clearInterval(clock);
-                showFinal();
-            }
-        }
-
-        function showFinal() {
-            document.getElementById('game-area').style.display = 'none';
-            document.getElementById('summary-screen').style.display = 'block';
-            document.getElementById('res-delta').innerText = maxReached;
-        }
-
-        function startSession() {
-            document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('game-area').style.display = 'flex';
-            cycle();
-        }
-
-        function cycle() {
-            let limit = parseInt(document.getElementById('i-series').value);
-            let time = isWorkPhase ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
+        function runSession() {
+            let totalSeries = parseInt(document.getElementById('i-series').value);
+            let timeLimit = isWorkPhase ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
             
-            document.getElementById('status-label').innerText = isWorkPhase ? "¡MANTÉN LA FUSIÓN!" : "DESCANSA";
-            document.getElementById('status-label').style.color = isWorkPhase ? "var(--success)" : "var(--danger)";
-            document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.05";
+            document.getElementById('phase-label').innerText = isWorkPhase ? "¡FUSIONA!" : "DESCANSA";
+            document.getElementById('phase-label').style.color = isWorkPhase ? "var(--success)" : "var(--danger)";
+            document.getElementById('series-label').innerText = `Serie ${currentSerie} de ${totalSeries}`;
+            document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.1";
 
             if(isWorkPhase) {
-                const pick = figuras[Math.floor(Math.random() * figuras.length)];
-                document.getElementById('fig-l').innerText = pick;
-                document.getElementById('fig-r').innerText = pick;
+                const selectedIcon = iconBank[Math.floor(Math.random() * iconBank.length)];
+                document.getElementById('fig-l').innerText = selectedIcon;
+                document.getElementById('fig-r').innerText = selectedIcon;
             }
 
-            clock = setInterval(() => {
-                document.getElementById('timer-display').innerText = time < 10 ? "0"+time : time;
-                if(time <= 0) {
-                    clearInterval(clock);
+            timerClock = setInterval(() => {
+                document.getElementById('timer-val').innerText = timeLimit < 10 ? "0" + timeLimit : timeLimit;
+                
+                if(timeLimit <= 0) {
+                    clearInterval(timerClock);
                     if(isWorkPhase) {
                         isWorkPhase = false;
-                        cycle();
+                        runSession();
                     } else {
-                        seriesCount++;
-                        if(seriesCount <= limit) {
+                        currentSerie++;
+                        if(currentSerie <= totalSeries) {
                             isWorkPhase = true;
-                            cycle();
+                            runSession();
                         } else {
-                            showFinal();
+                            alert("¡Sesión finalizada con éxito!");
+                            location.reload();
                         }
                     }
                 }
-                time--;
+                timeLimit--;
             }, 1000);
         }
 
-        updateL();
+        // Init
+        syncLabels();
         draw();
     </script>
 </body>
