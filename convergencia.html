@@ -3,97 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrenamiento de Convergencia - Perceptum</title>
+    <title>Convergencia Pro - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f172a;
-            --red-filter: rgba(255, 0, 0, 0.6);
-            --blue-filter: rgba(0, 0, 255, 0.6);
+            --card: #1e293b;
+            --accent: #38bdf8;
+            --red: #ff0000;
+            --green: #00ff00; /* Verde puro para tus gafas */
         }
         body {
-            margin: 0;
-            background: var(--bg);
-            color: white;
-            font-family: sans-serif;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            margin: 0; font-family: 'Montserrat', sans-serif;
+            background: var(--bg); color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; overflow: hidden;
         }
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+
+        /* Pantalla de Introducción */
+        #intro-screen {
+            background: var(--card); padding: 40px; border-radius: 30px;
+            border: 2px solid var(--accent); text-align: center; max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 10;
         }
-        /* Los estímulos que el paciente debe fusionar */
-        .stimulus {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            mix-blend-mode: screen;
-            transition: transform 0.1s linear;
-        }
-        .red { background-color: #ff0000; box-shadow: 0 0 20px #ff0000; }
-        .blue { background-color: #0000ff; box-shadow: 0 0 20px #0000ff; }
+        .config-group { margin: 20px 0; text-align: left; }
+        .config-group label { display: block; margin-bottom: 10px; font-weight: 900; color: var(--accent); }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        .val-display { font-weight: bold; float: right; color: white; }
+
+        /* Pantalla de Juego */
+        #game-area { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; }
+        #timer-display { font-size: 4rem; font-weight: 900; margin-top: 20px; color: var(--accent); }
+        #phase-name { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 3px; }
         
-        .ui {
-            position: fixed;
-            bottom: 20px;
-            text-align: center;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #38bdf8;
+        #stimulus-container {
+            flex-grow: 1; width: 100%; display: flex; align-items: center; justify-content: center;
+            position: relative;
+        }
+        .stimulus {
+            position: absolute; width: 120px; height: 120px; border-radius: 50%;
+            mix-blend-mode: screen; transition: transform 0.1s linear;
+        }
+        .red { background: var(--red); box-shadow: 0 0 30px var(--red); }
+        .green { background: var(--green); box-shadow: 0 0 30px var(--green); }
+
+        .bottom-ui {
+            background: rgba(30, 41, 59, 0.9); padding: 20px 40px; border-radius: 20px 20px 0 0;
+            border: 2px solid var(--accent); border-bottom: none; text-align: center;
+        }
+        .btn-start {
+            background: var(--accent); color: var(--bg); border: none;
+            padding: 15px 40px; border-radius: 50px; font-size: 1.2rem;
+            font-weight: 900; cursor: pointer; margin-top: 20px;
         }
         .controls button {
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-radius: 10px;
-            border: none;
-            background: #38bdf8;
-            font-weight: bold;
+            padding: 10px 20px; font-size: 1.5rem; cursor: pointer;
+            border-radius: 10px; border: none; background: var(--accent);
+            font-weight: bold; margin: 0 10px;
         }
     </style>
 </head>
 <body>
 
-    <h1>ENTRENAMIENTO DE CONVERGENCIA</h1>
-    <p>Usa tus gafas anaglifas. Une los dos círculos en uno solo.</p>
+    <div id="intro-screen">
+        <h1 style="margin-top:0">CONVERGENCIA PRO</h1>
+        <p>Configura la sesión para trabajar con tus gafas <b>ROJO/VERDE</b>.</p>
+        
+        <div class="config-group">
+            <label>SERIES: <span id="v-series" class="val-display">3</span></label>
+            <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateLabels()">
+        </div>
+        <div class="config-group">
+            <label>TRABAJO (Seg): <span id="v-work" class="val-display">20</span></label>
+            <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateLabels()">
+        </div>
+        <div class="config-group">
+            <label>DESCANSO (Seg): <span id="v-rest" class="val-display">10</span></label>
+            <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateLabels()">
+        </div>
 
-    <div id="game-container">
-        <div id="red-dot" class="stimulus red"></div>
-        <div id="blue-dot" class="stimulus blue"></div>
+        <button class="btn-start" onclick="startSession()">INICIAR ENTRENAMIENTO</button>
     </div>
 
-    <div class="ui">
-        <div id="stats">Separación: <span id="sep-val">0</span>px</div>
-        <div class="controls" style="margin-top: 10px;">
-            <button onclick="changeSep(-5)">-</button>
-            <button onclick="changeSep(5)">+</button>
-            <button onclick="resetGame()" style="background: #f472b6;">RESET</button>
+    <div id="game-area">
+        <div id="timer-display">00</div>
+        <div id="phase-name">PREPARADO</div>
+        <div id="series-left" style="margin-top: 5px; opacity: 0.7;">Serie 1 de 3</div>
+
+        <div id="stimulus-container">
+            <div id="red-dot" class="stimulus red"></div>
+            <div id="green-dot" class="stimulus green"></div>
         </div>
-        <p style="font-size: 0.8rem; margin-top: 10px;">Objetivo: Aumentar la separación (+) manteniendo una sola imagen.</p>
+
+        <div class="bottom-ui">
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+                Separación: <span id="sep-val">0</span> px
+            </div>
+            <div class="controls">
+                <button onclick="changeSep(-5)">-</button>
+                <button onclick="changeSep(5)">+</button>
+                <button onclick="location.reload()" style="background:#f472b6">SALIR</button>
+            </div>
+        </div>
     </div>
 
     <script>
         let separation = 0;
-        const redDot = document.getElementById('red-dot');
-        const blueDot = document.getElementById('blue-dot');
-        const sepVal = document.getElementById('sep-val');
+        let currentSerie = 1;
+        let timer;
+        let isWorkPhase = true;
+
+        function updateLabels() {
+            document.getElementById('v-series').innerText = document.getElementById('i-series').value;
+            document.getElementById('v-work').innerText = document.getElementById('i-work').value;
+            document.getElementById('v-rest').innerText = document.getElementById('i-rest').value;
+        }
 
         function updatePosition() {
-            // En convergencia, el estímulo rojo se mueve a la derecha y el azul a la izquierda
-            // para obligar a los ojos a cruzar (Base Out).
-            redDot.style.transform = `translateX(${separation}px)`;
-            blueDot.style.transform = `translateX(${-separation}px)`;
-            sepVal.innerText = Math.abs(separation * 2);
+            document.getElementById('red-dot').style.transform = `translateX(${separation}px)`;
+            document.getElementById('green-dot').style.transform = `translateX(${-separation}px)`;
+            document.getElementById('sep-val').innerText = Math.abs(separation * 2);
         }
 
         function changeSep(val) {
@@ -101,12 +130,47 @@
             updatePosition();
         }
 
-        function resetGame() {
-            separation = 0;
-            updatePosition();
+        function startSession() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('game-area').style.display = 'flex';
+            runPhase();
         }
 
-        // Soporte para teclado
+        function runPhase() {
+            let totalSeries = parseInt(document.getElementById('i-series').value);
+            let workTime = parseInt(document.getElementById('i-work').value);
+            let restTime = parseInt(document.getElementById('i-rest').value);
+            
+            let timeLeft = isWorkPhase ? workTime : restTime;
+            document.getElementById('phase-name').innerText = isWorkPhase ? "¡TRABAJA!" : "DESCANSO";
+            document.getElementById('phase-name').style.color = isWorkPhase ? "#10b981" : "#f472b6";
+            document.getElementById('series-left').innerText = `Serie ${currentSerie} de ${totalSeries}`;
+            
+            // Ocultar estímulos en descanso
+            document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.2";
+
+            timer = setInterval(() => {
+                document.getElementById('timer-display').innerText = timeLeft < 10 ? "0" + timeLeft : timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (isWorkPhase) {
+                        isWorkPhase = false;
+                        runPhase();
+                    } else {
+                        currentSerie++;
+                        if (currentSerie <= totalSeries) {
+                            isWorkPhase = true;
+                            runPhase();
+                        } else {
+                            alert("¡Sesión Completada!");
+                            location.reload();
+                        }
+                    }
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
         document.addEventListener('keydown', (e) => {
             if(e.key === 'ArrowRight') changeSep(2);
             if(e.key === 'ArrowLeft') changeSep(-2);
