@@ -28,67 +28,65 @@
         .active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* INSTRUCCIONES XL */
-        .instruction-text { font-size: 1.4rem; line-height: 1.6; text-align: justify; margin-bottom: 20px; }
-        .window-graphic {
-            background: #fff; color: #000; padding: 20px; border-radius: 15px;
-            display: inline-block; border: 4px solid var(--accent-color); margin: 20px 0;
+        /* INTRODUCCIÓN ESTILO DARK */
+        .instruction-text { font-size: 1.4rem; line-height: 1.6; text-align: center; margin-bottom: 20px; }
+        .window-box {
+            border: 3px dashed var(--accent-color); padding: 20px; border-radius: 20px;
+            display: inline-block; margin: 20px 0; background: rgba(56, 189, 248, 0.1);
         }
         .highlight { color: var(--accent-color); font-weight: 900; }
 
-        /* JUEGO */
+        /* ÁREA DE JUEGO */
         #game-area { display: none; width: 100%; height: 100%; position: relative; }
         #stimulus-container {
             position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%);
             display: flex; gap: 40px;
         }
-        .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 60vh; width: 260px; }
-        .glyph { font-size: 220px; color: #FFF; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); }
-        .mark { font-size: 100px; font-weight: 900; color: #FFF; }
+        .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 60vh; width: 260px; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .glyph { font-size: 200px; color: #FFF; filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); }
+        .mark { font-size: 90px; font-weight: 900; color: #FFF; }
 
-        /* BARRA LATERAL */
+        /* CONTROLES LATERALES */
         .sidebar {
             position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
             background: var(--card-bg); border: 3px solid var(--accent-color);
             padding: 30px 20px; border-radius: 40px; display: flex; flex-direction: column; gap: 20px; align-items: center;
         }
-        .btn-side { width: 80px; height: 80px; border-radius: 20px; border: none; font-size: 2.5rem; font-weight: 900; cursor: pointer; background: var(--accent-color); color: #000; }
+        .btn-side { width: 70px; height: 70px; border-radius: 20px; border: none; font-size: 2rem; font-weight: 900; cursor: pointer; background: var(--accent-color); color: #000; }
         .btn-main { background: var(--success); color: #000; border: none; padding: 20px 40px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 15px; }
-        .btn-exit { background: var(--danger); color: white; padding: 15px; border: none; border-radius: 15px; cursor: pointer; font-size: 0.8rem; width: 100%; font-weight: 900; }
+        .btn-exit { background: var(--danger); color: white; padding: 15px; border: none; border-radius: 15px; cursor: pointer; font-size: 0.8rem; width: 100%; font-weight: 900; text-transform: uppercase;}
 
-        input[type="range"] { width: 100%; accent-color: var(--accent-color); cursor: pointer; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-color); cursor: pointer; height: 10px; }
     </style>
 </head>
 <body>
 
     <div id="s1" class="screen active">
-        <h1>1. CONSTRUYE TU VENTANA</h1>
-        <p class="instruction-text">
-            Corta un cartón rígido y recorta una ventana central de:
-        </p>
-        <div class="window-graphic">
-            <b style="font-size: 1.8rem;">ANCHO: 2 cm x ALTO: 4 cm</b>
+        <h1 style="font-size: 2.5rem; color: var(--accent-color);">REGLA DE APERTURA</h1>
+        <p class="instruction-text">Usa tu cartón con ventana central de:</p>
+        <div class="window-box">
+            <b style="font-size: 2rem; color: #fff;">ANCHO: 2 cm x ALTO: 4 cm</b>
         </div>
         <p class="instruction-text">
-            Sujeta este cartón a <span class="highlight">20 cm</span> de tus ojos. La pantalla debe estar a <span class="highlight">40 cm</span>.
+            Sujétalo a <span class="highlight">20 cm</span> de tus ojos.<br>
+            Mantén la pantalla a <span class="highlight">40 cm</span>.
         </p>
         <button class="btn-main" onclick="go(2)">CONTINUAR</button>
     </div>
 
     <div id="s2" class="screen">
         <h1>2. CONTROL OCULAR</h1>
-        <p class="instruction-text">Mira a través del agujero y comprueba:</p>
-        <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; text-align: left; font-size: 1.3rem;">
-            👁️ Ojo <span class="highlight">IZQUIERDO</span> cerrado: Debes ver la imagen <span class="highlight">DERECHA</span>.<br><br>
-            👁️ Ojo <span class="highlight">DERECHO</span> cerrado: Debes ver la imagen <span class="highlight">IZQUIERDA</span>.<br><br>
-            ✅ <span class="highlight">AMBOS ABIERTOS:</span> Debes ver una imagen central con el <b>+ arriba</b> y el <b>- abajo</b>.
+        <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; text-align: left; font-size: 1.3rem; border-left: 8px solid var(--success);">
+            👁️ Ojo <span class="highlight">IZQUIERDO</span> cerrado: Ver imagen <span class="highlight">DERECHA</span>.<br><br>
+            👁️ Ojo <span class="highlight">DERECHO</span> cerrado: Ver imagen <span class="highlight">IZQUIERDA</span>.<br><br>
+            ✅ <span class="highlight">AMBOS ABIERTOS:</span> Imagen central con <b>+ arriba</b> y <b>- abajo</b>.
         </div>
         <button class="btn-main" onclick="go(3)">CONFIGURAR SESIÓN</button>
     </div>
 
     <div id="s3" class="screen">
         <h1>3. AJUSTES</h1>
-        <div style="text-align: left; display: flex; flex-direction: column; gap: 20px;">
+        <div style="text-align: left; display: flex; flex-direction: column; gap: 20px; margin: 20px 0;">
             <label style="font-weight: 900;">SERIES: <span id="v-series" class="highlight">3</span></label>
             <input type="range" id="i-series" min="1" max="10" value="3" oninput="sync()">
             
@@ -104,8 +102,8 @@
     <div id="game-area">
         <div style="position: absolute; top: 40px; left: 45%; transform: translateX(-50%); text-align: center;">
             <div id="timer" style="font-size: 6rem; font-weight: 900; color: var(--accent-color); line-height: 1;">00</div>
-            <div id="phase" style="font-weight: 900; letter-spacing: 5px; font-size: 1.5rem;">¡FUSIONA!</div>
-            <div id="series-label" style="opacity: 0.6; margin-top: 10px;">Serie 1</div>
+            <div id="phase" style="font-weight: 900; letter-spacing: 5px; font-size: 1.5rem; color: var(--success);">¡FUSIONA!</div>
+            <div id="series-label" style="opacity: 0.6; margin-top: 10px; font-weight: 900;">Serie 1</div>
         </div>
 
         <div id="stimulus-container">
@@ -130,9 +128,9 @@
             <button class="btn-side" onclick="changeLvl(-1)">-</button>
             <div style="text-align: center;">
                 <div style="font-size: 0.8rem; font-weight: 900; opacity: 0.7;">DEMANDA</div>
-                <div style="font-size: 1.5rem; font-weight: 900;"><span id="delta-val">6</span> Δ</div>
+                <div style="font-size: 1.5rem; font-weight: 900;"><span id="delta-val">5</span> Δ</div>
             </div>
-            <button class="btn-exit" onclick="finishSession()">FINALIZAR</button>
+            <button class="btn-exit" onclick="finishSession()">Finalizar</button>
         </div>
     </div>
 
@@ -142,8 +140,8 @@
         let currentSerie = 1;
         let maxLvl = 1;
         let clock;
-        // Demanda aumentada: niveles con mayor separación (hasta 200px por lado)
-        const levels = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240];
+        // 12 Niveles con demanda visual aumentada progresivamente
+        const levels = [0, 20, 40, 60, 80, 100, 120, 140, 160, 185, 210, 230, 250];
         const icons = ['🏠', '🦁', '⭐', '🍎', '🔔', '🌙', '🌳', '🐱'];
 
         function go(n) {
@@ -168,6 +166,7 @@
             document.getElementById('box-l').style.transform = `translateX(${-sep}px)`;
             document.getElementById('box-r').style.transform = `translateX(${sep}px)`;
             document.getElementById('lvl-num').innerText = currentLvl;
+            // Cálculo de dioptrías prismáticas aproximadas (sep_total_cm / distancia_m)
             document.getElementById('delta-val').innerText = Math.floor((sep * 2) / 4);
         }
 
@@ -210,7 +209,7 @@
             const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
             const params = new URLSearchParams();
             
-            params.append("entry.369874016", "PACIENTE_REGLA"); 
+            params.append("entry.369874016", "PACIENTE"); 
             params.append("entry.1353470174", "REGLA_APERTURA_DIGITAL"); 
             params.append("entry.721051298", maxLvl); 
             params.append("entry.873272199", document.getElementById('delta-val').innerText); 
@@ -220,7 +219,7 @@
 
             fetch(formURL, { method: "POST", mode: "no-cors", body: params })
                 .then(() => { 
-                    alert("¡Sesión Guardada! Nivel Máximo: " + maxLvl); 
+                    alert("Sesión finalizada con éxito. Nivel máximo alcanzado: " + maxLvl); 
                     location.reload(); 
                 });
         }
