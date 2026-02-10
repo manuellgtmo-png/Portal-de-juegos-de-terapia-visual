@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regla de Apertura Digital - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -21,102 +20,83 @@
         }
 
         .screen {
-            background: var(--card-bg); padding: 40px; border-radius: 30px;
-            border: 2px solid var(--accent-color); text-align: center;
-            max-width: 650px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            display: none; position: absolute; z-index: 10;
+            background: var(--card-bg); padding: 50px; border-radius: 40px;
+            border: 3px solid var(--accent-color); text-align: center;
+            max-width: 800px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            display: none; position: absolute;
         }
-        .active { display: block; animation: fadeIn 0.4s ease; }
+        .active { display: block; animation: zoomIn 0.3s ease-out; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* ESTILOS ESPECÍFICOS INSTRUCCIONES */
-        .window-box {
-            background: #fff; color: #000; padding: 20px; border-radius: 15px;
-            display: inline-block; border: 3px solid var(--accent-color); margin: 15px 0;
-        }
-        .check-box {
-            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success);
-            padding: 15px; border-radius: 15px; text-align: left; font-size: 0.9rem; margin: 15px 0;
+        .big-instruction { font-size: 1.6rem; line-height: 1.6; margin-bottom: 30px; font-weight: 700; }
+        .highlight { color: var(--accent-color); font-weight: 900; }
+
+        .check-list {
+            text-align: left; background: rgba(255,255,255,0.05);
+            padding: 30px; border-radius: 25px; border-left: 10px solid var(--success);
+            margin: 20px 0; font-size: 1.3rem; line-height: 1.5;
         }
 
         /* JUEGO */
         #game-area { display: none; width: 100%; height: 100%; position: relative; }
         #stimulus-container {
             position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%);
-            display: flex; gap: 40px; /* Base de separación */
+            display: flex; gap: 40px;
         }
-        .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 50vh; width: 220px; }
-        .glyph { font-size: 180px; color: #FFF; filter: drop-shadow(0 0 10px rgba(255,255,255,0.4)); }
-        .mark { font-size: 70px; font-weight: 900; color: #FFF; }
+        .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 55vh; width: 250px; transition: transform 0.2s; }
+        .glyph { font-size: 200px; color: #FFFFFF; filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); }
+        .mark { font-size: 90px; font-weight: 900; color: #FFFFFF; }
 
-        /* LATERAL DERECHO */
         .sidebar {
-            position: absolute; right: 30px; top: 50%; transform: translateY(-50%);
-            background: var(--card-bg); border: 2px solid var(--accent-color);
-            padding: 20px; border-radius: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center;
+            position: absolute; right: 40px; top: 50%; transform: translateY(-50%);
+            background: var(--card-bg); border: 3px solid var(--accent-color);
+            padding: 30px 20px; border-radius: 40px; display: flex; flex-direction: column; gap: 20px; align-items: center;
         }
-        .btn-lvl { width: 60px; height: 60px; border-radius: 15px; border: none; font-size: 1.5rem; font-weight: 900; cursor: pointer; background: var(--accent-color); }
-        .btn-nav { background: var(--success); border: none; padding: 15px 30px; border-radius: 15px; font-weight: 900; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 10px;}
-        .btn-exit { background: var(--danger); color: white; padding: 10px; font-size: 0.7rem; width: 100%; border: none; border-radius: 10px; cursor: pointer; margin-top: 10px;}
+        .btn-side { width: 80px; height: 80px; border-radius: 20px; border: none; font-size: 2.5rem; font-weight: 900; cursor: pointer; background: var(--accent-color); }
+        .btn-main { background: var(--success); color: #000; border: none; padding: 25px 50px; border-radius: 20px; font-weight: 900; font-size: 1.6rem; cursor: pointer; margin-top: 20px; width: 100%; }
+        .btn-exit { background: var(--danger); color: white; padding: 15px; border: none; border-radius: 15px; cursor: pointer; font-size: 0.9rem; width: 100%; font-weight: 900; text-transform: uppercase;}
 
-        .lvl-indicator { font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; font-weight: 900; }
-        .lvl-num { font-size: 2.5rem; font-weight: 900; color: var(--accent-color); }
-
+        .stats-label { font-size: 0.8rem; opacity: 0.7; text-transform: uppercase; font-weight: 900; }
+        .stats-val { font-size: 3.5rem; font-weight: 900; color: var(--accent-color); line-height: 1; }
     </style>
 </head>
 <body>
 
     <div id="s1" class="screen active">
-        <h2 style="color:var(--accent-color)">CONVERGENCIA PRO</h2>
-        <p style="text-align: justify; font-size: 0.95rem;">
-            Este ejercicio simula una <b>Regla de Apertura</b>. Entrenaremos tu capacidad de unir imágenes mediante el cruce visual, mejorando la potencia de tus músculos oculares y la comodidad al leer.
+        <h1 style="font-size: 3rem; margin-bottom: 20px;">REGLA DE APERTURA</h1>
+        <p class="big-instruction">
+            Sujeta tu <span class="highlight">ventana de 2x4 cm</span> a mitad de camino entre tus ojos y la pantalla. <br><br>
+            Realiza la tarea a <span class="highlight">40 cm de distancia</span>.
         </p>
-        <button class="btn-nav" onclick="go(2)">EMPEZAR CONFIGURACIÓN</button>
+        <button class="btn-main" onclick="go(2)">CONTINUAR</button>
     </div>
 
     <div id="s2" class="screen">
-        <h3>1. PREPARA TU "VENTANA"</h3>
-        <p>Corta un cartón con un agujero central de estas medidas:</p>
-        <div class="window-box">
-            <b>ANCHO: 2 cm</b><br>
-            <b>LARGO: 4 cm</b>
+        <h2 style="font-size: 2rem;">CONTROL DE FUSIÓN</h2>
+        <div class="check-list">
+            <p>👁️ Ojo <b>IZQUIERDO</b> cerrado: Debes ver la imagen <b>DERECHA</b>.</p>
+            <p>👁️ Ojo <b>DERECHO</b> cerrado: Debes ver la imagen <b>IZQUIERDA</b>.</p>
+            <p>✅ <b>AMBOS ABIERTOS:</b> Debes ver una imagen central con <span class="highlight">+ arriba</span> y <span class="highlight">- abajo</span>.</p>
         </div>
-        <p style="font-size: 0.8rem; color: var(--accent-color)">Sujeta el cartón a mitad de camino entre tus ojos y la pantalla.</p>
-        <button class="btn-nav" onclick="go(3)">SIGUIENTE</button>
+        <button class="btn-main" onclick="go(3)">CONFIGURAR SESIÓN</button>
     </div>
 
     <div id="s3" class="screen">
-        <h3>2. VALIDACIÓN VISUAL</h3>
-        <div class="check-box">
-            <b>Prueba esto antes de iniciar:</b><br><br>
-            👁️ Si cierras el ojo <b>izquierdo</b>, debes ver la imagen de la <b>derecha</b> a través del agujero.<br><br>
-            👁️ Si cierras el ojo <b>derecho</b>, debes ver la imagen de la <b>izquierda</b>.
-        </div>
-        <p style="font-size: 0.85rem;">Al abrir ambos, busca ver la figura central con el signo <b>+ arriba</b> y el <b>- abajo</b>.</p>
-        <button class="btn-nav" onclick="go(4)">CONFIGURAR SESIÓN</button>
-    </div>
-
-    <div id="s4" class="screen">
-        <h3>3. AJUSTES FINALES</h3>
-        <div style="background: rgba(56,189,248,0.1); padding: 10px; border-radius: 10px; margin-bottom: 15px; border: 1px dashed var(--accent-color);">
-            📏 TAREA A 40 CM DE DISTANCIA
-        </div>
-        <div style="text-align: left; display: flex; flex-direction: column; gap: 10px;">
-            <label style="font-size: 0.7rem; font-weight: 900; color: var(--accent-color);">SERIES: <span id="v-series">3</span></label>
-            <input type="range" id="i-series" min="1" max="10" value="3" oninput="sync()">
-            <label style="font-size: 0.7rem; font-weight: 900; color: var(--accent-color);">TRABAJO (s): <span id="v-work">20</span></label>
+        <h2>AJUSTES DE TIEMPO</h2>
+        <div style="text-align: left; display: flex; flex-direction: column; gap: 20px; margin: 30px 0;">
+            <label style="font-weight: 900;">TRABAJO (s): <span id="v-work" class="highlight">20</span></label>
             <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="sync()">
-            <label style="font-size: 0.7rem; font-weight: 900; color: var(--accent-color);">DESCANSO (s): <span id="v-rest">10</span></label>
+            <label style="font-weight: 900;">DESCANSO (s): <span id="v-rest" class="highlight">10</span></label>
             <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="sync()">
         </div>
-        <button class="btn-nav" onclick="startGame()">¡INICIAR EJERCICIO!</button>
+        <button class="btn-main" onclick="startGame()">¡EMPEZAR AHORA!</button>
     </div>
 
     <div id="game-area">
-        <div style="position: absolute; top: 30px; left: 45%; transform: translateX(-50%); text-align: center;">
-            <div id="timer" style="font-size: 5rem; font-weight: 900; color: var(--accent-color); line-height: 1;">00</div>
-            <div id="phase" style="font-weight: 900; letter-spacing: 5px;">¡FUSIONA!</div>
+        <div style="position: absolute; top: 40px; left: 45%; transform: translateX(-50%); text-align: center;">
+            <div id="timer" class="stats-val" style="font-size: 6rem;">00</div>
+            <div id="phase" style="font-weight: 900; letter-spacing: 5px; font-size: 1.5rem;">¡FUSIONA!</div>
         </div>
 
         <div id="stimulus-container">
@@ -134,28 +114,26 @@
 
         <div class="sidebar">
             <div style="text-align: center;">
-                <div class="lvl-indicator">Nivel Actual</div>
-                <div id="lvl-num" class="lvl-num">1</div>
+                <div class="stats-label">NIVEL</div>
+                <div id="lvl-num" class="stats-val">1</div>
             </div>
-            <button class="btn-lvl" onclick="changeLvl(1)">+</button>
-            <button class="btn-lvl" onclick="changeLvl(-1)">-</button>
-            <div style="text-align: center; margin-top: 10px;">
-                <div class="lvl-indicator">DEMANDA</div>
-                <div style="font-size: 1.2rem; font-weight: 900;"><span id="delta-val">6</span> Δ</div>
+            <button class="btn-side" onclick="changeLvl(1)">+</button>
+            <button class="btn-side" onclick="changeLvl(-1)">-</button>
+            <div style="text-align: center;">
+                <div class="stats-label">DEMANDA</div>
+                <div style="font-size: 1.5rem; font-weight: 900;"><span id="delta-val">6</span> Δ</div>
             </div>
-            <button class="btn-exit" onclick="location.reload()">TERMINAR</button>
+            <button class="btn-exit" onclick="finishSession()">Finalizar</button>
         </div>
     </div>
 
     <script>
-        let currentLevel = 1;
-        let seriesCount = 1;
+        let currentLvl = 1;
         let isWork = true;
+        let maxLvlReached = 1;
         let clock;
-        const icons = ['🏠', '🦁', '⭐', '🍎', '🔔', '🌙', '🌳', '🐱'];
-        
-        // Tabla de separaciones para Regla de Apertura (Nivel 1 a 12)
         const levels = [0, 20, 35, 50, 65, 80, 95, 110, 125, 140, 155, 170, 185];
+        const icons = ['🏠', '🦁', '⭐', '🍎', '🔔', '🌙', '🌳', '🐱'];
 
         function go(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -163,58 +141,77 @@
         }
 
         function sync() {
-            document.getElementById('v-series').innerText = document.getElementById('i-series').value;
             document.getElementById('v-work').innerText = document.getElementById('i-work').value;
             document.getElementById('v-rest').innerText = document.getElementById('i-rest').value;
         }
 
         function changeLvl(dir) {
-            currentLevel += dir;
-            if(currentLevel < 1) currentLevel = 1;
-            if(currentLevel > 12) currentLevel = 12;
+            currentLvl = Math.max(1, Math.min(12, currentLvl + dir));
+            if (currentLvl > maxLvlReached) maxLvlReached = currentLvl;
             updateVis();
         }
 
         function updateVis() {
-            const sep = levels[currentLevel];
+            const sep = levels[currentLvl];
             document.getElementById('box-l').style.transform = `translateX(${-sep}px)`;
             document.getElementById('box-r').style.transform = `translateX(${sep}px)`;
-            document.getElementById('lvl-num').innerText = currentLevel;
-            document.getElementById('delta-val').innerText = Math.floor((sep * 2) / 4); // Demanda aprox
+            document.getElementById('lvl-num').innerText = currentLvl;
+            document.getElementById('delta-val').innerText = Math.floor((sep * 2) / 4);
         }
 
         function startGame() {
-            document.getElementById('s4').classList.remove('active');
+            document.getElementById('s3').classList.remove('active');
             document.getElementById('game-area').style.display = 'block';
             run();
         }
 
         function run() {
-            let total = parseInt(document.getElementById('i-series').value);
             let time = isWork ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
-            
             document.getElementById('phase').innerText = isWork ? "¡FUSIONA!" : "DESCANSA";
             document.getElementById('phase').style.color = isWork ? "var(--success)" : "var(--danger)";
             document.getElementById('stimulus-container').style.opacity = isWork ? "1" : "0.05";
 
             if(isWork) {
                 const f = icons[Math.floor(Math.random()*icons.length)];
-                document.getElementById('fig-l').innerText = f;
-                document.getElementById('fig-r').innerText = f;
+                document.getElementById('fig-l').innerText = f; document.getElementById('fig-r').innerText = f;
             }
 
             clock = setInterval(() => {
                 document.getElementById('timer').innerText = time < 10 ? "0"+time : time;
                 if(time-- <= 0) {
                     clearInterval(clock);
-                    if(isWork) { isWork = false; run(); }
-                    else {
-                        seriesCount++;
-                        if(seriesCount <= total) { isWork = true; run(); }
-                        else { alert("¡Sesión completada!"); location.reload(); }
-                    }
+                    isWork = !isWork;
+                    run();
                 }
             }, 1000);
+        }
+
+        function finishSession() {
+            if(!confirm("¿Deseas finalizar y guardar los resultados?")) return;
+
+            // MÉTODO GOOGLE SHEETS (Silencioso)
+            const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+            
+            const params = new URLSearchParams();
+            params.append("entry.369874016", "PACIENTE_PRUEBA"); // Nombre del paciente
+            params.append("entry.1353470174", "REGLA_APERTURA_CONV"); // Nombre del juego
+            params.append("entry.721051298", maxLvlReached); // Nivel alcanzado
+            params.append("entry.873272199", document.getElementById('delta-val').innerText); // Dioptrías
+            params.append("entry.1030094511", "40cm"); // Distancia fija
+            params.append("entry.1303309812", document.getElementById('i-work').value); // Tiempo trabajo
+            params.append("entry.845098414", new Date().toISOString().split('T')[0]); // Fecha
+
+            fetch(formURL, {
+                method: "POST",
+                mode: "no-cors",
+                body: params
+            }).then(() => {
+                alert("Sesión finalizada. Nivel alcanzado: " + maxLvlReached);
+                location.reload();
+            }).catch(err => {
+                console.error("Error al enviar:", err);
+                location.reload();
+            });
         }
 
         updateVis();
