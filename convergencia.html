@@ -3,76 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convergencia Fusión Libre - Perceptum</title>
+    <title>Convergencia Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f8fafc; /* Fondo claro para mejor contraste de figuras negras */
-            --ui-panel: #ffffff;
-            --accent: #0284c7;
-            --target: #1e293b;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --success: #10b981;
         }
         body {
             margin: 0; font-family: 'Montserrat', sans-serif;
-            background: var(--bg); color: #1e293b;
+            background-color: var(--bg-color); color: var(--text-color);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100vh; overflow: hidden;
         }
 
-        /* Pantalla de Introducción */
+        /* INTRODUCCIÓN */
         #intro-screen {
-            background: var(--ui-panel); padding: 40px; border-radius: 30px;
-            border: 2px solid var(--accent); text-align: center; max-width: 500px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1); z-index: 10;
+            background: var(--card-bg); padding: 30px; border-radius: 35px;
+            border: 2px solid var(--accent-color); text-align: center; max-width: 550px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); z-index: 10; overflow-y: auto; max-height: 90vh;
         }
-        .config-group { margin: 20px 0; text-align: left; }
-        .config-group label { display: block; margin-bottom: 10px; font-weight: 900; color: var(--accent); }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        .val-display { font-weight: bold; float: right; }
 
-        /* Pantalla de Juego */
-        #game-area { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; }
-        #timer-display { font-size: 4rem; font-weight: 900; margin-top: 20px; color: var(--accent); }
-        
-        #stimulus-container {
-            flex-grow: 1; width: 100%; display: flex; align-items: center; justify-content: center;
-            position: relative; gap: 0; /* El gap se controla por JS */
+        /* Miniatura explicativa */
+        .tutorial-box {
+            background: #ffffff10; border-radius: 20px; padding: 15px; margin: 15px 0;
+            display: flex; flex-direction: column; align-items: center;
         }
+        .preview-fusion { display: flex; gap: 10px; margin-top: 10px; }
+        .prev-card { width: 40px; height: 40px; border: 1px solid white; display: flex; align-items: center; justify-content: center; font-size: 10px; background: white; color: black; border-radius: 5px; opacity: 0.5; }
+        .prev-card.main { opacity: 1; transform: scale(1.2); border: 2px solid var(--accent-color); font-weight: bold; position: relative; }
+        .prev-card.main::after { content: 'OBJETIVO'; position: absolute; bottom: -15px; font-size: 8px; color: var(--accent-color); width: 100%; }
+
+        .config-group { margin: 15px 0; text-align: left; }
+        .config-group label { display: block; margin-bottom: 5px; font-weight: 900; color: var(--accent-color); font-size: 0.8rem; }
+        input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--accent-color); }
+        .val-display { font-weight: bold; float: right; color: white; }
+
+        /* JUEGO */
+        #game-area { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; }
+        #timer-display { font-size: 4.5rem; font-weight: 900; margin-top: 20px; color: var(--accent-color); }
+        
+        #stimulus-container { flex-grow: 1; width: 100%; display: flex; align-items: center; justify-content: center; }
 
         .target-box {
-            width: 150px; height: 150px;
-            border: 4px solid var(--target);
+            width: 150px; height: 150px; border: 4px solid var(--accent-color);
             display: flex; align-items: center; justify-content: center;
-            background: white; border-radius: 20px;
-            position: relative; transition: transform 0.1s linear;
+            background: #ffffff; border-radius: 25px; position: relative; transition: transform 0.1s linear;
         }
 
-        /* Figuras internas */
-        .circle { width: 80px; height: 80px; border: 8px solid var(--target); border-radius: 50%; }
-        .cross { width: 80px; height: 8px; background: var(--target); position: relative; }
-        .cross::after { content: ''; width: 8px; height: 80px; background: var(--target); position: absolute; top: -36px; left: 36px; }
+        /* Figuras compuestas */
+        .circle { width: 80px; height: 80px; border: 8px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .cross-v { width: 80px; height: 8px; background: #000; position: absolute; }
+        .cross-h { width: 8px; height: 80px; background: #000; position: absolute; }
+        
+        /* Marcas de Supresión */
+        .suppression-mark { position: absolute; font-weight: 900; font-size: 24px; color: #000; }
+        .top { top: 10px; }
+        .bottom { bottom: 10px; }
 
         .bottom-ui {
-            background: var(--ui-panel); padding: 20px 40px; border-radius: 30px 30px 0 0;
-            border: 2px solid var(--accent); text-align: center; box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            background: var(--card-bg); padding: 20px 50px; border-radius: 40px 40px 0 0;
+            border: 2px solid var(--accent-color); border-bottom: none; text-align: center;
         }
         .btn-start {
-            background: var(--accent); color: white; border: none;
-            padding: 15px 40px; border-radius: 50px; font-size: 1.2rem;
-            font-weight: 900; cursor: pointer;
+            background: var(--accent-color); color: var(--bg-color); border: none;
+            padding: 15px 40px; border-radius: 50px; font-size: 1.2rem; font-weight: 900; cursor: pointer;
         }
         .controls button {
-            padding: 10px 25px; font-size: 1.5rem; cursor: pointer;
-            border-radius: 15px; border: none; background: var(--accent);
-            color: white; font-weight: bold; margin: 0 10px;
+            padding: 10px 20px; font-size: 1.5rem; cursor: pointer;
+            border-radius: 15px; border: none; background: var(--accent-color); color: var(--bg-color); font-weight: bold; margin: 0 10px;
         }
     </style>
 </head>
 <body>
 
     <div id="intro-screen">
-        <h1 style="color: var(--accent)">FUSIÓN LIBRE</h1>
-        <p>Cruza la vista hasta que el <b>Círculo</b> y la <b>Cruz</b> se unan en una sola imagen central.</p>
+        <h1 style="color: var(--accent-color); margin: 0;">CONVERGENCIA PRO</h1>
+        
+        <div class="tutorial-box">
+            <p style="font-size: 0.8rem; margin: 0;">Cruza la vista hasta ver 3 cuadros. El del centro debe verse así:</p>
+            <div class="preview-fusion">
+                <div class="prev-card">○</div>
+                <div class="prev-card main">
+                    <div style="position: absolute; top:2px">+</div>
+                    ○<br>+
+                    <div style="position: absolute; bottom:2px">-</div>
+                </div>
+                <div class="prev-card">+</div>
+            </div>
+            <p style="font-size: 0.7rem; margin-top: 18px; color: var(--accent-color);">Si falta el signo de arriba o abajo, ¡estás suprimiendo!</p>
+        </div>
         
         <div class="config-group">
             <label>SERIES: <span id="v-series" class="val-display">3</span></label>
@@ -87,31 +110,39 @@
             <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateLabels()">
         </div>
 
-        <button class="btn-start" onclick="startSession()">INICIAR</button>
+        <button class="btn-start" onclick="startSession()">INICIAR ENTRENAMIENTO</button>
     </div>
 
     <div id="game-area">
         <div id="timer-display">00</div>
-        <div id="phase-name" style="font-weight:900; text-transform:uppercase">PREPARADO</div>
-        <div id="series-left">Serie 1 de 3</div>
+        <div id="phase-name" style="font-weight:900; text-transform:uppercase;">PREPARADO</div>
+        <div id="series-left" style="opacity: 0.6;">Serie 1 de 3</div>
 
         <div id="stimulus-container">
-            <div id="left-box" class="target-box"><div class="circle"></div></div>
-            <div style="width: 20px;"></div> <div id="right-box" class="target-box"><div class="cross"></div></div>
+            <div id="left-box" class="target-box">
+                <div class="suppression-mark top">+</div>
+                <div class="circle"></div>
+            </div>
+            <div style="width: 40px;"></div> 
+            <div id="right-box" class="target-box">
+                <div class="cross-v"></div>
+                <div class="cross-h"></div>
+                <div class="suppression-mark bottom">-</div>
+            </div>
         </div>
 
         <div class="bottom-ui">
-            <div style="font-size: 1rem; font-weight: bold; margin-bottom: 10px;">SEPARACIÓN: <span id="sep-val">0</span></div>
+            <div style="font-size: 1rem; font-weight: 900; margin-bottom: 10px;">SEPARACIÓN: <span id="sep-val" style="color:var(--accent-color)">0</span> px</div>
             <div class="controls">
                 <button onclick="changeSep(-5)">-</button>
                 <button onclick="changeSep(5)">+</button>
-                <button onclick="location.reload()" style="background:#ef4444">X</button>
+                <button onclick="location.reload()" style="background:#f472b6;">SALIR</button>
             </div>
         </div>
     </div>
 
     <script>
-        let separation = 20; // Separación inicial
+        let separation = 25; 
         let currentSerie = 1;
         let timer;
         let isWorkPhase = true;
@@ -123,7 +154,6 @@
         }
 
         function updatePosition() {
-            // Movemos las cajas hacia afuera o adentro
             document.getElementById('left-box').style.transform = `translateX(${-separation}px)`;
             document.getElementById('right-box').style.transform = `translateX(${separation}px)`;
             document.getElementById('sep-val').innerText = separation * 2;
@@ -146,7 +176,7 @@
             let timeLeft = isWorkPhase ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
             
             document.getElementById('phase-name').innerText = isWorkPhase ? "¡FUSIONA!" : "DESCANSA";
-            document.getElementById('phase-name').style.color = isWorkPhase ? "#0284c7" : "#ef4444";
+            document.getElementById('phase-name').style.color = isWorkPhase ? "#10b981" : "#f472b6";
             document.getElementById('series-left').innerText = `Serie ${currentSerie} de ${totalSeries}`;
             document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.1";
 
@@ -163,7 +193,7 @@
                             isWorkPhase = true;
                             runPhase();
                         } else {
-                            alert("Sesión finalizada");
+                            alert("¡Sesión Completada!");
                             location.reload();
                         }
                     }
