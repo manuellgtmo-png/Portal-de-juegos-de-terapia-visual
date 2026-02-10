@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.8);
+            --card-bg: rgba(30, 41, 59, 0.9);
             --accent-color: #38bdf8;
             --text-color: #f8fafc;
             --success: #10b981;
@@ -21,102 +21,103 @@
             height: 100vh; overflow: hidden;
         }
 
-        /* PANTALLA INICIAL MEJORADA */
-        #intro-screen, #summary-screen {
-            background: var(--card-bg); padding: 40px; border-radius: 40px;
-            border: 3px solid var(--accent-color); text-align: center; 
-            max-width: 650px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-            backdrop-filter: blur(15px); position: absolute; z-index: 100;
+        /* CONTENEDORES PRINCIPALES */
+        #setup-screen, #summary-screen {
+            background: var(--card-bg); padding: 30px; border-radius: 30px;
+            border: 2px solid var(--accent-color); text-align: center; 
+            max-width: 600px; width: 90%; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px); position: absolute; z-index: 10;
         }
+
+        /* DEFINICIÓN Y GUÍA VISUAL */
+        .info-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin: 15px 0; font-size: 0.85rem; line-height: 1.4; }
+        .visual-guide { display: flex; justify-content: center; gap: 15px; margin: 15px 0; align-items: center; }
+        .guide-item { border: 1px solid #444; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; }
+        .guide-item.target { border: 2px solid var(--success); transform: scale(1.1); }
 
         .distancia-banner {
-            background: rgba(56, 189, 248, 0.15); border: 2px dashed var(--accent-color);
-            padding: 15px; border-radius: 20px; margin-bottom: 25px;
-            font-weight: 900; color: var(--accent-color); font-size: 1.2rem;
+            background: rgba(56, 189, 248, 0.2); border: 1px dashed var(--accent-color);
+            padding: 10px; border-radius: 12px; margin-bottom: 15px;
+            font-weight: 900; color: var(--accent-color); text-transform: uppercase;
         }
 
-        .config-grid { 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            gap: 15px; margin: 25px 0; 
-        }
-        .config-group { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; }
-        .config-group label { display: block; font-size: 0.75rem; font-weight: 900; color: var(--accent-color); margin-bottom: 10px; }
-        
-        /* JUEGO - ELEMENTOS GRANDES */
+        /* CONFIGURACIÓN */
+        .config-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .config-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; }
+        .config-card label { display: block; font-size: 0.65rem; font-weight: 900; color: var(--accent-color); margin-bottom: 5px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-color); }
+
+        /* ÁREA DE JUEGO XXL */
         #game-area { display: none; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; align-items: center; }
+        .timer-header { text-align: center; margin-top: 20px; }
+        .timer-val { font-size: 5rem; font-weight: 900; color: var(--accent-color); line-height: 1; }
         
-        #stimulus-container {
-            flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 80px; width: 100%;
-        }
+        #stimulus-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 100px; width: 100%; }
+        .target-box { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 50vh; width: 250px; }
+        .glyph { font-size: 200px; color: #fff; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+        .mark { font-size: 70px; font-weight: 900; color: #fff; }
 
-        .target-box {
-            display: flex; flex-direction: column; align-items: center; justify-content: space-around;
-            height: 50vh; width: 200px; transition: transform 0.1s linear;
-        }
-
-        .glyph { font-size: 180px; color: #ffffff; filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); user-select: none; }
-        .mark { font-size: 80px; font-weight: 900; color: #ffffff; opacity: 0.8; user-select: none; }
-
-        /* UI INFERIOR ENCADRADA */
+        /* BARRA INFERIOR */
         .bottom-nav {
-            background: var(--card-bg); padding: 25px 50px; border-radius: 50px 50px 0 0;
-            border: 3px solid var(--accent-color); border-bottom: none;
-            width: 90%; max-width: 800px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); padding: 20px 40px; border-radius: 40px 40px 0 0;
+            border: 2px solid var(--accent-color); border-bottom: none;
+            width: 85%; max-width: 900px; display: flex; justify-content: space-between; align-items: center;
         }
-
+        .delta-display { font-size: 2.5rem; font-weight: 900; color: var(--accent-color); }
         .btn-group { display: flex; gap: 15px; }
-        button { border: none; border-radius: 20px; font-family: 'Montserrat'; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .btn-control { background: var(--accent-color); width: 70px; height: 60px; font-size: 2rem; }
-        .btn-control:hover { transform: translateY(-5px); box-shadow: 0 5px 15px var(--accent-color); }
-        .btn-exit { background: var(--danger); padding: 0 25px; color: white; text-transform: uppercase; font-size: 0.9rem; }
-        
-        .timer-big { font-size: 6rem; font-weight: 900; color: var(--accent-color); line-height: 1; }
-
-        /* RESUMEN ALEGRE */
-        #summary-screen { display: none; }
-        .stat-box { font-size: 2rem; color: var(--success); margin: 20px 0; }
-        .emoji-win { font-size: 5rem; display: block; margin-bottom: 10px; }
-
+        button { border: none; border-radius: 15px; font-family: 'Montserrat'; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .btn-plus-minus { background: var(--accent-color); width: 60px; height: 55px; font-size: 1.8rem; }
+        .btn-finish { background: var(--danger); color: white; padding: 0 20px; font-size: 0.8rem; }
+        .btn-start { background: var(--success); width: 100%; padding: 18px; font-size: 1.2rem; border-radius: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="intro-screen">
-        <h1 style="color: var(--accent-color); margin: 0; font-size: 2.5rem;">CONVERGENCIA PRO</h1>
-        <p style="opacity: 0.7; margin-bottom: 20px;">Entrenamiento de reserva fusional positiva</p>
+    <div id="setup-screen">
+        <h2 style="margin: 0; color: var(--accent-color);">CONVERGENCIA PRO</h2>
+        <div class="info-box">
+            La <b>convergencia</b> permite enfocar objetos cercanos coordinando ambos ojos. 
+            Cruza la vista lentamente hasta que las figuras laterales se unan en una tercera imagen central.
+        </div>
         
-        <div class="distancia-banner">📏 REALIZAR A 40 CM DE DISTANCIA</div>
+        <div class="distancia-banner">📏 Realizar tarea a 40 cm de distancia</div>
 
-        <div class="config-grid">
-            <div class="config-group">
-                <label>SERIES: <span id="v-series">3</span></label>
-                <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateLabels()">
+        <div class="visual-guide">
+            <div class="guide-item">🏠<br>+</div>
+            <div class="guide-item target"><b>+<br>🏠<br>-</b><br><small>OBJETIVO</small></div>
+            <div class="guide-item">🏠<br>-</div>
+        </div>
+
+        <div class="config-row">
+            <div class="config-card">
+                <label>SERIES: <span id="l-series">3</span></label>
+                <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateL()">
             </div>
-            <div class="config-group">
-                <label>TRABAJO: <span id="v-work">20</span>s</label>
-                <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateLabels()">
+            <div class="config-card">
+                <label>TRABAJO: <span id="l-work">20</span>s</label>
+                <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="updateL()">
             </div>
-            <div class="config-group">
-                <label>DESCANSO: <span id="v-rest">10</span>s</label>
-                <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateLabels()">
+            <div class="config-card">
+                <label>DESCANSO: <span id="l-rest">10</span>s</label>
+                <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="updateL()">
             </div>
         </div>
 
-        <button onclick="startSession()" style="background: var(--success); width: 100%; padding: 20px; font-size: 1.5rem; border-radius: 25px;">¡EMPEZAR AHORA!</button>
+        <button class="btn-start" onclick="startSession()">¡COMENZAR SESIÓN!</button>
     </div>
 
-    <div id="summary-screen">
-        <span class="emoji-win">🥳</span>
-        <h2 style="color: var(--success); font-size: 2rem;">¡SESIÓN COMPLETADA!</h2>
-        <div class="stat-box">Máxima Demanda: <span id="final-delta">0</span> Δ</div>
-        <p>Has fortalecido tu coordinación binocular con éxito.</p>
-        <button onclick="window.location.href='index.html'" style="background: var(--accent-color); width: 100%; padding: 20px; font-size: 1.2rem; margin-top: 20px;">VOLVER AL MÓDULO</button>
+    <div id="summary-screen" style="display: none;">
+        <h1 style="font-size: 4rem; margin: 0;">🥳</h1>
+        <h2 style="color: var(--success);">¡ENTRENAMIENTO EXITOSO!</h2>
+        <p>Lograste una demanda máxima de:</p>
+        <div style="font-size: 3rem; font-weight: 900; color: var(--accent-color); margin: 10px 0;"><span id="res-delta">0</span> Δ</div>
+        <button class="btn-start" style="background: var(--accent-color);" onclick="resetToSetup()">REPETIR CONFIGURACIÓN</button>
     </div>
 
     <div id="game-area">
-        <div style="text-align: center; margin-top: 20px;">
-            <div id="timer-display" class="timer-big">00</div>
-            <div id="phase-label" style="font-weight: 900; font-size: 1.5rem; letter-spacing: 5px;">PREPARADO</div>
+        <div class="timer-header">
+            <div id="timer-display" class="timer-val">00</div>
+            <div id="status-label" style="letter-spacing: 4px; font-weight: 900; font-size: 1.2rem;">¡FUSIONA!</div>
         </div>
 
         <div id="stimulus-container">
@@ -133,93 +134,100 @@
         </div>
 
         <div class="bottom-nav">
-            <div style="text-align: left;">
-                <div style="font-size: 0.8rem; opacity: 0.6; font-weight: 900;">DEMANDA ACTUAL</div>
-                <div style="font-size: 2.5rem; font-weight: 900;"><span id="demand-val" style="color: var(--accent-color);">0</span> <small style="font-size: 1rem;">Δ</small></div>
+            <div>
+                <div style="font-size: 0.7rem; opacity: 0.6; font-weight: 900;">DEMANDA</div>
+                <div class="delta-display"><span id="demand-val">0</span> <small style="font-size: 1rem;">Δ</small></div>
             </div>
             <div class="btn-group">
-                <button class="btn-control" onclick="adjustSep(-5)">-</button>
-                <button class="btn-control" onclick="adjustSep(5)">+</button>
-                <button class="btn-exit" onclick="finishExercise()">Terminar Ejercicio</button>
+                <button class="btn-plus-minus" onclick="adjust( -6 )">-</button>
+                <button class="btn-plus-minus" onclick="adjust( 6 )">+</button>
+                <button class="btn-finish" onclick="endEarly()">TERMINAR</button>
             </div>
         </div>
     </div>
 
     <script>
-        let separation = 20;
-        let currentSerie = 1;
-        let isWork = true;
-        let timer;
-        let maxDelta = 0;
-        const icons = ['🏠', '🦁', '⭐', '🍎', '🔔', '🌳', '🐱', '🌙'];
+        let separation = 30;
+        let seriesCount = 1;
+        let isWorkPhase = true;
+        let clock;
+        let maxReached = 0;
+        const figuras = ['🏠', '🦁', '⭐', '🔔', '🌳', '🐱', '🍎', '🌙'];
 
-        function updateLabels() {
-            document.getElementById('v-series').innerText = document.getElementById('i-series').value;
-            document.getElementById('v-work').innerText = document.getElementById('i-work').value;
-            document.getElementById('v-rest').innerText = document.getElementById('i-rest').value;
+        function updateL() {
+            document.getElementById('l-series').innerText = document.getElementById('i-series').value;
+            document.getElementById('l-work').innerText = document.getElementById('i-work').value;
+            document.getElementById('l-rest').innerText = document.getElementById('i-rest').value;
         }
 
-        function adjustSep(val) {
+        function adjust(val) {
             separation += val;
             if(separation < 0) separation = 0;
-            let delta = Math.floor(separation / 3.2);
-            if(delta > maxDelta) maxDelta = delta;
-            updatePosition();
+            let d = Math.floor(separation / 3.2);
+            if(d > maxReached) maxReached = d;
+            draw();
         }
 
-        function updatePosition() {
+        function draw() {
             document.getElementById('box-l').style.transform = `translateX(${-separation}px)`;
             document.getElementById('box-r').style.transform = `translateX(${separation}px)`;
             document.getElementById('demand-val').innerText = Math.floor(separation / 3.2);
         }
 
-        function finishExercise() {
-            if(confirm("¿Seguro que quieres terminar?")) {
-                showSummary();
+        function resetToSetup() {
+            document.getElementById('summary-screen').style.display = 'none';
+            document.getElementById('setup-screen').style.display = 'block';
+            seriesCount = 1;
+            maxReached = 0;
+        }
+
+        function endEarly() {
+            if(confirm("¿Deseas finalizar y ver resultados?")) {
+                clearInterval(clock);
+                showFinal();
             }
         }
 
-        function showSummary() {
-            clearInterval(timer);
+        function showFinal() {
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('summary-screen').style.display = 'block';
-            document.getElementById('final-delta').innerText = maxDelta;
+            document.getElementById('res-delta').innerText = maxReached;
         }
 
         function startSession() {
-            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('game-area').style.display = 'flex';
-            runPhase();
+            cycle();
         }
 
-        function runPhase() {
-            let total = parseInt(document.getElementById('i-series').value);
-            let time = isWork ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
+        function cycle() {
+            let limit = parseInt(document.getElementById('i-series').value);
+            let time = isWorkPhase ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
             
-            document.getElementById('phase-label').innerText = isWork ? "¡FUSIONA!" : "DESCANSA";
-            document.getElementById('phase-label').style.color = isWork ? "var(--success)" : "var(--danger)";
-            document.getElementById('stimulus-container').style.opacity = isWork ? "1" : "0.1";
+            document.getElementById('status-label').innerText = isWorkPhase ? "¡MANTÉN LA FUSIÓN!" : "DESCANSA";
+            document.getElementById('status-label').style.color = isWorkPhase ? "var(--success)" : "var(--danger)";
+            document.getElementById('stimulus-container').style.opacity = isWorkPhase ? "1" : "0.05";
 
-            if(isWork) {
-                const icon = icons[Math.floor(Math.random() * icons.length)];
-                document.getElementById('fig-l').innerText = icon;
-                document.getElementById('fig-r').innerText = icon;
+            if(isWorkPhase) {
+                const pick = figuras[Math.floor(Math.random() * figuras.length)];
+                document.getElementById('fig-l').innerText = pick;
+                document.getElementById('fig-r').innerText = pick;
             }
 
-            timer = setInterval(() => {
+            clock = setInterval(() => {
                 document.getElementById('timer-display').innerText = time < 10 ? "0"+time : time;
                 if(time <= 0) {
-                    clearInterval(timer);
-                    if(isWork) {
-                        isWork = false;
-                        runPhase();
+                    clearInterval(clock);
+                    if(isWorkPhase) {
+                        isWorkPhase = false;
+                        cycle();
                     } else {
-                        currentSerie++;
-                        if(currentSerie <= total) {
-                            isWork = true;
-                            runPhase();
+                        seriesCount++;
+                        if(seriesCount <= limit) {
+                            isWorkPhase = true;
+                            cycle();
                         } else {
-                            showSummary();
+                            showFinal();
                         }
                     }
                 }
@@ -227,8 +235,8 @@
             }, 1000);
         }
 
-        updateLabels();
-        updatePosition();
+        updateL();
+        draw();
     </script>
 </body>
 </html>
