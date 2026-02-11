@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sacádicos DEM Pro - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --accent-color: #a855f7;
+            --text-color: #f8fafc;
+            --success: #10b981;
+        }
+        body {
+            margin: 0; font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+
+        .screen {
+            background: var(--card-bg); padding: 40px; border-radius: 40px;
+            border: 3px solid var(--accent-color); text-align: center;
+            max-width: 650px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            display: none; position: absolute; z-index: 100;
+        }
+        .active { display: block; animation: fadeIn 0.3s ease; }
+        
+        /* REJILLA TIPO DEM */
+        #game-area { 
+            display: none; width: 95vw; height: 90vh; 
+            grid-template-columns: repeat(5, 1fr); 
+            grid-template-rows: repeat(8, 1fr);
+            gap: 20px; padding: 40px; box-sizing: border-box;
+        }
+        .dem-number {
+            font-family: 'Roboto Mono', monospace; font-size: 3.5rem;
+            color: #64748b; display: flex; align-items: center; justify-content: center;
+            transition: all 0.1s ease; opacity: 0.3;
+        }
+        .dem-number.highlight {
+            color: var(--accent-color); opacity: 1; transform: scale(1.2);
+            filter: drop-shadow(0 0 15px var(--accent-color));
+        }
+
+        .btn-main { background: var(--success); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 20px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div id="s1" class="screen active">
+        <h1 style="color: var(--accent-color);">SACÁDICOS: MODO LECTURA</h1>
+        <p>Entrenamiento de saltos oculares basado en el test DEM.</p>
+        <p style="text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px;">
+            1. Aparecerá una cuadrícula de números.<br>
+            2. Deberás <b>nombrar en voz alta</b> solo el número resaltado.<br>
+            3. Los saltos seguirán un patrón de lectura (izquierda a derecha).
+        </p>
+        <button class="btn-main" onclick="go(2)">CONFIGURAR</button>
+    </div>
+
+    <div id="s2" class="screen">
+        <h1>AJUSTES</h1>
+        <div style="text-align: left; margin: 20px 0;">
+            <label>DIFICULTAD (Velocidad): <span id="v-lvl" style="color:var(--accent-color)">1</span></label>
+            <input type="range" id="i-lvl" min="1" max="10" value="1" oninput="sync()">
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">Nivel 1: Salto lento | Nivel 10: Salto experto</p>
+        </div>
+        <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
+    </div>
+
+    <div id="game-area"></div>
+
+    <div id="s-final" class="screen">
+        <h1 style="color: var(--success);">¡SESIÓN FINALIZADA!</h1>
+        <p id="res-txt"></p>
+        <button class="btn-main" onclick="location.reload()">REPETIR</button>
+    </div>
+
+    <script>
+        let currentIdx = 0, level, interval;
+        const totalNumbers = 40; // 5x8 como un DEM simplificado
+
+        function go(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            if(n === 'final') document.getElementById('s-final').classList.add('active');
+            else document.getElementById(`s${n}`).classList.add('active');
+        }
+
+        function sync() {
+            document.getElementById('v-lvl').innerText = document.getElementById('i-lvl').value;
+        }
+
+        function startGame() {
+            level = parseInt(document.getElementById('i-lvl').value);
+            const area = document.getElementById('game-area');
+            area.innerHTML = '';
+            area.style.display = 'grid';
+            document.getElementById('s2').classList.remove('active');
+
+            // Crear números aleatorios
+            for(let i=0; i<totalNumbers; i++) {
+                const div = document.createElement('div');
+                div.className = 'dem-number';
+                div.id = `num-${i}`;
+                div.innerText = Math.floor(Math.random() * 9) + 1;
+                area.appendChild(div);
+            }
+
+            // Velocidad: Nivel 1 = 1.5s por salto, Nivel 10 = 0.4s
+            const speed = 1600 - (level * 120);
+            
+            highlightNext();
+            interval = setInterval(highlightNext, speed);
+        }
+
+        function highlightNext() {
+            if(currentIdx > 0) {
+                document.getElementById(`num-${currentIdx-1}`).classList.remove('highlight');
+            }
+            
+            if(currentIdx < totalNumbers) {
+                document.getElementById(`num-${currentIdx}`).classList.add('highlight');
+                currentIdx++;
+            } else {
+                finish();
+            }
+        }
+
+        function finish() {
+            clearInterval(interval);
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('res-txt').innerHTML = `Has completado el test en <b>Nivel ${level}</b>.<br>Distancia de trabajo: <b>40cm</b>`;
+            go('final');
+
+            // ENVÍO A SHEETS
+            const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+            const params = new URLSearchParams();
+            params.append("entry.369874016", "PACIENTE_PRO"); 
+            params.append("entry.1353470174", "SACADICOS_DEM"); 
+            params.append("entry.721051298", level); 
+            params.append("entry.873272199", "Lectura_DEM"); 
+            params.append("entry.1030094511", "40cm"); 
+            params.append("entry.1303309812", "40_estímulos"); 
+            params.append("entry.845098414", new Date().toISOString().split('T')[0]); 
+
+            fetch(formURL, { method: "POST", mode: "no-cors", body: params });
+        }
+    </script>
+</body>
+</html>
