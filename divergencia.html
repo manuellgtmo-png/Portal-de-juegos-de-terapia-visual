@@ -28,10 +28,8 @@
         .active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* EJEMPLO VISUAL DEL RECORTE */
-        .visual-example {
-            margin: 25px auto; width: 300px; text-align: center;
-        }
+        /* EJEMPLO VISUAL RECORTE */
+        .visual-example { margin: 25px auto; width: 300px; text-align: center; }
         .card-mockup {
             width: 220px; height: 140px; background: #1e293b; border: 2px solid #64748b;
             border-radius: 15px; margin: 10px auto; position: relative;
@@ -41,14 +39,13 @@
             width: 45px; height: 65px; background: var(--bg-color);
             border: 2px dashed var(--accent-color); border-radius: 5px;
         }
-        .dimension-label { font-size: 0.8rem; color: var(--accent-color); font-weight: 700; margin-top: 5px; }
 
         .instruction-text { font-size: 1.2rem; line-height: 1.5; margin-bottom: 15px; }
         .highlight { color: var(--accent-color); font-weight: 900; }
 
+        /* JUEGO */
         #game-area { display: none; width: 100%; height: 100%; position: relative; }
         #stimulus-container { position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); display: flex; gap: 40px; }
-        
         .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 55vh; width: 200px; transition: transform 0.2s ease; }
         .glyph { font-size: 120px; color: #FFF; filter: drop-shadow(0 0 10px rgba(244,114,182,0.5)); }
         .mark { font-size: 70px; font-weight: 900; color: #FFF; }
@@ -66,16 +63,11 @@
     <div id="s1" class="screen active">
         <h1 style="color: var(--accent-color);">1. PREPARA TU MATERIAL</h1>
         <p class="instruction-text">Recorta un cartón oscuro con esta forma:</p>
-        
         <div class="visual-example">
-            <div class="card-mockup">
-                <div class="window-cut"></div>
-                <div class="window-cut"></div>
-            </div>
-            <div class="dimension-label">DOS VENTANAS: 3cm ancho x 4cm alto</div>
+            <div class="card-mockup"><div class="window-cut"></div><div class="window-cut"></div></div>
+            <div style="font-size: 0.8rem; color: var(--accent-color); font-weight: 700;">VENTANAS: 3cm ancho x 4cm alto</div>
         </div>
-
-        <p class="instruction-text">Sujétalo a <span class="highlight">20 cm</span> de tus ojos.<br>Mantén la pantalla a <span class="highlight">40 cm</span>.</p>
+        <p class="instruction-text">Sujétalo a <span class="highlight">20 cm</span> de tus ojos.<br>Pantalla a <span class="highlight">40 cm</span>.</p>
         <button class="btn-main" onclick="go(2)">CONTINUAR</button>
     </div>
 
@@ -138,7 +130,6 @@
 
     <script>
         let currentLvl = 1, isWork = true, currentSerie = 1, maxLvlReached = 1, clock;
-        // Escala de 1 en 1 delta (4px aprox = 1 delta a 40cm)
         const levels = [0, 2, 4, 6, 8, 12, 16, 20, 26, 32, 40, 50, 60];
         const icons = ['◎', '✧', '⬔', '▽', '◇', '⠿'];
 
@@ -204,22 +195,23 @@
         function finishAndSend() {
             clearInterval(clock);
             const deltaFinal = document.getElementById('delta-val').innerText;
+            const tiempoWork = document.getElementById('i-work').value;
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('res-lvl').innerText = maxLvlReached;
             document.getElementById('res-delta').innerText = deltaFinal + " Δ";
             go('final');
 
-            // CONEXIÓN ROBUSTA A GOOGLE SHEETS (SIN OMISIONES)
             const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
             const params = new URLSearchParams();
             
+            // MAPEO EXACTO BASADO EN TU LINK
             params.append("entry.369874016", "PACIENTE_PRO"); 
             params.append("entry.1353470174", "DIVERGENCIA_DIGITAL"); 
             params.append("entry.721051298", maxLvlReached); 
             params.append("entry.873272199", deltaFinal); 
             params.append("entry.1030094511", "40cm"); 
-            params.append("entry.1303309812", document.getElementById('i-work').value); 
-            params.append("entry.845098414", new Date().toLocaleDateString()); 
+            params.append("entry.1303309812", tiempoWork); 
+            params.append("entry.845098414", new Date().toISOString().split('T')[0]); 
 
             fetch(formURL, { method: "POST", mode: "no-cors", body: params });
         }
