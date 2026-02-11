@@ -2,12 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sacádicos DEM Pro - Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
+    <title>Sacádicos Dinámicos - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.95);
+            --bg-color: #020617;
             --accent-color: #a855f7;
             --text-color: #f8fafc;
             --success: #10b981;
@@ -19,68 +18,72 @@
         }
 
         .screen {
-            background: var(--card-bg); padding: 40px; border-radius: 40px;
+            background: rgba(30, 41, 59, 0.95); padding: 40px; border-radius: 40px;
             border: 3px solid var(--accent-color); text-align: center;
-            max-width: 650px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            max-width: 650px; width: 90%; box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
             display: none; position: absolute; z-index: 100;
         }
         .active { display: block; animation: fadeIn 0.3s ease; }
-        
-        /* REJILLA TIPO DEM */
+
+        /* REJILLA DINÁMICA */
         #game-area { 
             display: none; width: 95vw; height: 90vh; 
             grid-template-columns: repeat(5, 1fr); 
-            grid-template-rows: repeat(8, 1fr);
-            gap: 20px; padding: 40px; box-sizing: border-box;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 15px; padding: 40px; box-sizing: border-box;
         }
-        .dem-number {
-            font-family: 'Roboto Mono', monospace; font-size: 3.5rem;
-            color: #64748b; display: flex; align-items: center; justify-content: center;
-            transition: all 0.1s ease; opacity: 0.3;
+        .slot {
+            display: flex; align-items: center; justify-content: center;
+            perspective: 1000px;
         }
-        .dem-number.highlight {
-            color: var(--accent-color); opacity: 1; transform: scale(1.2);
-            filter: drop-shadow(0 0 15px var(--accent-color));
+        .stimulus {
+            font-family: 'Roboto Mono', monospace; font-size: 4rem;
+            color: #1e293b; transition: all 0.1s ease;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
+        .stimulus.active {
+            color: var(--accent-color);
+            transform: scale(1.3) translate(var(--rx), var(--ry));
+            filter: drop-shadow(0 0 20px var(--accent-color));
+        }
+        .stimulus.distractor { color: #475569; opacity: 0.2; }
 
-        .btn-main { background: var(--success); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 20px; }
-        input[type="range"] { width: 100%; accent-color: var(--accent-color); }
+        .btn-main { background: var(--success); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 20px; box-shadow: 0 10px 0 #059669; }
+        .btn-main:active { transform: translateY(5px); box-shadow: 0 5px 0 #059669; }
     </style>
 </head>
 <body>
 
     <div id="s1" class="screen active">
-        <h1 style="color: var(--accent-color);">SACÁDICOS: MODO LECTURA</h1>
-        <p>Entrenamiento de saltos oculares basado en el test DEM.</p>
-        <p style="text-align: left; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px;">
-            1. Aparecerá una cuadrícula de números.<br>
-            2. Deberás <b>nombrar en voz alta</b> solo el número resaltado.<br>
-            3. Los saltos seguirán un patrón de lectura (izquierda a derecha).
-        </p>
-        <button class="btn-main" onclick="go(2)">CONFIGURAR</button>
+        <h1 style="color: var(--accent-color); font-size: 2.5rem;">ENTRENAMIENTO SACÁDICO DINÁMICO</h1>
+        <p style="font-size: 1.2rem;">Los números aparecerán en ráfagas. <br><b style="color: var(--success);">¡Nómbralos antes de que se apaguen!</b></p>
+        <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; border-left: 5px solid var(--accent-color);">
+            🚀 <b>Distancia:</b> 40 cm.<br>
+            🧠 <b>Reto:</b> Ignora los símbolos tenues, solo di los números brillantes.<br>
+            ⚡ <b>Velocidad:</b> El tiempo se reduce según el nivel.
+        </div>
+        <button class="btn-main" onclick="go(2)">CONFIGURAR SESIÓN</button>
     </div>
 
     <div id="s2" class="screen">
-        <h1>AJUSTES</h1>
-        <div style="text-align: left; margin: 20px 0;">
-            <label>DIFICULTAD (Velocidad): <span id="v-lvl" style="color:var(--accent-color)">1</span></label>
-            <input type="range" id="i-lvl" min="1" max="10" value="1" oninput="sync()">
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 5px;">Nivel 1: Salto lento | Nivel 10: Salto experto</p>
-        </div>
-        <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
+        <h1>DIFICULTAD</h1>
+        <input type="range" id="i-lvl" min="1" max="10" value="1" style="width:100%; accent-color:var(--accent-color)" oninput="sync()">
+        <h2 id="v-lvl" style="font-size: 4rem; color: var(--accent-color); margin: 10px 0;">NIVEL 1</h2>
+        <button class="btn-main" onclick="startGame()">¡INICIAR FUEGO!</button>
     </div>
 
     <div id="game-area"></div>
 
     <div id="s-final" class="screen">
-        <h1 style="color: var(--success);">¡SESIÓN FINALIZADA!</h1>
-        <p id="res-txt"></p>
-        <button class="btn-main" onclick="location.reload()">REPETIR</button>
+        <h1 style="color: var(--success);">FIN DE LA RONDA</h1>
+        <p id="res-txt" style="font-size: 1.5rem;"></p>
+        <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
     </div>
 
     <script>
         let currentIdx = 0, level, interval;
-        const totalNumbers = 40; // 5x8 como un DEM simplificado
+        const totalSlots = 30; 
+        const distractors = ['#', '&', 'X', '?', '%'];
 
         function go(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -89,7 +92,7 @@
         }
 
         function sync() {
-            document.getElementById('v-lvl').innerText = document.getElementById('i-lvl').value;
+            document.getElementById('v-lvl').innerText = "NIVEL " + document.getElementById('i-lvl').value;
         }
 
         function startGame() {
@@ -99,29 +102,41 @@
             area.style.display = 'grid';
             document.getElementById('s2').classList.remove('active');
 
-            // Crear números aleatorios
-            for(let i=0; i<totalNumbers; i++) {
-                const div = document.createElement('div');
-                div.className = 'dem-number';
-                div.id = `num-${i}`;
-                div.innerText = Math.floor(Math.random() * 9) + 1;
-                area.appendChild(div);
+            for(let i=0; i<totalSlots; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'slot';
+                const stim = document.createElement('div');
+                stim.className = 'stimulus';
+                stim.id = `st-${i}`;
+                
+                // 30% de probabilidad de ser un distractor
+                if(Math.random() > 0.7) {
+                    stim.innerText = distractors[Math.floor(Math.random()*distractors.length)];
+                    stim.classList.add('distractor');
+                } else {
+                    stim.innerText = Math.floor(Math.random() * 9) + 1;
+                }
+                
+                // Desplazamiento aleatorio para que no sea perfecto
+                stim.style.setProperty('--rx', (Math.random()*20 - 10) + 'px');
+                stim.style.setProperty('--ry', (Math.random()*20 - 10) + 'px');
+                
+                slot.appendChild(stim);
+                area.appendChild(slot);
             }
 
-            // Velocidad: Nivel 1 = 1.5s por salto, Nivel 10 = 0.4s
-            const speed = 1600 - (level * 120);
-            
+            const speed = 1800 - (level * 150);
             highlightNext();
             interval = setInterval(highlightNext, speed);
         }
 
         function highlightNext() {
-            if(currentIdx > 0) {
-                document.getElementById(`num-${currentIdx-1}`).classList.remove('highlight');
-            }
+            if(currentIdx > 0) document.getElementById(`st-${currentIdx-1}`).classList.remove('active');
             
-            if(currentIdx < totalNumbers) {
-                document.getElementById(`num-${currentIdx}`).classList.add('highlight');
+            if(currentIdx < totalSlots) {
+                const el = document.getElementById(`st-${currentIdx}`);
+                el.classList.add('active');
+                // Si es un distractor, saltar más rápido o marcar ritmo
                 currentIdx++;
             } else {
                 finish();
@@ -131,20 +146,16 @@
         function finish() {
             clearInterval(interval);
             document.getElementById('game-area').style.display = 'none';
-            document.getElementById('res-txt').innerHTML = `Has completado el test en <b>Nivel ${level}</b>.<br>Distancia de trabajo: <b>40cm</b>`;
+            document.getElementById('res-txt').innerHTML = `Completado en <b>Nivel ${level}</b>.<br>Entrenamiento de 40 cm finalizado.`;
             go('final');
 
-            // ENVÍO A SHEETS
             const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
             const params = new URLSearchParams();
             params.append("entry.369874016", "PACIENTE_PRO"); 
-            params.append("entry.1353470174", "SACADICOS_DEM"); 
+            params.append("entry.1353470174", "SACADICOS_DINAMICOS"); 
             params.append("entry.721051298", level); 
-            params.append("entry.873272199", "Lectura_DEM"); 
             params.append("entry.1030094511", "40cm"); 
-            params.append("entry.1303309812", "40_estímulos"); 
             params.append("entry.845098414", new Date().toISOString().split('T')[0]); 
-
             fetch(formURL, { method: "POST", mode: "no-cors", body: params });
         }
     </script>
