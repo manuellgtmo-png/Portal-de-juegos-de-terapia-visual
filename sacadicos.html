@@ -2,38 +2,57 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Sacádicos Voice Master - Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <title>Sacádicos Voice Pro - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020617; --accent-color: #a855f7; --text-color: #f8fafc;
-            --success: #10b981; --danger: #ef4444;
+            --bg-color: #020617;
+            --accent-color: #a855f7;
+            --text-color: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
         }
         body {
             margin: 0; font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-color); color: var(--text-color);
             height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
+
         .screen {
             background: rgba(30, 41, 59, 0.95); padding: 40px; border-radius: 40px;
             border: 3px solid var(--accent-color); text-align: center;
             max-width: 600px; width: 90%; position: absolute; z-index: 100; display: none;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.2);
         }
-        .active { display: block; }
+        .active { display: block; animation: fadeIn 0.3s ease; }
+
         .hud {
             position: absolute; top: 20px; width: 100%; display: flex;
             justify-content: space-around; font-size: 1.5rem; font-weight: 900; z-index: 50;
+            text-shadow: 0 0 10px #000;
         }
+
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
+
         .stimulus {
-            position: absolute; font-size: var(--sz); color: var(--accent-color);
-            transform: translate(-50%, -50%); filter: drop-shadow(0 0 15px var(--accent-color));
-            transition: color 0.2s;
+            position: absolute; font-family: 'Roboto Mono', monospace; font-size: var(--sz);
+            color: var(--accent-color); transform: translate(-50%, -50%);
+            filter: drop-shadow(0 0 15px var(--accent-color));
+            transition: color 0.2s, transform 0.1s;
         }
-        .stimulus.warning { color: var(--danger); animation: shake 0.1s infinite; }
-        @keyframes shake { 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); } 25% { transform: translate(-50%, -50%) rotate(5deg); } 75% { transform: translate(-50%, -50%) rotate(-5deg); } }
-        .btn-main { background: var(--success); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 20px; }
-        .mic-status { font-size: 0.8rem; margin-top: 10px; color: var(--success); opacity: 0.8; }
+
+        .stimulus.warning {
+            color: var(--danger);
+            filter: drop-shadow(0 0 25px var(--danger));
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes shake { 0% { transform: translate(-50%, -50%) rotate(0); } 25% { transform: translate(-50%, -50%) rotate(5deg); } 75% { transform: translate(-50%, -50%) rotate(-5deg); } }
+
+        .btn-main { background: var(--success); color: #000; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 20px; box-shadow: 0 8px 0 #059669; }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 4px 0 #059669; }
+        .mic-log { font-size: 0.9rem; margin-top: 15px; color: var(--success); font-weight: 700; }
     </style>
 </head>
 <body>
@@ -44,21 +63,22 @@
     </div>
 
     <div id="s1" class="screen active">
-        <h1 style="color: var(--accent-color);">VOICE MASTER SACÁDICOS</h1>
-        <p>Entrenamiento controlado por voz a <b>40 cm</b>.</p>
-        <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 20px; font-size: 0.9rem;">
-            🎤 <b>Paso 1:</b> Permite el uso del micrófono.<br>
-            🗣️ <b>Paso 2:</b> Di el número o letra en voz alta rápidamente.<br>
-            🧠 <b>Paso 3:</b> Solo pasarás de nivel si pronuncias el correcto.
+        <h1 style="color: var(--accent-color); font-size: 2.2rem;">VOICE SACÁDICOS PRO</h1>
+        <p>Entrenamiento de saltos y reconocimiento verbal a <b>40 cm</b>.</p>
+        <div style="text-align: left; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 25px; border-left: 5px solid var(--accent-color);">
+            1. 🎤 Haz clic en el botón y **Permite el Micrófono**.<br>
+            2. 👁️ Aparecerán **Números y Letras** en posiciones aleatorias.<br>
+            3. 🗣️ Di el nombre del estímulo en voz alta para pasar al siguiente.<br>
+            4. ⚠️ Si parpadea en rojo y no respondes, pierdes una vida.
         </div>
-        <button class="btn-main" onclick="initVoice()">ACTIVAR MICRÓFONO</button>
-        <div id="mic-info" class="mic-status" style="display:none">✅ Micrófono detectado</div>
+        <button class="btn-main" onclick="initVoice()">ACTIVAR Y EMPEZAR</button>
+        <div id="mic-status" class="mic-log">Esperando activación...</div>
     </div>
 
     <div id="game-area"></div>
 
     <div id="s-final" class="screen">
-        <h1 style="color: var(--danger);">FIN DE SESIÓN</h1>
+        <h1 style="color: var(--danger); font-size: 3rem;">FIN DEL JUEGO</h1>
         <p id="res-txt" style="font-size: 1.5rem;"></p>
         <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
     </div>
@@ -66,28 +86,41 @@
     <script>
         let level = 1, lives = 3, currentVal = "";
         let recognition;
-        const stimuli = "123456789ABCDEFHKMNPRTUVWXY"; // Mix de números y letras fáciles de reconocer
+        let failTimer, warningTimer;
+        const stimuli = "123456789ABCDEFHKMNPRTUVWXY"; 
 
         function initVoice() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!window.SpeechRecognition) {
-                alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.");
+                alert("Tu navegador no soporta reconocimiento de voz. Usa Chrome en PC o Android.");
                 return;
             }
+
             recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
             recognition.continuous = true;
             recognition.interimResults = false;
 
-            recognition.onresult = (event) => {
-                const speechToText = event.results[event.results.length - 1][0].transcript.trim().toUpperCase();
-                console.log("Escuchado:", speechToText);
-                checkAnswer(speechToText);
+            recognition.onstart = () => {
+                document.getElementById('mic-status').innerText = "🎤 MICRÓFONO CONECTADO - ESCUCHANDO...";
+                startGame();
             };
 
+            recognition.onresult = (event) => {
+                const results = event.results;
+                const transcript = results[results.length - 1][0].transcript.trim().toUpperCase();
+                console.log("Detectado:", transcript);
+                processVoice(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Error de mic:", event.error);
+            };
+
+            // Reiniciar si se detiene solo
+            recognition.onend = () => { if(lives > 0) recognition.start(); };
+
             recognition.start();
-            document.getElementById('mic-info').style.display = 'block';
-            setTimeout(startGame, 1000);
         }
 
         function startGame() {
@@ -101,9 +134,10 @@
             const area = document.getElementById('game-area');
             area.innerHTML = '';
             
+            // Lógica de dificultad: niveles infinitos
             currentVal = stimuli[Math.floor(Math.random() * stimuli.length)];
-            const speed = Math.max(800, 3500 - (level * 150)); // Un poco más de tiempo para procesar voz
-            const size = Math.floor(Math.random() * (110 - 50 + 1)) + 50;
+            const timeLimit = Math.max(900, 4000 - (level * 150)); 
+            const size = Math.floor(Math.random() * (120 - 50 + 1)) + 50;
             
             const stim = document.createElement('div');
             stim.className = 'stimulus';
@@ -114,26 +148,35 @@
             stim.style.setProperty('--sz', `${size}px`);
             area.appendChild(stim);
 
-            // Temporizador de fallo
-            stim.failTimer = setTimeout(() => {
+            // Temporizadores
+            warningTimer = setTimeout(() => stim.classList.add('warning'), timeLimit * 0.6);
+            failTimer = setTimeout(() => {
                 lives--;
                 updateHUD();
                 if(lives <= 0) endGame();
                 else spawn();
-            }, speed);
-
-            stim.warningTimer = setTimeout(() => stim.classList.add('warning'), speed * 0.6);
+            }, timeLimit);
         }
 
-        function checkAnswer(val) {
-            // El reconocimiento a veces devuelve palabras (ej: "Siete" en vez de "7")
-            const map = {"UNO": "1", "DOS": "2", "TRES": "3", "CUATRO": "4", "CINCO": "5", "SEIS": "6", "SIETE": "7", "OCHO": "8", "NUEVE": "9"};
-            const finalVal = map[val] || val;
+        function processVoice(text) {
+            const dict = {
+                "UNO": "1", "1": "1", "DOS": "2", "2": "2", "TRES": "3", "3": "3",
+                "CUATRO": "4", "4": "4", "CINCO": "5", "5": "5", "SEIS": "6", "6": "6",
+                "SIETE": "7", "7": "7", "OCHO": "8", "8": "8", "NUEVE": "9", "9": "9"
+            };
 
-            if (finalVal.includes(currentVal)) {
-                const stim = document.getElementById('active-stim');
-                clearTimeout(stim.failTimer);
-                clearTimeout(stim.warningTimer);
+            // Verificamos si alguna palabra de lo dicho coincide con el objetivo
+            const words = text.split(" ");
+            let success = false;
+            
+            words.forEach(w => {
+                const clean = dict[w] || w;
+                if(clean === currentVal.toString()) success = true;
+            });
+
+            if(success) {
+                clearTimeout(failTimer);
+                clearTimeout(warningTimer);
                 level++;
                 updateHUD();
                 spawn();
@@ -146,11 +189,23 @@
         }
 
         function endGame() {
+            clearTimeout(failTimer);
+            clearTimeout(warningTimer);
             recognition.stop();
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            document.getElementById('res-txt').innerHTML = `Nivel alcanzado: ${level}`;
+            document.getElementById('res-txt').innerHTML = `Llegaste al Nivel: <b>${level}</b><br>Sesión a 40 cm.`;
             document.getElementById('s-final').classList.add('active');
+
+            // ENVÍO DE DATOS
+            const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+            const params = new URLSearchParams();
+            params.append("entry.369874016", "PACIENTE_PRO"); 
+            params.append("entry.1353470174", "SACADICOS_VOICE_INFINITO"); 
+            params.append("entry.721051298", level); 
+            params.append("entry.1030094511", "40cm"); 
+            params.append("entry.845098414", new Date().toISOString().split('T')[0]); 
+            fetch(formURL, { method: "POST", mode: "no-cors", body: params });
         }
     </script>
 </body>
