@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Divergencia Pro - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --accent-color: #f472b6; 
+            --text-color: #f8fafc;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        body {
+            margin: 0; font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+
+        .screen {
+            background: var(--card-bg); padding: 40px; border-radius: 40px;
+            border: 3px solid var(--accent-color); text-align: center;
+            max-width: 750px; width: 90%; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            display: none; position: absolute; z-index: 100;
+        }
+        .active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+        .instruction-text { font-size: 1.4rem; line-height: 1.6; text-align: center; margin-bottom: 20px; }
+        .window-box { border: 3px dashed var(--accent-color); padding: 20px; border-radius: 20px; display: inline-block; margin: 20px 0; background: rgba(244, 114, 182, 0.1); }
+        .highlight { color: var(--accent-color); font-weight: 900; }
+
+        #game-area { display: none; width: 100%; height: 100%; position: relative; }
+        #stimulus-container { position: absolute; top: 50%; left: 45%; transform: translate(-50%, -50%); display: flex; gap: 40px; }
+        
+        /* Ajuste de tamaño para Divergencia */
+        .target { display: flex; flex-direction: column; align-items: center; justify-content: space-around; height: 55vh; width: 200px; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .glyph { font-size: 130px; color: #FFF; filter: drop-shadow(0 0 10px rgba(244,114,182,0.5)); }
+        .mark { font-size: 70px; font-weight: 900; color: #FFF; }
+
+        .sidebar { position: absolute; right: 40px; top: 50%; transform: translateY(-50%); background: var(--card-bg); border: 3px solid var(--accent-color); padding: 30px 20px; border-radius: 40px; display: flex; flex-direction: column; gap: 20px; align-items: center; }
+        .btn-side { width: 70px; height: 70px; border-radius: 20px; border: none; font-size: 2rem; font-weight: 900; cursor: pointer; background: var(--accent-color); color: #000; }
+        .btn-main { background: var(--success); color: #000; border: none; padding: 20px 40px; border-radius: 20px; font-weight: 900; font-size: 1.5rem; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-exit { background: var(--danger); color: white; padding: 15px; border: none; border-radius: 15px; cursor: pointer; font-size: 0.8rem; width: 100%; font-weight: 900; text-transform: uppercase; }
+
+        input[type="range"] { width: 100%; accent-color: var(--accent-color); cursor: pointer; height: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="s1" class="screen active">
+        <h1 style="font-size: 2.5rem; color: var(--accent-color);">DIVERGENCIA PRO</h1>
+        <p class="instruction-text">Usa tu cartón con <span class="highlight">VENTANA DOBLE</span>:</p>
+        <div class="window-box">
+            <b style="font-size: 1.5rem; color: #fff;">Dos aberturas de 3 cm (Ancho) x 4 cm (Alto)</b>
+        </div>
+        <p class="instruction-text">Sujétalo a <span class="highlight">20 cm</span> de tus ojos.<br>Mantén la pantalla a <span class="highlight">40 cm</span>.</p>
+        <button class="btn-main" onclick="go(2)">CONTINUAR</button>
+    </div>
+
+    <div id="s2" class="screen">
+        <h1>2. CONTROL OCULAR</h1>
+        <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 25px; text-align: left; font-size: 1.3rem; border-left: 8px solid var(--accent-color);">
+            👁️ Ojo <span class="highlight">IZQUIERDO</span> cerrado: Ver imagen <span class="highlight">IZQUIERDA</span>.<br><br>
+            👁️ Ojo <span class="highlight">DERECHO</span> cerrado: Ver imagen <span class="highlight">DERECHA</span>.<br><br>
+            ✅ <span class="highlight">AMBOS ABIERTOS:</span> Imagen central con <b>+ arriba</b> y <b>- abajo</b>.
+        </div>
+        <button class="btn-main" onclick="go(3)">CONFIGURAR SESIÓN</button>
+    </div>
+
+    <div id="s3" class="screen">
+        <h1>3. AJUSTES</h1>
+        <div style="text-align: left; display: flex; flex-direction: column; gap: 20px; margin: 20px 0;">
+            <label style="font-weight: 900;">SERIES: <span id="v-series" class="highlight">3</span></label>
+            <input type="range" id="i-series" min="1" max="10" value="3" oninput="sync()">
+            <label style="font-weight: 900;">TRABAJO (s): <span id="v-work" class="highlight">20</span></label>
+            <input type="range" id="i-work" min="5" max="60" value="20" step="5" oninput="sync()">
+            <label style="font-weight: 900;">DESCANSO (s): <span id="v-rest" class="highlight">10</span></label>
+            <input type="range" id="i-rest" min="5" max="30" value="10" step="5" oninput="sync()">
+        </div>
+        <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
+    </div>
+
+    <div id="game-area">
+        <div style="position: absolute; top: 40px; left: 45%; transform: translateX(-50%); text-align: center;">
+            <div id="timer" style="font-size: 6rem; font-weight: 900; color: var(--accent-color); line-height: 1;">00</div>
+            <div id="phase" style="font-weight: 900; letter-spacing: 5px; font-size: 1.5rem; color: var(--success);">¡FUSIONA!</div>
+            <div id="series-label" style="opacity: 0.6; margin-top: 10px; font-weight: 900;">Serie 1</div>
+        </div>
+        <div id="stimulus-container">
+            <div id="box-l" class="target"><div class="mark">+</div><div id="fig-l" class="glyph">◎</div><div class="mark" style="visibility: hidden;">-</div></div>
+            <div id="box-r" class="target"><div class="mark" style="visibility: hidden;">+</div><div id="fig-r" class="glyph">◎</div><div class="mark">-</div></div>
+        </div>
+        <div class="sidebar">
+            <div style="text-align: center;"><div style="font-size: 0.8rem; font-weight: 900; opacity: 0.7;">NIVEL</div><div id="lvl-num" style="font-size: 3.5rem; font-weight: 900; color: var(--accent-color);">1</div></div>
+            <button class="btn-side" onclick="changeLvl(1)">+</button>
+            <button class="btn-side" onclick="changeLvl(-1)">-</button>
+            <div style="text-align: center;"><div style="font-size: 0.8rem; font-weight: 900; opacity: 0.7;">DEMANDA</div><div style="font-size: 1.5rem; font-weight: 900;"><span id="delta-val">2</span> Δ BI</div></div>
+            <button class="btn-exit" onclick="endGameEarly()">Finalizar</button>
+        </div>
+    </div>
+
+    <div id="s-final" class="screen" style="border-color: var(--success);">
+        <h1 style="color: var(--success); font-size: 2.5rem; margin-bottom: 10px;">¡SESIÓN TERMINADA!</h1>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 25px 0;">
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(244,114,182,0.2);">
+                <p style="margin:0; opacity:0.6; font-size:0.8rem;">NIVEL MÁXIMO</p>
+                <b id="res-lvl" style="font-size:2.5rem; color:var(--accent-color);">1</b>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(244,114,182,0.2);">
+                <p style="margin:0; opacity:0.6; font-size:0.8rem;">DEMANDA FINAL</p>
+                <b id="res-delta" style="font-size:2.5rem; color:var(--accent-color);">0 Δ BI</b>
+            </div>
+        </div>
+        <button class="btn-main" onclick="location.reload()">VOLVER AL INICIO</button>
+    </div>
+
+    <script>
+        let currentLvl = 1, isWork = true, currentSerie = 1, maxLvlReached = 1, clock;
+        const levels = [0, 10, 20, 30, 40, 55, 70, 85, 100, 115, 130, 145, 160];
+        const icons = ['◎', '✧', '⬔', '▽', '◇', '⠿', '⨀'];
+
+        function go(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            if(n === 'final') document.getElementById('s-final').classList.add('active');
+            else if(n !== 'none') document.getElementById(`s${n}`).classList.add('active');
+        }
+
+        function sync() {
+            document.getElementById('v-series').innerText = document.getElementById('i-series').value;
+            document.getElementById('v-work').innerText = document.getElementById('i-work').value;
+            document.getElementById('v-rest').innerText = document.getElementById('i-rest').value;
+        }
+
+        function changeLvl(dir) {
+            currentLvl = Math.max(1, Math.min(12, currentLvl + dir));
+            if(currentLvl > maxLvlReached) maxLvlReached = currentLvl;
+            updateVis();
+        }
+
+        function updateVis() {
+            const sep = levels[currentLvl];
+            document.getElementById('box-l').style.transform = `translateX(${-sep}px)`;
+            document.getElementById('box-r').style.transform = `translateX(${sep}px)`;
+            document.getElementById('lvl-num').innerText = currentLvl;
+            document.getElementById('delta-val').innerText = Math.floor((sep * 2) / 4);
+        }
+
+        function startGame() {
+            go('none');
+            document.getElementById('game-area').style.display = 'block';
+            run();
+        }
+
+        function run() {
+            let totalS = parseInt(document.getElementById('i-series').value);
+            let time = isWork ? parseInt(document.getElementById('i-work').value) : parseInt(document.getElementById('i-rest').value);
+            document.getElementById('phase').innerText = isWork ? "¡FUSIONA!" : "DESCANSA";
+            document.getElementById('phase').style.color = isWork ? "var(--success)" : "var(--danger)";
+            document.getElementById('series-label').innerText = `Serie ${currentSerie} de ${totalS}`;
+            document.getElementById('stimulus-container').style.opacity = isWork ? "1" : "0.05";
+            if(isWork) {
+                const f = icons[Math.floor(Math.random()*icons.length)];
+                document.getElementById('fig-l').innerText = f; document.getElementById('fig-r').innerText = f;
+            }
+            clock = setInterval(() => {
+                document.getElementById('timer').innerText = time < 10 ? "0"+time : time;
+                if(time-- <= 0) {
+                    clearInterval(clock);
+                    if(isWork) { isWork = false; run(); }
+                    else {
+                        currentSerie++;
+                        if(currentSerie <= totalS) { isWork = true; run(); }
+                        else { finishAndSend(); }
+                    }
+                }
+            }, 1000);
+        }
+
+        function endGameEarly() { if(confirm("¿Finalizar sesión?")) finishAndSend(); }
+
+        function finishAndSend() {
+            clearInterval(clock);
+            const delta = document.getElementById('delta-val').innerText;
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('res-lvl').innerText = maxLvlReached;
+            document.getElementById('res-delta').innerText = delta + " Δ BI";
+            go('final');
+
+            const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+            const params = new URLSearchParams();
+            params.append("entry.369874016", "PACIENTE"); 
+            params.append("entry.1353470174", "DIVERGENCIA_DIGITAL"); 
+            params.append("entry.721051298", maxLvlReached); 
+            params.append("entry.873272199", delta); 
+            params.append("entry.1030094511", "40cm"); 
+            params.append("entry.1303309812", document.getElementById('i-work').value); 
+            params.append("entry.845098414", new Date().toISOString().split('T')[0]);
+            fetch(formURL, { method: "POST", mode: "no-cors", body: params });
+        }
+
+        updateVis();
+    </script>
+</body>
+</html>
