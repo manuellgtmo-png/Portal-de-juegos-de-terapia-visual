@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacádicos Voice Ultra - Perceptum</title>
+    <title>Sacádicos Voice Ultra V2 - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         
         .screen { background: rgba(30, 41, 59, 0.98); padding: 3rem; border-radius: 3rem; border: 5px solid var(--acc); text-align: center; width: 90%; max-width: 800px; z-index: 100; display: none; box-shadow: 0 0 80px rgba(168, 85, 247, 0.5); }
-        .active { display: block; animation: zoomIn 0.3s ease; }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .active { display: block; animation: zoomIn 0.2s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         h1 { font-size: 3.5rem; color: var(--acc); margin-bottom: 2rem; text-transform: uppercase; line-height: 1; }
         p { font-size: 1.8rem; line-height: 1.4; margin-bottom: 2rem; }
@@ -23,15 +23,13 @@
         
         .hud { position: absolute; top: 1rem; width: 100%; display: flex; justify-content: space-around; font-weight: 900; font-size: 2rem; z-index: 50; text-shadow: 3px 3px 6px #000; pointer-events: none; }
         
-        #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
-        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 25px var(--acc)); font-weight: 900; }
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: var(--bg); }
+        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 25px var(--acc)); font-weight: 900; z-index: 60; }
         
         .btn { background: var(--success); color: #000; border: none; padding: 2rem; border-radius: 1.5rem; font-weight: 900; font-size: 2rem; cursor: pointer; width: 100%; margin-top: 1.5rem; transition: 0.2s; box-shadow: 0 10px 0 #059669; text-transform: uppercase; }
         .btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #059669; }
         
-        /* RESUMEN FINAL GIGANTE */
         .summary-item { font-size: 2.5rem; margin: 1.5rem 0; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 1.5rem; border-left: 15px solid var(--acc); text-align: left; }
-        .mic-tag { font-size: 1.2rem; color: var(--success); margin-top: 1rem; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -66,7 +64,6 @@
             </div>
         </div>
         <button class="btn" onclick="initVoice()">INICIAR FUEGO!</button>
-        <div id="mic-status" class="mic-tag">Permite el micrófono para empezar</div>
     </div>
 
     <div id="s-rest" class="screen">
@@ -78,7 +75,7 @@
     <div id="game-area"></div>
 
     <div id="s-end" class="screen">
-        <h1 id="end-title">SESIÓN FINALIZADA</h1>
+        <h1 id="end-title">RESULTADOS</h1>
         <div id="summary"></div>
         <button class="btn" onclick="location.reload()">REPETIR TODO</button>
     </div>
@@ -92,11 +89,13 @@
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playTone(freq, type, dur) {
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = type; osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + dur);
+            try {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + dur);
+            } catch(e) {}
         }
 
         function nextStep(hide, show) {
@@ -106,7 +105,7 @@
 
         function initVoice() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Usa Google Chrome para soporte de voz.");
+            if (!window.SpeechRecognition) return alert("Usa Google Chrome.");
             
             workTime = parseInt(document.getElementById('i-work').value);
             restTime = parseInt(document.getElementById('i-rest').value);
@@ -130,9 +129,7 @@
                 checkMatch(transcript);
             };
 
-            recognition.onerror = (e) => console.error("Mic error:", e.error);
             recognition.onend = () => { if(lives > 0 && currentSession <= totalSessions) recognition.start(); };
-            
             recognition.start();
         }
 
@@ -159,6 +156,7 @@
         }
 
         function spawn() {
+            clearTimeout(failTimer); // Limpiamos cualquier timer previo para evitar bloqueos
             const area = document.getElementById('game-area');
             area.innerHTML = '';
             currentVal = stimuli[Math.floor(Math.random() * stimuli.length)];
@@ -168,16 +166,15 @@
             stim.id = "active-stim";
             stim.innerText = currentVal;
             
-            // Dificultad extrema: más lejos a más nivel
-            const m = Math.max(2, 20 - level);
+            const m = Math.max(2, 22 - level);
             stim.style.left = `${Math.random() * (100 - 2*m) + m}%`;
-            stim.style.top = `${Math.random() * (80 - m) + m + 10}%`;
+            stim.style.top = `${Math.random() * (75 - m) + m + 5}%`;
             stim.style.setProperty('--sz', `${Math.max(70, 160 - level*4)}px`);
             
             area.appendChild(stim);
             
-            // Tiempo de reacción dinámico
-            const reactionTime = Math.max(900, 5000 - (level * 350));
+            // Tiempo de reacción: empieza más rápido y baja según nivel
+            const reactionTime = Math.max(800, 4500 - (level * 400));
             failTimer = setTimeout(() => handleFailure(), reactionTime);
         }
 
@@ -189,24 +186,41 @@
         }
 
         function handleSuccess() {
-            if(!document.getElementById('active-stim')) return;
+            const el = document.getElementById('active-stim');
+            if(!el) return;
+            el.remove(); // Eliminación inmediata para sensación de velocidad
             clearTimeout(failTimer);
-            playTone(900, 'sine', 0.08);
+            playTone(900, 'sine', 0.05);
             stats.hits++;
-            spawn();
+            
+            // Pequeño delay de 50ms para que el ojo no se canse pero se sienta instantáneo
+            setTimeout(spawn, 50); 
         }
 
         function handleFailure() {
-            playTone(150, 'square', 0.25);
+            // Evitamos que se pegue: pausamos todo antes de descontar vida
+            clearTimeout(failTimer);
+            playTone(150, 'square', 0.2);
             lives--;
             stats.errors++;
             updateHUD();
-            if(lives <= 0) endGame("SIN VIDAS RESTANTES");
-            else spawn();
+            
+            if(lives <= 0) {
+                endGame("SIN VIDAS RESTANTES");
+            } else {
+                // Reiniciamos el spawn tras un pequeño parpadeo rojo de aviso
+                const area = document.getElementById('game-area');
+                area.style.background = "rgba(239, 68, 68, 0.2)";
+                setTimeout(() => {
+                    area.style.background = var(--bg);
+                    spawn();
+                }, 300);
+            }
         }
 
         function showRest() {
             clearTimeout(failTimer);
+            clearInterval(timerInt);
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('s-rest').classList.add('active');
             let c = restTime;
@@ -229,25 +243,22 @@
         }
 
         function endGame(reason) {
-            // LIMPIEZA TOTAL PARA EVITAR QUE SE PEGUE
             clearInterval(timerInt);
             clearInterval(restInt);
             clearTimeout(failTimer);
             try { recognition.stop(); } catch(e) {}
             
-            document.getElementById('game-area').innerHTML = '';
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('hud').style.display = 'none';
             
             const endScreen = document.getElementById('s-end');
             endScreen.classList.add('active');
-            document.getElementById('end-title').innerText = reason;
             
             document.getElementById('summary').innerHTML = `
-                <div class="summary-item">🎯 ACIERTOS TOTALES: ${stats.hits}</div>
-                <div class="summary-item">❌ ERRORES COMETIDOS: ${stats.errors}</div>
-                <div class="summary-item">🚀 NIVEL ALCANZADO: ${level}</div>
-                <div class="summary-item" style="border-color:var(--success)">📏 DISTANCIA FIJA: 40 cm</div>
+                <div class="summary-item">🎯 ACIERTOS: ${stats.hits}</div>
+                <div class="summary-item">❌ ERRORES: ${stats.errors}</div>
+                <div class="summary-item">🚀 NIVEL MAX: ${level}</div>
+                <div class="summary-item" style="border-color:var(--success)">📏 DISTANCIA: 40 cm</div>
             `;
         }
     </script>
