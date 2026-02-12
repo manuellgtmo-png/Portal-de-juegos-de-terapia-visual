@@ -3,47 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacádicos Voice Ultra V3 - Perceptum</title>
+    <title>Sacádicos Voice Pro - Series y Niveles</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-        
         .screen { background: rgba(30, 41, 59, 0.98); padding: 3rem; border-radius: 3rem; border: 5px solid var(--acc); text-align: center; width: 90%; max-width: 800px; z-index: 100; display: none; box-shadow: 0 0 80px rgba(168, 85, 247, 0.5); }
         .active { display: block; animation: zoomIn 0.2s ease-out; }
         @keyframes zoomIn { from { transform: scale(0.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        h1 { font-size: 3.5rem; color: var(--acc); margin-bottom: 2rem; text-transform: uppercase; line-height: 1; }
-        p { font-size: 1.8rem; line-height: 1.4; margin-bottom: 2rem; }
-        
-        .config-box { background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 2rem; margin-top: 1rem; border: 2px solid rgba(255,255,255,0.1); }
-        .config-group { margin-bottom: 2rem; text-align: left; }
-        .config-group label { display: block; font-size: 1.5rem; margin-bottom: 1rem; color: var(--success); font-weight: 900; }
-        input[type="range"] { width: 100%; height: 20px; accent-color: var(--acc); cursor: pointer; }
-        
-        .hud { position: absolute; top: 1rem; width: 100%; display: flex; justify-content: space-around; font-weight: 900; font-size: 2rem; z-index: 50; text-shadow: 3px 3px 6px #000; pointer-events: none; }
-        
+        h1 { font-size: 3rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; }
+        p { font-size: 1.6rem; margin-bottom: 2rem; }
+        .config-box { background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 2rem; margin-bottom: 1.5rem; }
+        .config-group { margin-bottom: 1.5rem; text-align: left; }
+        .config-group label { display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--success); font-weight: 900; }
+        input[type="range"] { width: 100%; height: 15px; accent-color: var(--acc); cursor: pointer; }
+        .hud { position: absolute; top: 1rem; width: 100%; display: flex; justify-content: space-around; font-weight: 900; font-size: 1.8rem; z-index: 50; text-shadow: 2px 2px 4px #000; pointer-events: none; }
         #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #020617; }
-        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 25px var(--acc)); font-weight: 900; z-index: 60; }
-        
-        .btn { background: var(--success); color: #000; border: none; padding: 2rem; border-radius: 1.5rem; font-weight: 900; font-size: 2rem; cursor: pointer; width: 100%; margin-top: 1.5rem; transition: 0.2s; box-shadow: 0 10px 0 #059669; text-transform: uppercase; }
-        .btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #059669; }
-        
-        .summary-item { font-size: 2.5rem; margin: 1.5rem 0; padding: 2rem; background: rgba(255,255,255,0.05); border-radius: 1.5rem; border-left: 15px solid var(--acc); text-align: left; }
+        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 20px var(--acc)); font-weight: 900; }
+        .btn { background: var(--success); color: #000; border: none; padding: 1.8rem; border-radius: 1.5rem; font-weight: 900; font-size: 1.8rem; cursor: pointer; width: 100%; margin-top: 1rem; box-shadow: 0 8px 0 #059669; text-transform: uppercase; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #059669; }
+        .summary-item { font-size: 2.2rem; margin: 1rem 0; padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 1.2rem; border-left: 12px solid var(--acc); text-align: left; }
     </style>
 </head>
 <body>
 
     <div class="hud" id="hud" style="display:none">
-        <div>SESIÓN: <span id="h-ses" style="color:var(--success)">1</span></div>
-        <div>NIVEL: <span id="h-lvl" style="color:var(--acc)">1</span></div>
-        <div>TIEMPO: <span id="h-time" style="color:#fff">00</span></div>
-        <div>VIDAS: <span id="h-lives" style="color:var(--danger)">❤️❤️❤️</span></div>
+        <div style="color:var(--success)">SERIE: <span id="h-ses">1</span></div>
+        <div style="color:var(--acc)">NIVEL: <span id="h-lvl">1</span></div>
+        <div>TIEMPO: <span id="h-time">00</span></div>
+        <div style="color:var(--danger)">VIDAS: <span id="h-lives">❤️❤️❤️</span></div>
     </div>
 
     <div id="s-intro" class="screen active">
         <h1>INSTRUCCIONES</h1>
-        <p>Sitúate a <b>40 cm</b> de la pantalla.<br><br>Nombra los números y letras que aparezcan en los extremos lo más rápido posible.</p>
+        <p>Distancia: <b>40 cm</b>.<br><br>Completa las series de cada nivel. Al terminar las series, subirás de dificultad.</p>
         <button class="btn" onclick="nextStep('s-intro', 's-config')">CONTINUAR</button>
     </div>
 
@@ -51,38 +44,44 @@
         <h1>AJUSTES</h1>
         <div class="config-box">
             <div class="config-group">
-                <label>Tiempo de Ejercicio (Nivel): <b id="v-work">30s</b></label>
-                <input type="range" id="i-work" min="10" max="120" step="10" value="30" oninput="document.getElementById('v-work').innerText = this.value + 's'">
+                <label>Tiempo por Serie: <b id="v-work">30s</b></label>
+                <input type="range" id="i-work" min="10" max="60" step="5" value="30" oninput="document.getElementById('v-work').innerText = this.value + 's'">
             </div>
             <div class="config-group">
-                <label>Tiempo de Descanso: <b id="v-rest">10s</b></label>
-                <input type="range" id="i-rest" min="5" max="60" step="5" value="10" oninput="document.getElementById('v-rest').innerText = this.value + 's'">
+                <label>Descanso entre Series: <b id="v-rest">10s</b></label>
+                <input type="range" id="i-rest" min="5" max="30" step="5" value="10" oninput="document.getElementById('v-rest').innerText = this.value + 's'">
             </div>
             <div class="config-group">
-                <label>Número de Sesiones Totales: <b id="v-cycles">3</b></label>
-                <input type="range" id="i-cycles" min="1" max="15" value="3" oninput="document.getElementById('v-cycles').innerText = this.value">
+                <label>Series para subir Nivel: <b id="v-cycles">3</b></label>
+                <input type="range" id="i-cycles" min="1" max="10" value="3" oninput="document.getElementById('v-cycles').innerText = this.value">
             </div>
         </div>
-        <button class="btn" onclick="initVoice()">INICIAR FUEGO!</button>
+        <button class="btn" onclick="initVoice()">EMPEZAR</button>
     </div>
 
     <div id="s-rest" class="screen">
         <h1 style="color:var(--success)">DESCANSO</h1>
-        <p>Relaja los ojos y parpadea...</p>
+        <p>Serie <span id="rest-current">1</span> finalizada.</p>
         <div id="rest-timer" style="font-size: 8rem; font-weight: 900; color: var(--acc);">10</div>
+    </div>
+
+    <div id="s-levelup" class="screen">
+        <h1 style="color:var(--acc)">¡NIVEL COMPLETADO!</h1>
+        <p>Has terminado todas las series de este nivel.</p>
+        <button class="btn" onclick="startNewLevel()">PASAR AL SIGUIENTE NIVEL</button>
     </div>
 
     <div id="game-area"></div>
 
     <div id="s-end" class="screen">
-        <h1 id="end-title">RESULTADOS</h1>
+        <h1 id="end-title">SESIÓN TERMINADA</h1>
         <div id="summary"></div>
-        <button class="btn" onclick="location.reload()">REPETIR TODO</button>
+        <button class="btn" onclick="location.reload()">REINICIAR</button>
     </div>
 
     <script>
-        let level = 1, lives = 3, currentVal = "", currentSession = 1;
-        let workTime, restTime, totalSessions;
+        let level = 1, lives = 3, currentVal = "", currentSerie = 1;
+        let workTime, restTime, seriesPerLevel;
         let recognition, timerInt, restInt, failTimer;
         let stats = { hits: 0, errors: 0 };
         const stimuli = "123456789ABCDEFHKMNPRTUVWXY";
@@ -106,11 +105,11 @@
 
         function initVoice() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Usa Google Chrome.");
+            if (!window.SpeechRecognition) return alert("Usa Chrome.");
             
             workTime = parseInt(document.getElementById('i-work').value);
             restTime = parseInt(document.getElementById('i-rest').value);
-            totalSessions = parseInt(document.getElementById('i-cycles').value);
+            seriesPerLevel = parseInt(document.getElementById('i-cycles').value);
 
             recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
@@ -119,7 +118,7 @@
 
             recognition.onstart = () => {
                 document.getElementById('s-config').style.display = 'none';
-                startLevel();
+                startSerie();
             };
 
             recognition.onresult = (e) => {
@@ -130,11 +129,11 @@
                 checkMatch(transcript);
             };
 
-            recognition.onend = () => { if(lives > 0 && currentSession <= totalSessions) recognition.start(); };
+            recognition.onend = () => { if(lives > 0) recognition.start(); };
             recognition.start();
         }
 
-        function startLevel() {
+        function startSerie() {
             clearInterval(restInt);
             document.getElementById('s-rest').style.display = 'none';
             document.getElementById('game-area').style.display = 'block';
@@ -149,8 +148,8 @@
                 document.getElementById('h-time').innerText = timeLeft;
                 if(timeLeft <= 0) {
                     clearInterval(timerInt);
-                    clearTimeout(failTimer); // BLOQUEO DE SEGURIDAD
-                    if(currentSession >= totalSessions) endGame("OBJETIVO CUMPLIDO");
+                    clearTimeout(failTimer);
+                    if(currentSerie >= seriesPerLevel) showLevelUp();
                     else showRest();
                 }
             }, 1000);
@@ -168,25 +167,25 @@
             stim.id = "active-stim";
             stim.innerText = currentVal;
             
-            // Lógica de Sacádicos: Obligar a extremos (mínimo 60% de distancia)
+            // Posicionamiento Sacádico (Extremos)
             const side = Math.random() > 0.5 ? 'left' : 'right';
             const height = Math.random() > 0.5 ? 'top' : 'bottom';
-            
             let xPos = side === 'left' ? (Math.random() * 15 + 5) : (Math.random() * 15 + 80);
             let yPos = height === 'top' ? (Math.random() * 15 + 10) : (Math.random() * 15 + 75);
             
             stim.style.left = `${xPos}%`;
             stim.style.top = `${yPos}%`;
-            stim.style.setProperty('--sz', `${Math.max(80, 180 - level*5)}px`);
+            stim.style.setProperty('--sz', `${Math.max(70, 180 - level*10)}px`);
             
             area.appendChild(stim);
             
-            const reactionTime = Math.max(800, 4500 - (level * 400));
-            failTimer = setTimeout(() => handleFailure(), reactionTime);
+            // VELOCIDAD: El estímulo desaparece más rápido según nivel
+            const timeLimit = Math.max(700, 4000 - (level * 500));
+            failTimer = setTimeout(() => handleFailure(), timeLimit);
         }
 
         function checkMatch(text) {
-            const dict = { "UNO":"1","DOS":"2","TRES":"3","EQUIS":"X","EKIS":"X","CE":"C","SE":"C","SI":"C","HACE":"C","BÉ":"B","VE":"B" };
+            const dict = { "UNO":"1","DOS":"2","TRES":"3","EQUIS":"X","EKIS":"X","CE":"C","SE":"C","SI":"C" };
             let match = text.includes(currentVal);
             for(let k in dict) if(text.includes(k) && dict[k] === currentVal) match = true;
             if(match) handleSuccess();
@@ -199,23 +198,22 @@
             el.remove();
             playTone(900, 'sine', 0.05);
             stats.hits++;
-            setTimeout(spawn, 10); 
+            spawn(); // Salto instantáneo
         }
 
         function handleFailure() {
+            if(document.getElementById('game-area').style.display === 'none') return; // Bloqueo de seguridad
             clearTimeout(failTimer);
             playTone(150, 'square', 0.2);
             lives--;
             stats.errors++;
             updateHUD();
             
-            if(lives <= 0) {
-                endGame("SIN VIDAS RESTANTES");
-            } else {
-                const area = document.getElementById('game-area');
-                area.style.background = "rgba(239, 68, 68, 0.3)";
+            if(lives <= 0) endGame("SIN VIDAS");
+            else {
+                document.getElementById('game-area').style.background = "rgba(239, 68, 68, 0.2)";
                 setTimeout(() => {
-                    area.style.background = "#020617";
+                    document.getElementById('game-area').style.background = "#020617";
                     spawn();
                 }, 200);
             }
@@ -223,47 +221,55 @@
 
         function showRest() {
             clearTimeout(failTimer);
-            clearInterval(timerInt);
             document.getElementById('game-area').style.display = 'none';
-            document.getElementById('s-rest').style.display = 'block';
-            document.getElementById('s-rest').classList.add('active');
+            document.getElementById('rest-current').innerText = currentSerie;
+            const restScr = document.getElementById('s-rest');
+            restScr.style.display = 'block';
+            restScr.classList.add('active');
+            
             let c = restTime;
             document.getElementById('rest-timer').innerText = c;
             restInt = setInterval(() => {
                 c--;
                 document.getElementById('rest-timer').innerText = c;
                 if(c <= 0) {
-                    currentSession++;
-                    level++;
-                    startLevel();
+                    currentSerie++;
+                    startSerie();
                 }
             }, 1000);
         }
 
+        function showLevelUp() {
+            clearTimeout(failTimer);
+            document.getElementById('game-area').style.display = 'none';
+            nextStep('hud', 's-levelup');
+        }
+
+        function startNewLevel() {
+            level++;
+            currentSerie = 1;
+            document.getElementById('s-levelup').style.display = 'none';
+            startSerie();
+        }
+
         function updateHUD() {
-            document.getElementById('h-ses').innerText = `${currentSession}/${totalSessions}`;
+            document.getElementById('h-ses').innerText = currentSerie + "/" + seriesPerLevel;
             document.getElementById('h-lvl').innerText = level;
             document.getElementById('h-lives').innerText = "❤️".repeat(Math.max(0, lives));
         }
 
         function endGame(reason) {
-            clearInterval(timerInt);
-            clearInterval(restInt);
-            clearTimeout(failTimer);
+            clearInterval(timerInt); clearInterval(restInt); clearTimeout(failTimer);
             try { recognition.stop(); } catch(e) {}
-            
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            
             const endScreen = document.getElementById('s-end');
             endScreen.style.display = 'block';
             endScreen.classList.add('active');
-            document.getElementById('end-title').innerText = reason;
-            
             document.getElementById('summary').innerHTML = `
                 <div class="summary-item">🎯 ACIERTOS: ${stats.hits}</div>
                 <div class="summary-item">❌ ERRORES: ${stats.errors}</div>
-                <div class="summary-item">🚀 NIVEL MAX: ${level}</div>
+                <div class="summary-item">🚀 NIVEL ALCANZADO: ${level}</div>
                 <div class="summary-item" style="border-color:var(--success)">📏 DISTANCIA: 40 cm</div>
             `;
         }
