@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacádicos Voice Ultra V2.1 - Perceptum</title>
+    <title>Sacádicos Voice Ultra V3 - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
@@ -43,7 +43,7 @@
 
     <div id="s-intro" class="screen active">
         <h1>INSTRUCCIONES</h1>
-        <p>Sitúate a <b>40 cm</b> de la pantalla.<br><br>Nombra los números y letras que aparezcan lo más rápido posible.</p>
+        <p>Sitúate a <b>40 cm</b> de la pantalla.<br><br>Nombra los números y letras que aparezcan en los extremos lo más rápido posible.</p>
         <button class="btn" onclick="nextStep('s-intro', 's-config')">CONTINUAR</button>
     </div>
 
@@ -100,6 +100,7 @@
 
         function nextStep(hide, show) {
             document.getElementById(hide).style.display = 'none';
+            document.getElementById(show).style.display = 'block';
             document.getElementById(show).classList.add('active');
         }
 
@@ -148,6 +149,7 @@
                 document.getElementById('h-time').innerText = timeLeft;
                 if(timeLeft <= 0) {
                     clearInterval(timerInt);
+                    clearTimeout(failTimer); // BLOQUEO DE SEGURIDAD
                     if(currentSession >= totalSessions) endGame("OBJETIVO CUMPLIDO");
                     else showRest();
                 }
@@ -166,10 +168,16 @@
             stim.id = "active-stim";
             stim.innerText = currentVal;
             
-            const m = Math.max(2, 22 - level);
-            stim.style.left = `${Math.random() * (100 - 2*m) + m}%`;
-            stim.style.top = `${Math.random() * (75 - m) + m + 5}%`;
-            stim.style.setProperty('--sz', `${Math.max(70, 160 - level*4)}px`);
+            // Lógica de Sacádicos: Obligar a extremos (mínimo 60% de distancia)
+            const side = Math.random() > 0.5 ? 'left' : 'right';
+            const height = Math.random() > 0.5 ? 'top' : 'bottom';
+            
+            let xPos = side === 'left' ? (Math.random() * 15 + 5) : (Math.random() * 15 + 80);
+            let yPos = height === 'top' ? (Math.random() * 15 + 10) : (Math.random() * 15 + 75);
+            
+            stim.style.left = `${xPos}%`;
+            stim.style.top = `${yPos}%`;
+            stim.style.setProperty('--sz', `${Math.max(80, 180 - level*5)}px`);
             
             area.appendChild(stim);
             
@@ -187,11 +195,11 @@
         function handleSuccess() {
             const el = document.getElementById('active-stim');
             if(!el) return;
-            el.remove();
             clearTimeout(failTimer);
+            el.remove();
             playTone(900, 'sine', 0.05);
             stats.hits++;
-            setTimeout(spawn, 30); // Aparición ultra-rápida
+            setTimeout(spawn, 10); 
         }
 
         function handleFailure() {
@@ -233,7 +241,7 @@
         }
 
         function updateHUD() {
-            document.getElementById('h-ses').innerText = currentSession;
+            document.getElementById('h-ses').innerText = `${currentSession}/${totalSessions}`;
             document.getElementById('h-lvl').innerText = level;
             document.getElementById('h-lives').innerText = "❤️".repeat(Math.max(0, lives));
         }
