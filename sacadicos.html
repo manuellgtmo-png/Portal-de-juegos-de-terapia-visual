@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sacádicos Voice Ultra V2 - Perceptum</title>
+    <title>Sacádicos Voice Ultra V2.1 - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
@@ -23,7 +23,7 @@
         
         .hud { position: absolute; top: 1rem; width: 100%; display: flex; justify-content: space-around; font-weight: 900; font-size: 2rem; z-index: 50; text-shadow: 3px 3px 6px #000; pointer-events: none; }
         
-        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: var(--bg); }
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #020617; }
         .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 25px var(--acc)); font-weight: 900; z-index: 60; }
         
         .btn { background: var(--success); color: #000; border: none; padding: 2rem; border-radius: 1.5rem; font-weight: 900; font-size: 2rem; cursor: pointer; width: 100%; margin-top: 1.5rem; transition: 0.2s; box-shadow: 0 10px 0 #059669; text-transform: uppercase; }
@@ -99,7 +99,7 @@
         }
 
         function nextStep(hide, show) {
-            document.getElementById(hide).classList.remove('active');
+            document.getElementById(hide).style.display = 'none';
             document.getElementById(show).classList.add('active');
         }
 
@@ -117,7 +117,7 @@
             recognition.interimResults = true;
 
             recognition.onstart = () => {
-                nextStep('s-config', 'game-area');
+                document.getElementById('s-config').style.display = 'none';
                 startLevel();
             };
 
@@ -135,7 +135,7 @@
 
         function startLevel() {
             clearInterval(restInt);
-            document.getElementById('s-rest').classList.remove('active');
+            document.getElementById('s-rest').style.display = 'none';
             document.getElementById('game-area').style.display = 'block';
             document.getElementById('hud').style.display = 'flex';
             updateHUD();
@@ -156,7 +156,7 @@
         }
 
         function spawn() {
-            clearTimeout(failTimer); // Limpiamos cualquier timer previo para evitar bloqueos
+            clearTimeout(failTimer);
             const area = document.getElementById('game-area');
             area.innerHTML = '';
             currentVal = stimuli[Math.floor(Math.random() * stimuli.length)];
@@ -173,7 +173,6 @@
             
             area.appendChild(stim);
             
-            // Tiempo de reacción: empieza más rápido y baja según nivel
             const reactionTime = Math.max(800, 4500 - (level * 400));
             failTimer = setTimeout(() => handleFailure(), reactionTime);
         }
@@ -188,17 +187,14 @@
         function handleSuccess() {
             const el = document.getElementById('active-stim');
             if(!el) return;
-            el.remove(); // Eliminación inmediata para sensación de velocidad
+            el.remove();
             clearTimeout(failTimer);
             playTone(900, 'sine', 0.05);
             stats.hits++;
-            
-            // Pequeño delay de 50ms para que el ojo no se canse pero se sienta instantáneo
-            setTimeout(spawn, 50); 
+            setTimeout(spawn, 30); // Aparición ultra-rápida
         }
 
         function handleFailure() {
-            // Evitamos que se pegue: pausamos todo antes de descontar vida
             clearTimeout(failTimer);
             playTone(150, 'square', 0.2);
             lives--;
@@ -208,13 +204,12 @@
             if(lives <= 0) {
                 endGame("SIN VIDAS RESTANTES");
             } else {
-                // Reiniciamos el spawn tras un pequeño parpadeo rojo de aviso
                 const area = document.getElementById('game-area');
-                area.style.background = "rgba(239, 68, 68, 0.2)";
+                area.style.background = "rgba(239, 68, 68, 0.3)";
                 setTimeout(() => {
-                    area.style.background = var(--bg);
+                    area.style.background = "#020617";
                     spawn();
-                }, 300);
+                }, 200);
             }
         }
 
@@ -222,6 +217,7 @@
             clearTimeout(failTimer);
             clearInterval(timerInt);
             document.getElementById('game-area').style.display = 'none';
+            document.getElementById('s-rest').style.display = 'block';
             document.getElementById('s-rest').classList.add('active');
             let c = restTime;
             document.getElementById('rest-timer').innerText = c;
@@ -252,7 +248,9 @@
             document.getElementById('hud').style.display = 'none';
             
             const endScreen = document.getElementById('s-end');
+            endScreen.style.display = 'block';
             endScreen.classList.add('active');
+            document.getElementById('end-title').innerText = reason;
             
             document.getElementById('summary').innerHTML = `
                 <div class="summary-item">🎯 ACIERTOS: ${stats.hits}</div>
