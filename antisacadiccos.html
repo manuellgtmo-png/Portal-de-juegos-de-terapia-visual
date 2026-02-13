@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antisacádicos Voice - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .screen { background: rgba(30, 41, 59, 0.98); padding: 3rem; border-radius: 3rem; border: 5px solid var(--acc); text-align: center; width: 90%; max-width: 800px; z-index: 100; display: none; box-shadow: 0 0 80px rgba(168, 85, 247, 0.5); }
+        .active { display: block; animation: zoomIn 0.2s ease-out; }
+        @keyframes zoomIn { from { transform: scale(0.98); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        h1 { font-size: 3rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; }
+        p { font-size: 1.6rem; margin-bottom: 2rem; }
+        .config-box { background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 2rem; margin-bottom: 1.5rem; }
+        .config-group { margin-bottom: 1.5rem; text-align: left; }
+        .config-group label { display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--success); font-weight: 900; }
+        input[type="range"] { width: 100%; height: 15px; accent-color: var(--acc); cursor: pointer; }
+        .hud { position: absolute; top: 1rem; width: 100%; display: flex; justify-content: space-around; font-weight: 900; font-size: 1.8rem; z-index: 50; text-shadow: 2px 2px 4px #000; pointer-events: none; }
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #020617; }
+        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 20px var(--acc)); font-weight: 900; }
+        .distractor { position: absolute; width: 30px; height: 30px; background: white; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 20px white; }
+        .btn { background: var(--success); color: #000; border: none; padding: 1.8rem; border-radius: 1.5rem; font-weight: 900; font-size: 1.8rem; cursor: pointer; width: 100%; margin-top: 1rem; box-shadow: 0 8px 0 #059669; text-transform: uppercase; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #059669; }
+        .summary-item { font-size: 2.2rem; margin: 1rem 0; padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 1.2rem; border-left: 12px solid var(--acc); text-align: left; }
+    </style>
+</head>
+<body>
+
+    <div class="hud" id="hud" style="display:none">
+        <div style="color:var(--success)">SERIE: <span id="h-ses">1</span></div>
+        <div style="color:var(--acc)">NIVEL: <span id="h-lvl">1</span></div>
+        <div>TIEMPO: <span id="h-time">00</span></div>
+        <div style="color:var(--danger)">VIDAS: <span id="h-lives">❤️❤️❤️</span></div>
+    </div>
+
+    <div id="s-intro" class="screen active">
+        <h1>ANTISACÁDICOS</h1>
+        <p>Distancia: <b>40 cm</b>.<br><br>Aparecerá un punto blanco: <b>¡NO LO MIRES!</b><br>Debes mirar al <b>LADO CONTRARIO</b> y nombrar la letra que aparecerá allí.</p>
+        <button class="btn" onclick="nextStep('s-intro', 's-config')">ENTENDIDO</button>
+    </div>
+
+    <div id="s-config" class="screen">
+        <h1>AJUSTES</h1>
+        <div class="config-box">
+            <div class="config-group">
+                <label>Tiempo por Serie: <b id="v-work">30s</b></label>
+                <input type="range" id="i-work" min="10" max="60" step="5" value="30" oninput="document.getElementById('v-work').innerText = this.value + 's'">
+            </div>
+            <div class="config-group">
+                <label>Descanso entre Series: <b id="v-rest">10s</b></label>
+                <input type="range" id="i-rest" min="5" max="30" step="5" value="10" oninput="document.getElementById('v-rest').innerText = this.value + 's'">
+            </div>
+            <div class="config-group">
+                <label>Series por Nivel: <b id="v-cycles">3</b></label>
+                <input type="range" id="i-cycles" min="1" max="10" value="3" oninput="document.getElementById('v-cycles').innerText = this.value">
+            </div>
+        </div>
+        <button class="btn" onclick="initVoice()">INICIAR</button>
+    </div>
+
+    <div id="s-rest" class="screen">
+        <h1 style="color:var(--success)">DESCANSO</h1>
+        <p>Serie finalizada. Respira y relaja.</p>
+        <div id="rest-timer" style="font-size: 8rem; font-weight: 900; color: var(--acc);">10</div>
+    </div>
+
+    <div id="s-levelup" class="screen">
+        <h1 style="color:var(--acc)">NIVEL SUPERADO</h1>
+        <p>¿Listo para aumentar la velocidad y reducir el tamaño?</p>
+        <button class="btn" onclick="startNewLevel()">SIGUIENTE NIVEL</button>
+    </div>
+
+    <div id="game-area"></div>
+
+    <div id="s-end" class="screen">
+        <h1>RESUMEN FINAL</h1>
+        <div id="summary"></div>
+        <button class="btn" onclick="location.reload()">REINTENTAR</button>
+    </div>
+
+    <script>
+        let level = 1, lives = 3, currentVal = "", currentSerie = 1;
+        let workTime, restTime, seriesPerLevel;
+        let recognition, timerInt, restInt, failTimer;
+        let stats = { hits: 0, errors: 0 };
+        const stimuli = "123456789ABCDEFHKMNPRTUVWXY";
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, dur) {
+            try {
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + dur);
+            } catch(e) {}
+        }
+
+        function nextStep(hide, show) {
+            document.getElementById(hide).style.display = 'none';
+            document.getElementById(show).style.display = 'block';
+            document.getElementById(show).classList.add('active');
+        }
+
+        function initVoice() {
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return alert("Usa Chrome.");
+            
+            workTime = parseInt(document.getElementById('i-work').value);
+            restTime = parseInt(document.getElementById('i-rest').value);
+            seriesPerLevel = parseInt(document.getElementById('i-cycles').value);
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = true;
+            recognition.interimResults = true;
+
+            recognition.onstart = () => {
+                document.getElementById('s-config').style.display = 'none';
+                startSerie();
+            };
+
+            recognition.onresult = (e) => {
+                let transcript = '';
+                for (let i = e.resultIndex; i < e.results.length; ++i) {
+                    transcript += e.results[i][0].transcript.toUpperCase();
+                }
+                checkMatch(transcript);
+            };
+
+            recognition.onend = () => { if(lives > 0) recognition.start(); };
+            recognition.start();
+        }
+
+        function startSerie() {
+            clearInterval(restInt);
+            document.getElementById('s-rest').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+            document.getElementById('hud').style.display = 'flex';
+            updateHUD();
+            
+            let timeLeft = workTime;
+            document.getElementById('h-time').innerText = timeLeft;
+            
+            timerInt = setInterval(() => {
+                timeLeft--;
+                document.getElementById('h-time').innerText = timeLeft;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInt);
+                    clearTimeout(failTimer);
+                    if(currentSerie >= seriesPerLevel) showLevelUp();
+                    else showRest();
+                }
+            }, 1000);
+            spawn();
+        }
+
+        function spawn() {
+            clearTimeout(failTimer);
+            const area = document.getElementById('game-area');
+            area.innerHTML = '';
+            
+            // 1. Definir posiciones OPUESTAS
+            const side = Math.random() > 0.5 ? 'left' : 'right';
+            const height = Math.random() > 0.5 ? 'top' : 'bottom';
+            
+            // Posición del Distractor (donde NO mirar)
+            let distX = side === 'left' ? 15 : 85;
+            let distY = height === 'top' ? 20 : 80;
+            
+            // Posición del Estímulo Real (donde SI mirar - Lado opuesto)
+            let stimX = side === 'left' ? 85 : 15;
+            let stimY = height === 'top' ? 80 : 20;
+
+            // 2. Mostrar Distractor primero (Flash rápido)
+            const dist = document.createElement('div');
+            dist.className = 'distractor';
+            dist.style.left = distX + '%';
+            dist.style.top = distY + '%';
+            area.appendChild(dist);
+
+            // 3. Tras un breve delay, mostrar la letra en el lado opuesto
+            setTimeout(() => {
+                dist.remove();
+                currentVal = stimuli[Math.floor(Math.random() * stimuli.length)];
+                const stim = document.createElement('div');
+                stim.className = 'stimulus';
+                stim.id = "active-stim";
+                stim.innerText = currentVal;
+                stim.style.left = stimX + '%';
+                stim.style.top = stimY + '%';
+                stim.style.setProperty('--sz', `${Math.max(70, 180 - level*12)}px`);
+                area.appendChild(stim);
+
+                const timeLimit = Math.max(700, 3500 - (level * 400));
+                failTimer = setTimeout(() => handleFailure(), timeLimit);
+            }, 150); // El distractor dura 150ms antes de que aparezca la letra
+        }
+
+        function checkMatch(text) {
+            const dict = { "UNO":"1","DOS":"2","TRES":"3","EQUIS":"X","CE":"C","SE":"C" };
+            let match = text.includes(currentVal);
+            for(let k in dict) if(text.includes(k) && dict[k] === currentVal) match = true;
+            if(match) handleSuccess();
+        }
+
+        function handleSuccess() {
+            const el = document.getElementById('active-stim');
+            if(!el) return;
+            clearTimeout(failTimer);
+            el.remove();
+            playTone(1000, 'sine', 0.05);
+            stats.hits++;
+            spawn();
+        }
+
+        function handleFailure() {
+            if(document.getElementById('game-area').style.display === 'none') return;
+            clearTimeout(failTimer);
+            playTone(150, 'square', 0.2);
+            lives--;
+            stats.errors++;
+            updateHUD();
+            if(lives <= 0) endGame("SIN VIDAS");
+            else spawn();
+        }
+
+        function showRest() {
+            document.getElementById('game-area').style.display = 'none';
+            const restScr = document.getElementById('s-rest');
+            restScr.style.display = 'block';
+            restScr.classList.add('active');
+            let c = restTime;
+            document.getElementById('rest-timer').innerText = c;
+            restInt = setInterval(() => {
+                c--;
+                document.getElementById('rest-timer').innerText = c;
+                if(c <= 0) { currentSerie++; startSerie(); }
+            }, 1000);
+        }
+
+        function showLevelUp() {
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('hud').style.display = 'none';
+            nextStep('s-config', 's-levelup');
+        }
+
+        function startNewLevel() {
+            level++; currentSerie = 1;
+            document.getElementById('s-levelup').style.display = 'none';
+            startSerie();
+        }
+
+        function updateHUD() {
+            document.getElementById('h-ses').innerText = currentSerie + "/" + seriesPerLevel;
+            document.getElementById('h-lvl').innerText = level;
+            document.getElementById('h-lives').innerText = "❤️".repeat(Math.max(0, lives));
+        }
+
+        function endGame(reason) {
+            clearInterval(timerInt); clearInterval(restInt); clearTimeout(failTimer);
+            try { recognition.stop(); } catch(e) {}
+            document.getElementById('game-area').style.display = 'none';
+            document.getElementById('hud').style.display = 'none';
+            const endScreen = document.getElementById('s-end');
+            endScreen.style.display = 'block';
+            endScreen.classList.add('active');
+            document.getElementById('summary').innerHTML = `
+                <div class="summary-item">🎯 ACIERTOS: ${stats.hits}</div>
+                <div class="summary-item">❌ ERRORES: ${stats.errors}</div>
+                <div class="summary-item">🚀 NIVEL MAX: ${level}</div>
+                <div class="summary-item" style="border-color:var(--success)">📏 DISTANCIA: 40 cm</div>
+            `;
+        }
+    </script>
+</body>
+</html>
