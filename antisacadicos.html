@@ -3,255 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos - Terapia Visual</title>
+    <title>Antisacádicos Voice - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #020617;
-            --card: #1e293b;
-            --acc: #a855f7;
-            --txt: #f8fafc;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
-
+        :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: var(--bg); 
-            color: var(--txt); 
-            font-family: 'Montserrat', sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-            transition: background 0.2s;
-        }
+        body { background: var(--bg); color: var(--txt); font-family: 'Montserrat', sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
 
-        /* PASO 1 Y 2: INTERFAZ */
-        .screen {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--card); padding: 3rem; border-radius: 2.5rem; border: 4px solid var(--acc);
-            text-align: center; max-width: 700px; width: 90%; z-index: 1000; box-shadow: 0 0 40px rgba(168, 85, 247, 0.4);
+        /* PANTALLAS INICIALES */
+        .screen { 
+            background: rgba(30, 41, 59, 0.98); padding: 3rem; border-radius: 3rem; border: 5px solid var(--acc); 
+            text-align: center; width: 90%; max-width: 800px; z-index: 1000; animation: zoomIn 0.3s ease-out;
         }
+        @keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 3.5rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; }
+        p { font-size: 1.6rem; margin-bottom: 2rem; line-height: 1.4; }
 
-        .config-group { margin: 20px 0; text-align: left; }
-        label { display: block; margin-bottom: 8px; font-weight: 900; color: var(--acc); font-size: 1.1rem; }
+        .config-box { background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 2rem; margin-bottom: 1.5rem; }
+        .config-group { margin-bottom: 1.5rem; text-align: left; }
+        label { display: block; font-weight: 900; color: var(--acc); font-size: 1.2rem; margin-bottom: 0.5rem; }
         input[type="range"] { width: 100%; accent-color: var(--acc); cursor: pointer; }
 
-        /* HUD */
-        #hud {
-            position: absolute; top: 0; width: 100%; padding: 1.5rem 3rem;
-            display: none; justify-content: space-around; align-items: center;
-            background: rgba(0,0,0,0.8); border-bottom: 3px solid var(--acc); z-index: 500;
-        }
+        /* HUD JUEGO */
+        #hud { position: absolute; top: 0; width: 100%; padding: 1.5rem 3rem; display: none; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); border-bottom: 2px solid var(--acc); }
+        .hud-item { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: bold; }
 
-        /* JUEGO */
+        /* ELEMENTOS JUEGO */
         #game-area { width: 100vw; height: 100vh; position: relative; display: none; }
-        .fixation { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; color: var(--acc); opacity: 0.3; }
-        .dot { position: absolute; width: 45px; height: 45px; background: white; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 25px white; }
-        .stim { position: absolute; font-family: 'Orbitron', sans-serif; font-size: 8rem; font-weight: 900; color: var(--acc); transform: translate(-50%, -50%); text-shadow: 0 0 35px var(--acc); cursor: pointer; }
+        .fixation { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; color: var(--acc); opacity: 0.3; }
+        .dot { position: absolute; width: 50px; height: 50px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 30px #fff; }
+        .stimulus { position: absolute; font-family: 'Orbitron', sans-serif; font-size: 10rem; font-weight: 900; color: var(--acc); transform: translate(-50%, -50%); text-shadow: 0 0 40px var(--acc); }
 
-        .btn-game {
-            background: var(--success); color: #000; padding: 1.2rem 3rem; border-radius: 1.5rem;
-            border: none; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s; width: 100%;
-        }
-
-        /* MODALES */
-        #level-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--card); padding: 4rem; border-radius: 3rem; border: 6px solid var(--success);
-            text-align: center; z-index: 2000; width: 80%;
-        }
-
-        /* EFECTO PANTALLA ROJA */
-        .hit-flash { background: var(--danger) !important; }
+        .btn-main { background: var(--success); color: #000; padding: 1.5rem 4rem; border-radius: 2rem; border: none; font-weight: 900; font-size: 1.8rem; cursor: pointer; transition: 0.2s; width: 100%; }
+        .btn-main:hover { transform: scale(1.03); filter: brightness(1.1); }
+        
+        .hit-flash { animation: flashRed 0.3s; }
+        @keyframes flashRed { 50% { background: var(--danger); } }
     </style>
 </head>
 <body>
 
     <div id="step1" class="screen">
-        <h1 style="color:var(--acc); font-size: 2.5rem; margin-bottom: 1.5rem; font-family:'Orbitron';">SANTISACÁDICOS</h1>
-        <p style="font-size: 1.2rem; line-height: 1.5; margin-bottom: 2rem; text-align: left;">
-            1. Distancia: <b>40 cm</b>.<br>
-            2. <b>Punto Blanco</b>: ¡No lo mires! Mira al lado opuesto.<br>
-            3. <b>Vocales / Pares</b>: Dilos en voz alta.<br>
-            4. <b>Consonantes / Impares</b>: Tócalos en la pantalla.
-        </p>
-        <button class="btn-game" onclick="toStep2()">SIGUIENTE</button>
+        <h1>Antisacádicos</h1>
+        <p>Mantén la distancia de <b>40 cm</b> [cite: 2026-02-10].</p>
+        <p>Aparecerá un punto blanco: <b>¡NO LO MIRES!</b><br>Debes mirar al lado contrario y nombrar el estímulo que aparecerá allí.</p>
+        <button class="btn-main" onclick="showConfig()">ENTENDIDO</button>
     </div>
 
     <div id="step2" class="screen" style="display:none;">
-        <h2 style="color:var(--acc); margin-bottom: 1.5rem; font-family:'Orbitron';">AJUSTES</h2>
-        <div class="config-group">
-            <label>Series: <span id="val-series">3</span></label>
-            <input type="range" id="in-series" min="1" max="10" value="3" oninput="document.getElementById('val-series').innerText=this.value">
+        <h1>Ajustes</h1>
+        <div class="config-box">
+            <div class="config-group">
+                <label>Número de Series: <span id="val-series">3</span></label>
+                <input type="range" id="in-series" min="1" max="10" value="3" oninput="document.getElementById('val-series').innerText=this.value">
+            </div>
+            <div class="config-group">
+                <label>Tiempo de Trabajo (seg): <span id="val-work">30</span></label>
+                <input type="range" id="in-work" min="10" max="120" value="30" oninput="document.getElementById('val-work').innerText=this.value">
+            </div>
+            <div class="config-group">
+                <label>Tiempo de Descanso (seg): <span id="val-rest">10</span></label>
+                <input type="range" id="in-rest" min="5" max="60" value="10" oninput="document.getElementById('val-rest').innerText=this.value">
+            </div>
         </div>
-        <div class="config-group">
-            <label>Tiempo Trabajo (seg): <span id="val-work">30</span></label>
-            <input type="range" id="in-work" min="10" max="120" value="30" oninput="document.getElementById('val-work').innerText=this.value">
-        </div>
-        <div class="config-group">
-            <label>Descanso (seg): <span id="val-rest">10</span></label>
-            <input type="range" id="in-rest" min="5" max="60" value="10" oninput="document.getElementById('val-rest').innerText=this.value">
-        </div>
-        <button class="btn-game" style="background:var(--acc); color:white;" onclick="initGame()">¡COMENZAR!</button>
+        <button class="btn-main" style="background: var(--acc); color: white;" onclick="startTraining()">INICIAR ENTRENAMIENTO</button>
     </div>
 
     <div id="hud">
-        <div style="font-family:'Orbitron'; font-size: 2rem; color: var(--success);" id="timer">30s</div>
-        <div style="font-weight:900;">SERIE: <span id="cur-serie">1</span></div>
-        <div id="lives" style="font-size: 2rem;">❤️❤️❤️</div>
+        <div class="hud-item" id="hud-timer">30s</div>
+        <div class="hud-item">SERIE: <span id="hud-serie">1</span></div>
+        <div class="hud-item" id="hud-lives" style="color: var(--danger);">❤️❤️❤️</div>
     </div>
 
-    <div id="game-area"></div>
+    <div id="game-area"><div class="fixation">+</div></div>
 
-    <div id="level-modal">
-        <h1 style="color:var(--success); font-family:'Orbitron'; margin-bottom: 1rem;">SERIE COMPLETADA</h1>
-        <p id="stats" style="font-size: 1.8rem; margin-bottom: 2rem;"></p>
-        <button class="btn-game" onclick="startNextSerie()">SIGUIENTE NIVEL</button>
-    </div>
+    <script>
+        let series, workT, restT;
+        let currentSerie = 1, lives = 3, hits = 0;
+        let active = false, timer, currentTarget = "";
+        const stimuli = ['A', 'O', 'U', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-<script>
-    // Audio Context para sonidos
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(freq, type) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type; osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-    }
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recog = new Speech();
+        recog.lang = 'es-ES';
+        recog.continuous = true;
+        recog.interimResults = false;
 
-    let seriesTotales, tTrabajo, tDescanso;
-    let serieActual = 1, vidas = 3, aciertos = 0;
-    let juegoActivo = false, timerInterval, targetActual = "", modoActual = ""; 
-    
-    const vocales = ['A', 'O', 'U'];
-    const consonantes = ['X', 'P', 'T', 'K'];
-    const numeros = ['1', '2', '3', '4', '5', '6', '7', '8'];
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, t) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.frequency.value = f; o.type = t;
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + 0.1);
+        }
 
-    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new Speech();
-    recognition.lang = 'es-ES';
-    recognition.continuous = true;
+        function showConfig() {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
 
-    function toStep2() {
-        document.getElementById('step1').style.display = 'none';
-        document.getElementById('step2').style.display = 'block';
-    }
+        function startTraining() {
+            series = parseInt(document.getElementById('in-series').value);
+            workT = parseInt(document.getElementById('in-work').value);
+            restT = parseInt(document.getElementById('in-rest').value);
+            
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('game-area').style.display = 'block';
+            
+            recog.start();
+            runSerie();
+        }
 
-    function initGame() {
-        seriesTotales = parseInt(document.getElementById('in-series').value);
-        tTrabajo = parseInt(document.getElementById('in-work').value);
-        tDescanso = parseInt(document.getElementById('in-rest').value);
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('hud').style.display = 'flex';
-        document.getElementById('game-area').style.display = 'block';
-        recognition.start();
-        lanzarSerie();
-    }
+        function runSerie() {
+            lives = 3; hits = 0; active = true;
+            updateHUD();
+            startClock();
+            spawn();
+        }
 
-    function lanzarSerie() {
-        aciertos = 0; vidas = 3; juegoActivo = true;
-        actualizarHUD();
-        iniciarCronometro();
-        generarReto();
-    }
+        function spawn() {
+            if (!active) return;
+            const area = document.getElementById('game-area');
+            area.innerHTML = '<div class="fixation">+</div>';
 
-    function generarReto() {
-        if(!juegoActivo) return;
-        const area = document.getElementById('game-area');
-        area.innerHTML = '<div class="fixation">+</div>';
+            const isLeft = Math.random() > 0.5;
+            
+            // PUNTO INICIAL
+            const d = document.createElement('div');
+            d.className = 'dot';
+            d.style.left = isLeft ? "20%" : "80%"; d.style.top = "50%";
+            area.appendChild(d);
 
-        const ladoIzquierdo = Math.random() > 0.5;
-        setTimeout(() => {
-            // Decidir Estímulo
-            const r = Math.random();
-            if(r < 0.33) {
-                targetActual = vocales[Math.floor(Math.random()*vocales.length)];
-                modoActual = "voz";
-            } else if (r < 0.66) {
-                targetActual = consonantes[Math.floor(Math.random()*consonantes.length)];
-                modoActual = "click";
+            setTimeout(() => {
+                if (!active) return;
+                d.remove();
+                // ESTÍMULO AL LADO OPUESTO
+                currentTarget = stimuli[Math.floor(Math.random() * stimuli.length)];
+                const s = document.createElement('div');
+                s.className = 'stimulus';
+                s.innerText = currentTarget;
+                s.style.left = isLeft ? "80%" : "20%"; s.style.top = "50%";
+                area.appendChild(s);
+
+                // Tiempo para responder (se reduce según nivel)
+                setTimeout(() => { if (area.contains(s) && active) fail(); }, 2500);
+            }, 800);
+        }
+
+        recog.onresult = (e) => {
+            if (!active) return;
+            const msg = e.results[e.results.length - 1][0].transcript.toUpperCase();
+            if (msg.includes(currentTarget)) success();
+        };
+
+        function success() {
+            beep(880, 'sine');
+            hits++;
+            document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
+            setTimeout(spawn, 600);
+        }
+
+        function fail() {
+            beep(220, 'square');
+            document.body.classList.add('hit-flash');
+            setTimeout(() => document.body.classList.remove('hit-flash'), 300);
+            lives--;
+            updateHUD();
+            if (lives <= 0) {
+                alert("Serie fallida. Reintentando...");
+                clearInterval(timer);
+                runSerie();
             } else {
-                targetActual = numeros[Math.floor(Math.random()*numeros.length)];
-                modoActual = (parseInt(targetActual) % 2 === 0) ? "voz" : "click";
+                document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
+                setTimeout(spawn, 1000);
             }
-
-            const s = document.createElement('div');
-            s.className = 'stim';
-            s.style.left = ladoIzquierdo ? "80%" : "20%"; 
-            s.style.top = "50%";
-            s.innerText = targetActual;
-            s.onclick = () => { if(modoActual === "click") acertar(); else fallar(); };
-            area.appendChild(s);
-
-            const p = document.createElement('div');
-            p.className = 'dot';
-            p.style.left = ladoIzquierdo ? "20%" : "80%"; p.style.top = "50%";
-            area.appendChild(p);
-            setTimeout(() => p.remove(), 400);
-
-        }, 800);
-    }
-
-    recognition.onresult = (event) => {
-        if(!juegoActivo || modoActual !== "voz") return;
-        const voz = event.results[event.results.length-1][0].transcript.toUpperCase();
-        if(voz.includes(targetActual)) acertar();
-    };
-
-    function acertar() {
-        playSound(880, 'sine');
-        aciertos++;
-        document.getElementById('game-area').innerHTML = '';
-        setTimeout(generarReto, 600);
-    }
-
-    function fallar() {
-        playSound(220, 'square');
-        document.body.classList.add('hit-flash');
-        setTimeout(() => document.body.classList.remove('hit-flash'), 200);
-        vidas--;
-        actualizarHUD();
-        if(vidas <= 0) {
-            alert("Vidas agotadas en esta serie.");
-            pausaSerie();
-        } else {
-            document.getElementById('game-area').innerHTML = '';
-            setTimeout(generarReto, 1000);
         }
-    }
 
-    function iniciarCronometro() {
-        let t = tTrabajo;
-        timerInterval = setInterval(() => {
-            t--;
-            document.getElementById('timer').innerText = t + "s";
-            if(t <= 0) { clearInterval(timerInterval); pausaSerie(); }
-        }, 1000);
-    }
-
-    function pausaSerie() {
-        juegoActivo = false;
-        document.getElementById('stats').innerText = `Puntos: ${aciertos}`;
-        document.getElementById('level-modal').style.display = 'block';
-    }
-
-    function startNextSerie() {
-        serieActual++;
-        if(serieActual > seriesTotales) {
-            alert("¡ENTRENAMIENTO FINALIZADO CON ÉXITO!");
-            location.reload();
-        } else {
-            document.getElementById('level-modal').style.display = 'none';
-            document.getElementById('cur-serie').innerText = serieActual;
-            lanzarSerie();
+        function startClock() {
+            let time = workT;
+            timer = setInterval(() => {
+                time--;
+                document.getElementById('hud-timer').innerText = time + "s";
+                if (time <= 0) {
+                    clearInterval(timer);
+                    active = false;
+                    finishSerie();
+                }
+            }, 1000);
         }
-    }
 
-    function actualizarHUD() {
-        document.getElementById('lives').innerText = "❤️".repeat(vidas);
-    }
-</script>
+        function finishSerie() {
+            if (currentSerie >= series) {
+                alert("Entrenamiento Finalizado. Aciertos totales: " + hits);
+                location.reload();
+            } else {
+                alert("Serie " + currentSerie + " completada. Aciertos: " + hits + ". Presiona para descansar.");
+                setTimeout(() => {
+                    currentSerie++;
+                    document.getElementById('hud-serie').innerText = currentSerie;
+                    runSerie();
+                }, restT * 1000);
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-lives').innerText = "❤️".repeat(lives);
+        }
+
+        recog.onend = () => { if(active) recog.start(); };
+    </script>
 </body>
 </html>
