@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg: #020617;
-            --card-bg: #1e293b;
+            --card: #1e293b;
             --accent: #a855f7;
             --text: #f8fafc;
             --success: #10b981;
@@ -17,271 +17,223 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body, html {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Montserrat', sans-serif;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        body { background: var(--bg); color: var(--text); font-family: 'Montserrat', sans-serif; overflow: hidden; height: 100vh; }
+
+        /* CONFIGURACIÓN INICIAL */
+        .config-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.98); display: flex; align-items: center; justify-content: center; z-index: 2000;
         }
 
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .config-card {
+            background: var(--card); padding: 40px; border-radius: 30px; border: 3px solid var(--accent);
+            width: 90%; max-width: 600px; text-align: center; box-shadow: var(--neon);
         }
 
-        /* Pantallas de Interfaz */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.98);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            padding: 50px;
-            border-radius: 40px;
-            border: 4px solid var(--accent);
-            text-align: center;
-            max-width: 700px;
-            box-shadow: var(--neon);
-        }
-
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--accent); font-size: 3rem; margin-bottom: 25px; }
-        p { font-size: 1.4rem; line-height: 1.6; margin-bottom: 30px; }
-
-        .btn-play {
-            background: var(--success);
-            color: #000;
-            border: none;
-            padding: 20px 50px;
-            font-size: 1.8rem;
-            font-weight: 900;
-            border-radius: 20px;
-            cursor: pointer;
-            display: none; /* Espera al micrófono */
-            width: 100%;
-            transition: transform 0.2s;
-        }
-
-        .btn-play:hover { transform: scale(1.05); }
+        .input-group { margin: 20px 0; text-align: left; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--accent); }
+        input[type="range"] { width: 100%; accent-color: var(--accent); }
 
         /* HUD */
         #hud {
-            position: absolute;
-            top: 0; width: 100%;
-            padding: 25px 50px;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.9);
-            border-bottom: 3px solid var(--accent);
-            z-index: 100;
+            position: absolute; top: 0; width: 100%; padding: 20px 50px;
+            display: none; justify-content: space-between; align-items: center;
+            background: rgba(15, 23, 42, 0.9); border-bottom: 3px solid var(--accent); z-index: 100;
         }
 
-        .hud-item { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: bold; }
-        .lives { color: var(--danger); font-size: 2rem; letter-spacing: 5px; }
-
-        /* Elementos de Juego */
-        #game-area { position: relative; width: 100%; height: 100%; display: none; }
-        
-        .fixation {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5rem;
-            color: var(--accent);
-            opacity: 0.4;
-        }
-
-        .distractor {
-            position: absolute;
-            width: 45px; height: 45px;
-            background: #fff;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 30px #fff;
-        }
-
+        /* JUEGO */
+        #game-area { width: 100vw; height: 100vh; position: relative; display: none; cursor: crosshair; }
         .stimulus {
-            position: absolute;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 8rem;
-            font-weight: 900;
-            color: var(--accent);
-            transform: translate(-50%, -50%);
-            text-shadow: 0 0 40px var(--accent);
+            position: absolute; font-family: 'Orbitron', sans-serif; font-size: 8rem; font-weight: 900;
+            color: var(--accent); transform: translate(-50%, -50%); text-shadow: 0 0 40px var(--accent);
+            cursor: pointer; user-select: none;
+        }
+        .distractor {
+            position: absolute; width: 45px; height: 45px; background: #fff;
+            border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 30px #fff;
         }
 
-        #mic-status { margin-top: 20px; font-weight: bold; font-size: 1.2rem; }
-        .blinking { animation: blinker 1.5s linear infinite; color: #fbbf24; }
-        @keyframes blinker { 50% { opacity: 0; } }
+        /* MODALES VIDEOJUEGO */
+        .game-modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--card); padding: 50px; border-radius: 40px; border: 5px solid var(--success);
+            text-align: center; z-index: 3000; box-shadow: 0 0 100px rgba(16, 185, 129, 0.4);
+        }
+        .btn-next {
+            background: var(--success); color: #000; padding: 20px 60px; font-size: 1.5rem;
+            font-weight: 900; border-radius: 20px; border: none; cursor: pointer; margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-<div id="game-wrapper">
-    <div id="hud">
-        <div class="hud-item">NIVEL: <span id="h-lvl">1</span></div>
-        <div class="hud-item">ACIERTOS: <span id="h-hits">0</span></div>
-        <div class="hud-item lives" id="h-lives">❤️❤️❤️</div>
-    </div>
+    <div id="setup" class="config-overlay">
+        <div class="config-card">
+            <h1 style="color:var(--accent); font-family:'Orbitron';">PERCEPTUM v2.0</h1>
+            <p style="margin:10px 0;">Distancia: <b>40 cm</b> [cite: 2026-02-10]</p>
+            
+            <div class="input-group">
+                <label>Series: <span id="v-series">3</span></label>
+                <input type="range" id="i-series" min="1" max="10" value="3" oninput="updateVal('series')">
+            </div>
+            <div class="input-group">
+                <label>Tiempo Trabajo (seg): <span id="v-work">30</span></label>
+                <input type="range" id="i-work" min="10" max="120" value="30" oninput="updateVal('work')">
+            </div>
+            <div class="input-group">
+                <label>Descanso (seg): <span id="v-rest">10</span></label>
+                <input type="range" id="i-rest" min="5" max="60" value="10" oninput="updateVal('rest')">
+            </div>
 
-    <div id="start-screen" class="overlay">
-        <div class="modal">
-            <h1>Antisacádicos</h1>
-            <p>
-                1. Mantén la distancia de <b>40 cm</b>.<br>
-                2. Aparecerá un punto: <b>¡No lo mires!</b>.<br>
-                3. Salta al lado opuesto y di la <b>letra o número</b> rápido.
+            <p style="font-size:0.9rem; color:#94a3b8; margin: 15px 0;">
+                👄 Di: Vocales y Pares | 👆 Toca: Consonantes e Impares
             </p>
-            <div id="mic-status" class="blinking">🎤 Esperando permiso de voz...</div>
-            <button id="btn-start" class="btn-play" onclick="startGame()">INICIAR</button>
+            <button class="btn-next" id="btn-ready" onclick="startEngine()">¡A ENTRENAR!</button>
         </div>
     </div>
 
-    <div id="game-area">
-        <div class="fixation">+</div>
+    <div id="hud">
+        <div class="hud-item" id="timer-display">30s</div>
+        <div class="hud-item" style="color:var(--accent)">SERIE: <span id="cur-serie">1</span></div>
+        <div id="lives-hud" style="color:var(--danger); font-size:2rem;">❤️❤️❤️</div>
     </div>
-</div>
+
+    <div id="game-area"></div>
+
+    <div id="level-modal" class="game-modal">
+        <h1 style="color:var(--success)">¡SERIE COMPLETADA!</h1>
+        <p id="level-stats">Aciertos logrados: 0</p>
+        <button class="btn-next" onclick="nextSerie()">SIGUIENTE NIVEL</button>
+    </div>
 
 <script>
-    // Configuración y Estado
-    const stimuli = ['A', 'E', 'O', 'U', 'X', '1', '2', '3', '4', '5'];
-    let level = 1, hits = 0, lives = 3;
-    let awaitingResponse = false;
-    let currentTarget = "";
-    let presentationTimer;
+    // Configuración
+    let totalSeries = 3, workTime = 30, restTime = 10;
+    let currentSerie = 1, lives = 3, hits = 0;
+    let timer, gameActive = false;
+    let currentTarget = "", targetType = ""; // 'voice' o 'click'
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const vowels = ['A', 'O', 'U'];
+    const consonants = ['X', 'P', 'T', 'K', 'S'];
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8'];
+
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    // Inicialización de Micrófono
-    async function initVoice() {
-        try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            document.getElementById('mic-status').innerHTML = "✅ Micrófono activo";
-            document.getElementById('mic-status').classList.remove('blinking');
-            document.getElementById('btn-start').style.display = 'block';
-        } catch (e) {
-            document.getElementById('mic-status').innerHTML = "❌ Activa el micrófono para jugar";
-            document.getElementById('mic-status').style.color = "var(--danger)";
-        }
+    function updateVal(id) {
+        document.getElementById('v-'+id).innerText = document.getElementById('i-'+id).value;
     }
-    initVoice();
 
-    function startGame() {
-        document.getElementById('start-screen').style.display = 'none';
+    function startEngine() {
+        totalSeries = parseInt(document.getElementById('i-series').value);
+        workTime = parseInt(document.getElementById('i-work').value);
+        restTime = parseInt(document.getElementById('i-rest').value);
+        
+        document.getElementById('setup').style.display = 'none';
         document.getElementById('hud').style.display = 'flex';
         document.getElementById('game-area').style.display = 'block';
+        
         recognition.start();
-        setTimeout(spawn, 1000);
+        runSerie();
+    }
+
+    function runSerie() {
+        hits = 0; lives = 3; gameActive = true;
+        updateHUD();
+        startTimer();
+        spawn();
     }
 
     function spawn() {
-        if (lives <= 0) return;
-        
+        if(!gameActive) return;
         const area = document.getElementById('game-area');
-        area.innerHTML = '<div class="fixation">+</div>';
-        awaitingResponse = false;
+        area.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:4rem;color:var(--accent);opacity:0.3;">+</div>';
 
         const isLeft = Math.random() > 0.5;
-        const distX = isLeft ? "20%" : "80%";
-        const targetX = isLeft ? "80%" : "20%";
-
-        // 1. Aparece PUNTO BLANCO
-        const dot = document.createElement('div');
-        dot.className = 'distractor';
-        dot.style.left = distX;
-        dot.style.top = "50%";
-        area.appendChild(dot);
-
-        // 2. Retraso para inhibición (800ms)
         setTimeout(() => {
-            dot.remove();
-            
-            // 3. Aparece ESTÍMULO (Letra o Número)
-            currentTarget = stimuli[Math.floor(Math.random() * stimuli.length)];
+            // Lógica de estímulo aleatorio
+            const pool = Math.random() > 0.5 ? 'let' : 'num';
+            if(pool === 'let') {
+                const isVowel = Math.random() > 0.5;
+                currentTarget = isVowel ? vowels[Math.floor(Math.random()*vowels.length)] : consonants[Math.floor(Math.random()*consonants.length)];
+                targetType = isVowel ? 'voice' : 'click';
+            } else {
+                const num = numbers[Math.floor(Math.random()*numbers.length)];
+                currentTarget = num;
+                targetType = (parseInt(num) % 2 === 0) ? 'voice' : 'click';
+            }
+
             const stim = document.createElement('div');
             stim.className = 'stimulus';
-            stim.style.left = targetX;
+            stim.style.left = isLeft ? "80%" : "20%"; // Antisacádico: aparece al lado opuesto del foco mental
             stim.style.top = "50%";
             stim.innerText = currentTarget;
+            stim.onclick = () => { if(targetType === 'click') handleSuccess(); else loseLife(); };
             area.appendChild(stim);
-            
-            awaitingResponse = true;
 
-            // 4. TIEMPO LÍMITE (Se acorta según nivel)
-            let timeLimit = Math.max(2500 - (level * 250), 700);
-            
-            presentationTimer = setTimeout(() => {
-                if (awaitingResponse) {
-                    handleFail();
-                }
-            }, timeLimit);
+            // Aparece punto blanco rápido al lado opuesto para forzar el antisacádico
+            const dot = document.createElement('div');
+            dot.className = 'distractor';
+            dot.style.left = isLeft ? "20%" : "80%";
+            dot.style.top = "50%";
+            area.appendChild(dot);
+            setTimeout(() => dot.remove(), 400);
 
         }, 800);
     }
 
     recognition.onresult = (event) => {
-        if (!awaitingResponse) return;
-        const voiceInput = event.results[event.results.length - 1][0].transcript.toUpperCase();
-        
-        if (voiceInput.includes(currentTarget)) {
-            handleSuccess();
-        }
+        if(!gameActive || targetType !== 'voice') return;
+        const speech = event.results[event.results.length-1][0].transcript.toUpperCase();
+        if(speech.includes(currentTarget)) handleSuccess();
     };
 
     function handleSuccess() {
-        clearTimeout(presentationTimer);
-        awaitingResponse = false;
         hits++;
-        if (hits % 5 === 0) level++; // Niveles infinitos
-        
-        // DESAPARECE AL TIRO
-        document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
-        
-        updateHUD();
-        setTimeout(spawn, 800); // Siguiente ronda rápida
+        document.getElementById('game-area').innerHTML = '';
+        setTimeout(spawn, 600);
     }
 
-    function handleFail() {
-        awaitingResponse = false;
-        lives--;
-        updateHUD();
-        document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
-        
-        if (lives <= 0) {
-            alert("Fin del Entrenamiento. Aciertos: " + hits);
-            location.reload();
-        } else {
-            setTimeout(spawn, 1500);
-        }
+    function loseLife() {
+        lives--; updateHUD();
+        if(lives <= 0) endGame("SISTEMA DAÑADO - REINTENTA");
+    }
+
+    function startTimer() {
+        let timeLeft = workTime;
+        timer = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer-display').innerText = timeLeft + "s";
+            if(timeLeft <= 0) {
+                clearInterval(timer);
+                finishSerie();
+            }
+        }, 1000);
+    }
+
+    function finishSerie() {
+        gameActive = false;
+        document.getElementById('level-stats').innerText = `Aciertos en esta serie: ${hits}`;
+        document.getElementById('level-modal').style.display = 'block';
+    }
+
+    function nextSerie() {
+        currentSerie++;
+        if(currentSerie > totalSeries) return endGame("¡ENTRENAMIENTO COMPLETO!");
+        document.getElementById('level-modal').style.display = 'none';
+        document.getElementById('cur-serie').innerText = currentSerie;
+        runSerie();
     }
 
     function updateHUD() {
-        document.getElementById('h-lvl').innerText = level;
-        document.getElementById('h-hits').innerText = hits;
         document.getElementById('h-lives').innerText = "❤️".repeat(lives);
     }
 
-    recognition.onend = () => { if(lives > 0) recognition.start(); };
+    function endGame(msg) {
+        alert(msg); location.reload();
+    }
 </script>
 </body>
 </html>
