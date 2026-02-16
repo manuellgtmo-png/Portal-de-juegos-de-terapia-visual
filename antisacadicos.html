@@ -3,273 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Pro - Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <title>Antisacádicos Voice - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020617;
-            --card-bg: #1e293b;
-            --accent: #a855f7;
-            --text: #f8fafc;
+            --bg: #020617;
+            --acc: #a855f7;
+            --txt: #f8fafc;
             --success: #10b981;
             --danger: #ef4444;
-            --neon-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body, html {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            color: var(--text);
+        body {
+            margin: 0;
             font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            height: 100vh;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Contenedor Principal */
-        #game-wrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Pantalla de Inicio y Overlays */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 6, 23, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 30px;
-            border: 3px solid var(--accent);
+        /* Pantalla de Inicio */
+        .screen {
+            background: rgba(30, 41, 59, 0.98);
+            padding: 3rem;
+            border-radius: 3rem;
+            border: 5px solid var(--acc);
             text-align: center;
-            max-width: 600px;
-            box-shadow: var(--neon-shadow);
+            width: 90%;
+            max-width: 800px;
+            z-index: 100;
+            box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
         }
 
-        h1 { font-family: 'Orbitron', sans-serif; color: var(--accent); font-size: 2.5rem; margin-bottom: 20px; text-transform: uppercase; }
-        p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; }
+        h1 { font-size: 3rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; }
+        p { font-size: 1.6rem; margin-bottom: 2rem; line-height: 1.4; }
 
-        .btn-start {
+        .btn {
             background: var(--success);
             color: #000;
+            padding: 1.5rem 3rem;
+            border-radius: 2rem;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.3rem;
             font-weight: 900;
-            border-radius: 15px;
+            font-size: 1.8rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: 0.3s;
             display: none; /* Se activa con el micro */
             width: 100%;
         }
 
-        .btn-start:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--success); }
-
         /* HUD Superior */
-        #hud {
+        .hud {
             position: absolute;
             top: 0;
             width: 100%;
-            padding: 20px 40px;
             display: none;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.8);
-            border-bottom: 2px solid var(--accent);
+            justify-content: space-around;
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: rgba(0,0,0,0.8);
+            border-bottom: 3px solid var(--acc);
             z-index: 10;
         }
 
-        .hud-item { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; font-weight: bold; }
-        .lives { color: var(--danger); font-size: 1.5rem; }
-
         /* Elementos del Juego */
-        #game-canvas { position: relative; width: 100%; height: 100%; display: none; }
+        #game-area { width: 100%; height: 100%; position: relative; display: none; }
         
-        .fixation-cross {
+        .fixation {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: var(--accent);
-            opacity: 0.5;
+            font-size: 4rem;
+            color: var(--acc);
+            opacity: 0.3;
         }
 
         .distractor {
             position: absolute;
-            width: 35px; height: 35px;
-            background: #fff;
+            width: 40px; height: 40px;
+            background: white;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 25px #fff;
+            box-shadow: 0 0 30px white;
         }
 
         .stimulus {
             position: absolute;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 6rem;
-            color: var(--accent);
+            font-size: 7rem;
+            font-weight: 900;
+            color: var(--acc);
             transform: translate(-50%, -50%);
-            text-shadow: 0 0 30px var(--accent);
+            text-shadow: 0 0 40px var(--acc);
         }
 
-        /* Status del Micrófono */
-        #mic-indicator {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            background: rgba(0,0,0,0.3);
+        #mic-status {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
             font-weight: bold;
+            color: var(--success);
         }
-        .mic-listening { color: var(--success); animation: blink 1.5s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .loading { animation: pulse 1.5s infinite; color: #fbbf24; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
 
-<div id="game-wrapper">
-    <div id="hud">
-        <div class="hud-item">LVL: <span id="level">1</span></div>
-        <div class="hud-item">ACIERTOS: <span id="hits">0</span></div>
-        <div class="hud-item lives" id="lives">❤️❤️❤️</div>
+    <div class="hud" id="hud">
+        <div>NIVEL: <span id="lvl">1</span></div>
+        <div>ACIERTOS: <span id="hits">0</span></div>
+        <div id="lives-display" style="color:var(--danger)">❤️❤️❤️</div>
     </div>
 
-    <div id="start-screen" class="overlay">
-        <div class="modal">
-            <h1>Antisacádicos</h1>
-            <p>
-                Sitúate a exactamente <b>40 cm</b> de la pantalla.<br>
-                Aparecerá un punto blanco: <b>¡No lo mires!</b><br>
-                Mira al lado opuesto y di la letra que aparezca.
-            </p>
-            <div id="mic-indicator" class="mic-listening">🎤 Solicitando acceso al micrófono...</div>
-            <button id="btn-play" class="btn-start" onclick="initGame()">COMENZAR</button>
-        </div>
+    <div id="s-intro" class="screen">
+        <h1>Antisacádicos</h1>
+        <p>Distancia: <b>40 cm</b> [cite: 2026-02-10].</p>
+        <p>No mires el punto blanco. Mira al <b>LADO OPUESTO</b> y di la letra.</p>
+        
+        <div id="mic-status" class="loading">🎤 Solicitando acceso al micrófono...</div>
+        <button class="btn" id="start-btn" onclick="startGame()">ENTENDIDO</button>
     </div>
 
-    <div id="game-canvas">
-        <div class="fixation-cross">+</div>
+    <div id="game-area">
+        <div class="fixation">+</div>
     </div>
-</div>
 
 <script>
-    // Variables de Estado
-    let score = 0;
-    let currentLevel = 1;
-    let lives = 3;
-    let isAwaitingResponse = false;
-    let currentTargetLetter = "";
-    
+    let level = 1, hits = 0, lives = 3;
+    let awaitingResponse = false;
+    let currentLetter = "";
     const letters = ['A', 'E', 'O', 'U', 'X', 'P', 'T'];
-    const gameCanvas = document.getElementById('game-canvas');
 
-    // Speech Recognition Setup
+    // Web Speech API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
-    recognition.interimResults = false;
 
-    // Inicializar Micrófono
-    async function setupMic() {
+    // 1. Activar Micrófono al inicio
+    async function initMic() {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true });
-            document.getElementById('mic-indicator').innerHTML = "✅ Micrófono conectado";
-            document.getElementById('mic-indicator').classList.remove('mic-listening');
-            document.getElementById('btn-play').style.display = 'block';
-        } catch (err) {
-            document.getElementById('mic-indicator').innerHTML = "❌ Error: Activa el micrófono para continuar";
-            document.getElementById('mic-indicator').style.color = "var(--danger)";
+            document.getElementById('mic-status').innerText = "✅ Micrófono conectado";
+            document.getElementById('mic-status').classList.remove('loading');
+            document.getElementById('start-btn').style.display = 'block';
+        } catch (e) {
+            document.getElementById('mic-status').innerText = "❌ Error: Activa el micrófono";
+            document.getElementById('mic-status').style.color = "var(--danger)";
         }
     }
-    setupMic();
+    initMic();
 
-    function initGame() {
-        document.getElementById('start-screen').style.display = 'none';
+    function startGame() {
+        document.getElementById('s-intro').style.display = 'none';
         document.getElementById('hud').style.display = 'flex';
-        gameCanvas.style.display = 'block';
+        document.getElementById('game-area').style.display = 'block';
         recognition.start();
-        setTimeout(gameLoop, 1500);
+        setTimeout(spawn, 1000);
     }
 
-    function gameLoop() {
-        if (lives <= 0) return gameOver();
+    function spawn() {
+        if (lives <= 0) return;
+        const area = document.getElementById('game-area');
+        area.innerHTML = '<div class="fixation">+</div>';
         
-        gameCanvas.innerHTML = '<div class="fixation-cross">+</div>';
-        isAwaitingResponse = false;
-
         const isLeft = Math.random() > 0.5;
-        const distractorX = isLeft ? "25%" : "75%";
-        const targetX = isLeft ? "75%" : "25%";
+        const distX = isLeft ? "20%" : "80%";
+        const targetX = isLeft ? "80%" : "20%";
 
-        // 1. Mostrar Punto Blanco (Distractor)
-        const distractor = document.createElement('div');
-        distractor.className = 'distractor';
-        distractor.style.left = distractorX;
-        distractor.style.top = "50%";
-        gameCanvas.appendChild(distractor);
+        // APARECE PUNTO BLANCO
+        const dot = document.createElement('div');
+        dot.className = 'distractor';
+        dot.style.left = distX;
+        dot.style.top = "50%";
+        area.appendChild(dot);
 
-        // 2. Tiempo de espera aumentado a 800ms (Más lento como pediste)
+        // MEJORA: 800ms de espera antes de la letra (más lento)
         setTimeout(() => {
-            distractor.remove();
-            showStimulus(targetX);
+            dot.remove();
+            
+            currentLetter = letters[Math.floor(Math.random() * letters.length)];
+            const stimulus = document.createElement('div');
+            stimulus.className = 'stimulus';
+            stimulus.style.left = targetX;
+            stimulus.style.top = "50%";
+            stimulus.innerText = currentLetter;
+            area.appendChild(stimulus);
+            
+            awaitingResponse = true;
+
+            // Si no responde en 3 segundos, pierde vida
+            setTimeout(() => {
+                if (awaitingResponse) {
+                    loseLife();
+                }
+            }, 3000);
+
         }, 800);
     }
 
-    function showStimulus(xPos) {
-        currentTargetLetter = letters[Math.floor(Math.random() * letters.length)];
-        
-        const stimulus = document.createElement('div');
-        stimulus.className = 'stimulus';
-        stimulus.style.left = xPos;
-        stimulus.style.top = "50%";
-        stimulus.innerText = currentTargetLetter;
-        gameCanvas.appendChild(stimulus);
-
-        isAwaitingResponse = true;
-    }
-
     recognition.onresult = (event) => {
-        if (!isAwaitingResponse) return;
+        if (!awaitingResponse) return;
+        const voice = event.results[event.results.length - 1][0].transcript.toUpperCase();
         
-        const voiceInput = event.results[event.results.length - 1][0].transcript.toUpperCase();
-        console.log("Escuchado:", voiceInput);
-
-        if (voiceInput.includes(currentTargetLetter)) {
-            handleSuccess();
-        } else {
-            // Opcional: manejar error de voz si es necesario
+        if (voice.includes(currentLetter)) {
+            hits++;
+            if (hits % 5 === 0) level++; // Niveles infinitos [cite: 2026-02-04]
+            updateHUD();
+            awaitingResponse = false;
+            setTimeout(spawn, 1200);
         }
     };
 
-    function handleSuccess() {
-        score++;
-        if (score % 5 === 0) currentLevel++; // Niveles infinitos
-        document.getElementById('hits').innerText = score;
-        document.getElementById('level').innerText = currentLevel;
-        isAwaitingResponse = false;
-        setTimeout(gameLoop, 1200);
+    function loseLife() {
+        lives--;
+        updateHUD();
+        awaitingResponse = false;
+        if (lives <= 0) {
+            alert("Juego Terminado. Aciertos: " + hits);
+            location.reload();
+        } else {
+            setTimeout(spawn, 1500);
+        }
     }
 
-    function gameOver() {
-        alert("Entrenamiento finalizado. Aciertos totales: " + score);
-        location.reload();
+    function updateHUD() {
+        document.getElementById('lvl').innerText = level;
+        document.getElementById('hits').innerText = hits;
+        document.getElementById('lives-display').innerText = "❤️".repeat(lives);
     }
 
     recognition.onend = () => { if(lives > 0) recognition.start(); };
