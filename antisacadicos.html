@@ -3,163 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Voice - Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Antisacádicos Pro - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #020617;
-            --acc: #a855f7;
-            --txt: #f8fafc;
+            --card-bg: #1e293b;
+            --accent: #a855f7;
+            --text: #f8fafc;
             --success: #10b981;
             --danger: #ef4444;
+            --neon: 0 0 20px rgba(168, 85, 247, 0.6);
         }
 
-        body {
-            margin: 0;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Montserrat', sans-serif;
-            background: var(--bg);
-            color: var(--txt);
-            height: 100vh;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Pantalla de Inicio */
-        .screen {
-            background: rgba(30, 41, 59, 0.98);
-            padding: 3rem;
-            border-radius: 3rem;
-            border: 5px solid var(--acc);
-            text-align: center;
-            width: 90%;
-            max-width: 800px;
-            z-index: 100;
-            box-shadow: 0 0 50px rgba(168, 85, 247, 0.3);
+        #game-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        h1 { font-size: 3rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; }
-        p { font-size: 1.6rem; margin-bottom: 2rem; line-height: 1.4; }
+        /* Pantallas de Interfaz */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
 
-        .btn {
+        .modal {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 40px;
+            border: 4px solid var(--accent);
+            text-align: center;
+            max-width: 700px;
+            box-shadow: var(--neon);
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--accent); font-size: 3rem; margin-bottom: 25px; }
+        p { font-size: 1.4rem; line-height: 1.6; margin-bottom: 30px; }
+
+        .btn-play {
             background: var(--success);
             color: #000;
-            padding: 1.5rem 3rem;
-            border-radius: 2rem;
             border: none;
-            font-weight: 900;
+            padding: 20px 50px;
             font-size: 1.8rem;
-            cursor: pointer;
-            transition: 0.3s;
-            display: none; /* Se activa con el micro */
-            width: 100%;
-        }
-
-        /* HUD Superior */
-        .hud {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            display: none;
-            justify-content: space-around;
-            padding: 1.5rem;
-            font-size: 1.5rem;
             font-weight: 900;
-            background: rgba(0,0,0,0.8);
-            border-bottom: 3px solid var(--acc);
-            z-index: 10;
+            border-radius: 20px;
+            cursor: pointer;
+            display: none; /* Espera al micrófono */
+            width: 100%;
+            transition: transform 0.2s;
         }
 
-        /* Elementos del Juego */
-        #game-area { width: 100%; height: 100%; position: relative; display: none; }
+        .btn-play:hover { transform: scale(1.05); }
+
+        /* HUD */
+        #hud {
+            position: absolute;
+            top: 0; width: 100%;
+            padding: 25px 50px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 3px solid var(--accent);
+            z-index: 100;
+        }
+
+        .hud-item { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: bold; }
+        .lives { color: var(--danger); font-size: 2rem; letter-spacing: 5px; }
+
+        /* Elementos de Juego */
+        #game-area { position: relative; width: 100%; height: 100%; display: none; }
         
         .fixation {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 4rem;
-            color: var(--acc);
-            opacity: 0.3;
+            font-size: 5rem;
+            color: var(--accent);
+            opacity: 0.4;
         }
 
         .distractor {
             position: absolute;
-            width: 40px; height: 40px;
-            background: white;
+            width: 45px; height: 45px;
+            background: #fff;
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 30px white;
+            box-shadow: 0 0 30px #fff;
         }
 
         .stimulus {
             position: absolute;
-            font-size: 7rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8rem;
             font-weight: 900;
-            color: var(--acc);
+            color: var(--accent);
             transform: translate(-50%, -50%);
-            text-shadow: 0 0 40px var(--acc);
+            text-shadow: 0 0 40px var(--accent);
         }
 
-        #mic-status {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--success);
-        }
-        .loading { animation: pulse 1.5s infinite; color: #fbbf24; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        #mic-status { margin-top: 20px; font-weight: bold; font-size: 1.2rem; }
+        .blinking { animation: blinker 1.5s linear infinite; color: #fbbf24; }
+        @keyframes blinker { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-    <div class="hud" id="hud">
-        <div>NIVEL: <span id="lvl">1</span></div>
-        <div>ACIERTOS: <span id="hits">0</span></div>
-        <div id="lives-display" style="color:var(--danger)">❤️❤️❤️</div>
+<div id="game-wrapper">
+    <div id="hud">
+        <div class="hud-item">NIVEL: <span id="h-lvl">1</span></div>
+        <div class="hud-item">ACIERTOS: <span id="h-hits">0</span></div>
+        <div class="hud-item lives" id="h-lives">❤️❤️❤️</div>
     </div>
 
-    <div id="s-intro" class="screen">
-        <h1>Antisacádicos</h1>
-        <p>Distancia: <b>40 cm</b> [cite: 2026-02-10].</p>
-        <p>No mires el punto blanco. Mira al <b>LADO OPUESTO</b> y di la letra.</p>
-        
-        <div id="mic-status" class="loading">🎤 Solicitando acceso al micrófono...</div>
-        <button class="btn" id="start-btn" onclick="startGame()">ENTENDIDO</button>
+    <div id="start-screen" class="overlay">
+        <div class="modal">
+            <h1>Antisacádicos</h1>
+            <p>
+                1. Mantén la distancia de <b>40 cm</b>.<br>
+                2. Aparecerá un punto: <b>¡No lo mires!</b>.<br>
+                3. Salta al lado opuesto y di la <b>letra o número</b> rápido.
+            </p>
+            <div id="mic-status" class="blinking">🎤 Esperando permiso de voz...</div>
+            <button id="btn-start" class="btn-play" onclick="startGame()">INICIAR</button>
+        </div>
     </div>
 
     <div id="game-area">
         <div class="fixation">+</div>
     </div>
+</div>
 
 <script>
+    // Configuración y Estado
+    const stimuli = ['A', 'E', 'O', 'U', 'X', '1', '2', '3', '4', '5'];
     let level = 1, hits = 0, lives = 3;
     let awaitingResponse = false;
-    let currentLetter = "";
-    const letters = ['A', 'E', 'O', 'U', 'X', 'P', 'T'];
+    let currentTarget = "";
+    let presentationTimer;
 
-    // Web Speech API
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.lang = 'es-ES';
     recognition.continuous = true;
 
-    // 1. Activar Micrófono al inicio
-    async function initMic() {
+    // Inicialización de Micrófono
+    async function initVoice() {
         try {
             await navigator.mediaDevices.getUserMedia({ audio: true });
-            document.getElementById('mic-status').innerText = "✅ Micrófono conectado";
-            document.getElementById('mic-status').classList.remove('loading');
-            document.getElementById('start-btn').style.display = 'block';
+            document.getElementById('mic-status').innerHTML = "✅ Micrófono activo";
+            document.getElementById('mic-status').classList.remove('blinking');
+            document.getElementById('btn-start').style.display = 'block';
         } catch (e) {
-            document.getElementById('mic-status').innerText = "❌ Error: Activa el micrófono";
+            document.getElementById('mic-status').innerHTML = "❌ Activa el micrófono para jugar";
             document.getElementById('mic-status').style.color = "var(--danger)";
         }
     }
-    initMic();
+    initVoice();
 
     function startGame() {
-        document.getElementById('s-intro').style.display = 'none';
+        document.getElementById('start-screen').style.display = 'none';
         document.getElementById('hud').style.display = 'flex';
         document.getElementById('game-area').style.display = 'block';
         recognition.start();
@@ -168,63 +196,79 @@
 
     function spawn() {
         if (lives <= 0) return;
+        
         const area = document.getElementById('game-area');
         area.innerHTML = '<div class="fixation">+</div>';
-        
+        awaitingResponse = false;
+
         const isLeft = Math.random() > 0.5;
         const distX = isLeft ? "20%" : "80%";
         const targetX = isLeft ? "80%" : "20%";
 
-        // APARECE PUNTO BLANCO
+        // 1. Aparece PUNTO BLANCO
         const dot = document.createElement('div');
         dot.className = 'distractor';
         dot.style.left = distX;
         dot.style.top = "50%";
         area.appendChild(dot);
 
-        // MEJORA: 800ms de espera antes de la letra (más lento)
+        // 2. Retraso para inhibición (800ms)
         setTimeout(() => {
             dot.remove();
             
-            currentLetter = letters[Math.floor(Math.random() * letters.length)];
-            const stimulus = document.createElement('div');
-            stimulus.className = 'stimulus';
-            stimulus.style.left = targetX;
-            stimulus.style.top = "50%";
-            stimulus.innerText = currentLetter;
-            area.appendChild(stimulus);
+            // 3. Aparece ESTÍMULO (Letra o Número)
+            currentTarget = stimuli[Math.floor(Math.random() * stimuli.length)];
+            const stim = document.createElement('div');
+            stim.className = 'stimulus';
+            stim.style.left = targetX;
+            stim.style.top = "50%";
+            stim.innerText = currentTarget;
+            area.appendChild(stim);
             
             awaitingResponse = true;
 
-            // Si no responde en 3 segundos, pierde vida
-            setTimeout(() => {
+            // 4. TIEMPO LÍMITE (Se acorta según nivel)
+            let timeLimit = Math.max(2500 - (level * 250), 700);
+            
+            presentationTimer = setTimeout(() => {
                 if (awaitingResponse) {
-                    loseLife();
+                    handleFail();
                 }
-            }, 3000);
+            }, timeLimit);
 
         }, 800);
     }
 
     recognition.onresult = (event) => {
         if (!awaitingResponse) return;
-        const voice = event.results[event.results.length - 1][0].transcript.toUpperCase();
+        const voiceInput = event.results[event.results.length - 1][0].transcript.toUpperCase();
         
-        if (voice.includes(currentLetter)) {
-            hits++;
-            if (hits % 5 === 0) level++; // Niveles infinitos [cite: 2026-02-04]
-            updateHUD();
-            awaitingResponse = false;
-            setTimeout(spawn, 1200);
+        if (voiceInput.includes(currentTarget)) {
+            handleSuccess();
         }
     };
 
-    function loseLife() {
+    function handleSuccess() {
+        clearTimeout(presentationTimer);
+        awaitingResponse = false;
+        hits++;
+        if (hits % 5 === 0) level++; // Niveles infinitos
+        
+        // DESAPARECE AL TIRO
+        document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
+        
+        updateHUD();
+        setTimeout(spawn, 800); // Siguiente ronda rápida
+    }
+
+    function handleFail() {
+        awaitingResponse = false;
         lives--;
         updateHUD();
-        awaitingResponse = false;
+        document.getElementById('game-area').innerHTML = '<div class="fixation">+</div>';
+        
         if (lives <= 0) {
-            alert("Juego Terminado. Aciertos: " + hits);
+            alert("Fin del Entrenamiento. Aciertos: " + hits);
             location.reload();
         } else {
             setTimeout(spawn, 1500);
@@ -232,9 +276,9 @@
     }
 
     function updateHUD() {
-        document.getElementById('lvl').innerText = level;
-        document.getElementById('hits').innerText = hits;
-        document.getElementById('lives-display').innerText = "❤️".repeat(lives);
+        document.getElementById('h-lvl').innerText = level;
+        document.getElementById('h-hits').innerText = hits;
+        document.getElementById('h-lives').innerText = "❤️".repeat(lives);
     }
 
     recognition.onend = () => { if(lives > 0) recognition.start(); };
