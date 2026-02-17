@@ -3,45 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Elite - Versión Corregida</title>
+    <title>Antisacádicos Elite - Versión Final Corregida</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #020617;
-            --panel: #1e293b;
-            --purple: #a855f7;
-            --green: #10b981;
-            --red: #ef4444;
-            --white: #f8fafc;
-        }
-
+        :root { --bg: #020617; --panel: #1e293b; --purple: #a855f7; --green: #10b981; --red: #ef4444; --white: #f8fafc; }
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         body, html { width: 100%; height: 100%; background: var(--bg); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
-
         .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
         .card { background: var(--panel); padding: 45px; border-radius: 40px; border: 5px solid var(--purple); text-align: center; max-width: 750px; width: 100%; box-shadow: 0 0 60px rgba(168, 85, 247, 0.4); }
-        
         h1 { font-family: 'Orbitron'; font-size: 3rem; color: var(--purple); margin-bottom: 25px; letter-spacing: 3px; }
         .instr { text-align: left; background: rgba(0,0,0,0.3); padding: 30px; border-radius: 20px; margin-bottom: 30px; font-size: 1.3rem; line-height: 1.8; border-left: 8px solid var(--purple); }
-        
         .config-row { margin-bottom: 25px; text-align: left; }
         .config-row label { display: block; font-weight: 900; color: var(--purple); margin-bottom: 10px; font-size: 1.2rem; }
         input[type="range"] { width: 100%; height: 12px; accent-color: var(--purple); cursor: pointer; }
-
         .btn { background: var(--green); color: #000; border: none; padding: 22px; font-size: 1.8rem; font-weight: 900; border-radius: 20px; cursor: pointer; width: 100%; box-shadow: 0 8px 0 #065f46; transition: 0.1s; }
         .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #065f46; }
-
         #hud { position: absolute; top: 0; width: 100%; padding: 25px 50px; display: none; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(2,6,23,0.9), transparent); }
         .stat { font-family: 'Orbitron'; font-size: 1.6rem; font-weight: 700; }
-
         #stage { position: relative; width: 100vw; height: 100vh; display: none; }
         .cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 6rem; color: var(--purple); opacity: 0.2; }
         .dot { position: absolute; width: 55px; height: 55px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 40px #fff; z-index: 10; }
         .stim { position: absolute; font-family: 'Orbitron'; font-size: 10rem; font-weight: 900; color: var(--purple); transform: translate(-50%, -50%); text-shadow: 0 0 50px var(--purple); cursor: pointer; z-index: 100; }
-
         .flash-red { animation: f-red 0.3s ease; }
         @keyframes f-red { 50% { background: var(--red); } }
-
         .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1.2rem; }
         .summary-table td { padding: 12px; border-bottom: 1px solid rgba(168, 85, 247, 0.2); text-align: left; }
         .summary-val { font-weight: 900; color: var(--green); text-align: right; font-family: 'Orbitron'; }
@@ -115,20 +99,24 @@
     <script>
         let cfg_series, cfg_duration, cfg_rest;
         let lvl = 1, serie = 1, lives = 3, totalHits = 0, currentHits = 0, lvlBonusCounter = 0;
-        let isRunning = false, masterClock, spawnTimer, reactTimer;
+        let isRunning = false, masterClock, spawnTimer, reactTimer, nextTurnTimer;
         let currentTarget = "", currentMode = "";
 
         const voc = ['A','E','O','U'], cons = ['X','P','T','K','S'], pares = ['2','4','6','8'], impares = ['1','3','5','7','9'];
 
         const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const speech = new Recognition();
-        speech.lang = 'es-ES';
-        speech.continuous = true;
+        speech.lang = 'es-ES'; speech.continuous = true;
 
-        function navToConfig() {
-            document.getElementById('scr-intro').style.display = 'none';
-            document.getElementById('scr-config').style.display = 'flex';
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq) {
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.frequency.value = freq; gain.gain.value = 0.1;
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         }
+
+        function navToConfig() { document.getElementById('scr-intro').style.display = 'none'; document.getElementById('scr-config').style.display = 'flex'; }
 
         function bootGame() {
             cfg_series = parseInt(document.getElementById('i-ser').value);
@@ -141,18 +129,12 @@
             runSerie();
         }
 
-        function runSerie() {
-            currentHits = 0;
-            isRunning = true;
-            updateHUD();
-            startTimer();
-            generate();
-        }
+        function runSerie() { currentHits = 0; isRunning = true; updateHUD(); startTimer(); generate(); }
 
         function generate() {
             if (!isRunning) return;
             const s = document.getElementById('stage');
-            s.innerHTML = '<div class="cross">+</div>'; // Limpieza total de restos previos
+            s.innerHTML = '<div class="cross">+</div>'; 
 
             const isLeft = Math.random() > 0.5;
             const dotPos = isLeft ? "22%" : "78%";
@@ -165,7 +147,6 @@
             spawnTimer = setTimeout(() => {
                 if (!isRunning) return;
                 d.remove();
-                
                 const roll = Math.random();
                 if (roll < 0.25) { currentTarget = voc[Math.floor(Math.random()*voc.length)]; currentMode = "VOZ"; }
                 else if (roll < 0.5) { currentTarget = cons[Math.floor(Math.random()*cons.length)]; currentMode = "TOUCH"; }
@@ -174,14 +155,9 @@
 
                 const el = document.createElement('div');
                 el.className = 'stim'; el.innerText = currentTarget; el.style.left = stimPos; el.style.top = "50%";
-                
-                el.onclick = (e) => {
-                    e.stopPropagation();
-                    if (currentMode === "TOUCH") processHit();
-                    else processMiss(); // Si tocas lo que es de voz, error
-                };
-
+                el.onclick = (e) => { e.stopPropagation(); if (currentMode === "TOUCH") processHit(); else processMiss(); };
                 s.appendChild(el);
+
                 const limit = Math.max(800, 2500 - (lvl * 150));
                 reactTimer = setTimeout(() => { if (isRunning && s.contains(el)) processMiss(); }, limit);
             }, 800);
@@ -190,48 +166,45 @@
         speech.onresult = (e) => {
             if (!isRunning) return;
             const raw = e.results[e.results.length - 1][0].transcript.toUpperCase();
-            
-            // Lógica reforzada para E y U
-            const isE = (currentTarget === 'E' && (raw.includes('E') || raw.includes('HE') || raw.includes('EH') || raw.includes('DE')));
-            const isU = (currentTarget === 'U' && (raw.includes('U') || raw.includes('UH') || raw.includes('TÚ')));
-
-            if (currentMode === "TOUCH") { processMiss(); return; } // Si hablas cuando debes tocar, error
+            const isE = (currentTarget === 'E' && (raw.includes('E') || raw.includes('HE') || raw.includes('EH')));
+            const isU = (currentTarget === 'U' && (raw.includes('U') || raw.includes('UH')));
+            if (currentMode === "TOUCH") { processMiss(); return; }
             if (currentMode === "VOZ" && (raw.includes(currentTarget) || isE || isU)) processHit();
         };
 
         function processHit() {
-            stopTimers();
+            killTimers();
+            playBeep(880);
             currentHits++; totalHits++;
             document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
-            setTimeout(generate, 400);
+            nextTurnTimer = setTimeout(generate, 400);
         }
 
         function processMiss() {
-            stopTimers();
+            killTimers();
+            playBeep(220);
             document.body.classList.add('flash-red');
             setTimeout(() => document.body.classList.remove('flash-red'), 300);
-            lives--;
-            updateHUD();
+            lives--; updateHUD();
             if (lives <= 0) gameOver();
             else {
                 document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
-                setTimeout(generate, 800);
+                nextTurnTimer = setTimeout(generate, 800);
             }
         }
 
-        function stopTimers() { clearTimeout(spawnTimer); clearTimeout(reactTimer); }
+        function killTimers() { clearTimeout(spawnTimer); clearTimeout(reactTimer); clearTimeout(nextTurnTimer); }
 
         function startTimer() {
             let t = cfg_duration;
             masterClock = setInterval(() => {
-                t--;
-                document.getElementById('h-time').innerText = t + "s";
+                t--; document.getElementById('h-time').innerText = t + "s";
                 if (t <= 0) { clearInterval(masterClock); pauseSerie(); }
             }, 1000);
         }
 
         function pauseSerie() {
-            isRunning = false; stopTimers();
+            isRunning = false; killTimers();
             document.getElementById('rest-hits').innerText = currentHits;
             document.getElementById('scr-rest').style.display = 'flex';
             document.getElementById('btn-next').style.display = 'none';
@@ -245,17 +218,17 @@
 
         function flowControl() {
             document.getElementById('scr-rest').style.display = 'none';
-            if (serie < cfg_series) { serie++; } 
+            if (serie < cfg_series) serie++; 
             else { 
                 serie = 1; lvl++; lvlBonusCounter++;
                 if (lvlBonusCounter >= 6) { lives = Math.min(5, lives + 1); lvlBonusCounter = 0; document.getElementById('rest-title').innerText = "¡NIVEL 6 SUPERADO: +1 VIDA!"; }
-                else { document.getElementById('rest-title').innerText = "¡NIVEL SUPERADO!"; }
+                else document.getElementById('rest-title').innerText = "¡NIVEL SUPERADO!";
             }
             runSerie();
         }
 
         function gameOver() {
-            isRunning = false; clearInterval(masterClock); stopTimers();
+            isRunning = false; clearInterval(masterClock); killTimers();
             document.getElementById('f-lvl').innerText = lvl;
             document.getElementById('f-ser').innerText = ((lvl - 1) * cfg_series) + (serie - 1);
             document.getElementById('f-hits').innerText = totalHits;
