@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Elite - Motor Sacádico Original</title>
+    <title>Antisacádicos Elite - Lógica Sacádica Original</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --panel: #1e293b; --purple: #a855f7; --green: #10b981; --red: #ef4444; --white: #f8fafc; }
@@ -106,7 +106,7 @@
 
         const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const speech = new Recognition();
-        speech.lang = 'es-ES'; speech.continuous = true;
+        speech.lang = 'es-ES'; speech.continuous = true; speech.interimResults = false;
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(freq) {
@@ -168,45 +168,58 @@
             }, 800);
         }
 
-        speech.onresult = (e) => {
+        // --- ESTA ES LA LÓGICA EXACTA DE LOS SACÁDICOS ---
+        speech.onresult = (event) => {
             if (!isRunning || !canInput) return;
-            const raw = e.results[e.results.length - 1][0].transcript.toUpperCase();
             
-            // Lógica Sacádica Original (Simple y Directa)
-            if (currentMode === "TOUCH") { processMiss(); return; }
-            
-            // Detección de caracteres individuales como en el otro juego
-            if (raw.includes(currentTarget) || 
-               (currentTarget === '8' && raw.includes("OCHO")) ||
-               (currentTarget === '2' && raw.includes("DOS")) ||
-               (currentTarget === '4' && raw.includes("CUATRO")) ||
-               (currentTarget === '6' && raw.includes("SEIS")) ||
-               (currentTarget === 'E' && (raw.includes("EH") || raw.includes("HE"))) ||
-               (currentTarget === 'U' && raw.includes("UH"))) {
-                processHit();
+            let finalTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript.toUpperCase();
+                }
+            }
+
+            if (finalTranscript !== '') {
+                if (currentMode === "TOUCH") {
+                    processMiss();
+                    return;
+                }
+
+                const targets = {
+                    'A': ['A', 'HA', 'LA'],
+                    'E': ['E', 'HE', 'EH', 'DE'],
+                    'O': ['O', 'OH', 'DO'],
+                    'U': ['U', 'UH', 'TU', 'TÚ'],
+                    '2': ['2', 'DOS'],
+                    '4': ['4', 'CUATRO'],
+                    '6': ['6', 'SEIS'],
+                    '8': ['8', 'OCHO']
+                };
+
+                let isMatch = false;
+                if (targets[currentTarget]) {
+                    isMatch = targets[currentTarget].some(t => finalTranscript.includes(t));
+                }
+
+                if (isMatch) processHit();
             }
         };
 
         function processHit() {
-            canInput = false;
-            killTimers();
-            playBeep(880);
+            canInput = false; killTimers(); playBeep(880);
             currentHits++; totalHits++;
             document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
             nextTurnTimer = setTimeout(generate, 400);
         }
 
         function processMiss() {
-            canInput = false;
-            killTimers();
-            playBeep(220);
+            canInput = false; killTimers(); playBeep(220);
             document.body.classList.add('flash-red');
             setTimeout(() => document.body.classList.remove('flash-red'), 300);
             lives--; updateHUD();
             if (lives <= 0) gameOver();
             else {
                 document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
-                // Bloqueamos entrada un poco más para evitar el "doble error"
                 nextTurnTimer = setTimeout(generate, 1000);
             }
         }
