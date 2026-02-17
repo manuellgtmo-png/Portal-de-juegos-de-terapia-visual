@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Elite - Versión Final Corregida</title>
+    <title>Antisacádicos Elite - Reconocimiento Reforzado</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --panel: #1e293b; --purple: #a855f7; --green: #10b981; --red: #ef4444; --white: #f8fafc; }
@@ -166,10 +166,26 @@
         speech.onresult = (e) => {
             if (!isRunning) return;
             const raw = e.results[e.results.length - 1][0].transcript.toUpperCase();
-            const isE = (currentTarget === 'E' && (raw.includes('E') || raw.includes('HE') || raw.includes('EH')));
-            const isU = (currentTarget === 'U' && (raw.includes('U') || raw.includes('UH')));
+            
+            // --- DICCIONARIO FLEXIBLE ---
+            const match = {
+                'A': ['A', 'HA', 'LA'],
+                'E': ['E', 'HE', 'EH', 'DE', 'B'],
+                'O': ['O', 'OH', 'DO'],
+                'U': ['U', 'UH', 'TU', 'TÚ', 'YÚ'],
+                '2': ['2', 'DOS'],
+                '4': ['4', 'CUATRO'],
+                '6': ['6', 'SEIS'],
+                '8': ['8', 'OCHO']
+            };
+
+            let isCorrect = false;
+            if (match[currentTarget]) {
+                isCorrect = match[currentTarget].some(v => raw.includes(v));
+            }
+
             if (currentMode === "TOUCH") { processMiss(); return; }
-            if (currentMode === "VOZ" && (raw.includes(currentTarget) || isE || isU)) processHit();
+            if (currentMode === "VOZ" && isCorrect) processHit();
         };
 
         function processHit() {
