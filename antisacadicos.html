@@ -61,8 +61,8 @@
             <div class="instr">
                 <p>📍 Distancia de trabajo: <b>40 cm</b></p>
                 <p>👁️ Punto blanco: <b>¡IGNÓRALO!</b> Mira al lado opuesto.</p>
-                <p>👄 <b>DILO:</b> Vocales y Números Pares (2, 4, 6, 8).</p>
-                <p>👆 <b>TÓCALO:</b> Letras y Números Impares (1, 3, 5, 7, 9).</p>
+                <p>👄 <b>DILO:</b> Vocales y Números Pares.</p>
+                <p>👆 <b>TÓCALO:</b> Letras y Números Impares.</p>
             </div>
             <button class="btn" onclick="navToConfig()">CONTINUAR</button>
         </div>
@@ -79,6 +79,10 @@
                 <div class="config-row">
                     <label>Tiempo por Serie: <span id="v-time">30</span>s</label>
                     <input type="range" id="i-time" min="10" max="60" value="30" oninput="document.getElementById('v-time').innerText=this.value">
+                </div>
+                <div class="config-row">
+                    <label>Tiempo de Descanso: <span id="v-rest">5</span>s</label>
+                    <input type="range" id="i-rest" min="3" max="15" value="5" oninput="document.getElementById('v-rest').innerText=this.value">
                 </div>
             </div>
             <button class="btn" style="background: var(--purple); color: white;" onclick="bootGame()">INICIAR JUEGO</button>
@@ -97,8 +101,8 @@
         <div class="card" style="border-color: var(--green)">
             <h1 id="rest-title">¡SERIE LOGRADA!</h1>
             <p style="font-size: 2.2rem; margin: 20px 0;">Aciertos: <span id="rest-hits">0</span></p>
-            <p id="rest-msg" style="color: var(--purple); font-style: italic; margin-bottom: 30px;"></p>
-            <button class="btn" onclick="flowControl()">SIGUIENTE PASO</button>
+            <p id="rest-timer-msg" style="color: var(--purple); font-weight: 900; font-size: 1.5rem;"></p>
+            <button id="btn-next" class="btn" style="display:none" onclick="flowControl()">CONTINUAR</button>
         </div>
     </div>
 
@@ -110,35 +114,23 @@
                 <tr><td>Series Completadas:</td><td class="summary-val" id="f-ser">0</td></tr>
                 <tr><td>Aciertos Totales:</td><td class="summary-val" id="f-hits">0</td></tr>
             </table>
-            <button class="btn" style="background: var(--purple); color: white;" onclick="location.reload()">REINTENTAR</button>
+            <button class="btn" style="background: var(--purple); color: white;" onclick="location.reload()">VOLVER A EMPEZAR</button>
         </div>
     </div>
 
     <script>
-        // --- ESTADO GLOBAL ---
-        let cfg_series, cfg_duration;
+        let cfg_series, cfg_duration, cfg_rest;
         let lvl = 1, serie = 1, lives = 3, totalHits = 0, currentHits = 0, lvlBonusCounter = 0;
         let isRunning = false, masterClock, spawnTimer, reactTimer;
         let currentTarget = "", currentMode = "";
 
         const voc = ['A','E','O','U'], cons = ['X','P','T','K','S'], pares = ['2','4','6','8'], impares = ['1','3','5','7','9'];
 
-        // --- MOTORES ---
         const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const speech = new Recognition();
         speech.lang = 'es-ES';
         speech.continuous = true;
 
-        const audio = new (window.AudioContext || window.webkitAudioContext)();
-        function beep(f, t) {
-            const o = audio.createOscillator(); const g = audio.createGain();
-            o.type = t; o.frequency.setValueAtTime(f, audio.currentTime);
-            g.gain.setValueAtTime(0.1, audio.currentTime);
-            o.connect(g); g.connect(audio.destination);
-            o.start(); o.stop(audio.currentTime + 0.15);
-        }
-
-        // --- NAVEGACIÓN ---
         function navToConfig() {
             document.getElementById('scr-intro').style.display = 'none';
             document.getElementById('scr-config').style.display = 'flex';
@@ -147,6 +139,7 @@
         function bootGame() {
             cfg_series = parseInt(document.getElementById('i-ser').value);
             cfg_duration = parseInt(document.getElementById('i-time').value);
+            cfg_rest = parseInt(document.getElementById('i-rest').value);
             document.getElementById('scr-config').style.display = 'none';
             document.getElementById('hud').style.display = 'flex';
             document.getElementById('stage').style.display = 'block';
@@ -154,7 +147,6 @@
             runSerie();
         }
 
-        // --- CICLO DE JUEGO ---
         function runSerie() {
             currentHits = 0;
             isRunning = true;
@@ -172,12 +164,10 @@
             const dotPos = isLeft ? "22%" : "78%";
             const stimPos = isLeft ? "78%" : "22%";
 
-            // 1. Mostrar punto distractor
             const d = document.createElement('div');
             d.className = 'dot'; d.style.left = dotPos; d.style.top = "50%";
             s.appendChild(d);
 
-            // 2. Aparecer estímulo tras delay
             spawnTimer = setTimeout(() => {
                 if (!isRunning) return;
                 d.remove();
@@ -185,75 +175,61 @@
                 const roll = Math.random();
                 if (roll < 0.25) { currentTarget = voc[Math.floor(Math.random()*voc.length)]; currentMode = "VOZ"; }
                 else if (roll < 0.5) { currentTarget = cons[Math.floor(Math.random()*cons.length)]; currentMode = "TOUCH"; }
-                else if (roll < 0.75) { currentTarget = pares[Math.floor(Math.random()*pares.length)]; currentMode = "VOZ"; }
+                else if (roll < 0.75) { currentTarget = pares[Math.floor(Math.random()*numPares().length)]; currentMode = "VOZ"; }
                 else { currentTarget = impares[Math.floor(Math.random()*impares.length)]; currentMode = "TOUCH"; }
 
                 const el = document.createElement('div');
-                el.className = 'stim'; el.innerText = currentTarget;
-                el.style.left = stimPos; el.style.top = "50%";
+                el.className = 'stim'; el.innerText = currentTarget; el.style.left = stimPos; el.style.top = "50%";
                 
-                // Evento click/touch
-                el.onclick = () => {
+                el.onclick = (e) => {
+                    e.stopPropagation();
                     if (currentMode === "TOUCH") processHit();
                     else processMiss();
                 };
 
                 s.appendChild(el);
-
-                // Tiempo de respuesta progresivo
-                const limit = Math.max(850, 2600 - (lvl * 160));
-                reactTimer = setTimeout(() => {
-                    if (isRunning && s.contains(el)) processMiss();
-                }, limit);
-
-            }, 850);
+                const limit = Math.max(800, 2500 - (lvl * 150));
+                reactTimer = setTimeout(() => { if (isRunning && s.contains(el)) processMiss(); }, limit);
+            }, 800);
         }
 
-        // --- CAPTURA DE VOZ ---
+        function numPares() { return ['2','4','6','8']; }
+
         speech.onresult = (e) => {
             if (!isRunning) return;
             const raw = e.results[e.results.length - 1][0].transcript.toUpperCase();
-            
-            // Variantes fonéticas para E y U
-            const isE = (currentTarget === 'E' && (raw.includes('E') || raw.includes('HE') || raw.includes('EH') || raw.includes('DE')));
-            const isU = (currentTarget === 'U' && (raw.includes('U') || raw.includes('UH') || raw.includes('OOU') || raw.includes('TÚ')));
+            const isE = (currentTarget === 'E' && (raw.includes('E') || raw.includes('HE') || raw.includes('EH')));
+            const isU = (currentTarget === 'U' && (raw.includes('U') || raw.includes('UH')));
 
-            // Error de inhibición: si habla cuando debe tocar
             if (currentMode === "TOUCH") { processMiss(); return; }
-
-            if (currentMode === "VOZ" && (raw.includes(currentTarget) || isE || isU)) {
-                processHit();
-            }
+            if (currentMode === "VOZ" && (raw.includes(currentTarget) || isE || isU)) processHit();
         };
 
         function processHit() {
-            clearTimeout(reactTimer);
-            beep(880, 'sine');
+            stopTimers();
             currentHits++; totalHits++;
             document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
-            setTimeout(generate, 500);
+            setTimeout(generate, 400);
         }
 
         function processMiss() {
-            clearTimeout(reactTimer);
-            clearTimeout(spawnTimer);
-            beep(220, 'square');
-            
+            stopTimers();
             document.body.classList.add('flash-red');
             setTimeout(() => document.body.classList.remove('flash-red'), 300);
-            
             lives--;
             updateHUD();
-
-            if (lives <= 0) {
-                gameOver();
-            } else {
+            if (lives <= 0) gameOver();
+            else {
                 document.getElementById('stage').innerHTML = '<div class="cross">+</div>';
-                setTimeout(generate, 900);
+                setTimeout(generate, 800);
             }
         }
 
-        // --- RELOJ Y FLUJO ---
+        function stopTimers() {
+            clearTimeout(spawnTimer);
+            clearTimeout(reactTimer);
+        }
+
         function startTimer() {
             let t = cfg_duration;
             masterClock = setInterval(() => {
@@ -265,22 +241,30 @@
 
         function pauseSerie() {
             isRunning = false;
-            clearTimeout(spawnTimer);
-            clearTimeout(reactTimer);
+            stopTimers();
             document.getElementById('rest-hits').innerText = currentHits;
-            document.getElementById('rest-msg').innerText = "Prepárate para la siguiente fase.";
             document.getElementById('scr-rest').style.display = 'flex';
+            document.getElementById('btn-next').style.display = 'none';
+            
+            let rt = cfg_rest;
+            const rInterval = setInterval(() => {
+                document.getElementById('rest-timer-msg').innerText = `Descansa ${rt} segundos...`;
+                rt--;
+                if (rt < 0) {
+                    clearInterval(rInterval);
+                    document.getElementById('rest-timer-msg').innerText = "¡Listo!";
+                    document.getElementById('btn-next').style.display = 'block';
+                }
+            }, 1000);
         }
 
         function flowControl() {
             document.getElementById('scr-rest').style.display = 'none';
             if (serie < cfg_series) {
                 serie++;
-                document.getElementById('rest-title').innerText = "¡SERIE LOGRADA!";
             } else {
                 serie = 1; lvl++;
                 lvlBonusCounter++;
-                // REGLA: 1 vida cada 6 niveles [cite: 2026-02-04]
                 if (lvlBonusCounter >= 6) {
                     lives = Math.min(5, lives + 1);
                     lvlBonusCounter = 0;
@@ -295,14 +279,10 @@
         function gameOver() {
             isRunning = false;
             clearInterval(masterClock);
-            clearTimeout(spawnTimer);
-            clearTimeout(reactTimer);
-            
-            // Llenar tabla resumen
+            stopTimers();
             document.getElementById('f-lvl').innerText = lvl;
             document.getElementById('f-ser').innerText = ((lvl - 1) * cfg_series) + (serie - 1);
             document.getElementById('f-hits').innerText = totalHits;
-            
             document.getElementById('hud').style.display = 'none';
             document.getElementById('stage').style.display = 'none';
             document.getElementById('scr-final').style.display = 'flex';
