@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Antisacádicos Elite - Lógica Sacádica Original</title>
+    <title>Antisacádicos Elite - Voz Ultra-Rápida</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --panel: #1e293b; --purple: #a855f7; --green: #10b981; --red: #ef4444; --white: #f8fafc; }
@@ -106,7 +106,9 @@
 
         const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const speech = new Recognition();
-        speech.lang = 'es-ES'; speech.continuous = true; speech.interimResults = false;
+        speech.lang = 'es-ES'; 
+        speech.continuous = true; 
+        speech.interimResults = true; // CAMBIO CLAVE: Resultados instantáneos
 
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(freq) {
@@ -168,41 +170,28 @@
             }, 800);
         }
 
-        // --- ESTA ES LA LÓGICA EXACTA DE LOS SACÁDICOS ---
         speech.onresult = (event) => {
             if (!isRunning || !canInput) return;
             
-            let finalTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; ++i) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript.toUpperCase();
-                }
+            // Leemos el resultado más reciente, sea final o no
+            const result = event.results[event.results.length - 1][0].transcript.toUpperCase();
+            
+            if (currentMode === "TOUCH") {
+                processMiss();
+                return;
             }
 
-            if (finalTranscript !== '') {
-                if (currentMode === "TOUCH") {
-                    processMiss();
-                    return;
-                }
+            const targets = {
+                'A': ['A', 'HA', 'LA'], 'E': ['E', 'HE', 'EH', 'DE'], 'O': ['O', 'OH', 'DO'], 'U': ['U', 'UH', 'TU', 'TÚ'],
+                '2': ['2', 'DOS'], '4': ['4', 'CUATRO'], '6': ['6', 'SEIS'], '8': ['8', 'OCHO']
+            };
 
-                const targets = {
-                    'A': ['A', 'HA', 'LA'],
-                    'E': ['E', 'HE', 'EH', 'DE'],
-                    'O': ['O', 'OH', 'DO'],
-                    'U': ['U', 'UH', 'TU', 'TÚ'],
-                    '2': ['2', 'DOS'],
-                    '4': ['4', 'CUATRO'],
-                    '6': ['6', 'SEIS'],
-                    '8': ['8', 'OCHO']
-                };
-
-                let isMatch = false;
-                if (targets[currentTarget]) {
-                    isMatch = targets[currentTarget].some(t => finalTranscript.includes(t));
-                }
-
-                if (isMatch) processHit();
+            let isMatch = false;
+            if (targets[currentTarget]) {
+                isMatch = targets[currentTarget].some(t => result.includes(t));
             }
+
+            if (isMatch) processHit();
         };
 
         function processHit() {
