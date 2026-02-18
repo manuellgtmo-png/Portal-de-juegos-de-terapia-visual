@@ -86,6 +86,10 @@
         }
         .active { color: var(--success); border: 2px solid var(--success); background: rgba(16, 185, 129, 0.1); }
         .locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+
+        /* Estilos adicionales para asegurar que las cartas nuevas mantengan el estilo blanco en el submenú */
+        .submenu-card { background: white !important; color: #1e293b !important; }
+        .submenu-card .name { color: #0f172a !important; }
     </style>
 </head>
 <body>
@@ -195,12 +199,12 @@
             <div class="desc">Entrenamiento de la retención de secuencias lógicas y patrones visuales.</div>
             <div class="badge active">¡SISTEMA ACTIVO!</div>
         </a>
-        <a href="integracion-visual.html" class="card pink">
+        <div class="card pink" onclick="window.location.href='integracion-visual.html'" style="cursor:pointer;">
             <div class="icon">🔍</div>
             <div class="name">Integración Visual</div>
             <div class="desc">Habilidad para sintetizar un estímulo a partir de partes incompletas.</div>
             <div class="badge active">¡SISTEMA ACTIVO!</div>
-        </a>
+        </div>
     </div>
 </div>
 
@@ -216,6 +220,7 @@
 </script>
 </body>
 </html>
+
 
 
 
