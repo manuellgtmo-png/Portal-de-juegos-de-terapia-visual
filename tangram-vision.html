@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tangram Vision - Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --accent-green: #22c55e;
+            --panel-bg: #ffffff;
+            /* Colores de las piezas para diferenciarlas visualmente */
+            --color-t1: #ef4444; --color-t2: #3b82f6; --color-t3: #f59e0b;
+            --color-t4: #8b5cf6; --color-t5: #ec4899; --color-sq: #10b981;
+            --color-rh: #f43f5e;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 2px; }
+        header p { margin: 5px 0 0; color: var(--accent-green); font-weight: 700; font-size: 0.8rem; }
+
+        .game-wrapper {
+            display: flex;
+            width: 95%;
+            max-width: 1400px;
+            height: 75vh;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        /* Zona de Armado (Izquierda) */
+        .drop-zone {
+            flex: 1.2;
+            background: rgba(255,255,255,0.03);
+            border: 3px dashed rgba(255,255,255,0.1);
+            border-radius: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone::after {
+            content: "ZONA DE ARMADO";
+            position: absolute;
+            bottom: 20px;
+            font-weight: 900;
+            opacity: 0.2;
+            letter-spacing: 5px;
+        }
+
+        /* Almacén de Piezas (Derecha) */
+        .pieces-inventory {
+            flex: 1;
+            background: var(--panel-bg);
+            border-radius: 30px;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Estilos Base de Piezas */
+        .piece {
+            position: absolute;
+            cursor: grab;
+            touch-action: none;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .piece:active { cursor: grabbing; z-index: 100; }
+
+        /* Construcción Geométrica SVG de las 7 piezas clásicas */
+        .shape-svg { width: 100%; height: 100%; }
+
+        /* Tamaños proporcionales */
+        .tg { width: 180px; height: 180px; } /* Triángulos Grandes (2) */
+        .tm { width: 127px; height: 127px; } /* Triángulo Mediano (1) */
+        .tp { width: 90px; height: 90px; }   /* Triángulos Pequeños (2) */
+        .sq { width: 90px; height: 90px; }   /* Cuadrado (1) */
+        .rh { width: 135px; height: 90px; }  /* Romboide (1) */
+
+        .footer-controls {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .back-link {
+            margin-top: 15px;
+            color: rgba(255,255,255,0.5);
+            text-decoration: none;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .back-link:hover { color: white; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TANGRAM VISION</h1>
+        <p>REPLICACIÓN DE RELACIONES ESPACIALES</p>
+    </header>
+
+    <div class="game-wrapper">
+        <div class="drop-zone" id="assembly-area">
+            </div>
+
+        <div class="pieces-inventory" id="inventory">
+            <div class="piece tg" data-angle="0" style="top:20px; left:20px;">
+                <svg class="shape-svg" viewBox="0 0 100 100"><polygon points="0,0 100,0 50,50" fill="var(--color-t1)"/></svg>
+            </div>
+            <div class="piece tg" data-angle="0" style="top:20px; left:180px;">
+                <svg class="shape-svg" viewBox="0 0 100 100"><polygon points="0,0 0,100 50,50" fill="var(--color-t2)"/></svg>
+            </div>
+
+            <div class="piece tm" data-angle="0" style="top:210px; left:20px;">
+                <svg class="shape-svg" viewBox="0 0 100 100"><polygon points="0,0 100,0 0,100" fill="var(--color-t3)"/></svg>
+            </div>
+
+            <div class="piece tp" data-angle="0" style="top:210px; left:160px;">
+                <svg class="shape-svg" viewBox="0 0 100 100"><polygon points="50,50 100,100 0,100" fill="var(--color-t4)"/></svg>
+            </div>
+            <div class="piece tp" data-angle="0" style="top:210px; left:260px;">
+                <svg class="shape-svg" viewBox="0 0 100 100"><polygon points="0,0 50,50 0,100" fill="var(--color-t5)"/></svg>
+            </div>
+
+            <div class="piece sq" data-angle="0" style="top:320px; left:20px;">
+                <rect width="100%" height="100%" fill="var(--color-sq)"/>
+            </div>
+
+            <div class="piece rh" data-angle="0" style="top:320px; left:130px;">
+                <svg class="shape-svg" viewBox="0 0 150 100"><polygon points="50,0 150,0 100,100 0,100" fill="var(--color-rh)"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-controls">
+        <span>🖱️ ARRASTRAR PIEZAS</span>
+        <span>|</span>
+        <span>👆 TOQUE PARA ROTAR 45°</span>
+    </div>
+
+    <a href="menu-relaciones.html" class="back-link">← VOLVER AL MENÚ DE SELECCIÓN</a>
+
+    <script>
+        // Configuración de interacción
+        interact('.piece')
+            .draggable({
+                inertia: true,
+                modifiers: [
+                    interact.modifiers.restrictRect({
+                        restriction: 'parent', // Evita que salgan del contenedor si se desea
+                        endOnly: false
+                    })
+                ],
+                listeners: {
+                    move(event) {
+                        const target = event.target;
+                        // Mantener la posición en atributos data
+                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+                        const angle = target.getAttribute('data-angle') || 0;
+
+                        // Aplicar transformación combinada
+                        target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+
+                        target.setAttribute('data-x', x);
+                        target.setAttribute('data-y', y);
+                    }
+                }
+            })
+            .on('tap', function (event) {
+                const target = event.currentTarget;
+                let angle = parseInt(target.getAttribute('data-angle')) || 0;
+                
+                // Rotación de 45 grados para entrenamiento visual
+                angle = (angle + 45) % 360;
+                target.setAttribute('data-angle', angle);
+
+                const x = target.getAttribute('data-x') || 0;
+                const y = target.getAttribute('data-y') || 0;
+
+                target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+            });
+
+        // Prevención de scroll accidental en móviles
+        document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+    </script>
+</body>
+</html>
