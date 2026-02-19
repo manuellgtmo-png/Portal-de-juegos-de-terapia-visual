@@ -8,347 +8,310 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
         :root {
-            --bg-body: #0f172a;
+            --bg-deep: #0f172a;
             --bg-card: #1e293b;
-            --bg-dark-inv: #0a0f1a;
+            --bg-inv: #0a0f1a;
             --accent: #22c55e;
-            --danger: #ef4444;
+            --error: #ef4444;
             --text: #f8fafc;
-            /* Colores de las piezas */
-            --tg1: #ef4444; --tg2: #3b82f6; --tm: #f59e0b; 
-            --tp1: #8b5cf6; --tp2: #ec4899; --sq: #10b981; --rh: #f43f5e;
+            /* Colores Tangram */
+            --c1: #ef4444; --c2: #3b82f6; --c3: #f59e0b; 
+            --c4: #8b5cf6; --c5: #ec4899; --c6: #10b981; --c7: #f43f5e;
         }
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
-
         body { 
-            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-body); 
+            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-deep); 
             color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- PANTALLA DE CONFIGURACIÓN --- */
+        /* --- MENÚ INICIAL (TAMAÑO MÁXIMO) --- */
         #config-screen {
-            position: fixed; inset: 0; background: var(--bg-body); z-index: 5000;
-            display: flex; flex-direction: column; align-items: center; padding: 50px; overflow-y: auto;
+            position: fixed; inset: 0; background: var(--bg-deep); z-index: 5000;
+            display: flex; flex-direction: column; align-items: center; padding: 60px; overflow-y: auto;
         }
 
-        .header-brand h1 { font-size: 4rem; font-weight: 900; color: var(--accent); margin: 0; text-align: center; }
-        .header-brand p { font-size: 1.2rem; opacity: 0.6; text-align: center; letter-spacing: 3px; margin-bottom: 40px; }
+        .main-title { font-size: 5rem; font-weight: 900; color: var(--accent); margin: 0; text-align: center; text-transform: uppercase; }
+        .sub-title { font-size: 1.8rem; opacity: 0.5; letter-spacing: 8px; margin-bottom: 60px; }
 
-        /* Tarjetas de Modo Grandes */
-        .modes-container {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px; width: 100%; max-width: 1200px; margin-bottom: 40px;
+        .modes-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 35px; width: 100%; max-width: 1500px; margin-bottom: 60px;
         }
 
-        .mode-item {
-            background: var(--bg-card); padding: 40px; border-radius: 35px; border: 4px solid transparent;
-            cursor: pointer; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .mode-card {
+            background: var(--bg-card); padding: 50px; border-radius: 45px; border: 6px solid transparent;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .mode-item:hover { transform: translateY(-5px); background: #2d3a4f; }
-        .mode-item.active { border-color: var(--accent); background: #14532d; }
-        .mode-item h3 { color: var(--accent); font-size: 1.5rem; margin: 0 0 10px 0; }
-        .mode-item p { font-size: 0.95rem; line-height: 1.5; opacity: 0.8; margin: 0; }
+        .mode-card:hover { transform: translateY(-10px); background: #263349; }
+        .mode-card.selected { border-color: var(--accent); background: #14532d; }
+        .mode-card h3 { font-size: 2.5rem; margin: 0 0 15px 0; color: var(--accent); }
+        .mode-card p { font-size: 1.2rem; opacity: 0.8; line-height: 1.4; margin: 0; }
 
-        /* Panel de opciones adicionales */
-        .options-panel {
-            background: var(--bg-card); padding: 40px; border-radius: 40px; width: 100%;
-            max-width: 800px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px;
+        .settings-area {
+            background: var(--bg-card); padding: 50px; border-radius: 50px;
+            width: 100%; max-width: 1000px; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 60px;
         }
 
-        .option-flex { display: flex; justify-content: center; gap: 50px; flex-wrap: wrap; }
-        .control-group { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .radio-box { display: flex; gap: 20px; font-size: 1.1rem; font-weight: 700; }
+        .type-selector { display: flex; justify-content: center; gap: 80px; margin-bottom: 20px; }
+        .type-option { display: flex; align-items: center; gap: 20px; font-size: 2rem; font-weight: 900; cursor: pointer; }
+        .type-option input { transform: scale(2.5); cursor: pointer; accent-color: var(--accent); }
 
-        /* Slider Inteligente (Condicional) */
-        #slider-wrapper { 
-            width: 100%; margin-top: 30px; display: none; /* Se activa por JS */
-            padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .slider-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 900; }
-        .slider-header span { color: var(--accent); }
-        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 8px; }
+        #slider-wrapper { display: none; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .slider-label { font-size: 1.8rem; font-weight: 900; margin-bottom: 20px; display: block; }
+        .slider-label span { color: var(--accent); }
+        input[type="range"] { width: 100%; height: 20px; accent-color: var(--accent); cursor: pointer; }
 
-        .btn-launch {
-            background: var(--accent); color: var(--bg-body); padding: 25px 100px;
-            border-radius: 60px; font-weight: 900; font-size: 1.8rem; border: none;
+        .btn-start {
+            background: var(--accent); color: var(--bg-deep); padding: 35px 150px;
+            border-radius: 100px; font-weight: 900; font-size: 3rem; border: none;
             cursor: pointer; transition: 0.3s; text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+            box-shadow: 0 20px 50px rgba(34, 197, 94, 0.4);
         }
-        .btn-launch:hover { transform: scale(1.05); background: #4ade80; }
+        .btn-start:hover { transform: scale(1.05); background: #4ade80; }
 
         /* --- INTERFAZ DE JUEGO --- */
         header {
-            height: 100px; padding: 0 40px; background: rgba(0,0,0,0.5);
+            height: 120px; padding: 0 60px; background: rgba(0,0,0,0.6);
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid rgba(255,255,255,0.1);
         }
 
-        .stats-wrap { display: flex; gap: 30px; }
-        .stat-box { background: rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 15px; text-align: center; }
-        .stat-box small { font-size: 0.7rem; opacity: 0.5; display: block; }
-        .stat-box b { font-size: 1.3rem; color: var(--accent); }
-        .lives { color: var(--danger); font-size: 1.4rem; letter-spacing: 3px; }
+        .stats-group { display: flex; gap: 40px; }
+        .stat-item { background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 20px; text-align: center; min-width: 180px; }
+        .stat-item small { font-size: 0.9rem; opacity: 0.5; display: block; margin-bottom: 5px; text-transform: uppercase; }
+        .stat-item b { font-size: 2rem; color: var(--accent); }
+        .hp-display { font-size: 2.2rem; color: var(--error); letter-spacing: 5px; }
 
-        .game-body { display: flex; flex: 1; padding: 20px; gap: 20px; height: calc(100vh - 200px); }
+        .game-layout { display: flex; flex: 1; padding: 30px; gap: 30px; height: calc(100vh - 260px); }
 
-        /* Referencia Lateral Gigante */
-        .ref-panel {
-            flex: 0 0 380px; background: var(--bg-card); border-radius: 35px;
-            padding: 20px; border: 3px solid var(--accent); display: flex; flex-direction: column;
-        }
-        .ref-container {
-            flex: 1; background: rgba(0,0,0,0.3); border-radius: 20px; position: relative;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
-        }
+        /* Paneles laterales */
+        .side-panel { flex: 0 0 450px; background: var(--bg-card); border-radius: 50px; padding: 25px; display: flex; flex-direction: column; border: 3px solid rgba(255,255,255,0.05); }
+        .ref-area { flex: 1; background: rgba(0,0,0,0.3); border-radius: 30px; position: relative; border: 3px solid var(--accent); overflow: hidden; }
 
-        /* Lienzo de Trabajo Central */
-        .work-zone {
-            flex: 1; background: rgba(255,255,255,0.02); border-radius: 40px;
-            border: 4px dashed rgba(255,255,255,0.1); position: relative;
-        }
-
-        /* Inventario Oscuro Lateral */
-        .inv-panel {
-            flex: 0 0 380px; background: var(--bg-dark-inv); border-radius: 35px;
-            position: relative; border: 2px solid rgba(255,255,255,0.05);
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
-        }
+        .canvas { flex: 1; background: rgba(255,255,255,0.02); border: 5px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
+        
+        .inventory { flex: 0 0 450px; background: var(--bg-inv); border-radius: 50px; position: relative; border: 2px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 60px rgba(0,0,0,0.5); }
 
         /* Piezas */
-        .piece { position: absolute; cursor: grab; touch-action: none; z-index: 10; }
-        .piece.static { pointer-events: none; opacity: 0.9; }
-        .piece svg { width: 100%; height: 100%; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3)); }
+        .piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; }
+        .piece svg { width: 100%; height: 100%; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
 
-        /* Footer de Botones */
-        .footer-actions {
-            height: 100px; display: flex; justify-content: center; align-items: center; gap: 30px;
-            background: rgba(0,0,0,0.2);
-        }
-        .btn-ui {
-            padding: 20px 50px; border-radius: 40px; font-weight: 900; font-size: 1.1rem;
-            border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s;
-        }
-        .btn-check { background: var(--accent); color: var(--bg-body); }
-        .btn-exit { background: var(--danger); color: white; }
+        .footer { height: 140px; display: flex; justify-content: center; align-items: center; gap: 50px; }
+        .btn-game { padding: 30px 80px; border-radius: 60px; font-weight: 900; font-size: 1.6rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-check { background: var(--accent); color: var(--bg-deep); }
+        .btn-check:hover { background: #4ade80; transform: translateY(-5px); }
+        .btn-exit { background: var(--error); color: white; }
 
-        /* Overlays de Mensaje */
-        #overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+        #msg-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
-        .modal {
-            background: var(--bg-card); padding: 50px; border-radius: 40px;
-            text-align: center; border: 4px solid var(--accent); max-width: 500px;
-        }
+        .msg-modal { background: var(--bg-card); padding: 80px; border-radius: 60px; text-align: center; border: 5px solid var(--accent); max-width: 700px; }
+        .msg-modal h2 { font-size: 4rem; color: var(--accent); margin: 0 0 20px 0; }
+        .msg-modal p { font-size: 1.5rem; margin-bottom: 50px; opacity: 0.8; }
     </style>
 </head>
 <body>
 
     <div id="config-screen">
-        <div class="header-brand">
-            <h1>CENTRO PERCEPTUM</h1>
-            <p>TANGRAM VISION • RELACIONES ESPACIALES</p>
-        </div>
+        <h1 class="main-title">CENTRO PERCEPTUM</h1>
+        <p class="sub-title">RELACIONES ESPACIALES</p>
 
-        <div class="modes-container" id="modes-grid">
-            <div class="mode-item active" data-mode="copy">
-                <h3>Copia Directa</h3>
-                <p>Replica la figura exactamente en la misma posición y orientación.</p>
+        <div class="modes-grid">
+            <div class="mode-card selected" data-mode="copy">
+                <h3>COPIA DIRECTA</h3>
+                <p>Reproduce la figura exactamente igual en posición y rotación.</p>
             </div>
-            <div class="mode-item" data-mode="mirrorV">
-                <h3>Espejo Vertical</h3>
-                <p>Invierte los ejes izquierda y derecha del modelo de referencia.</p>
+            <div class="mode-card" data-mode="mirrorV">
+                <h3>ESPEJO VERTICAL</h3>
+                <p>Invierte los lados: la izquierda es derecha y viceversa.</p>
             </div>
-            <div class="mode-item" data-mode="mirrorH">
-                <h3>Espejo Horizontal</h3>
-                <p>Reflejo tipo agua. Lo que está arriba debe quedar abajo.</p>
+            <div class="mode-card" data-mode="mirrorH">
+                <h3>ESPEJO HORIZONTAL</h3>
+                <p>Efecto reflejo en el agua: invierte arriba y abajo.</p>
             </div>
-            <div class="mode-item" data-mode="rot90">
-                <h3>Rotación 90°</h3>
-                <p>Gira mentalmente la estructura completa 90 grados a la derecha.</p>
-            </div>
-            <div class="mode-item" data-mode="rot180">
-                <h3>Rotación 180°</h3>
-                <p>Gira la figura por completo. Inversión total de la estructura.</p>
-            </div>
-            <div class="mode-item" data-mode="mixed">
-                <h3>Modo Mixto</h3>
-                <p>Desafío máximo: Combinación aleatoria de todas las anteriores.</p>
+            <div class="mode-card" data-mode="rotate">
+                <h3>ROTACIÓN 180°</h3>
+                <p>Gira mentalmente la figura por completo (de cabeza).</p>
             </div>
         </div>
 
-        <div class="options-panel">
-            <div class="option-flex">
-                <div class="control-group">
-                    <span style="font-weight: 900; opacity: 0.5;">MODALIDAD</span>
-                    <div class="radio-box">
-                        <label><input type="radio" name="m-tipo" value="timer" checked onclick="toggleSlider(false)"> CRONÓMETRO</label>
-                        <label><input type="radio" name="m-tipo" value="countdown" onclick="toggleSlider(true)"> CONTRARRELOJ</label>
-                    </div>
-                </div>
+        <div class="settings-area">
+            <div class="type-selector">
+                <label class="type-option">
+                    <input type="radio" name="g-type" value="timer" checked onclick="toggleSlider(false)"> CRONÓMETRO
+                </label>
+                <label class="type-option">
+                    <input type="radio" name="g-type" value="countdown" onclick="toggleSlider(true)"> CONTRARRELOJ
+                </label>
             </div>
-
+            
             <div id="slider-wrapper">
-                <div class="slider-header">TIEMPO LÍMITE: <span id="val-limite">30</span> SEG.</div>
-                <input type="range" id="time-range" min="5" max="60" value="30">
+                <span class="slider-label">DURACIÓN DEL NIVEL: <span id="lbl-time">30</span> SEGUNDOS</span>
+                <input type="range" id="inp-time" min="5" max="60" value="30">
             </div>
         </div>
 
-        <button class="btn-launch" onclick="startGame()">Comenzar Entrenamiento</button>
+        <button class="btn-start" onclick="begin()">COMENZAR</button>
     </div>
 
     <header>
-        <div style="font-weight:900; font-size:1.5rem; letter-spacing:2px;">CENTRO PERCEPTUM</div>
-        <div class="stats-wrap">
-            <div class="stat-box"><small>NIVEL</small><b id="txt-nivel">1</b></div>
-            <div class="stat-box"><small>TIEMPO</small><b id="txt-tiempo">00:00</b></div>
-            <div class="stat-box"><small>VIDAS</small><span id="txt-vidas" class="lives">❤️❤️❤️</span></div>
+        <div style="font-weight:900; font-size:2.5rem; letter-spacing:3px;">PERCEPTUM <span style="color:var(--accent)">VISION</span></div>
+        <div class="stats-group">
+            <div class="stat-item"><small>Nivel</small><b id="ui-lvl">1</b></div>
+            <div class="stat-item"><small>Tiempo</small><b id="ui-clock">00:00</b></div>
+            <div class="stat-item"><small>Vidas</small><span id="ui-hp" class="hp-display">❤️❤️❤️</span></div>
         </div>
     </header>
 
-    <div class="game-body">
-        <div class="ref-panel">
-            <div class="ref-container" id="box-ref"></div>
-            <h3 style="text-align:center; color:var(--accent);">MODELO</h3>
+    <div class="game-layout">
+        <div class="side-panel">
+            <div class="ref-area" id="ref-zone"></div>
+            <h2 style="text-align:center; color:var(--accent); font-size: 2rem; margin-top: 20px;">MODELO</h2>
         </div>
-        <div class="work-zone" id="lienzo"></div>
-        <div class="inv-panel" id="box-inv"></div>
+
+        <div class="canvas" id="main-canvas"></div>
+
+        <div class="inventory" id="inv-zone"></div>
     </div>
 
-    <div class="footer-actions">
-        <button class="btn-ui btn-exit" onclick="location.reload()">Abandonar</button>
-        <button class="btn-ui btn-check" onclick="checkFigure()">Comprobar Figura</button>
+    <div class="footer">
+        <button class="btn-game btn-exit" onclick="location.reload()">Salir del Juego</button>
+        <button class="btn-game btn-check" onclick="verifySolution()">Comprobar Figura</button>
     </div>
 
-    <div id="overlay">
-        <div class="modal">
-            <h2 id="modal-h">¡MUY BIEN!</h2>
-            <p id="modal-p">Has completado el desafío correctamente.</p>
-            <button class="btn-launch" id="modal-btn">Siguiente</button>
+    <div id="msg-overlay">
+        <div class="msg-modal">
+            <h2 id="modal-title">¡LOGRADO!</h2>
+            <p id="modal-desc">La figura es correcta. Prepárate para el siguiente nivel.</p>
+            <button class="btn-start" id="modal-btn">CONTINUAR</button>
         </div>
     </div>
 
     <script>
-        // --- DATA DE GEOMETRÍA ---
-        const PIECES_CONFIG = [
-            { id:0, pts: "0,0 100,0 50,50", c: 'var(--tg1)', w: 160, h: 160 },
-            { id:1, pts: "0,0 0,100 50,50", c: 'var(--tg2)', w: 160, h: 160 },
-            { id:2, pts: "0,0 100,0 0,100", c: 'var(--tm)', w: 110, h: 110 },
-            { id:3, pts: "50,50 100,100 0,100", c: 'var(--tp1)', w: 80, h: 80 },
-            { id:4, pts: "0,0 50,50 0,100", c: 'var(--tp2)', w: 80, h: 80 },
-            { id:5, pts: "0,0 100,0 100,100 0,100", c: 'var(--sq)', w: 80, h: 80 },
-            { id:6, pts: "50,0 150,0 100,100 0,100", c: 'var(--rh)', w: 120, h: 80 }
+        const SHAPES_DB = [
+            { id:0, pts: "0,0 100,0 50,50", c: 'var(--c1)', w: 180, h: 180 },
+            { id:1, pts: "0,0 0,100 50,50", c: 'var(--c2)', w: 180, h: 180 },
+            { id:2, pts: "0,0 100,0 0,100", c: 'var(--c3)', w: 140, h: 140 },
+            { id:3, pts: "50,50 100,100 0,100", c: 'var(--c4)', w: 100, h: 100 },
+            { id:4, pts: "0,0 50,50 0,100", c: 'var(--c5)', w: 100, h: 100 },
+            { id:5, pts: "0,0 100,0 100,100 0,100", c: 'var(--c6)', w: 90, h: 90 },
+            { id:6, pts: "40,0 140,0 100,100 0,100", c: 'var(--c7)', w: 140, h: 100 }
         ];
 
-        let game = {
-            nivel: 1, lives: 3, clock: 0, 
+        let app = {
+            lvl: 1, hp: 3, time: 0, 
             modo: 'copy', tipo: 'timer', limit: 30,
-            figura: [], timerObj: null
+            targets: [], interval: null
         };
 
-        // --- LÓGICA DE CONFIGURACIÓN ---
-        function toggleSlider(show) {
-            document.getElementById('slider-wrapper').style.display = show ? 'block' : 'none';
-        }
-
-        document.getElementById('time-range').oninput = function() {
-            document.getElementById('val-limite').innerText = this.value;
-            game.limit = parseInt(this.value);
+        // --- MANEJO DE MENÚ ---
+        function toggleSlider(s) { document.getElementById('slider-wrapper').style.display = s ? 'block' : 'none'; }
+        
+        document.getElementById('inp-time').oninput = function() {
+            document.getElementById('lbl-time').innerText = this.value;
+            app.limit = parseInt(this.value);
         };
 
-        document.querySelectorAll('.mode-item').forEach(card => {
+        document.querySelectorAll('.mode-card').forEach(card => {
             card.onclick = () => {
-                document.querySelectorAll('.mode-item').forEach(m => m.classList.remove('active'));
-                card.classList.add('active');
-                game.modo = card.dataset.mode;
+                document.querySelectorAll('.mode-card').forEach(m => m.classList.remove('selected'));
+                card.classList.add('selected');
+                app.modo = card.dataset.mode;
             };
         });
 
-        // --- MOTOR DEL JUEGO ---
-        function startGame() {
-            game.tipo = document.querySelector('input[name="m-tipo"]:checked').value;
+        // --- INICIO Y MOTOR ---
+        function begin() {
+            app.tipo = document.querySelector('input[name="g-type"]:checked').value;
             document.getElementById('config-screen').style.display = 'none';
-            if(game.tipo === 'countdown') game.clock = game.limit;
+            if(app.tipo === 'countdown') app.time = app.limit;
             
-            game.timerObj = setInterval(updateClock, 1000);
-            createLevel();
+            app.interval = setInterval(tick, 1000);
+            genLvl();
         }
 
-        function updateClock() {
-            if(game.tipo === 'timer') game.clock++;
+        function tick() {
+            if(app.tipo === 'timer') app.time++;
             else {
-                game.clock--;
-                if(game.clock <= 0) triggerError("¡TIEMPO AGOTADO!");
+                app.time--;
+                if(app.time <= 0) { 
+                    processError("¡TIEMPO AGOTADO!"); 
+                    app.time = app.limit; 
+                }
             }
-            renderStats();
+            updateStats();
         }
 
-        function renderStats() {
-            const m = Math.floor(Math.abs(game.clock)/60).toString().padStart(2,'0');
-            const s = (Math.abs(game.clock)%60).toString().padStart(2,'0');
-            document.getElementById('txt-tiempo').innerText = `${m}:${s}`;
-            document.getElementById('txt-nivel').innerText = game.nivel;
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(game.lives);
+        function updateStats() {
+            const m = Math.floor(Math.abs(app.time)/60).toString().padStart(2,'0');
+            const s = (Math.abs(app.time)%60).toString().padStart(2,'0');
+            document.getElementById('ui-clock').innerText = `${m}:${s}`;
+            document.getElementById('ui-lvl').innerText = app.lvl;
+            document.getElementById('ui-hp').innerText = "❤️".repeat(app.hp);
         }
 
-        function createLevel() {
-            const inv = document.getElementById('box-inv');
-            const ref = document.getElementById('box-ref');
+        // --- GENERADOR DE NIVELES (SIMPLES Y COMPLEJOS) ---
+        function genLvl() {
+            const inv = document.getElementById('inv-zone');
+            const ref = document.getElementById('ref-zone');
             inv.innerHTML = ''; ref.innerHTML = '';
-            game.figura = [];
+            app.targets = [];
 
-            // Cantidad de piezas progresiva
-            let n = game.nivel < 3 ? 3 : (game.nivel < 6 ? 5 : 7);
+            // Cantidad de piezas: 3 en niveles bajos, hasta 7 en altos
+            let num = app.lvl <= 2 ? 3 : (app.lvl <= 5 ? 5 : 7);
 
-            for(let i=0; i<n; i++) {
-                let data = PIECES_CONFIG[i];
-                // Posiciones simples: evitaremos solapamiento total en niveles bajos
-                let tx = (Math.random() * 120) - 60;
-                let ty = (Math.random() * 120) - 60;
-                let ta = Math.floor(Math.random() * 4) * 90;
+            for(let i=0; i<num; i++) {
+                let data = SHAPES_DB[i];
+                let tx, ty;
 
-                game.figura.push({ id: i, x: tx, y: ty, a: ta % 360 });
+                // FIGURAS SIMPLES (LINEALES) EN NIVELES 1 Y 2
+                if(app.lvl <= 2) {
+                    tx = (i * 100) - 100; // Alineación horizontal
+                    ty = 0;
+                } else {
+                    // FIGURAS ESTRUCTURADAS (COMPLEJAS)
+                    tx = (Math.random() * 160) - 80;
+                    ty = (Math.random() * 160) - 80;
+                }
 
-                // Render en referencia
-                drawPiece(data, ref, tx, ty, ta, true, i);
-                // Render en inventario (desordenado)
-                drawPiece(data, inv, 0, i*75, 0, false, i);
+                let ta = Math.floor(Math.random()*4)*90;
+                app.targets.push({ id: i, x: tx, y: ty, a: ta % 360 });
+
+                renderPiece(data, ref, tx, ty, ta, true, i);
+                renderPiece(data, inv, 0, i*85, 0, false, i);
             }
-            applyInteractions();
+            initInteract();
         }
 
-        function drawPiece(data, cont, x, y, a, isRef, id) {
+        function renderPiece(data, cont, x, y, a, isRef, id) {
             const div = document.createElement('div');
-            div.className = isRef ? 'piece static' : 'piece';
-            div.style.width = (isRef ? data.w * 0.8 : data.w) + 'px';
-            div.style.height = (isRef ? data.h * 0.8 : data.h) + 'px';
+            div.className = 'piece';
+            div.style.width = (isRef ? data.w * 0.7 : data.w) + 'px';
+            div.style.height = (isRef ? data.h * 0.7 : data.h) + 'px';
             
             if(isRef) {
                 div.style.left = '50%'; div.style.top = '50%';
                 div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
+                div.style.opacity = "0.7"; div.style.pointerEvents = "none";
             } else {
-                div.style.left = '40px'; div.style.top = (40 + y) + 'px';
-                div.setAttribute('data-id', id);
-                div.setAttribute('data-ang', 0);
+                div.style.left = '50px'; div.style.top = (50 + y) + 'px';
+                div.setAttribute('data-id', id); div.setAttribute('data-ang', 0);
             }
-
-            div.innerHTML = `<svg viewBox="0 0 ${data.id === 6 ? 150 : 100} 100"><polygon points="${data.pts}" fill="${data.c}"/></svg>`;
+            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${data.pts}" fill="${data.c}"/></svg>`;
             cont.appendChild(div);
         }
 
-        function applyInteractions() {
-            interact('.piece:not(.static)').draggable({
-                listeners: {
-                    move(e) {
-                        const t = e.target;
-                        const nx = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
-                        const ny = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
-                        const na = t.getAttribute('data-ang') || 0;
-                        t.style.transform = `translate(${nx}px, ${ny}px) rotate(${na}deg)`;
-                        t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
-                    }
-                }
+        function initInteract() {
+            interact('.piece:not([style*="pointer-events: none"])').draggable({
+                listeners: { move(e) {
+                    const t = e.target;
+                    const nx = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
+                    const ny = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
+                    t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
+                    t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
+                }}
             }).on('tap', function(e) {
                 const t = e.currentTarget;
                 let na = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
@@ -357,76 +320,61 @@
             });
         }
 
-        // --- VALIDACIÓN MATEMÁTICA ---
-        function checkFigure() {
-            const lienzo = document.getElementById('lienzo');
-            const rectL = lienzo.getBoundingClientRect();
-            let score = 0;
+        // --- VALIDACIÓN GEOMÉTRICA ---
+        function verifySolution() {
+            const canvas = document.getElementById('main-canvas');
+            const rectC = canvas.getBoundingClientRect();
+            let successCount = 0;
 
-            game.figura.forEach(target => {
-                const pieza = document.querySelector(`.piece[data-id="${target.id}"]`);
-                if(!pieza) return;
+            app.targets.forEach(tgt => {
+                const p = document.querySelector(`[data-id="${tgt.id}"]`);
+                if(!p) return;
 
-                const rectP = pieza.getBoundingClientRect();
-                // Calcular centro de la pieza respecto al centro del lienzo
-                const px = (rectP.left + rectP.width/2) - (rectL.left + rectL.width/2);
-                const py = (rectP.top + rectP.height/2) - (rectL.top + rectL.height/2);
-                const pa = (parseInt(pieza.getAttribute('data-ang')) || 0) % 360;
+                const rectP = p.getBoundingClientRect();
+                const curX = (rectP.left + rectP.width/2) - (rectC.left + rectC.width/2);
+                const curY = (rectP.top + rectP.height/2) - (rectC.top + rectC.height/2);
+                const curA = (parseInt(p.getAttribute('data-ang')) || 0) % 360;
 
-                // VALIDACIÓN SEGÚN MODO
-                let matchPos = false;
-                let matchAng = false;
+                // Lógica de validación por modo
+                let posX = tgt.x, posY = tgt.y, angA = tgt.a;
 
-                // Margen de 40px para posición
-                let diffX = px - target.x;
-                let diffY = py - target.y;
+                if(app.modo === 'mirrorV') { posX = -tgt.x; }
+                if(app.modo === 'mirrorH') { posY = -tgt.y; }
+                if(app.modo === 'rotate') { posX = -tgt.x; posY = -tgt.y; angA = (tgt.a + 180) % 360; }
 
-                if(game.modo === 'copy') {
-                    matchPos = Math.sqrt(diffX**2 + diffY**2) < 45;
-                    matchAng = pa === target.a;
-                } else if(game.modo === 'mirrorV') {
-                    // Espejo Vertical: el target.x debe ser el inverso (-x)
-                    matchPos = Math.sqrt((px - (-target.x))**2 + (py - target.y)**2) < 45;
-                    matchAng = (360 - pa) % 180 === (360 - target.a) % 180; // Simplificado para rotación
-                } else if(game.modo === 'mirrorH') {
-                    matchPos = Math.sqrt((px - target.x)**2 + (py - (-target.y))**2) < 45;
-                    matchAng = true; // Rotación de espejo H requiere lógica compleja, permitimos 
-                } else {
-                    // Modo simplificado para otros hasta pulir matemática de rotación mental
-                    matchPos = Math.sqrt(diffX**2 + diffY**2) < 60;
-                    matchAng = true;
-                }
-
-                if(matchPos && matchAng) score++;
+                const dist = Math.sqrt(Math.pow(curX - posX, 2) + Math.pow(curY - posY, 2));
+                
+                // Margen de error tolerante de 45px y rotación exacta
+                if(dist < 50 && curA === angA) successCount++;
             });
 
-            if(score === game.figura.length) {
-                showModal("¡EXCELENTE!", "Figura completada correctamente.", () => {
-                    game.nivel++;
-                    if(game.tipo === 'countdown') game.clock = game.limit;
-                    document.getElementById('overlay').style.display = 'none';
-                    createLevel();
+            if(successCount === app.targets.length) {
+                showModal("¡EXCELENTE!", "Has replicado la figura con éxito.", () => {
+                    app.lvl++;
+                    if(app.tipo === 'countdown') app.time = app.limit;
+                    document.getElementById('msg-overlay').style.display = 'none';
+                    genLvl();
                 });
             } else {
-                triggerError("FIGURA INCORRECTA");
+                processError("FIGURA INCORRECTA");
             }
         }
 
-        function triggerError(msg) {
-            game.lives--;
-            renderStats();
-            if(game.lives <= 0) {
-                showModal("FIN DEL JUEGO", `Llegaste al nivel ${game.nivel}.`, () => location.reload());
+        function processError(msg) {
+            app.hp--;
+            updateStats();
+            if(app.hp <= 0) {
+                showModal("FIN", "Entrenamiento terminado.", () => location.reload());
             } else {
-                alert(msg + ". Te quedan " + game.lives + " vidas.");
+                alert(msg + "\nTe quedan " + app.hp + " vidas.");
             }
         }
 
-        function showModal(h, p, fn) {
-            document.getElementById('modal-h').innerText = h;
-            document.getElementById('modal-p').innerText = p;
-            document.getElementById('modal-btn').onclick = fn;
-            document.getElementById('overlay').style.display = 'flex';
+        function showModal(t, d, cb) {
+            document.getElementById('modal-title').innerText = t;
+            document.getElementById('modal-desc').innerText = d;
+            document.getElementById('modal-btn').onclick = cb;
+            document.getElementById('msg-overlay').style.display = 'flex';
         }
     </script>
 </body>
