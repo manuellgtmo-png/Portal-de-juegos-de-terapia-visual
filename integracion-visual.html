@@ -10,13 +10,11 @@
             --bg-color: #0f172a;
             --text-color: #f8fafc;
             --accent-color: #38bdf8;
-            /* Gradientes vivos para cada categoría */
             --g-verde: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
             --g-naranja: linear-gradient(135deg, #ffedd5 0%, #ffffff 100%);
             --g-rosa: linear-gradient(135deg, #fce7f3 0%, #ffffff 100%);
             --g-cian: linear-gradient(135deg, #ecfeff 0%, #ffffff 100%);
             --g-morado: linear-gradient(135deg, #f3e8ff 0%, #ffffff 100%);
-            
             --border-verde: #22c55e;
             --border-naranja: #f59e0b;
             --border-rosa: #ec4899;
@@ -49,7 +47,6 @@
             margin-bottom: 80px;
         }
 
-        /* CARTA CON VIDA */
         .card-skill {
             background: white;
             border-radius: 40px;
@@ -64,10 +61,9 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             position: relative;
             overflow: hidden;
-            border: 4px solid transparent; /* Reservamos espacio para el borde al hacer hover */
+            border: 4px solid transparent;
         }
 
-        /* Al pasar el mouse, la carta brilla con su color */
         .card-skill:hover { 
             transform: translateY(-15px); 
             border-color: var(--b-color);
@@ -99,14 +95,12 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-        /* ASIGNACIÓN DE COLORES Y GRADIENTES SUTILES */
         .relaciones { --bg-grad: var(--g-verde); --b-color: var(--border-verde); }
         .cierre { --bg-grad: var(--g-naranja); --b-color: var(--border-naranja); }
         .figura { --bg-grad: var(--g-rosa); --b-color: var(--border-rosa); }
         .constancia { --bg-grad: var(--g-cian); --b-color: var(--border-cian); }
         .memoria { --bg-grad: var(--g-morado); --b-color: var(--border-morado); }
 
-        /* BOTÓN VOLVER INFERIOR MEJORADO */
         .back-btn {
             padding: 18px 50px;
             background: rgba(255,255,255,0.05);
@@ -140,11 +134,11 @@
     </header>
 
     <div class="grid">
-        <a href="tangrama.html" class="card-skill relaciones">
+        <a href="menu-relaciones.html" class="card-skill relaciones">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zM12 6l7.5 14h-15L12 6z"/></svg>
             <div class="name">Relaciones Espaciales</div>
             <div class="desc">Entrenamiento de la orientación y rotación mental de objetos.</div>
-            <div class="btn-tag">JUEGO: TANGRAMA</div>
+            <div class="btn-tag">VER JUEGOS</div>
         </a>
 
         <div class="card-skill cierre locked">
@@ -178,7 +172,7 @@
 
     <a href="index.html" class="back-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        VOLVER AL MENÚ PRINCIPAL
+        VOLVER AL PORTAL PRINCIPAL
     </a>
 
 </body>
