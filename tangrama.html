@@ -3,378 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tangram Vision | Centro Perceptum</title>
+    <title>Tangram Vision | Centro Perceptum Professional</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
         :root {
-            --bg-deep: #0f172a;
-            --bg-card: #1e293b;
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
             --bg-inv: #0a0f1a;
             --accent: #22c55e;
             --error: #ef4444;
-            --text: #f8fafc;
-            /* Colores Tangram */
+            --text-light: #f8fafc;
+            /* Colores de piezas con alto contraste perceptivo */
             --c1: #ef4444; --c2: #3b82f6; --c3: #f59e0b; 
             --c4: #8b5cf6; --c5: #ec4899; --c6: #10b981; --c7: #f43f5e;
         }
 
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        
         body { 
-            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-deep); 
-            color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-dark); 
+            color: var(--text-light); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- MENÚ INICIAL (TAMAÑO MÁXIMO) --- */
+        /* --- PANTALLA DE CONFIGURACIÓN GIGANTE --- */
         #config-screen {
-            position: fixed; inset: 0; background: var(--bg-deep); z-index: 5000;
+            position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; padding: 60px; overflow-y: auto;
         }
 
-        .main-title { font-size: 5rem; font-weight: 900; color: var(--accent); margin: 0; text-align: center; text-transform: uppercase; }
-        .sub-title { font-size: 1.8rem; opacity: 0.5; letter-spacing: 8px; margin-bottom: 60px; }
+        .brand-title { font-size: 5.5rem; font-weight: 900; color: var(--accent); margin: 0; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .brand-tag { font-size: 1.8rem; opacity: 0.5; letter-spacing: 12px; margin-bottom: 50px; text-transform: uppercase; }
 
         .modes-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-            gap: 35px; width: 100%; max-width: 1500px; margin-bottom: 60px;
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 30px; width: 100%; max-width: 1400px; margin-bottom: 50px;
         }
 
         .mode-card {
-            background: var(--bg-card); padding: 50px; border-radius: 45px; border: 6px solid transparent;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: var(--bg-panel); padding: 50px; border-radius: 45px; border: 6px solid transparent;
+            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center;
         }
-        .mode-card:hover { transform: translateY(-10px); background: #263349; }
+        .mode-card:hover { transform: translateY(-10px); background: #2d3a4f; }
         .mode-card.selected { border-color: var(--accent); background: #14532d; }
-        .mode-card h3 { font-size: 2.5rem; margin: 0 0 15px 0; color: var(--accent); }
-        .mode-card p { font-size: 1.2rem; opacity: 0.8; line-height: 1.4; margin: 0; }
+        .mode-card h3 { font-size: 2.8rem; margin: 0 0 15px 0; color: var(--accent); text-transform: uppercase; }
+        .mode-card p { font-size: 1.3rem; opacity: 0.8; margin: 0; }
 
-        .settings-area {
-            background: var(--bg-card); padding: 50px; border-radius: 50px;
-            width: 100%; max-width: 1000px; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 60px;
+        .settings-box {
+            background: var(--bg-panel); padding: 50px; border-radius: 50px;
+            width: 100%; max-width: 1000px; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 50px;
         }
 
-        .type-selector { display: flex; justify-content: center; gap: 80px; margin-bottom: 20px; }
-        .type-option { display: flex; align-items: center; gap: 20px; font-size: 2rem; font-weight: 900; cursor: pointer; }
-        .type-option input { transform: scale(2.5); cursor: pointer; accent-color: var(--accent); }
+        .type-flex { display: flex; justify-content: center; gap: 80px; margin-bottom: 20px; }
+        .type-option { display: flex; align-items: center; gap: 20px; font-size: 2.2rem; font-weight: 900; cursor: pointer; }
+        .type-option input { transform: scale(3); cursor: pointer; accent-color: var(--accent); }
 
-        #slider-wrapper { display: none; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .slider-label { font-size: 1.8rem; font-weight: 900; margin-bottom: 20px; display: block; }
-        .slider-label span { color: var(--accent); }
-        input[type="range"] { width: 100%; height: 20px; accent-color: var(--accent); cursor: pointer; }
+        #limit-ui { display: none; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .slider-label { font-size: 2rem; font-weight: 900; margin-bottom: 25px; display: block; }
+        input[type="range"] { width: 100%; height: 25px; accent-color: var(--accent); cursor: pointer; }
 
-        .btn-start {
-            background: var(--accent); color: var(--bg-deep); padding: 35px 150px;
-            border-radius: 100px; font-weight: 900; font-size: 3rem; border: none;
-            cursor: pointer; transition: 0.3s; text-transform: uppercase;
-            box-shadow: 0 20px 50px rgba(34, 197, 94, 0.4);
+        .btn-launch {
+            background: var(--accent); color: var(--bg-dark); padding: 40px 160px;
+            border-radius: 100px; font-weight: 900; font-size: 3.5rem; border: none;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 20px 60px rgba(34, 197, 94, 0.4);
         }
-        .btn-start:hover { transform: scale(1.05); background: #4ade80; }
 
         /* --- INTERFAZ DE JUEGO --- */
         header {
-            height: 120px; padding: 0 60px; background: rgba(0,0,0,0.6);
+            height: 120px; padding: 0 60px; background: rgba(0,0,0,0.5);
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid rgba(255,255,255,0.1);
         }
 
-        .stats-group { display: flex; gap: 40px; }
-        .stat-item { background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 20px; text-align: center; min-width: 180px; }
-        .stat-item small { font-size: 0.9rem; opacity: 0.5; display: block; margin-bottom: 5px; text-transform: uppercase; }
-        .stat-item b { font-size: 2rem; color: var(--accent); }
-        .hp-display { font-size: 2.2rem; color: var(--error); letter-spacing: 5px; }
+        .ui-box { background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 20px; text-align: center; min-width: 200px; }
+        .ui-box small { font-size: 1rem; opacity: 0.5; display: block; text-transform: uppercase; margin-bottom: 5px; }
+        .ui-box b { font-size: 2.2rem; color: var(--accent); }
+        .hp-icon { font-size: 2.5rem; color: var(--error); letter-spacing: 8px; }
 
-        .game-layout { display: flex; flex: 1; padding: 30px; gap: 30px; height: calc(100vh - 260px); }
+        .game-area { display: flex; flex: 1; padding: 30px; gap: 30px; }
 
-        /* Paneles laterales */
-        .side-panel { flex: 0 0 450px; background: var(--bg-card); border-radius: 50px; padding: 25px; display: flex; flex-direction: column; border: 3px solid rgba(255,255,255,0.05); }
-        .ref-area { flex: 1; background: rgba(0,0,0,0.3); border-radius: 30px; position: relative; border: 3px solid var(--accent); overflow: hidden; }
+        .panel-ref { flex: 0 0 450px; background: var(--bg-panel); border-radius: 50px; padding: 30px; display: flex; flex-direction: column; border: 4px solid var(--accent); }
+        .draw-zone { flex: 1; background: rgba(0,0,0,0.3); border-radius: 35px; position: relative; overflow: hidden; }
 
-        .canvas { flex: 1; background: rgba(255,255,255,0.02); border: 5px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
+        .work-canvas { flex: 1; background: rgba(255,255,255,0.02); border: 5px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
         
-        .inventory { flex: 0 0 450px; background: var(--bg-inv); border-radius: 50px; position: relative; border: 2px solid rgba(255,255,255,0.1); box-shadow: inset 0 0 60px rgba(0,0,0,0.5); }
+        .inventory-panel { flex: 0 0 450px; background: var(--bg-inv); border-radius: 50px; position: relative; border: 2px solid rgba(255,255,255,0.1); }
 
         /* Piezas */
-        .piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; }
-        .piece svg { width: 100%; height: 100%; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        .tangram-piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; }
+        .tangram-piece svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6)); }
 
-        .footer { height: 140px; display: flex; justify-content: center; align-items: center; gap: 50px; }
-        .btn-game { padding: 30px 80px; border-radius: 60px; font-weight: 900; font-size: 1.6rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-check { background: var(--accent); color: var(--bg-deep); }
-        .btn-check:hover { background: #4ade80; transform: translateY(-5px); }
+        .game-footer { height: 150px; display: flex; justify-content: center; align-items: center; gap: 50px; background: rgba(0,0,0,0.2); }
+        .btn-game { padding: 30px 80px; border-radius: 70px; font-weight: 900; font-size: 1.8rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-check { background: var(--accent); color: var(--bg-dark); }
         .btn-exit { background: var(--error); color: white; }
 
-        #msg-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+        /* --- MODALES PERSONALIZADOS --- */
+        #game-modal {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
-        .msg-modal { background: var(--bg-card); padding: 80px; border-radius: 60px; text-align: center; border: 5px solid var(--accent); max-width: 700px; }
-        .msg-modal h2 { font-size: 4rem; color: var(--accent); margin: 0 0 20px 0; }
-        .msg-modal p { font-size: 1.5rem; margin-bottom: 50px; opacity: 0.8; }
+        .modal-body { 
+            background: var(--bg-panel); padding: 80px; border-radius: 70px; text-align: center; 
+            border: 8px solid var(--accent); max-width: 800px; width: 90%;
+            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+        }
+        .modal-body h2 { font-size: 5rem; margin: 0 0 20px 0; }
+        .modal-body p { font-size: 2rem; margin-bottom: 50px; opacity: 0.8; }
+        .modal-btn { width: 100%; padding: 35px; border-radius: 60px; font-size: 2.5rem; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
     <div id="config-screen">
-        <h1 class="main-title">CENTRO PERCEPTUM</h1>
-        <p class="sub-title">RELACIONES ESPACIALES</p>
+        <h1 class="brand-title">CENTRO PERCEPTUM</h1>
+        <p class="brand-tag">Tangram Vision Engine</p>
 
         <div class="modes-grid">
             <div class="mode-card selected" data-mode="copy">
                 <h3>COPIA DIRECTA</h3>
-                <p>Reproduce la figura exactamente igual en posición y rotación.</p>
+                <p>Mismo lugar, misma posición. Entrenamiento base.</p>
             </div>
             <div class="mode-card" data-mode="mirrorV">
                 <h3>ESPEJO VERTICAL</h3>
-                <p>Invierte los lados: la izquierda es derecha y viceversa.</p>
+                <p>Invierte derecha e izquierda. Procesamiento espacial.</p>
             </div>
             <div class="mode-card" data-mode="mirrorH">
                 <h3>ESPEJO HORIZONTAL</h3>
-                <p>Efecto reflejo en el agua: invierte arriba y abajo.</p>
+                <p>Reflejo tipo agua. Arriba es abajo.</p>
             </div>
-            <div class="mode-card" data-mode="rotate">
+            <div class="mode-card" data-mode="rot180">
                 <h3>ROTACIÓN 180°</h3>
-                <p>Gira mentalmente la figura por completo (de cabeza).</p>
+                <p>Gira la estructura completamente de cabeza.</p>
             </div>
         </div>
 
-        <div class="settings-area">
-            <div class="type-selector">
+        <div class="settings-box">
+            <div class="type-flex">
                 <label class="type-option">
-                    <input type="radio" name="g-type" value="timer" checked onclick="toggleSlider(false)"> CRONÓMETRO
+                    <input type="radio" name="g-type" value="cron" checked onclick="showSlider(false)"> CRONÓMETRO
                 </label>
                 <label class="type-option">
-                    <input type="radio" name="g-type" value="countdown" onclick="toggleSlider(true)"> CONTRARRELOJ
+                    <input type="radio" name="g-type" value="contra" onclick="showSlider(true)"> CONTRARRELOJ
                 </label>
             </div>
             
-            <div id="slider-wrapper">
-                <span class="slider-label">DURACIÓN DEL NIVEL: <span id="lbl-time">30</span> SEGUNDOS</span>
-                <input type="range" id="inp-time" min="5" max="60" value="30">
+            <div id="limit-ui">
+                <span class="slider-label">TIEMPO LÍMITE: <span id="lbl-val" style="color:var(--accent)">30</span> SEGUNDOS</span>
+                <input type="range" id="inp-val" min="10" max="120" value="30">
             </div>
         </div>
 
-        <button class="btn-start" onclick="begin()">COMENZAR</button>
+        <button class="btn-launch" onclick="launchGame()">¡EMPEZAR!</button>
     </div>
 
     <header>
-        <div style="font-weight:900; font-size:2.5rem; letter-spacing:3px;">PERCEPTUM <span style="color:var(--accent)">VISION</span></div>
-        <div class="stats-group">
-            <div class="stat-item"><small>Nivel</small><b id="ui-lvl">1</b></div>
-            <div class="stat-item"><small>Tiempo</small><b id="ui-clock">00:00</b></div>
-            <div class="stat-item"><small>Vidas</small><span id="ui-hp" class="hp-display">❤️❤️❤️</span></div>
+        <div style="font-weight:900; font-size:2.5rem;">PERCEPTUM <span style="color:var(--accent)">VISION</span></div>
+        <div class="stats-group" style="display:flex; gap:30px;">
+            <div class="ui-box"><small>Nivel</small><b id="txt-lvl">1</b></div>
+            <div class="ui-box"><small>Tiempo</small><b id="txt-clock">00:00</b></div>
+            <div class="ui-box"><small>Vidas</small><span id="txt-hp" class="hp-icon">❤️❤️❤️</span></div>
         </div>
     </header>
 
-    <div class="game-layout">
-        <div class="side-panel">
-            <div class="ref-area" id="ref-zone"></div>
-            <h2 style="text-align:center; color:var(--accent); font-size: 2rem; margin-top: 20px;">MODELO</h2>
+    <div class="game-area">
+        <div class="panel-ref">
+            <div class="draw-zone" id="ref-canvas"></div>
+            <h3 style="text-align:center; color:var(--accent); font-size: 2.2rem; margin-top: 25px;">MODELO</h3>
         </div>
 
-        <div class="canvas" id="main-canvas"></div>
+        <div class="work-canvas" id="main-zone"></div>
 
-        <div class="inventory" id="inv-zone"></div>
+        <div class="inventory-panel" id="inv-zone"></div>
     </div>
 
-    <div class="footer">
-        <button class="btn-game btn-exit" onclick="location.reload()">Salir del Juego</button>
-        <button class="btn-game btn-check" onclick="verifySolution()">Comprobar Figura</button>
+    <div class="game-footer">
+        <button class="btn-game btn-exit" onclick="location.reload()">Abandonar</button>
+        <button class="btn-game btn-check" onclick="validateSolution()">Comprobar Figura</button>
     </div>
 
-    <div id="msg-overlay">
-        <div class="msg-modal">
-            <h2 id="modal-title">¡LOGRADO!</h2>
-            <p id="modal-desc">La figura es correcta. Prepárate para el siguiente nivel.</p>
-            <button class="btn-start" id="modal-btn">CONTINUAR</button>
+    <div id="game-modal">
+        <div class="modal-body">
+            <h2 id="modal-h">¡MUY BIEN!</h2>
+            <p id="modal-p">Has completado el patrón correctamente.</p>
+            <button class="modal-btn" id="modal-btn">Siguiente Nivel</button>
         </div>
     </div>
 
     <script>
-        const SHAPES_DB = [
+        // CONFIGURACIÓN DE PIEZAS
+        const PIECES = [
             { id:0, pts: "0,0 100,0 50,50", c: 'var(--c1)', w: 180, h: 180 },
             { id:1, pts: "0,0 0,100 50,50", c: 'var(--c2)', w: 180, h: 180 },
             { id:2, pts: "0,0 100,0 0,100", c: 'var(--c3)', w: 140, h: 140 },
-            { id:3, pts: "50,50 100,100 0,100", c: 'var(--c4)', w: 100, h: 100 },
-            { id:4, pts: "0,0 50,50 0,100", c: 'var(--c5)', w: 100, h: 100 },
+            { id:3, pts: "50,50 100,100 0,100", c: 'var(--c4)', w: 110, h: 110 },
+            { id:4, pts: "0,0 50,50 0,100", c: 'var(--c5)', w: 110, h: 110 },
             { id:5, pts: "0,0 100,0 100,100 0,100", c: 'var(--c6)', w: 90, h: 90 },
-            { id:6, pts: "40,0 140,0 100,100 0,100", c: 'var(--c7)', w: 140, h: 100 }
+            { id:6, pts: "40,0 140,0 100,100 0,100", c: 'var(--c7)', w: 150, h: 100 }
         ];
 
-        let app = {
-            lvl: 1, hp: 3, time: 0, 
-            modo: 'copy', tipo: 'timer', limit: 30,
+        // LIBRERÍA DE NIVELES MANUALES (Figuras Simples)
+        const LEVEL_DATABASE = [
+            { name: "Iniciación", pieces: [{i:0, x:-90, y:0, a:0}, {i:1, x:90, y:0, a:0}] },
+            { name: "Duo Rotado", pieces: [{i:2, x:-80, y:0, a:90}, {i:5, x:80, y:0, a:0}] },
+            { name: "La Flecha", pieces: [{i:0, x:0, y:-60, a:180}, {i:5, x:0, y:40, a:0}] },
+            { name: "Trío Lineal", pieces: [{i:3, x:-110, y:0, a:0}, {i:4, x:0, y:0, a:90}, {i:2, x:110, y:0, a:0}] },
+            { name: "Estructura V", pieces: [{i:0, x:-70, y:-40, a:0}, {i:1, x:70, y:-40, a:0}, {i:6, x:0, y:60, a:0}] }
+        ];
+
+        let state = {
+            lvl: 1, hp: 3, clock: 0, 
+            modo: 'copy', tipo: 'cron', limit: 30,
             targets: [], interval: null
         };
 
-        // --- MANEJO DE MENÚ ---
-        function toggleSlider(s) { document.getElementById('slider-wrapper').style.display = s ? 'block' : 'none'; }
+        // --- GESTIÓN DE INTERFAZ INICIAL ---
+        function showSlider(val) { document.getElementById('limit-ui').style.display = val ? 'block' : 'none'; }
         
-        document.getElementById('inp-time').oninput = function() {
-            document.getElementById('lbl-time').innerText = this.value;
-            app.limit = parseInt(this.value);
+        document.getElementById('inp-val').oninput = function() {
+            document.getElementById('lbl-val').innerText = this.value;
+            state.limit = parseInt(this.value);
         };
 
         document.querySelectorAll('.mode-card').forEach(card => {
             card.onclick = () => {
                 document.querySelectorAll('.mode-card').forEach(m => m.classList.remove('selected'));
                 card.classList.add('selected');
-                app.modo = card.dataset.mode;
+                state.modo = card.dataset.mode;
             };
         });
 
-        // --- INICIO Y MOTOR ---
-        function begin() {
-            app.tipo = document.querySelector('input[name="g-type"]:checked').value;
+        // --- MOTOR DEL JUEGO ---
+        function launchGame() {
+            state.tipo = document.querySelector('input[name="g-type"]:checked').value;
             document.getElementById('config-screen').style.display = 'none';
-            if(app.tipo === 'countdown') app.time = app.limit;
+            if(state.tipo === 'contra') state.clock = state.limit;
             
-            app.interval = setInterval(tick, 1000);
-            genLvl();
+            state.interval = setInterval(processTime, 1000);
+            renderLevel();
         }
 
-        function tick() {
-            if(app.tipo === 'timer') app.time++;
+        function processTime() {
+            if(state.tipo === 'cron') state.clock++;
             else {
-                app.time--;
-                if(app.time <= 0) { 
-                    processError("¡TIEMPO AGOTADO!"); 
-                    app.time = app.limit; 
+                state.clock--;
+                if(state.clock <= 0) { 
+                    triggerFailure("¡SE ACABÓ EL TIEMPO!"); 
+                    state.clock = state.limit; 
                 }
             }
-            updateStats();
+            refreshStats();
         }
 
-        function updateStats() {
-            const m = Math.floor(Math.abs(app.time)/60).toString().padStart(2,'0');
-            const s = (Math.abs(app.time)%60).toString().padStart(2,'0');
-            document.getElementById('ui-clock').innerText = `${m}:${s}`;
-            document.getElementById('ui-lvl').innerText = app.lvl;
-            document.getElementById('ui-hp').innerText = "❤️".repeat(app.hp);
+        function refreshStats() {
+            const m = Math.floor(Math.abs(state.clock)/60).toString().padStart(2,'0');
+            const s = (Math.abs(state.clock)%60).toString().padStart(2,'0');
+            document.getElementById('txt-clock').innerText = `${m}:${s}`;
+            document.getElementById('txt-lvl').innerText = state.lvl;
+            document.getElementById('txt-hp').innerText = "❤️".repeat(state.hp);
         }
 
-        // --- GENERADOR DE NIVELES (SIMPLES Y COMPLEJOS) ---
-        function genLvl() {
+        // --- RENDERIZADO DE NIVEL ---
+        function renderLevel() {
             const inv = document.getElementById('inv-zone');
-            const ref = document.getElementById('ref-zone');
+            const ref = document.getElementById('ref-canvas');
             inv.innerHTML = ''; ref.innerHTML = '';
-            app.targets = [];
+            state.targets = [];
 
-            // Cantidad de piezas: 3 en niveles bajos, hasta 7 en altos
-            let num = app.lvl <= 2 ? 3 : (app.lvl <= 5 ? 5 : 7);
+            // Obtenemos datos del nivel (o generamos uno aleatorio si se acaban los manuales)
+            let lData = LEVEL_DATABASE[Math.min(state.lvl - 1, LEVEL_DATABASE.length - 1)];
+            
+            lData.pieces.forEach((p, idx) => {
+                let config = PIECES[p.i];
+                let angle = p.a;
+                state.targets.push({ id: idx, x: p.x, y: p.y, a: angle, type: p.i });
 
-            for(let i=0; i<num; i++) {
-                let data = SHAPES_DB[i];
-                let tx, ty;
-
-                // FIGURAS SIMPLES (LINEALES) EN NIVELES 1 Y 2
-                if(app.lvl <= 2) {
-                    tx = (i * 100) - 100; // Alineación horizontal
-                    ty = 0;
-                } else {
-                    // FIGURAS ESTRUCTURADAS (COMPLEJAS)
-                    tx = (Math.random() * 160) - 80;
-                    ty = (Math.random() * 160) - 80;
-                }
-
-                let ta = Math.floor(Math.random()*4)*90;
-                app.targets.push({ id: i, x: tx, y: ty, a: ta % 360 });
-
-                renderPiece(data, ref, tx, ty, ta, true, i);
-                renderPiece(data, inv, 0, i*85, 0, false, i);
-            }
-            initInteract();
+                // Render en panel de referencia
+                createPiece(config, ref, p.x, p.y, angle, true, idx);
+                // Render en inventario
+                createPiece(config, inv, 0, idx * 100 - 150, 0, false, idx);
+            });
+            enableDragging();
         }
 
-        function renderPiece(data, cont, x, y, a, isRef, id) {
-            const div = document.createElement('div');
-            div.className = 'piece';
-            div.style.width = (isRef ? data.w * 0.7 : data.w) + 'px';
-            div.style.height = (isRef ? data.h * 0.7 : data.h) + 'px';
+        function createPiece(data, container, x, y, a, isRef, id) {
+            const el = document.createElement('div');
+            el.className = 'tangram-piece';
+            el.style.width = (isRef ? data.w * 0.75 : data.w) + 'px';
+            el.style.height = (isRef ? data.h * 0.75 : data.h) + 'px';
             
             if(isRef) {
-                div.style.left = '50%'; div.style.top = '50%';
-                div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
-                div.style.opacity = "0.7"; div.style.pointerEvents = "none";
+                el.style.left = '50%'; el.style.top = '50%';
+                el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
+                el.style.opacity = "0.4"; el.style.pointerEvents = "none";
             } else {
-                div.style.left = '50px'; div.style.top = (50 + y) + 'px';
-                div.setAttribute('data-id', id); div.setAttribute('data-ang', 0);
+                el.style.left = '80px'; el.style.top = '200px';
+                el.setAttribute('data-id', id); el.setAttribute('data-ang', 0);
             }
-            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${data.pts}" fill="${data.c}"/></svg>`;
-            cont.appendChild(div);
+            el.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${data.pts}" fill="${data.c}"/></svg>`;
+            container.appendChild(el);
         }
 
-        function initInteract() {
-            interact('.piece:not([style*="pointer-events: none"])').draggable({
+        function enableDragging() {
+            interact('.tangram-piece:not([style*="pointer-events: none"])').draggable({
                 listeners: { move(e) {
                     const t = e.target;
-                    const nx = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
-                    const ny = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
-                    t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
-                    t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
+                    const x = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
+                    const y = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
+                    t.style.transform = `translate(${x}px, ${y}px) rotate(${t.getAttribute('data-ang')}deg)`;
+                    t.setAttribute('data-x', x); t.setAttribute('data-y', y);
                 }}
             }).on('tap', function(e) {
                 const t = e.currentTarget;
-                let na = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
-                t.setAttribute('data-ang', na);
-                t.style.transform = `translate(${t.getAttribute('data-x') || 0}px, ${t.getAttribute('data-y') || 0}px) rotate(${na}deg)`;
+                let a = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
+                t.setAttribute('data-ang', a);
+                t.style.transform = `translate(${t.getAttribute('data-x') || 0}px, ${t.getAttribute('data-y') || 0}px) rotate(${a}deg)`;
             });
         }
 
-        // --- VALIDACIÓN GEOMÉTRICA ---
-        function verifySolution() {
-            const canvas = document.getElementById('main-canvas');
-            const rectC = canvas.getBoundingClientRect();
-            let successCount = 0;
+        // --- VALIDACIÓN PROFESIONAL ---
+        function validateSolution() {
+            const zone = document.getElementById('main-zone');
+            const rectZ = zone.getBoundingClientRect();
+            let correctCount = 0;
 
-            app.targets.forEach(tgt => {
-                const p = document.querySelector(`[data-id="${tgt.id}"]`);
-                if(!p) return;
+            state.targets.forEach(goal => {
+                const piece = document.querySelector(`[data-id="${goal.id}"]`);
+                if(!piece) return;
 
-                const rectP = p.getBoundingClientRect();
-                const curX = (rectP.left + rectP.width/2) - (rectC.left + rectC.width/2);
-                const curY = (rectP.top + rectP.height/2) - (rectC.top + rectC.height/2);
-                const curA = (parseInt(p.getAttribute('data-ang')) || 0) % 360;
+                const rectP = piece.getBoundingClientRect();
+                const curX = (rectP.left + rectP.width/2) - (rectZ.left + rectZ.width/2);
+                const curY = (rectP.top + rectP.height/2) - (rectZ.top + rectZ.height/2);
+                const curA = (parseInt(piece.getAttribute('data-ang')) || 0) % 360;
 
-                // Lógica de validación por modo
-                let posX = tgt.x, posY = tgt.y, angA = tgt.a;
+                // Lógica según modo terapéutico
+                let targetX = goal.x, targetY = goal.y, targetA = goal.a;
 
-                if(app.modo === 'mirrorV') { posX = -tgt.x; }
-                if(app.modo === 'mirrorH') { posY = -tgt.y; }
-                if(app.modo === 'rotate') { posX = -tgt.x; posY = -tgt.y; angA = (tgt.a + 180) % 360; }
+                if(state.modo === 'mirrorV') { targetX = -goal.x; }
+                if(state.modo === 'mirrorH') { targetY = -goal.y; }
+                if(state.modo === 'rot180') { targetX = -goal.x; targetY = -goal.y; targetA = (goal.a + 180) % 360; }
 
-                const dist = Math.sqrt(Math.pow(curX - posX, 2) + Math.pow(curY - posY, 2));
+                const dist = Math.sqrt(Math.pow(curX - targetX, 2) + Math.pow(curY - targetY, 2));
                 
-                // Margen de error tolerante de 45px y rotación exacta
-                if(dist < 50 && curA === angA) successCount++;
+                // Margen de error tolerante de 55px (aprox 1cm en pantalla estándar)
+                if(dist < 55 && curA === targetA) correctCount++;
             });
 
-            if(successCount === app.targets.length) {
-                showModal("¡EXCELENTE!", "Has replicado la figura con éxito.", () => {
-                    app.lvl++;
-                    if(app.tipo === 'countdown') app.time = app.limit;
-                    document.getElementById('msg-overlay').style.display = 'none';
-                    genLvl();
+            if(correctCount === state.targets.length) {
+                openModal("¡LOGRADO!", "La figura es idéntica al modelo.", () => {
+                    state.lvl++; 
+                    if(state.tipo === 'contra') state.clock = state.limit;
+                    document.getElementById('game-modal').style.display = 'none';
+                    renderLevel();
+                    refreshStats();
                 });
             } else {
-                processError("FIGURA INCORRECTA");
+                triggerFailure("LA FIGURA NO COINCIDE");
             }
         }
 
-        function processError(msg) {
-            app.hp--;
-            updateStats();
-            if(app.hp <= 0) {
-                showModal("FIN", "Entrenamiento terminado.", () => location.reload());
+        function triggerFailure(msg) {
+            state.hp--;
+            refreshStats();
+            if(state.hp <= 0) {
+                openModal("FIN DEL JUEGO", "Has agotado tus intentos.", () => location.reload(), true);
             } else {
-                alert(msg + "\nTe quedan " + app.hp + " vidas.");
+                openModal("¡UY!", msg + ". Inténtalo de nuevo.", () => {
+                    document.getElementById('game-modal').style.display = 'none';
+                }, true);
             }
         }
 
-        function showModal(t, d, cb) {
-            document.getElementById('modal-title').innerText = t;
-            document.getElementById('modal-desc').innerText = d;
-            document.getElementById('modal-btn').onclick = cb;
-            document.getElementById('msg-overlay').style.display = 'flex';
+        function openModal(title, desc, callback, isErr = false) {
+            const m = document.getElementById('game-modal');
+            const h = document.getElementById('modal-h');
+            const b = document.getElementById('modal-btn');
+            
+            h.innerText = title;
+            h.style.color = isErr ? 'var(--error)' : 'var(--accent)';
+            document.getElementById('modal-p').innerText = desc;
+            b.innerText = isErr ? (state.hp <= 0 ? "REINICIAR" : "REINTENTAR") : "SIGUIENTE NIVEL";
+            b.style.background = isErr ? 'var(--error)' : 'var(--accent)';
+            b.style.color = isErr ? 'white' : 'var(--bg-dark)';
+            b.onclick = callback;
+            m.style.display = 'flex';
         }
     </script>
 </body>
