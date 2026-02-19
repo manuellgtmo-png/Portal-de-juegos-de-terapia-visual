@@ -9,8 +9,16 @@
         :root {
             --bg-color: #0f172a;
             --text-color: #f8fafc;
-            --accent-color: #22c55e; /* Verde Relaciones */
+            --accent-color: #38bdf8;
+            /* Colores específicos para las 3 cartas */
+            --c-verde: #22c55e;
+            --c-naranja: #f59e0b;
+            --c-rosa: #ec4899;
+            
+            /* Gradientes sutiles para el fondo de cada carta al pasar el mouse */
             --g-verde: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
+            --g-naranja: linear-gradient(135deg, #ffedd5 0%, #ffffff 100%);
+            --g-rosa: linear-gradient(135deg, #fce7f3 0%, #ffffff 100%);
         }
 
         body { 
@@ -27,7 +35,7 @@
 
         .header { text-align: center; margin-bottom: 60px; }
         .header h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
-        .header p { color: var(--accent-color); font-weight: 700; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;}
+        .header p { color: var(--accent-color); font-weight: 700; margin-top: 10px; text-transform: uppercase; }
 
         .grid { 
             display: grid; 
@@ -53,10 +61,11 @@
             border: 4px solid transparent;
         }
 
+        /* Efecto de Hover usando las variables de cada carta */
         .card-game:hover { 
             transform: translateY(-15px); 
-            border-color: var(--accent-color);
-            background: var(--g-verde);
+            border-color: var(--color-item);
+            background: var(--grad-item);
         }
 
         .svg-icon {
@@ -64,7 +73,7 @@
             height: 90px;
             margin-bottom: 25px;
             fill: none;
-            stroke: var(--accent-color);
+            stroke: var(--color-item); /* El icono toma el color de la carta */
             stroke-width: 1.5;
         }
 
@@ -79,9 +88,13 @@
             color: white;
             text-transform: uppercase;
             width: 100%;
-            background: var(--accent-color);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background: var(--color-item); /* El botón toma el color de la carta */
         }
+
+        /* ASIGNACIÓN DE COLORES INDIVIDUALES */
+        .item-verde { --color-item: var(--c-verde); --grad-item: var(--g-verde); }
+        .item-naranja { --color-item: var(--c-naranja); --grad-item: var(--g-naranja); }
+        .item-rosa { --color-item: var(--c-rosa); --grad-item: var(--g-rosa); }
 
         .back-btn {
             padding: 18px 50px;
@@ -109,21 +122,21 @@
     </header>
 
     <div class="grid">
-        <a href="tangrama.html" class="card-game">
+        <a href="tangrama.html" class="card-game item-verde">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2L2 12h10V2zM12 22L22 12H12v10zM2 22l10-10L2 12v10z"/></svg>
             <div class="name">Tangrama Pro</div>
             <div class="desc">Construye figuras geométricas rotando y encajando piezas.</div>
             <div class="btn-play">Jugar Ahora</div>
         </a>
 
-        <a href="espejo-maestro.html" class="card-game">
+        <a href="espejo-maestro.html" class="card-game item-naranja">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 14"/></svg>
             <div class="name">Espejo Maestro</div>
             <div class="desc">Identifica la orientación correcta de figuras reflejadas.</div>
             <div class="btn-play">Jugar Ahora</div>
         </a>
 
-        <a href="laberinto-espacial.html" class="card-game">
+        <a href="laberinto-espacial.html" class="card-game item-rosa">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zM9 9h6v6H9V9zM21 12h-3M3 12h3M12 3v3M12 18v3"/></svg>
             <div class="name">Laberinto Espacial</div>
             <div class="desc">Planifica rutas mediante comandos direccionales.</div>
