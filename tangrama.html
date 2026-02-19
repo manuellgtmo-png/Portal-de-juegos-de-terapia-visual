@@ -3,315 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tangram Vision - Centro Perceptum</title>
+    <title>Tangram Vision | Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
+            --bg: #0f172a;
+            --panel-dark: #1e293b;
             --accent: #22c55e;
-            --panel-light: #ffffff;
-            --text-main: #f8fafc;
-            /* Colores oficiales de las 7 piezas */
-            --color-tg1: #ef4444; --color-tg2: #3b82f6; --color-tm: #f59e0b;
-            --color-tp1: #8b5cf6; --color-tp2: #ec4899; --color-sq: #10b981;
-            --color-rh: #f43f5e;
+            --error: #ef4444;
+            --text: #f8fafc;
+            --white: #ffffff;
+            /* Colores Tangram */
+            --c1: #ef4444; --c2: #3b82f6; --c3: #f59e0b; --c4: #a855f7; 
+            --c5: #ec4899; --c6: #10b981; --c7: #f43f5e;
         }
 
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            touch-action: none;
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            margin: 0; font-family: 'Montserrat', sans-serif; 
+            background: var(--bg); color: var(--text); 
+            height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- MODAL DE INTRODUCCIÓN --- */
-        #intro-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.98);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
+        /* --- PANTALLA DE CONFIGURACIÓN --- */
+        #config-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            z-index: 1000; display: flex; flex-direction: column; align-items: center;
+            padding: 40px; overflow-y: auto;
         }
 
-        .modal-card {
-            background: #1e293b;
-            padding: 50px;
-            border-radius: 40px;
-            text-align: center;
-            max-width: 600px;
-            border: 3px solid var(--accent);
-            box-shadow: 0 0 50px rgba(34, 197, 94, 0.2);
-        }
-
-        .modal-card h2 { font-size: 2.5rem; margin-bottom: 20px; text-transform: uppercase; color: var(--accent); }
-        .modal-card p { font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; opacity: 0.9; }
+        .config-container { max-width: 900px; width: 100%; text-align: center; }
+        .config-title { font-size: 3rem; font-weight: 900; color: var(--accent); margin-bottom: 10px; }
         
-        .start-btn {
-            background: var(--accent);
-            color: #0f172a;
-            padding: 20px 50px;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            font-weight: 900;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
+        .modes-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px; margin: 30px 0;
         }
-        .start-btn:hover { transform: scale(1.05); background: #4ade80; }
 
-        /* --- HEADER Y ESTADÍSTICAS --- */
+        .mode-card {
+            background: var(--panel-dark); padding: 25px; border-radius: 25px;
+            border: 2px solid transparent; cursor: pointer; transition: 0.3s; text-align: left;
+        }
+        .mode-card.selected { border-color: var(--accent); background: #14532d; }
+        .mode-card h3 { margin: 0 0 10px 0; color: var(--accent); }
+        .mode-card p { margin: 0; font-size: 0.85rem; opacity: 0.8; line-height: 1.4; }
+
+        .settings-row {
+            display: flex; justify-content: center; gap: 40px; margin-bottom: 40px;
+            background: var(--panel-dark); padding: 20px; border-radius: 20px;
+        }
+        .option-group { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .radio-group { display: flex; gap: 15px; }
+        
+        .btn-start {
+            background: var(--accent); color: var(--bg); padding: 20px 60px;
+            border-radius: 50px; font-weight: 900; font-size: 1.4rem; border: none;
+            cursor: pointer; transition: 0.3s; text-transform: uppercase;
+        }
+        .btn-start:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
+
+        /* --- INTERFAZ DE JUEGO --- */
         header {
-            width: 100%;
-            padding: 20px 40px;
-            background: rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 15px 30px; background: rgba(0,0,0,0.4);
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .logo-text { font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; }
-        .stats-container { display: flex; gap: 30px; }
-        .stat-item {
-            background: rgba(255,255,255,0.05);
-            padding: 10px 25px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            font-weight: 700;
-        }
-        .stat-item span { color: var(--accent); margin-left: 10px; }
+        .stats { display: flex; gap: 20px; font-weight: 900; }
+        .stat-v { color: var(--accent); }
+        .hearts { color: var(--error); font-size: 1.2rem; }
 
-        /* --- ÁREA DE JUEGO --- */
-        .main-layout {
-            display: flex;
-            width: 100%;
-            height: calc(100vh - 180px);
-            padding: 20px;
-            gap: 20px;
+        .game-layout {
+            display: flex; flex: 1; padding: 15px; gap: 15px; height: calc(100vh - 80px);
         }
 
-        /* Lado Izquierdo: Zona de Trabajo */
-        .work-zone {
-            flex: 1.3;
-            background: rgba(255,255,255,0.02);
-            border: 4px dashed rgba(255,255,255,0.05);
-            border-radius: 40px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Izquierda: Referencia */
+        .side-panel {
+            flex: 0 0 220px; display: flex; flex-direction: column; gap: 15px;
+        }
+        .reference-box {
+            background: var(--panel-dark); border-radius: 20px; aspect-ratio: 1;
+            position: relative; border: 2px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .reference-box h4 { position: absolute; top: 10px; margin: 0; font-size: 0.7rem; opacity: 0.5; }
+
+        /* Centro: Zona de Armado */
+        .workspace {
+            flex: 1; background: rgba(255,255,255,0.02); border-radius: 30px;
+            border: 3px dashed rgba(255,255,255,0.05); position: relative;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* Lado Derecho: Almacén de Piezas */
-        .inventory-zone {
-            flex: 1;
-            background: var(--panel-light);
-            border-radius: 40px;
-            position: relative;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.1);
+        /* Derecha: Almacén */
+        .inventory {
+            flex: 0 0 320px; background: var(--white); border-radius: 30px;
+            position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
         }
 
-        /* --- LAS 7 PIEZAS --- */
+        /* --- PIEZAS --- */
         .piece {
-            position: absolute;
-            cursor: grab;
-            touch-action: none;
-            z-index: 100;
-            filter: drop-shadow(0 8px 15px rgba(0,0,0,0.2));
-            transition: transform 0.1s ease-out;
+            position: absolute; cursor: grab; touch-action: none; z-index: 10;
         }
-        .piece:active { cursor: grabbing; z-index: 1000; }
+        .piece.in-ref { pointer-events: none; } /* Piezas en la miniatura de referencia */
 
-        /* Dimensiones exactas para Tangram */
-        .tg { width: 180px; height: 180px; }
-        .tm { width: 127px; height: 127px; }
-        .tp { width: 90px; height: 90px; }
-        .sq { width: 90px; height: 90px; }
-        .rh { width: 135px; height: 90px; }
-
-        /* --- ELEMENTOS DE CONTROL --- */
-        .ui-footer {
-            width: 100%;
-            padding: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
+        /* Geometrías SVG */
+        .svg-p { width: 100%; height: 100%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); }
+        
+        /* Controles Inferiores */
+        .game-footer {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; z-index: 2000;
         }
-
-        .action-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 12px 30px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
+        .btn-ui {
+            padding: 12px 35px; border-radius: 30px; font-weight: 900;
+            border: none; cursor: pointer; text-transform: uppercase;
         }
-        .action-btn:hover { background: white; color: #0f172a; }
+        .btn-check { background: var(--accent); color: var(--bg); }
+        .btn-exit { background: rgba(255,255,255,0.1); color: white; }
 
-        .check-btn {
-            background: var(--accent);
-            border: none;
-            color: #0f172a;
-            padding: 12px 40px;
-            border-radius: 30px;
-            font-weight: 900;
-            cursor: pointer;
-            text-transform: uppercase;
+        /* --- MENSAJES --- */
+        #message-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+            display: none; align-items: center; justify-content: center;
+            z-index: 5000; flex-direction: column;
         }
-
-        #level-complete {
-            position: fixed;
-            top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--accent);
-            color: #0f172a;
-            padding: 30px 60px;
-            border-radius: 30px;
-            font-weight: 900;
-            font-size: 2rem;
-            display: none;
-            z-index: 3000;
-            box-shadow: 0 0 100px rgba(34, 197, 94, 0.5);
+        .msg-card {
+            background: var(--panel-dark); padding: 40px; border-radius: 30px;
+            text-align: center; border: 3px solid var(--accent);
         }
     </style>
 </head>
 <body>
 
-    <div id="intro-modal">
-        <div class="modal-card">
-            <h2>TANGRAM VISION</h2>
-            <p><strong>INSTRUCCIONES:</strong><br>
-            1. Arrastra las piezas del panel blanco a la zona oscura.<br>
-            2. <strong>Toca/Haz Clic</strong> en una pieza para rotarla 45°.<br>
-            3. Réplica la posición y orientación mental de los objetos.<br>
-            4. Tarea a <strong>40 cm</strong> de distancia.</p>
-            <button class="start-btn" onclick="iniciarJuego()">Comenzar Entrenamiento</button>
+    <div id="config-screen">
+        <div class="config-container">
+            <h1 class="config-title">TANGRAM VISION</h1>
+            <p>Selecciona el modo de entrenamiento perceptivo</p>
+
+            <div class="modes-grid" id="modes-grid">
+                <div class="mode-card selected" data-mode="copy">
+                    <h3>COPIA DIRECTA</h3>
+                    <p>Replica la figura exactamente en la misma posición y ángulo.</p>
+                </div>
+                <div class="mode-card" data-mode="mirrorH">
+                    <h3>ESPEJO HORIZONTAL</h3>
+                    <p>Invierte la figura verticalmente (reflejo en agua).</p>
+                </div>
+                <div class="mode-card" data-mode="mirrorV">
+                    <h3>ESPEJO VERTICAL</h3>
+                    <p>Invierte los lados izquierdo y derecho del modelo.</p>
+                </div>
+                <div class="mode-card" data-mode="rotate">
+                    <h3>ROTACIÓN 90°</h3>
+                    <p>Gira la estructura mentalmente 90 grados a la derecha.</p>
+                </div>
+                <div class="mode-card" data-mode="double">
+                    <h3>DOS ACCIONES</h3>
+                    <p>Combinación aleatoria de espejo y rotación.</p>
+                </div>
+                <div class="mode-card" data-mode="triple">
+                    <h3>TRES ACCIONES</h3>
+                    <p>Máximo desafío: Triple transformación mental.</p>
+                </div>
+            </div>
+
+            <div class="settings-row">
+                <div class="option-group">
+                    <span>MODALIDAD</span>
+                    <div class="radio-group">
+                        <label><input type="radio" name="game-mode" value="timer" checked> Cronómetro</label>
+                        <label><input type="radio" name="game-mode" value="countdown"> Contrarreloj</label>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-start" onclick="initGame()">Iniciar Entrenamiento</button>
+            <p style="margin-top: 20px; opacity: 0.5; font-size: 0.8rem;">Distancia recomendada: 40 cm</p>
         </div>
     </div>
 
-    <div id="level-complete">¡NIVEL COMPLETADO!</div>
-
     <header>
-        <div class="logo-text">CENTRO PERCEPTUM</div>
-        <div class="stats-container">
-            <div class="stat-item">NIVEL: <span id="val-nivel">1</span></div>
-            <div class="stat-item">TIEMPO: <span id="val-tiempo">00:00</span></div>
+        <div class="logo">PERCEPTUM <span>VISION</span></div>
+        <div class="stats">
+            <div>NIVEL: <span id="ui-level" class="stat-v">1</span></div>
+            <div>TIEMPO: <span id="ui-time" class="stat-v">00:00</span></div>
+            <div class="hearts" id="ui-lives">❤️❤️❤️</div>
         </div>
     </header>
 
-    <div class="main-layout">
-        <div class="work-zone" id="zona-trabajo">
+    <div class="game-layout">
+        <div class="side-panel">
+            <div class="reference-box" id="reference-box">
+                <h4>MODELO OBJETIVO</h4>
+                </div>
+            <div style="font-size: 0.7rem; opacity: 0.5; text-align: center;">
+                Sigue las reglas del modo seleccionado para armar la figura en el centro.
             </div>
+        </div>
 
-        <div class="inventory-zone" id="almacen">
-            <div class="piece tg" data-angle="0" style="top: 20px; left: 20px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><polygon points="0,0 100,0 50,50" fill="var(--color-tg1)"/></svg>
+        <div class="workspace" id="workspace">
+            <div class="game-footer">
+                <button class="btn-ui btn-exit" onclick="location.reload()">SALIR</button>
+                <button class="btn-ui btn-check" onclick="checkSolution()">COMPROBAR FIGURA</button>
             </div>
-            <div class="piece tg" data-angle="0" style="top: 20px; left: 210px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><polygon points="0,0 0,100 50,50" fill="var(--color-tg2)"/></svg>
+        </div>
+
+        <div class="inventory" id="inventory">
             </div>
-            <div class="piece tm" data-angle="0" style="top: 210px; left: 20px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><polygon points="0,0 100,0 0,100" fill="var(--color-tm)"/></svg>
-            </div>
-            <div class="piece tp" data-angle="0" style="top: 210px; left: 160px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><polygon points="50,50 100,100 0,100" fill="var(--color-tp1)"/></svg>
-            </div>
-            <div class="piece tp" data-angle="0" style="top: 210px; left: 260px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><polygon points="0,0 50,50 0,100" fill="var(--color-tp2)"/></svg>
-            </div>
-            <div class="piece sq" data-angle="0" style="top: 350px; left: 20px;">
-                <svg viewBox="0 0 100 100" style="width:100%; height:100%"><rect width="100" height="100" fill="var(--color-sq)"/></svg>
-            </div>
-            <div class="piece rh" data-angle="0" style="top: 350px; left: 130px;">
-                <svg viewBox="0 0 150 100" style="width:100%; height:100%"><polygon points="50,0 150,0 100,100 0,100" fill="var(--color-rh)"/></svg>
-            </div>
+    </div>
+
+    <div id="message-overlay">
+        <div class="msg-card">
+            <h2 id="msg-title">¡BIEN HECHO!</h2>
+            <p id="msg-body">Nivel completado con éxito.</p>
+            <button class="btn-start" id="msg-btn">SIGUIENTE</button>
         </div>
     </div>
 
-    <div class="ui-footer">
-        <a href="menu-relaciones.html" class="action-btn">ABANDONAR</a>
-        <button class="check-btn" onclick="comprobarNivel()">Comprobar Figura</button>
-    </div>
-
     <script>
-        let segundos = 0;
-        let nivelActual = 1;
-        let cronometro;
+        // --- CONSTANTES Y ESTADOS ---
+        const PIECES_DATA = [
+            { type: 'tg', pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180 },
+            { type: 'tg', pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180 },
+            { type: 'tm', pts: "0,0 100,0 0,100", color: 'var(--c3)', w: 127, h: 127 },
+            { type: 'tp', pts: "50,50 100,100 0,100", color: 'var(--c4)', w: 90, h: 90 },
+            { type: 'tp', pts: "0,0 50,50 0,100", color: 'var(--c5)', w: 90, h: 90 },
+            { type: 'sq', pts: "0,0 100,0 100,100 0,100", color: 'var(--c6)', w: 90, h: 90 },
+            { type: 'rh', pts: "50,0 150,0 100,100 0,100", color: 'var(--c7)', w: 135, h: 90 }
+        ];
 
-        function iniciarJuego() {
-            document.getElementById('intro-modal').style.display = 'none';
-            iniciarCronometro();
+        let gameState = {
+            level: 1,
+            lives: 3,
+            time: 0,
+            selectedMode: 'copy',
+            gameType: 'timer',
+            currentLevelData: [],
+            timerInterval: null
+        };
+
+        // --- MANEJO DE CONFIGURACIÓN ---
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.onclick = () => {
+                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                gameState.selectedMode = card.dataset.mode;
+            };
+        });
+
+        function initGame() {
+            gameState.gameType = document.querySelector('input[name="game-mode"]:checked').value;
+            document.getElementById('config-screen').style.display = 'none';
+            if(gameState.gameType === 'countdown') gameState.time = 60; // Ejemplo: 60 seg iniciales
+            
+            startTimer();
+            loadLevel();
         }
 
-        function iniciarCronometro() {
-            cronometro = setInterval(() => {
-                segundos++;
-                let min = Math.floor(segundos / 60).toString().padStart(2, '0');
-                let seg = (segundos % 60).toString().padStart(2, '0');
-                document.getElementById('val-tiempo').innerText = `${min}:${seg}`;
+        // --- LÓGICA DEL JUEGO ---
+        function startTimer() {
+            gameState.timerInterval = setInterval(() => {
+                if(gameState.gameType === 'timer') {
+                    gameState.time++;
+                } else {
+                    gameState.time--;
+                    if(gameState.time <= 0) gameOver("TIEMPO AGOTADO");
+                }
+                updateUI();
             }, 1000);
         }
 
-        // LÓGICA DE INTERACCIÓN (Interact.js)
-        interact('.piece')
-            .draggable({
-                inertia: true,
-                autoScroll: true,
-                listeners: {
-                    move(event) {
-                        const target = event.target;
-                        const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-                        const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-                        const angle = target.getAttribute('data-angle') || 0;
-
-                        target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-                        target.setAttribute('data-x', x);
-                        target.setAttribute('data-y', y);
-                    }
-                }
-            })
-            .on('tap', function (event) {
-                const target = event.currentTarget;
-                let angle = parseInt(target.getAttribute('data-angle')) || 0;
-                angle = (angle + 45) % 360;
-                
-                const x = target.getAttribute('data-x') || 0;
-                const y = target.getAttribute('data-y') || 0;
-
-                target.setAttribute('data-angle', angle);
-                target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
-            });
-
-        function comprobarNivel() {
-            // Animación de éxito y subida de nivel
-            const banner = document.getElementById('level-complete');
-            banner.style.display = 'block';
-            
-            setTimeout(() => {
-                banner.style.display = 'none';
-                nivelActual++;
-                document.getElementById('val-nivel').innerText = nivelActual;
-                // Aquí podrías añadir lógica para guardar en Google Sheets en el futuro
-            }, 2000);
+        function updateUI() {
+            const m = Math.floor(Math.abs(gameState.time) / 60).toString().padStart(2, '0');
+            const s = (Math.abs(gameState.time) % 60).toString().padStart(2, '0');
+            document.getElementById('ui-time').innerText = `${m}:${s}`;
+            document.getElementById('ui-level').innerText = gameState.level;
+            document.getElementById('ui-lives').innerText = "❤️".repeat(gameState.lives);
         }
 
-        // Evitar que la pantalla se mueva en móviles
-        document.addEventListener('touchmove', (e) => {
-            if (e.touches.length > 1) e.preventDefault();
-        }, { passive: false });
+        function loadLevel() {
+            const workspace = document.getElementById('workspace');
+            const inventory = document.getElementById('inventory');
+            const refBox = document.getElementById('reference-box');
+
+            // Limpiar áreas (manteniendo el footer en workspace)
+            const pieces = document.querySelectorAll('.piece');
+            pieces.forEach(p => p.remove());
+            refBox.querySelectorAll('.piece').forEach(p => p.remove());
+
+            // Definir cuántas piezas según nivel
+            let numPieces = gameState.level < 5 ? 3 : (gameState.level < 10 ? 5 : 7);
+            gameState.currentLevelData = [];
+
+            // Generar Patrón Aleatorio
+            for(let i=0; i < numPieces; i++) {
+                let data = PIECES_DATA[i];
+                let levelPiece = {
+                    id: i,
+                    angle: Math.floor(Math.random() * 8) * 45,
+                    x: Math.random() * 80 - 40, // Relativo al centro
+                    y: Math.random() * 80 - 40,
+                    data: data
+                };
+                gameState.currentLevelData.push(levelPiece);
+
+                // Dibujar en Referencia (Miniatura)
+                createPieceElement(levelPiece, refBox, true);
+                
+                // Dibujar en Inventario (Paciente)
+                createPieceElement(levelPiece, inventory, false);
+            }
+            
+            initInteract();
+        }
+
+        function createPieceElement(pieceData, container, isRef) {
+            const el = document.createElement('div');
+            el.className = isRef ? 'piece in-ref' : 'piece';
+            el.id = isRef ? `ref-${pieceData.id}` : `p-${pieceData.id}`;
+            
+            const scale = isRef ? 0.4 : 1;
+            el.style.width = `${pieceData.data.w * scale}px`;
+            el.style.height = `${pieceData.data.h * scale}px`;
+
+            if(isRef) {
+                el.style.left = '50%'; el.style.top = '50%';
+                el.style.transform = `translate(-50%, -50%) translate(${pieceData.x}px, ${pieceData.y}px) rotate(${pieceData.angle}deg)`;
+            } else {
+                // Posición inicial desordenada en inventario
+                el.style.left = `${Math.random() * 150 + 20}px`;
+                el.style.top = `${Math.random() * 300 + 50}px`;
+                let randomStartAngle = Math.floor(Math.random() * 8) * 45;
+                el.style.transform = `rotate(${randomStartAngle}deg)`;
+                el.setAttribute('data-angle', randomStartAngle);
+            }
+
+            el.innerHTML = `
+                <svg class="svg-p" viewBox="0 0 ${pieceData.data.type === 'rh' ? 150 : 100} 100">
+                    <polygon points="${pieceData.data.pts}" fill="${pieceData.data.color}" />
+                </svg>`;
+            
+            container.appendChild(el);
+        }
+
+        function initInteract() {
+            interact('.piece:not(.in-ref)').draggable({
+                inertia: true,
+                listeners: {
+                    move(event) {
+                        const t = event.target;
+                        const x = (parseFloat(t.getAttribute('data-x')) || 0) + event.dx;
+                        const y = (parseFloat(t.getAttribute('data-y')) || 0) + event.dy;
+                        const a = t.getAttribute('data-angle') || 0;
+                        t.style.transform = `translate(${x}px, ${y}px) rotate(${a}deg)`;
+                        t.setAttribute('data-x', x);
+                        t.setAttribute('data-y', y);
+                    }
+                }
+            }).on('tap', function(event) {
+                const t = event.currentTarget;
+                let a = (parseInt(t.getAttribute('data-angle')) || 0) + 45;
+                const x = t.getAttribute('data-x') || 0;
+                const y = t.getAttribute('data-y') || 0;
+                t.setAttribute('data-angle', a);
+                t.style.transform = `translate(${x}px, ${y}px) rotate(${a}deg)`;
+            });
+        }
+
+        // --- VALIDACIÓN ---
+        function checkSolution() {
+            // Aquí iría la lógica matemática de comparación de (x,y,angle) 
+            // considerando la transformación del modo (Mirror, Rotate, etc.)
+            
+            // Simulación de validación para esta estructura:
+            let success = Math.random() > 0.3; // Simulado para prueba, aquí va la lógica real de coords.
+
+            if(success) {
+                showOverlay("¡NIVEL COMPLETADO!", "Excelente procesamiento espacial.", () => {
+                    gameState.level++;
+                    loadLevel();
+                    hideOverlay();
+                });
+            } else {
+                gameState.lives--;
+                updateUI();
+                if(gameState.lives <= 0) gameOver("HAS PERDIDO TUS VIDAS");
+                else alert("La figura no coincide con la transformación requerida. ¡Inténtalo de nuevo!");
+            }
+        }
+
+        function gameOver(reason) {
+            clearInterval(gameState.timerInterval);
+            showOverlay("FIN DEL JUEGO", `${reason}. Llegaste al nivel ${gameState.level}.`, () => location.reload());
+        }
+
+        function showOverlay(title, body, action) {
+            const ov = document.getElementById('message-overlay');
+            document.getElementById('msg-title').innerText = title;
+            document.getElementById('msg-body').innerText = body;
+            const btn = document.getElementById('msg-btn');
+            btn.onclick = action;
+            ov.style.display = 'flex';
+        }
+
+        function hideOverlay() {
+            document.getElementById('message-overlay').style.display = 'none';
+        }
+
     </script>
 </body>
 </html>
