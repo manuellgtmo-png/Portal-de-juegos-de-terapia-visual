@@ -3,390 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tangram Vision | Centro Perceptum Professional</title>
+    <title>Tangram Vision Pro | Centro Perceptum Professional Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
+        /* --- VARIABLES Y TEMAS --- */
         :root {
-            --bg-dark: #0f172a;
+            --bg-deep: #0f172a;
             --bg-panel: #1e293b;
             --bg-inv: #0a0f1a;
             --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.3);
             --error: #ef4444;
-            --text-light: #f8fafc;
-            /* Colores de piezas con alto contraste perceptivo */
-            --c1: #ef4444; --c2: #3b82f6; --c3: #f59e0b; 
-            --c4: #8b5cf6; --c5: #ec4899; --c6: #10b981; --c7: #f43f5e;
+            --error-glow: rgba(239, 68, 68, 0.3);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            /* Paleta Tangram Perceptum */
+            --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
+            --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
         }
 
-        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+        /* --- RESET Y ESTRUCTURA --- */
+        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
         
         body { 
-            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-dark); 
-            color: var(--text-light); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg-deep); 
+            color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- PANTALLA DE CONFIGURACIÓN GIGANTE --- */
-        #config-screen {
-            position: fixed; inset: 0; background: var(--bg-dark); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; padding: 60px; overflow-y: auto;
+        /* --- PANTALLA DE INICIO PROFESIONAL --- */
+        #launcher {
+            position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px;
         }
 
-        .brand-title { font-size: 5.5rem; font-weight: 900; color: var(--accent); margin: 0; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .brand-tag { font-size: 1.8rem; opacity: 0.5; letter-spacing: 12px; margin-bottom: 50px; text-transform: uppercase; }
+        .hero-title { font-size: 6rem; font-weight: 900; color: var(--accent); margin: 0; letter-spacing: -2px; }
+        .hero-subtitle { font-size: 2rem; color: var(--text-dim); letter-spacing: 15px; margin-bottom: 60px; text-transform: uppercase; }
 
-        .modes-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 30px; width: 100%; max-width: 1400px; margin-bottom: 50px;
+        .config-container {
+            width: 100%; max-width: 1400px; display: grid; grid-template-columns: 1fr 400px; gap: 40px; margin-bottom: 50px;
         }
 
-        .mode-card {
-            background: var(--bg-panel); padding: 50px; border-radius: 45px; border: 6px solid transparent;
-            cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center;
+        .mode-selection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        
+        .mode-option {
+            background: var(--bg-panel); padding: 40px; border-radius: 40px; border: 6px solid transparent;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .mode-card:hover { transform: translateY(-10px); background: #2d3a4f; }
-        .mode-card.selected { border-color: var(--accent); background: #14532d; }
-        .mode-card h3 { font-size: 2.8rem; margin: 0 0 15px 0; color: var(--accent); text-transform: uppercase; }
-        .mode-card p { font-size: 1.3rem; opacity: 0.8; margin: 0; }
+        .mode-option:hover { transform: translateY(-10px); background: #2d3a4f; }
+        .mode-option.active { border-color: var(--accent); background: #14532d; box-shadow: 0 0 40px var(--accent-glow); }
+        .mode-option h3 { font-size: 2.2rem; margin: 0 0 10px 0; color: var(--accent); }
+        .mode-option p { font-size: 1.1rem; color: var(--text-dim); margin: 0; line-height: 1.4; }
 
-        .settings-box {
-            background: var(--bg-panel); padding: 50px; border-radius: 50px;
-            width: 100%; max-width: 1000px; border: 2px solid rgba(255,255,255,0.1); margin-bottom: 50px;
-        }
-
-        .type-flex { display: flex; justify-content: center; gap: 80px; margin-bottom: 20px; }
-        .type-option { display: flex; align-items: center; gap: 20px; font-size: 2.2rem; font-weight: 900; cursor: pointer; }
-        .type-option input { transform: scale(3); cursor: pointer; accent-color: var(--accent); }
-
-        #limit-ui { display: none; margin-top: 40px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .slider-label { font-size: 2rem; font-weight: 900; margin-bottom: 25px; display: block; }
-        input[type="range"] { width: 100%; height: 25px; accent-color: var(--accent); cursor: pointer; }
-
-        .btn-launch {
-            background: var(--accent); color: var(--bg-dark); padding: 40px 160px;
-            border-radius: 100px; font-weight: 900; font-size: 3.5rem; border: none;
-            cursor: pointer; transition: 0.3s; box-shadow: 0 20px 60px rgba(34, 197, 94, 0.4);
+        .time-panel {
+            background: var(--bg-panel); padding: 40px; border-radius: 40px; display: flex; flex-direction: column; justify-content: center;
         }
 
-        /* --- INTERFAZ DE JUEGO --- */
+        .radio-box { margin-bottom: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .radio-item { display: flex; align-items: center; gap: 15px; font-size: 1.8rem; font-weight: 900; cursor: pointer; }
+        .radio-item input { width: 30px; height: 30px; accent-color: var(--accent); }
+
+        .slider-box { border-top: 2px solid rgba(255,255,255,0.1); padding-top: 30px; display: none; }
+        .slider-box.visible { display: block; }
+        .slider-label { font-size: 1.4rem; font-weight: 900; margin-bottom: 20px; display: block; }
+        input[type="range"] { width: 100%; height: 15px; border-radius: 10px; accent-color: var(--accent); cursor: pointer; }
+
+        .btn-start-engine {
+            background: var(--accent); color: var(--bg-deep); padding: 35px 150px;
+            border-radius: 100px; font-weight: 900; font-size: 3rem; border: none;
+            cursor: pointer; transition: 0.3s; box-shadow: 0 20px 50px var(--accent-glow);
+        }
+        .btn-start-engine:hover { transform: scale(1.05) translateY(-5px); }
+
+        /* --- HEADER Y HUD --- */
         header {
-            height: 120px; padding: 0 60px; background: rgba(0,0,0,0.5);
+            height: 130px; padding: 0 60px; background: rgba(0,0,0,0.4);
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid rgba(255,255,255,0.1);
         }
 
-        .ui-box { background: rgba(255,255,255,0.05); padding: 15px 30px; border-radius: 20px; text-align: center; min-width: 200px; }
-        .ui-box small { font-size: 1rem; opacity: 0.5; display: block; text-transform: uppercase; margin-bottom: 5px; }
-        .ui-box b { font-size: 2.2rem; color: var(--accent); }
-        .hp-icon { font-size: 2.5rem; color: var(--error); letter-spacing: 8px; }
+        .hud-group { display: flex; gap: 30px; }
+        .hud-card { background: rgba(255,255,255,0.05); padding: 15px 35px; border-radius: 25px; text-align: center; min-width: 220px; border: 1px solid rgba(255,255,255,0.1); }
+        .hud-card small { font-size: 0.9rem; color: var(--text-dim); display: block; text-transform: uppercase; margin-bottom: 5px; font-weight: 700; }
+        .hud-card span { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
+        .hp-hearts { font-size: 2.5rem; color: var(--error); letter-spacing: 5px; }
 
-        .game-area { display: flex; flex: 1; padding: 30px; gap: 30px; }
+        /* --- ZONA DE JUEGO --- */
+        .viewport { display: flex; flex: 1; padding: 30px; gap: 30px; }
 
-        .panel-ref { flex: 0 0 450px; background: var(--bg-panel); border-radius: 50px; padding: 30px; display: flex; flex-direction: column; border: 4px solid var(--accent); }
-        .draw-zone { flex: 1; background: rgba(0,0,0,0.3); border-radius: 35px; position: relative; overflow: hidden; }
+        .model-panel { flex: 0 0 420px; background: var(--bg-panel); border-radius: 50px; padding: 30px; display: flex; flex-direction: column; border: 4px solid var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        .model-view { flex: 1; background: rgba(0,0,0,0.3); border-radius: 30px; position: relative; overflow: hidden; }
+        .model-title-tag { text-align: center; margin-top: 20px; font-weight: 900; color: var(--accent); font-size: 1.8rem; text-transform: uppercase; }
 
-        .work-canvas { flex: 1; background: rgba(255,255,255,0.02); border: 5px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
+        .main-stage { flex: 1; background: rgba(255,255,255,0.02); border: 6px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
         
-        .inventory-panel { flex: 0 0 450px; background: var(--bg-inv); border-radius: 50px; position: relative; border: 2px solid rgba(255,255,255,0.1); }
+        .inv-panel { flex: 0 0 420px; background: var(--bg-inv); border-radius: 50px; border: 2px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+        .inv-title { text-align: center; padding: 20px; color: var(--text-dim); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        /* Piezas */
-        .tangram-piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; }
-        .tangram-piece svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6)); }
+        /* --- PIEZAS --- */
+        .piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; transition: filter 0.2s; }
+        .piece:active { cursor: grabbing; filter: brightness(1.2); }
+        .piece svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.6)); }
 
-        .game-footer { height: 150px; display: flex; justify-content: center; align-items: center; gap: 50px; background: rgba(0,0,0,0.2); }
-        .btn-game { padding: 30px 80px; border-radius: 70px; font-weight: 900; font-size: 1.8rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-check { background: var(--accent); color: var(--bg-dark); }
+        .game-actions { height: 160px; display: flex; justify-content: center; align-items: center; gap: 40px; background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); }
+        .btn-action { padding: 30px 90px; border-radius: 100px; font-weight: 900; font-size: 1.8rem; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn-check { background: var(--accent); color: var(--bg-deep); box-shadow: 0 10px 30px var(--accent-glow); }
+        .btn-check:hover { transform: translateY(-5px) scale(1.05); }
         .btn-exit { background: var(--error); color: white; }
 
-        /* --- MODALES PERSONALIZADOS --- */
-        #game-modal {
+        /* --- MODALES REFORZADOS --- */
+        #feedback-overlay {
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
             display: none; align-items: center; justify-content: center; z-index: 10000;
         }
-        .modal-body { 
+        .modal-card { 
             background: var(--bg-panel); padding: 80px; border-radius: 70px; text-align: center; 
-            border: 8px solid var(--accent); max-width: 800px; width: 90%;
-            box-shadow: 0 0 100px rgba(0,0,0,0.5);
+            border: 8px solid var(--accent); max-width: 850px; width: 95%;
+            animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-body h2 { font-size: 5rem; margin: 0 0 20px 0; }
-        .modal-body p { font-size: 2rem; margin-bottom: 50px; opacity: 0.8; }
-        .modal-btn { width: 100%; padding: 35px; border-radius: 60px; font-size: 2.5rem; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; }
+        @keyframes modalPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        .modal-card h2 { font-size: 5.5rem; margin: 0 0 20px 0; font-weight: 900; }
+        .modal-card p { font-size: 2.2rem; margin-bottom: 50px; color: var(--text-dim); }
+        .modal-main-btn { width: 100%; padding: 35px; border-radius: 60px; font-size: 2.8rem; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        
+        .success-theme { border-color: var(--accent); color: var(--accent); }
+        .error-theme { border-color: var(--error); color: var(--error); }
     </style>
 </head>
 <body>
 
-    <div id="config-screen">
-        <h1 class="brand-title">CENTRO PERCEPTUM</h1>
-        <p class="brand-tag">Tangram Vision Engine</p>
+    <div id="launcher">
+        <h1 class="hero-title">CENTRO PERCEPTUM</h1>
+        <p class="hero-subtitle">Tangram Visual Training</p>
 
-        <div class="modes-grid">
-            <div class="mode-card selected" data-mode="copy">
-                <h3>COPIA DIRECTA</h3>
-                <p>Mismo lugar, misma posición. Entrenamiento base.</p>
+        <div class="config-container">
+            <div class="mode-selection">
+                <div class="mode-option active" data-m="copy" onclick="selectMode(this)">
+                    <h3>COPIA DIRECTA</h3>
+                    <p>Misma posición y orientación. Ideal para trabajar atención y constancia de forma.</p>
+                </div>
+                <div class="mode-option" data-m="mirrorV" onclick="selectMode(this)">
+                    <h3>ESPEJO VERTICAL</h3>
+                    <p>Invierte el eje X. Trabaja la lateralidad y el cruce de línea media.</p>
+                </div>
+                <div class="mode-option" data-m="mirrorH" onclick="selectMode(this)">
+                    <h3>ESPEJO HORIZONTAL</h3>
+                    <p>Invierte el eje Y. Entrenamiento de las relaciones arriba-abajo.</p>
+                </div>
+                <div class="mode-option" data-m="rotate180" onclick="selectMode(this)">
+                    <h3>ROTACIÓN 180°</h3>
+                    <p>Giro completo. Máximo nivel de abstracción y rotación mental.</p>
+                </div>
             </div>
-            <div class="mode-card" data-mode="mirrorV">
-                <h3>ESPEJO VERTICAL</h3>
-                <p>Invierte derecha e izquierda. Procesamiento espacial.</p>
-            </div>
-            <div class="mode-card" data-mode="mirrorH">
-                <h3>ESPEJO HORIZONTAL</h3>
-                <p>Reflejo tipo agua. Arriba es abajo.</p>
-            </div>
-            <div class="mode-card" data-mode="rot180">
-                <h3>ROTACIÓN 180°</h3>
-                <p>Gira la estructura completamente de cabeza.</p>
+
+            <div class="time-panel">
+                <div class="radio-box">
+                    <label class="radio-item">
+                        <input type="radio" name="timer-type" value="cron" checked onclick="toggleTimerUI(false)"> 
+                        CRONÓMETRO
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="timer-type" value="contra" onclick="toggleTimerUI(true)"> 
+                        CONTRARRELOJ
+                    </label>
+                </div>
+                
+                <div class="slider-box" id="timer-config">
+                    <span class="slider-label">DURACIÓN: <span id="val-time" style="color:var(--accent)">30</span> SEG</span>
+                    <input type="range" id="input-time" min="10" max="120" value="30">
+                </div>
             </div>
         </div>
 
-        <div class="settings-box">
-            <div class="type-flex">
-                <label class="type-option">
-                    <input type="radio" name="g-type" value="cron" checked onclick="showSlider(false)"> CRONÓMETRO
-                </label>
-                <label class="type-option">
-                    <input type="radio" name="g-type" value="contra" onclick="showSlider(true)"> CONTRARRELOJ
-                </label>
-            </div>
-            
-            <div id="limit-ui">
-                <span class="slider-label">TIEMPO LÍMITE: <span id="lbl-val" style="color:var(--accent)">30</span> SEGUNDOS</span>
-                <input type="range" id="inp-val" min="10" max="120" value="30">
-            </div>
-        </div>
-
-        <button class="btn-launch" onclick="launchGame()">¡EMPEZAR!</button>
+        <button class="btn-start-engine" onclick="initEngine()">INICIAR ENTRENAMIENTO</button>
     </div>
 
     <header>
-        <div style="font-weight:900; font-size:2.5rem;">PERCEPTUM <span style="color:var(--accent)">VISION</span></div>
-        <div class="stats-group" style="display:flex; gap:30px;">
-            <div class="ui-box"><small>Nivel</small><b id="txt-lvl">1</b></div>
-            <div class="ui-box"><small>Tiempo</small><b id="txt-clock">00:00</b></div>
-            <div class="ui-box"><small>Vidas</small><span id="txt-hp" class="hp-icon">❤️❤️❤️</span></div>
+        <div style="font-weight:900; font-size:3rem; letter-spacing:-1px;">PERCEPTUM<span style="color:var(--accent)">PRO</span></div>
+        <div class="hud-group">
+            <div class="hud-card"><small>Nivel Actual</small><span id="hud-lvl">1</span></div>
+            <div class="hud-card"><small>Reloj de Sesión</small><span id="hud-time">00:00</span></div>
+            <div class="hud-card"><small>Salud Perceptiva</small><div id="hud-hp" class="hp-hearts">❤️❤️❤️</div></div>
         </div>
     </header>
 
-    <div class="game-area">
-        <div class="panel-ref">
-            <div class="draw-zone" id="ref-canvas"></div>
-            <h3 style="text-align:center; color:var(--accent); font-size: 2.2rem; margin-top: 25px;">MODELO</h3>
+    <div class="viewport">
+        <div class="model-panel">
+            <div class="model-view" id="model-screen"></div>
+            <div class="model-title-tag">Modelo Objetivo</div>
         </div>
 
-        <div class="work-canvas" id="main-zone"></div>
+        <div class="main-stage" id="canvas-stage"></div>
 
-        <div class="inventory-panel" id="inv-zone"></div>
+        <div class="inv-panel">
+            <div class="inv-title">PIEZAS DISPONIBLES</div>
+            <div id="inventory-screen" style="height:100%"></div>
+        </div>
     </div>
 
-    <div class="game-footer">
-        <button class="btn-game btn-exit" onclick="location.reload()">Abandonar</button>
-        <button class="btn-game btn-check" onclick="validateSolution()">Comprobar Figura</button>
+    <div class="game-actions">
+        <button class="btn-action btn-exit" onclick="location.reload()">Cerrar Sesión</button>
+        <button class="btn-action btn-check" onclick="runValidation()">Validar Figura</button>
     </div>
 
-    <div id="game-modal">
-        <div class="modal-body">
-            <h2 id="modal-h">¡MUY BIEN!</h2>
-            <p id="modal-p">Has completado el patrón correctamente.</p>
-            <button class="modal-btn" id="modal-btn">Siguiente Nivel</button>
+    <div id="feedback-overlay">
+        <div class="modal-card success-theme" id="modal-content">
+            <h2 id="m-header">¡LOGRADO!</h2>
+            <p id="m-text">El patrón visual es correcto. Procediendo al siguiente nivel.</p>
+            <button class="modal-main-btn" id="m-btn">CONTINUAR</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE PIEZAS
-        const PIECES = [
-            { id:0, pts: "0,0 100,0 50,50", c: 'var(--c1)', w: 180, h: 180 },
-            { id:1, pts: "0,0 0,100 50,50", c: 'var(--c2)', w: 180, h: 180 },
-            { id:2, pts: "0,0 100,0 0,100", c: 'var(--c3)', w: 140, h: 140 },
-            { id:3, pts: "50,50 100,100 0,100", c: 'var(--c4)', w: 110, h: 110 },
-            { id:4, pts: "0,0 50,50 0,100", c: 'var(--c5)', w: 110, h: 110 },
-            { id:5, pts: "0,0 100,0 100,100 0,100", c: 'var(--c6)', w: 90, h: 90 },
-            { id:6, pts: "40,0 140,0 100,100 0,100", c: 'var(--c7)', w: 150, h: 100 }
+        // --- BASE DE DATOS DE PIEZAS (Geometría Exacta) ---
+        const MASTER_SHAPES = [
+            { id:0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180, name: 'Triángulo Grande' },
+            { id:1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180, name: 'Triángulo Lateral' },
+            { id:2, pts: "0,0 100,0 100,100 0,100", color: 'var(--c3)', w: 110, h: 110, name: 'Cuadrado' },
+            { id:3, pts: "50,50 150,150 0,150", color: 'var(--c4)', w: 120, h: 120, name: 'Triángulo Pequeño' },
+            { id:4, pts: "0,0 100,0 0,100", color: 'var(--c5)', w: 140, h: 140, name: 'Triángulo Isósceles' },
+            { id:5, pts: "40,0 140,0 100,100 0,100", color: 'var(--c7)', w: 160, h: 100, name: 'Romboide' }
         ];
 
-        // LIBRERÍA DE NIVELES MANUALES (Figuras Simples)
-        const LEVEL_DATABASE = [
-            { name: "Iniciación", pieces: [{i:0, x:-90, y:0, a:0}, {i:1, x:90, y:0, a:0}] },
-            { name: "Duo Rotado", pieces: [{i:2, x:-80, y:0, a:90}, {i:5, x:80, y:0, a:0}] },
-            { name: "La Flecha", pieces: [{i:0, x:0, y:-60, a:180}, {i:5, x:0, y:40, a:0}] },
-            { name: "Trío Lineal", pieces: [{i:3, x:-110, y:0, a:0}, {i:4, x:0, y:0, a:90}, {i:2, x:110, y:0, a:0}] },
-            { name: "Estructura V", pieces: [{i:0, x:-70, y:-40, a:0}, {i:1, x:70, y:-40, a:0}, {i:6, x:0, y:60, a:0}] }
+        // --- LIBRERÍA DE NIVELES MANUALES (Progreso de Simple a Complejo) ---
+        const MASTER_LEVELS = [
+            // Nivel 1-3: Piezas separadas para iniciación
+            { pieces: [{i:0, x:-90, y:0, a:0}, {i:1, x:90, y:0, a:0}] },
+            { pieces: [{i:2, x:-80, y:0, a:0}, {i:5, x:80, y:0, a:90}] },
+            { pieces: [{i:4, x:-100, y:0, a:0}, {i:3, x:100, y:0, a:0}, {i:2, x:0, y:0, a:0}] },
+            // Nivel 4-6: Figuras con formas (Casa, Flecha, etc)
+            { pieces: [{i:2, x:0, y:40, a:0}, {i:4, x:0, y:-50, a:180}] }, // Casita
+            { pieces: [{i:5, x:0, y:40, a:0}, {i:0, x:0, y:-40, a:180}] }, // Flecha
+            { pieces: [{i:0, x:-60, y:0, a:90}, {i:1, x:60, y:0, a:270}, {i:2, x:0, y:80, a:0}] }
         ];
 
-        let state = {
+        let gameStatus = {
             lvl: 1, hp: 3, clock: 0, 
-            modo: 'copy', tipo: 'cron', limit: 30,
-            targets: [], interval: null
+            mode: 'copy', type: 'cron', limit: 30,
+            targets: [], activeInterval: null
         };
 
-        // --- GESTIÓN DE INTERFAZ INICIAL ---
-        function showSlider(val) { document.getElementById('limit-ui').style.display = val ? 'block' : 'none'; }
-        
-        document.getElementById('inp-val').oninput = function() {
-            document.getElementById('lbl-val').innerText = this.value;
-            state.limit = parseInt(this.value);
-        };
+        // --- LÓGICA DE CONFIGURACIÓN ---
+        function selectMode(el) {
+            document.querySelectorAll('.mode-option').forEach(m => m.classList.remove('active'));
+            el.classList.add('active');
+            gameStatus.mode = el.dataset.m;
+        }
 
-        document.querySelectorAll('.mode-card').forEach(card => {
-            card.onclick = () => {
-                document.querySelectorAll('.mode-card').forEach(m => m.classList.remove('selected'));
-                card.classList.add('selected');
-                state.modo = card.dataset.mode;
-            };
-        });
+        function toggleTimerUI(show) {
+            document.getElementById('timer-config').classList.toggle('visible', show);
+        }
 
-        // --- MOTOR DEL JUEGO ---
-        function launchGame() {
-            state.tipo = document.querySelector('input[name="g-type"]:checked').value;
-            document.getElementById('config-screen').style.display = 'none';
-            if(state.tipo === 'contra') state.clock = state.limit;
+        document.getElementById('input-time').oninput = function() {
+            document.getElementById('val-time').innerText = this.value;
+            gameStatus.limit = parseInt(this.value);
+        }
+
+        // --- MOTOR PRINCIPAL ---
+        function initEngine() {
+            gameStatus.type = document.querySelector('input[name="timer-type"]:checked').value;
+            document.getElementById('launcher').style.display = 'none';
             
-            state.interval = setInterval(processTime, 1000);
+            if(gameStatus.type === 'contra') gameStatus.clock = gameStatus.limit;
+            
+            gameStatus.activeInterval = setInterval(updateClock, 1000);
             renderLevel();
         }
 
-        function processTime() {
-            if(state.tipo === 'cron') state.clock++;
+        function updateClock() {
+            if(gameStatus.type === 'cron') gameStatus.clock++;
             else {
-                state.clock--;
-                if(state.clock <= 0) { 
-                    triggerFailure("¡SE ACABÓ EL TIEMPO!"); 
-                    state.clock = state.limit; 
+                gameStatus.clock--;
+                if(gameStatus.clock <= 0) { 
+                    handleError("¡TIEMPO AGOTADO!"); 
+                    gameStatus.clock = gameStatus.limit;
                 }
             }
-            refreshStats();
+            refreshHUD();
         }
 
-        function refreshStats() {
-            const m = Math.floor(Math.abs(state.clock)/60).toString().padStart(2,'0');
-            const s = (Math.abs(state.clock)%60).toString().padStart(2,'0');
-            document.getElementById('txt-clock').innerText = `${m}:${s}`;
-            document.getElementById('txt-lvl').innerText = state.lvl;
-            document.getElementById('txt-hp').innerText = "❤️".repeat(state.hp);
+        function refreshHUD() {
+            const m = Math.floor(Math.abs(gameStatus.clock)/60).toString().padStart(2,'0');
+            const s = (Math.abs(gameStatus.clock)%60).toString().padStart(2,'0');
+            document.getElementById('hud-time').innerText = `${m}:${s}`;
+            document.getElementById('hud-lvl').innerText = gameStatus.lvl;
+            document.getElementById('hud-hp').innerText = "❤️".repeat(gameStatus.hp);
         }
 
-        // --- RENDERIZADO DE NIVEL ---
+        // --- GESTIÓN DE PIEZAS Y NIVELES ---
         function renderLevel() {
-            const inv = document.getElementById('inv-zone');
-            const ref = document.getElementById('ref-canvas');
-            inv.innerHTML = ''; ref.innerHTML = '';
-            state.targets = [];
+            const modelZone = document.getElementById('model-screen');
+            const invZone = document.getElementById('inventory-screen');
+            modelZone.innerHTML = ''; invZone.innerHTML = '';
+            gameStatus.targets = [];
 
-            // Obtenemos datos del nivel (o generamos uno aleatorio si se acaban los manuales)
-            let lData = LEVEL_DATABASE[Math.min(state.lvl - 1, LEVEL_DATABASE.length - 1)];
-            
-            lData.pieces.forEach((p, idx) => {
-                let config = PIECES[p.i];
-                let angle = p.a;
-                state.targets.push({ id: idx, x: p.x, y: p.y, a: angle, type: p.i });
+            // Obtener nivel actual
+            const data = MASTER_LEVELS[Math.min(gameStatus.lvl-1, MASTER_LEVELS.length-1)];
 
-                // Render en panel de referencia
-                createPiece(config, ref, p.x, p.y, angle, true, idx);
-                // Render en inventario
-                createPiece(config, inv, 0, idx * 100 - 150, 0, false, idx);
+            data.pieces.forEach((p, index) => {
+                const shape = MASTER_SHAPES[p.i];
+                gameStatus.targets.push({ id: index, x: p.x, y: p.y, a: p.a });
+
+                // Crear Pieza en Modelo (Referencia)
+                buildPiece(shape, modelZone, p.x, p.y, p.a, true, index);
+                
+                // Crear Pieza en Inventario (Jugable)
+                buildPiece(shape, invZone, 0, index * 120 - 150, 0, false, index);
             });
-            enableDragging();
+
+            initDragLogic();
         }
 
-        function createPiece(data, container, x, y, a, isRef, id) {
-            const el = document.createElement('div');
-            el.className = 'tangram-piece';
-            el.style.width = (isRef ? data.w * 0.75 : data.w) + 'px';
-            el.style.height = (isRef ? data.h * 0.75 : data.h) + 'px';
+        function buildPiece(shape, container, x, y, a, isRef, id) {
+            const div = document.createElement('div');
+            div.className = 'piece';
+            div.style.width = (isRef ? shape.w * 0.75 : shape.w) + 'px';
+            div.style.height = (isRef ? shape.h * 0.75 : shape.h) + 'px';
             
             if(isRef) {
-                el.style.left = '50%'; el.style.top = '50%';
-                el.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
-                el.style.opacity = "0.4"; el.style.pointerEvents = "none";
+                div.style.left = '50%'; div.style.top = '50%';
+                div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
+                div.style.opacity = "0.45"; div.style.pointerEvents = "none";
             } else {
-                el.style.left = '80px'; el.style.top = '200px';
-                el.setAttribute('data-id', id); el.setAttribute('data-ang', 0);
+                div.style.left = '90px'; div.style.top = '250px';
+                div.setAttribute('data-id', id); div.setAttribute('data-ang', 0);
             }
-            el.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${data.pts}" fill="${data.c}"/></svg>`;
-            container.appendChild(el);
+            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
+            container.appendChild(div);
         }
 
-        function enableDragging() {
-            interact('.tangram-piece:not([style*="pointer-events: none"])').draggable({
+        function initDragLogic() {
+            interact('.piece:not([style*="pointer-events: none"])').draggable({
                 listeners: { move(e) {
                     const t = e.target;
-                    const x = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
-                    const y = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
-                    t.style.transform = `translate(${x}px, ${y}px) rotate(${t.getAttribute('data-ang')}deg)`;
-                    t.setAttribute('data-x', x); t.setAttribute('data-y', y);
+                    const nx = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
+                    const ny = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
+                    t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
+                    t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
                 }}
             }).on('tap', function(e) {
                 const t = e.currentTarget;
-                let a = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
-                t.setAttribute('data-ang', a);
-                t.style.transform = `translate(${t.getAttribute('data-x') || 0}px, ${t.getAttribute('data-y') || 0}px) rotate(${a}deg)`;
+                let ang = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
+                t.setAttribute('data-ang', ang);
+                t.style.transform = `translate(${t.getAttribute('data-x') || 0}px, ${t.getAttribute('data-y') || 0}px) rotate(${ang}deg)`;
             });
         }
 
-        // --- VALIDACIÓN PROFESIONAL ---
-        function validateSolution() {
-            const zone = document.getElementById('main-zone');
-            const rectZ = zone.getBoundingClientRect();
-            let correctCount = 0;
+        // --- VALIDACIÓN Y FEEDBACK ---
+        function runValidation() {
+            const stage = document.getElementById('canvas-stage');
+            const sRect = stage.getBoundingClientRect();
+            let score = 0;
 
-            state.targets.forEach(goal => {
-                const piece = document.querySelector(`[data-id="${goal.id}"]`);
-                if(!piece) return;
+            gameStatus.targets.forEach(tgt => {
+                const p = document.querySelector(`[data-id="${tgt.id}"]`);
+                if(!p) return;
 
-                const rectP = piece.getBoundingClientRect();
-                const curX = (rectP.left + rectP.width/2) - (rectZ.left + rectZ.width/2);
-                const curY = (rectP.top + rectP.height/2) - (rectZ.top + rectZ.height/2);
-                const curA = (parseInt(piece.getAttribute('data-ang')) || 0) % 360;
+                const pRect = p.getBoundingClientRect();
+                const curX = (pRect.left + pRect.width/2) - (sRect.left + sRect.width/2);
+                const curY = (pRect.top + pRect.height/2) - (sRect.top + sRect.height/2);
+                const curA = (parseInt(p.getAttribute('data-ang')) || 0) % 360;
 
-                // Lógica según modo terapéutico
-                let targetX = goal.x, targetY = goal.y, targetA = goal.a;
+                let tx = tgt.x, ty = tgt.y, ta = tgt.a;
 
-                if(state.modo === 'mirrorV') { targetX = -goal.x; }
-                if(state.modo === 'mirrorH') { targetY = -goal.y; }
-                if(state.modo === 'rot180') { targetX = -goal.x; targetY = -goal.y; targetA = (goal.a + 180) % 360; }
+                // Lógica Matemática de Modos Perceptivos
+                if(gameStatus.mode === 'mirrorV') { tx = -tgt.x; }
+                if(gameStatus.mode === 'mirrorH') { ty = -tgt.y; }
+                if(gameStatus.mode === 'rotate180') { tx = -tgt.x; ty = -tgt.y; ta = (tgt.a + 180) % 360; }
 
-                const dist = Math.sqrt(Math.pow(curX - targetX, 2) + Math.pow(curY - targetY, 2));
+                const diff = Math.sqrt(Math.pow(curX - tx, 2) + Math.pow(curY - ty, 2));
                 
-                // Margen de error tolerante de 55px (aprox 1cm en pantalla estándar)
-                if(dist < 55 && curA === targetA) correctCount++;
+                // Tolerancia profesional (75px) para evitar frustración del paciente
+                if(diff < 75 && curA === (ta % 360)) score++;
             });
 
-            if(correctCount === state.targets.length) {
-                openModal("¡LOGRADO!", "La figura es idéntica al modelo.", () => {
-                    state.lvl++; 
-                    if(state.tipo === 'contra') state.clock = state.limit;
-                    document.getElementById('game-modal').style.display = 'none';
-                    renderLevel();
-                    refreshStats();
-                });
+            if(score === gameStatus.targets.length) {
+                triggerSuccess();
             } else {
-                triggerFailure("LA FIGURA NO COINCIDE");
+                handleError("POSICIÓN INCORRECTA");
             }
         }
 
-        function triggerFailure(msg) {
-            state.hp--;
-            refreshStats();
-            if(state.hp <= 0) {
-                openModal("FIN DEL JUEGO", "Has agotado tus intentos.", () => location.reload(), true);
+        function triggerSuccess() {
+            openModal("¡LOGRADO!", "La configuración visual es correcta.", () => {
+                gameStatus.lvl++;
+                if(gameStatus.type === 'contra') gameStatus.clock = gameStatus.limit;
+                document.getElementById('feedback-overlay').style.display = 'none';
+                renderLevel();
+                refreshHUD();
+            }, false);
+        }
+
+        function handleError(msg) {
+            gameStatus.hp--;
+            refreshHUD();
+            if(gameStatus.hp <= 0) {
+                openModal("FIN DE SESIÓN", "Se han agotado los intentos disponibles.", () => location.reload(), true);
             } else {
-                openModal("¡UY!", msg + ". Inténtalo de nuevo.", () => {
-                    document.getElementById('game-modal').style.display = 'none';
+                openModal("REINTENTAR", msg + ". Observa bien el modelo.", () => {
+                    document.getElementById('feedback-overlay').style.display = 'none';
                 }, true);
             }
         }
 
-        function openModal(title, desc, callback, isErr = false) {
-            const m = document.getElementById('game-modal');
-            const h = document.getElementById('modal-h');
-            const b = document.getElementById('modal-btn');
-            
+        function openModal(title, text, action, isErr) {
+            const overlay = document.getElementById('feedback-overlay');
+            const card = document.getElementById('modal-content');
+            const h = document.getElementById('m-header');
+            const b = document.getElementById('m-btn');
+
             h.innerText = title;
-            h.style.color = isErr ? 'var(--error)' : 'var(--accent)';
-            document.getElementById('modal-p').innerText = desc;
-            b.innerText = isErr ? (state.hp <= 0 ? "REINICIAR" : "REINTENTAR") : "SIGUIENTE NIVEL";
+            document.getElementById('m-text').innerText = text;
+            b.innerText = isErr ? (gameStatus.hp <= 0 ? "REINICIAR" : "REINTENTAR") : "SIGUIENTE NIVEL";
+            
+            card.className = "modal-card " + (isErr ? "error-theme" : "success-theme");
             b.style.background = isErr ? 'var(--error)' : 'var(--accent)';
-            b.style.color = isErr ? 'white' : 'var(--bg-dark)';
-            b.onclick = callback;
-            m.style.display = 'flex';
+            b.style.color = isErr ? 'white' : 'var(--bg-deep)';
+            b.onclick = action;
+            
+            overlay.style.display = 'flex';
         }
     </script>
 </body>
