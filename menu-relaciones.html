@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relaciones Espaciales - Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --accent-color: #22c55e; /* Verde Relaciones */
+            --g-verde: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Montserrat', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            padding: 60px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
+        .header p { color: var(--accent-color); font-weight: 700; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;}
+
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 35px; 
+            max-width: 1100px; 
+            width: 100%;
+            margin-bottom: 80px;
+        }
+
+        .card-game {
+            background: white;
+            border-radius: 40px;
+            padding: 45px 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            color: #1e293b;
+            text-decoration: none;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 4px solid transparent;
+        }
+
+        .card-game:hover { 
+            transform: translateY(-15px); 
+            border-color: var(--accent-color);
+            background: var(--g-verde);
+        }
+
+        .svg-icon {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 25px;
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 1.5;
+        }
+
+        .name { font-size: 1.7rem; font-weight: 900; margin-bottom: 15px; color: #0f172a; }
+        .desc { font-size: 1rem; opacity: 0.8; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; font-weight: 600; }
+
+        .btn-play {
+            padding: 15px 25px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: white;
+            text-transform: uppercase;
+            width: 100%;
+            background: var(--accent-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .back-btn {
+            padding: 18px 50px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .back-btn:hover { background: white; color: #0f172a; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>RELACIONES ESPACIALES</h1>
+        <p>Selecciona un nivel de entrenamiento</p>
+    </header>
+
+    <div class="grid">
+        <a href="tangrama.html" class="card-game">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2L2 12h10V2zM12 22L22 12H12v10zM2 22l10-10L2 12v10z"/></svg>
+            <div class="name">Tangrama Pro</div>
+            <div class="desc">Construye figuras geométricas rotando y encajando piezas.</div>
+            <div class="btn-play">Jugar Ahora</div>
+        </a>
+
+        <a href="espejo-maestro.html" class="card-game">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 14"/></svg>
+            <div class="name">Espejo Maestro</div>
+            <div class="desc">Identifica la orientación correcta de figuras reflejadas.</div>
+            <div class="btn-play">Jugar Ahora</div>
+        </a>
+
+        <a href="laberinto-espacial.html" class="card-game">
+            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zM9 9h6v6H9V9zM21 12h-3M3 12h3M12 3v3M12 18v3"/></svg>
+            <div class="name">Laberinto Espacial</div>
+            <div class="desc">Planifica rutas mediante comandos direccionales.</div>
+            <div class="btn-play">Jugar Ahora</div>
+        </a>
+    </div>
+
+    <a href="integracion-visual.html" class="back-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        VOLVER A INTEGRACIÓN VISUAL
+    </a>
+
+</body>
+</html>
