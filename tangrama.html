@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
-        /* --- VARIABLES Y TEMAS --- */
+        /* --- CONSTANTES ESTÉTICAS (PROHIBIDO TOCAR) --- */
         :root {
             --bg-deep: #0f172a;
             --bg-panel: #1e293b;
@@ -18,12 +18,13 @@
             --error-glow: rgba(239, 68, 68, 0.3);
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            /* Paleta Tangram Perceptum */
+            /* Paleta Tangram de Alto Contraste */
             --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
             --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
+            --c8: #1abc9c; --c9: #f1c40f; --c10: #e67e22;
         }
 
-        /* --- RESET Y ESTRUCTURA --- */
+        /* --- ESTRUCTURA BASE --- */
         * { box-sizing: border-box; -webkit-user-select: none; user-select: none; outline: none; }
         
         body { 
@@ -41,7 +42,7 @@
         .hero-subtitle { font-size: 2rem; color: var(--text-dim); letter-spacing: 15px; margin-bottom: 60px; text-transform: uppercase; }
 
         .config-container {
-            width: 100%; max-width: 1400px; display: grid; grid-template-columns: 1fr 400px; gap: 40px; margin-bottom: 50px;
+            width: 100%; max-width: 1400px; display: grid; grid-template-columns: 1fr 450px; gap: 40px; margin-bottom: 50px;
         }
 
         .mode-selection { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -88,21 +89,34 @@
         .hud-card span { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
         .hp-hearts { font-size: 2.5rem; color: var(--error); letter-spacing: 5px; }
 
-        /* --- ZONA DE JUEGO --- */
-        .viewport { display: flex; flex: 1; padding: 30px; gap: 30px; }
+        /* --- ESCENARIO DE JUEGO --- */
+        .viewport { display: flex; flex: 1; padding: 30px; gap: 30px; position: relative; z-index: 1; }
 
         .model-panel { flex: 0 0 420px; background: var(--bg-panel); border-radius: 50px; padding: 30px; display: flex; flex-direction: column; border: 4px solid var(--accent); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
         .model-view { flex: 1; background: rgba(0,0,0,0.3); border-radius: 30px; position: relative; overflow: hidden; }
         .model-title-tag { text-align: center; margin-top: 20px; font-weight: 900; color: var(--accent); font-size: 1.8rem; text-transform: uppercase; }
 
-        .main-stage { flex: 1; background: rgba(255,255,255,0.02); border: 6px dashed rgba(255,255,255,0.1); border-radius: 60px; position: relative; }
+        .main-stage { 
+            flex: 1; 
+            background: rgba(255,255,255,0.02); 
+            border: 6px dashed rgba(255,255,255,0.1); 
+            border-radius: 60px; 
+            position: relative;
+            z-index: 5;
+        }
         
         .inv-panel { flex: 0 0 420px; background: var(--bg-inv); border-radius: 50px; border: 2px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
         .inv-title { text-align: center; padding: 20px; color: var(--text-dim); font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
-        /* --- PIEZAS --- */
-        .piece { position: absolute; cursor: grab; touch-action: none; z-index: 100; transition: filter 0.2s; }
-        .piece:active { cursor: grabbing; filter: brightness(1.2); }
+        /* --- PIEZAS (CORRECCIÓN DE CAPAS DEFINITIVA) --- */
+        .piece { 
+            position: absolute !important; 
+            cursor: grab; 
+            touch-action: none; 
+            z-index: 9999 !important; /* Siempre sobre el tablero */
+            transition: filter 0.2s; 
+        }
+        .piece:active { cursor: grabbing; filter: brightness(1.2); z-index: 10000 !important; }
         .piece svg { width: 100%; height: 100%; filter: drop-shadow(0 15px 20px rgba(0,0,0,0.6)); }
 
         .game-actions { height: 160px; display: flex; justify-content: center; align-items: center; gap: 40px; background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); }
@@ -111,10 +125,10 @@
         .btn-check:hover { transform: translateY(-5px) scale(1.05); }
         .btn-exit { background: var(--error); color: white; }
 
-        /* --- MODALES REFORZADOS --- */
+        /* --- MODALES --- */
         #feedback-overlay {
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98);
-            display: none; align-items: center; justify-content: center; z-index: 10000;
+            display: none; align-items: center; justify-content: center; z-index: 20000;
         }
         .modal-card { 
             background: var(--bg-panel); padding: 80px; border-radius: 70px; text-align: center; 
@@ -141,7 +155,7 @@
             <div class="mode-selection">
                 <div class="mode-option active" data-m="copy" onclick="selectMode(this)">
                     <h3>COPIA DIRECTA</h3>
-                    <p>Misma posición y orientación. Ideal para trabajar atención y constancia de forma.</p>
+                    <p>Misma posición y orientación. Ideal para trabajar atención base.</p>
                 </div>
                 <div class="mode-option" data-m="mirrorV" onclick="selectMode(this)">
                     <h3>ESPEJO VERTICAL</h3>
@@ -153,7 +167,7 @@
                 </div>
                 <div class="mode-option" data-m="rotate180" onclick="selectMode(this)">
                     <h3>ROTACIÓN 180°</h3>
-                    <p>Giro completo. Máximo nivel de abstracción y rotación mental.</p>
+                    <p>Giro completo. Máximo nivel de abstracción mental.</p>
                 </div>
             </div>
 
@@ -183,8 +197,8 @@
         <div style="font-weight:900; font-size:3rem; letter-spacing:-1px;">PERCEPTUM<span style="color:var(--accent)">PRO</span></div>
         <div class="hud-group">
             <div class="hud-card"><small>Nivel Actual</small><span id="hud-lvl">1</span></div>
-            <div class="hud-card"><small>Reloj de Sesión</small><span id="hud-time">00:00</span></div>
-            <div class="hud-card"><small>Salud Perceptiva</small><div id="hud-hp" class="hp-hearts">❤️❤️❤️</div></div>
+            <div class="hud-card"><small>Tiempo</small><span id="hud-time">00:00</span></div>
+            <div class="hud-card"><small>Vidas</small><div id="hud-hp" class="hp-hearts">❤️❤️❤️</div></div>
         </div>
     </header>
 
@@ -193,9 +207,7 @@
             <div class="model-view" id="model-screen"></div>
             <div class="model-title-tag">Modelo Objetivo</div>
         </div>
-
         <div class="main-stage" id="canvas-stage"></div>
-
         <div class="inv-panel">
             <div class="inv-title">PIEZAS DISPONIBLES</div>
             <div id="inventory-screen" style="height:100%"></div>
@@ -203,39 +215,31 @@
     </div>
 
     <div class="game-actions">
-        <button class="btn-action btn-exit" onclick="location.reload()">Cerrar Sesión</button>
+        <button class="btn-action btn-exit" onclick="location.reload()">Cerrar</button>
         <button class="btn-action btn-check" onclick="runValidation()">Validar Figura</button>
     </div>
 
     <div id="feedback-overlay">
         <div class="modal-card success-theme" id="modal-content">
             <h2 id="m-header">¡LOGRADO!</h2>
-            <p id="m-text">El patrón visual es correcto. Procediendo al siguiente nivel.</p>
+            <p id="m-text">El patrón visual es correcto.</p>
             <button class="modal-main-btn" id="m-btn">CONTINUAR</button>
         </div>
     </div>
 
     <script>
-        // --- BASE DE DATOS DE PIEZAS (Geometría Exacta) ---
+        // --- MASTER PIECES DATABASE (EXTENDIDA) ---
         const MASTER_SHAPES = [
-            { id:0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180, name: 'Triángulo Grande' },
-            { id:1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180, name: 'Triángulo Lateral' },
-            { id:2, pts: "0,0 100,0 100,100 0,100", color: 'var(--c3)', w: 110, h: 110, name: 'Cuadrado' },
-            { id:3, pts: "50,50 150,150 0,150", color: 'var(--c4)', w: 120, h: 120, name: 'Triángulo Pequeño' },
-            { id:4, pts: "0,0 100,0 0,100", color: 'var(--c5)', w: 140, h: 140, name: 'Triángulo Isósceles' },
-            { id:5, pts: "40,0 140,0 100,100 0,100", color: 'var(--c7)', w: 160, h: 100, name: 'Romboide' }
-        ];
-
-        // --- LIBRERÍA DE NIVELES MANUALES (Progreso de Simple a Complejo) ---
-        const MASTER_LEVELS = [
-            // Nivel 1-3: Piezas separadas para iniciación
-            { pieces: [{i:0, x:-90, y:0, a:0}, {i:1, x:90, y:0, a:0}] },
-            { pieces: [{i:2, x:-80, y:0, a:0}, {i:5, x:80, y:0, a:90}] },
-            { pieces: [{i:4, x:-100, y:0, a:0}, {i:3, x:100, y:0, a:0}, {i:2, x:0, y:0, a:0}] },
-            // Nivel 4-6: Figuras con formas (Casa, Flecha, etc)
-            { pieces: [{i:2, x:0, y:40, a:0}, {i:4, x:0, y:-50, a:180}] }, // Casita
-            { pieces: [{i:5, x:0, y:40, a:0}, {i:0, x:0, y:-40, a:180}] }, // Flecha
-            { pieces: [{i:0, x:-60, y:0, a:90}, {i:1, x:60, y:0, a:270}, {i:2, x:0, y:80, a:0}] }
+            { id:0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180 },
+            { id:1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180 },
+            { id:2, pts: "0,0 100,0 100,100 0,100", color: 'var(--c3)', w: 110, h: 110 },
+            { id:3, pts: "50,50 150,150 0,150", color: 'var(--c4)', w: 120, h: 120 },
+            { id:4, pts: "0,0 100,0 0,100", color: 'var(--c5)', w: 140, h: 140 },
+            { id:5, pts: "40,0 140,0 100,100 0,100", color: 'var(--c6)', w: 160, h: 100 },
+            { id:6, pts: "0,0 50,0 50,100 0,100", color: 'var(--c7)', w: 80, h: 140 },
+            { id:7, pts: "50,0 100,100 0,100", color: 'var(--c8)', w: 130, h: 130 },
+            { id:8, pts: "0,0 100,0 50,100", color: 'var(--c9)', w: 150, h: 150 },
+            { id:9, pts: "0,50 100,50 50,0 50,100", color: 'var(--c10)', w: 120, h: 120 }
         ];
 
         let gameStatus = {
@@ -251,22 +255,35 @@
             gameStatus.mode = el.dataset.m;
         }
 
-        function toggleTimerUI(show) {
-            document.getElementById('timer-config').classList.toggle('visible', show);
-        }
+        function toggleTimerUI(show) { document.getElementById('timer-config').classList.toggle('visible', show); }
 
         document.getElementById('input-time').oninput = function() {
             document.getElementById('val-time').innerText = this.value;
             gameStatus.limit = parseInt(this.value);
         }
 
+        // --- MOTOR DE GENERACIÓN INFINITA ---
+        function generateLevel() {
+            const numPieces = Math.min(2 + Math.floor(gameStatus.lvl / 5), 8); // Aumenta piezas cada 5 niveles
+            const pieces = [];
+            const usedShapes = [];
+
+            for(let i=0; i < numPieces; i++) {
+                let shapeIdx = Math.floor(Math.random() * MASTER_SHAPES.length);
+                let x = (Math.random() * 200) - 100;
+                let y = (Math.random() * 200) - 100;
+                let a = [0, 90, 180, 270][Math.floor(Math.random() * 4)];
+                
+                pieces.push({ i: shapeIdx, x: Math.round(x), y: Math.round(y), a: a });
+            }
+            return { pieces };
+        }
+
         // --- MOTOR PRINCIPAL ---
         function initEngine() {
             gameStatus.type = document.querySelector('input[name="timer-type"]:checked').value;
             document.getElementById('launcher').style.display = 'none';
-            
             if(gameStatus.type === 'contra') gameStatus.clock = gameStatus.limit;
-            
             gameStatus.activeInterval = setInterval(updateClock, 1000);
             renderLevel();
         }
@@ -275,10 +292,7 @@
             if(gameStatus.type === 'cron') gameStatus.clock++;
             else {
                 gameStatus.clock--;
-                if(gameStatus.clock <= 0) { 
-                    handleError("¡TIEMPO AGOTADO!"); 
-                    gameStatus.clock = gameStatus.limit;
-                }
+                if(gameStatus.clock <= 0) { handleError("TIEMPO AGOTADO"); gameStatus.clock = gameStatus.limit; }
             }
             refreshHUD();
         }
@@ -291,27 +305,20 @@
             document.getElementById('hud-hp').innerText = "❤️".repeat(gameStatus.hp);
         }
 
-        // --- GESTIÓN DE PIEZAS Y NIVELES ---
         function renderLevel() {
             const modelZone = document.getElementById('model-screen');
             const invZone = document.getElementById('inventory-screen');
             modelZone.innerHTML = ''; invZone.innerHTML = '';
             gameStatus.targets = [];
 
-            // Obtener nivel actual
-            const data = MASTER_LEVELS[Math.min(gameStatus.lvl-1, MASTER_LEVELS.length-1)];
+            const levelData = generateLevel();
 
-            data.pieces.forEach((p, index) => {
+            levelData.pieces.forEach((p, index) => {
                 const shape = MASTER_SHAPES[p.i];
                 gameStatus.targets.push({ id: index, x: p.x, y: p.y, a: p.a });
-
-                // Crear Pieza en Modelo (Referencia)
                 buildPiece(shape, modelZone, p.x, p.y, p.a, true, index);
-                
-                // Crear Pieza en Inventario (Jugable)
-                buildPiece(shape, invZone, 0, index * 120 - 150, 0, false, index);
+                buildPiece(shape, invZone, 0, index * 130 - 200, 0, false, index);
             });
-
             initDragLogic();
         }
 
@@ -326,7 +333,7 @@
                 div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
                 div.style.opacity = "0.45"; div.style.pointerEvents = "none";
             } else {
-                div.style.left = '90px'; div.style.top = '250px';
+                div.style.left = '100px'; div.style.top = '250px';
                 div.setAttribute('data-id', id); div.setAttribute('data-ang', 0);
             }
             div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
@@ -350,7 +357,6 @@
             });
         }
 
-        // --- VALIDACIÓN Y FEEDBACK ---
         function runValidation() {
             const stage = document.getElementById('canvas-stage');
             const sRect = stage.getBoundingClientRect();
@@ -359,34 +365,26 @@
             gameStatus.targets.forEach(tgt => {
                 const p = document.querySelector(`[data-id="${tgt.id}"]`);
                 if(!p) return;
-
                 const pRect = p.getBoundingClientRect();
                 const curX = (pRect.left + pRect.width/2) - (sRect.left + sRect.width/2);
                 const curY = (pRect.top + pRect.height/2) - (sRect.top + sRect.height/2);
                 const curA = (parseInt(p.getAttribute('data-ang')) || 0) % 360;
 
                 let tx = tgt.x, ty = tgt.y, ta = tgt.a;
-
-                // Lógica Matemática de Modos Perceptivos
                 if(gameStatus.mode === 'mirrorV') { tx = -tgt.x; }
                 if(gameStatus.mode === 'mirrorH') { ty = -tgt.y; }
                 if(gameStatus.mode === 'rotate180') { tx = -tgt.x; ty = -tgt.y; ta = (tgt.a + 180) % 360; }
 
                 const diff = Math.sqrt(Math.pow(curX - tx, 2) + Math.pow(curY - ty, 2));
-                
-                // Tolerancia profesional (75px) para evitar frustración del paciente
-                if(diff < 75 && curA === (ta % 360)) score++;
+                if(diff < 75 && (curA + 360) % 360 === (ta + 360) % 360) score++;
             });
 
-            if(score === gameStatus.targets.length) {
-                triggerSuccess();
-            } else {
-                handleError("POSICIÓN INCORRECTA");
-            }
+            if(score === gameStatus.targets.length) triggerSuccess();
+            else handleError("POSICIÓN INCORRECTA");
         }
 
         function triggerSuccess() {
-            openModal("¡LOGRADO!", "La configuración visual es correcta.", () => {
+            openModal("¡LOGRADO!", "Patrón visual correcto. Subiendo dificultad...", () => {
                 gameStatus.lvl++;
                 if(gameStatus.type === 'contra') gameStatus.clock = gameStatus.limit;
                 document.getElementById('feedback-overlay').style.display = 'none';
@@ -398,30 +396,20 @@
         function handleError(msg) {
             gameStatus.hp--;
             refreshHUD();
-            if(gameStatus.hp <= 0) {
-                openModal("FIN DE SESIÓN", "Se han agotado los intentos disponibles.", () => location.reload(), true);
-            } else {
-                openModal("REINTENTAR", msg + ". Observa bien el modelo.", () => {
-                    document.getElementById('feedback-overlay').style.display = 'none';
-                }, true);
-            }
+            if(gameStatus.hp <= 0) openModal("FIN DE SESIÓN", "Se han agotado los intentos.", () => location.reload(), true);
+            else openModal("REINTENTAR", msg, () => { document.getElementById('feedback-overlay').style.display = 'none'; }, true);
         }
 
         function openModal(title, text, action, isErr) {
             const overlay = document.getElementById('feedback-overlay');
             const card = document.getElementById('modal-content');
-            const h = document.getElementById('m-header');
-            const b = document.getElementById('m-btn');
-
-            h.innerText = title;
+            document.getElementById('m-header').innerText = title;
             document.getElementById('m-text').innerText = text;
-            b.innerText = isErr ? (gameStatus.hp <= 0 ? "REINICIAR" : "REINTENTAR") : "SIGUIENTE NIVEL";
-            
+            const b = document.getElementById('m-btn');
+            b.innerText = isErr ? "REINTENTAR" : "SIGUIENTE NIVEL";
             card.className = "modal-card " + (isErr ? "error-theme" : "success-theme");
             b.style.background = isErr ? 'var(--error)' : 'var(--accent)';
-            b.style.color = isErr ? 'white' : 'var(--bg-deep)';
             b.onclick = action;
-            
             overlay.style.display = 'flex';
         }
     </script>
