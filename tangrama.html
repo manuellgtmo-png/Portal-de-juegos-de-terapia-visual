@@ -3,278 +3,612 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUMPRO | Visual Training</title>
+    <title>Tangram Vision Pro | Centro Perceptum Professional Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
     <style>
+        /* --- CONSTANTES ESTÉTICAS Y VARIABLES (RECUPERADAS) --- */
         :root {
             --bg-deep: #0f172a;
             --bg-panel: #1e293b;
             --bg-inv: #0a0f1a;
-            --accent: #22c55e; /* El verde brillante de tu botón */
-            --accent-glow: rgba(34, 197, 94, 0.4);
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.3);
             --error: #ef4444;
+            --error-glow: rgba(239, 68, 68, 0.3);
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            /* Colores de piezas según tu diseño */
+            /* Paleta Tangram Perceptum Profesional */
             --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
             --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
+            --c8: #1abc9c; --c9: #f1c40f; --c10: #e67e22;
         }
 
-        * { box-sizing: border-box; -webkit-user-select: none; user-select: none; margin: 0; padding: 0; }
+        /* --- RESET Y ESTRUCTURA GLOBAL --- */
+        * { 
+            box-sizing: border-box; 
+            -webkit-user-select: none; 
+            user-select: none; 
+            outline: none; 
+            margin: 0; 
+            padding: 0; 
+        }
         
         body { 
-            font-family: 'Montserrat', sans-serif; background: var(--bg-deep); 
-            color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+            font-family: 'Montserrat', sans-serif; 
+            background: var(--bg-deep); 
+            color: var(--text-main); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
         }
 
-        /* --- LAUNCHER (ESTÉTICA FIEL A TU CAPTURA) --- */
+        /* --- PANTALLA DE INICIO (LAUNCHER) --- */
         #launcher {
-            position: fixed; inset: 0; background: var(--bg-deep); z-index: 100000;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+            position: fixed; 
+            inset: 0; 
+            background: var(--bg-deep); 
+            z-index: 100000;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 60px;
         }
 
-        .logo-main { font-size: 3.5rem; font-weight: 900; margin-bottom: 5px; letter-spacing: -2px; }
-        .logo-main span { color: var(--accent); }
-
-        .hero-section { text-align: center; margin-bottom: 40px; }
-        .hero-title { font-size: 4rem; font-weight: 900; color: var(--accent); line-height: 1; }
-        .hero-subtitle { font-size: 1.2rem; color: var(--text-dim); letter-spacing: 8px; margin-top: 10px; }
+        .hero-title { 
+            font-size: 6rem; 
+            font-weight: 900; 
+            color: var(--accent); 
+            margin: 0; 
+            letter-spacing: -2px; 
+            text-shadow: 0 10px 30px var(--accent-glow);
+        }
+        
+        .hero-subtitle { 
+            font-size: 2rem; 
+            color: var(--text-dim); 
+            letter-spacing: 15px; 
+            margin-bottom: 60px; 
+            text-transform: uppercase; 
+        }
 
         .config-container {
-            display: grid; grid-template-columns: repeat(2, 300px) 300px; gap: 20px;
-            max-width: 1000px; margin-bottom: 40px;
+            width: 100%; 
+            max-width: 1400px; 
+            display: grid; 
+            grid-template-columns: 1fr 450px; 
+            gap: 40px; 
+            margin-bottom: 50px;
         }
 
-        .mode-card {
-            background: var(--bg-panel); padding: 25px; border-radius: 25px; border: 4px solid transparent;
-            cursor: pointer; transition: 0.3s;
+        .mode-selection { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 20px; 
         }
-        .mode-card.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.1); }
-        .mode-card h3 { color: var(--accent); font-size: 1.4rem; margin-bottom: 10px; text-transform: uppercase; }
-        .mode-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.3; }
-
-        .timer-panel {
-            background: var(--bg-panel); border-radius: 25px; padding: 25px;
-            display: flex; flex-direction: column; justify-content: center; gap: 20px;
-        }
-        .radio-opt { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.1rem; cursor: pointer; }
-        .radio-opt input { accent-color: var(--accent); transform: scale(1.5); }
-
-        .btn-main-start {
-            background: var(--accent); color: var(--bg-deep); width: 600px; padding: 25px;
-            border-radius: 50px; font-weight: 900; font-size: 2.2rem; border: none; cursor: pointer;
-            box-shadow: 0 10px 30px var(--accent-glow); transition: 0.3s;
-        }
-        .btn-main-start:hover { transform: scale(1.02); filter: brightness(1.1); }
-
-        /* --- UI DE JUEGO --- */
-        header {
-            height: 90px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .hud { display: flex; gap: 15px; }
-        .hud-item { background: #1a2235; padding: 10px 25px; border-radius: 15px; text-align: center; min-width: 140px; }
-        .hud-item small { display: block; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 2px; }
-        .hud-item b { font-size: 1.5rem; color: var(--accent); }
-
-        .game-world { display: flex; flex: 1; padding: 20px 40px; gap: 30px; overflow: visible; }
-
-        .panel-side {
-            width: 320px; background: var(--bg-panel); border-radius: 35px;
-            padding: 20px; display: flex; flex-direction: column; border: 2px solid var(--accent);
-            position: relative; z-index: 10;
-        }
-        .model-screen { flex: 1; background: rgba(0,0,0,0.5); border-radius: 20px; position: relative; overflow: hidden; }
         
-        .central-stage { flex: 1; position: relative; z-index: 1; overflow: visible; }
-
-        .inventory-panel {
-            width: 320px; background: #0c1220; border-radius: 35px; position: relative; z-index: 10; overflow: visible;
+        .mode-option {
+            background: var(--bg-panel); 
+            padding: 40px; 
+            border-radius: 40px; 
+            border: 6px solid transparent;
+            cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .mode-option:hover { 
+            transform: translateY(-10px); 
+            background: #2d3a4f; 
+        }
+        
+        .mode-option.active { 
+            border-color: var(--accent); 
+            background: #14532d; 
+            box-shadow: 0 0 40px var(--accent-glow); 
+        }
+        
+        .mode-option h3 { 
+            font-size: 2.2rem; 
+            margin: 0 0 10px 0; 
+            color: var(--accent); 
+        }
+        
+        .mode-option p { 
+            font-size: 1.1rem; 
+            color: var(--text-dim); 
+            margin: 0; 
+            line-height: 1.4; 
         }
 
-        /* --- PIEZAS (Z-INDEX MÁXIMO PARA NO PERDERLAS) --- */
-        .piece {
-            position: absolute !important; touch-action: none; cursor: grab;
-            z-index: 9999 !important; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.6));
+        .time-panel {
+            background: var(--bg-panel); 
+            padding: 40px; 
+            border-radius: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
         }
-        .piece:active { cursor: grabbing; z-index: 10000 !important; }
 
-        /* --- FOOTER (BOTONES ROJO Y VERDE DE TU CAPTURA) --- */
-        .game-footer { height: 120px; display: flex; justify-content: center; align-items: center; gap: 30px; }
-        .btn-foot { padding: 18px 60px; border-radius: 50px; font-weight: 900; font-size: 1.4rem; border: none; cursor: pointer; text-transform: uppercase; }
-        .btn-red { background: #ef4444; color: white; }
-        .btn-green { background: var(--accent); color: var(--bg-deep); }
+        .radio-box { 
+            margin-bottom: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        
+        .radio-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            font-size: 1.8rem; 
+            font-weight: 900; 
+            cursor: pointer; 
+        }
+        
+        .radio-item input { 
+            width: 30px; 
+            height: 30px; 
+            accent-color: var(--accent); 
+        }
 
-        #modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; align-items: center; justify-content: center; z-index: 1000000;
+        .slider-box { 
+            border-top: 2px solid rgba(255,255,255,0.1); 
+            padding-top: 30px; 
+            display: none; 
         }
-        .modal-box { 
-            background: var(--bg-panel); padding: 50px; border-radius: 40px; text-align: center; 
-            border: 5px solid var(--accent); width: 500px;
+        
+        .slider-box.visible { 
+            display: block; 
         }
+        
+        .slider-label { 
+            font-size: 1.4rem; 
+            font-weight: 900; 
+            margin-bottom: 20px; 
+            display: block; 
+        }
+        
+        input[type="range"] { 
+            width: 100%; 
+            height: 15px; 
+            border-radius: 10px; 
+            accent-color: var(--accent); 
+            cursor: pointer; 
+        }
+
+        .btn-start-engine {
+            background: var(--accent); 
+            color: var(--bg-deep); 
+            padding: 35px 150px;
+            border-radius: 100px; 
+            font-weight: 900; 
+            font-size: 3rem; 
+            border: none;
+            cursor: pointer; 
+            transition: 0.3s; 
+            box-shadow: 0 20px 50px var(--accent-glow);
+        }
+        
+        .btn-start-engine:hover { 
+            transform: scale(1.05) translateY(-5px); 
+        }
+
+        /* --- HEADER Y HUD --- */
+        header {
+            height: 130px; 
+            padding: 0 60px; 
+            background: rgba(0,0,0,0.4);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .hud-group { 
+            display: flex; 
+            gap: 30px; 
+        }
+        
+        .hud-card { 
+            background: rgba(255,255,255,0.05); 
+            padding: 15px 35px; 
+            border-radius: 25px; 
+            text-align: center; 
+            min-width: 220px; 
+            border: 1px solid rgba(255,255,255,0.1); 
+        }
+        
+        .hud-card small { 
+            font-size: 0.9rem; 
+            color: var(--text-dim); 
+            display: block; 
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
+            font-weight: 700; 
+        }
+        
+        .hud-card span { 
+            font-size: 2.2rem; 
+            font-weight: 900; 
+            color: var(--accent); 
+        }
+        
+        .hp-hearts { 
+            font-size: 2.5rem; 
+            color: var(--error); 
+            letter-spacing: 5px; 
+        }
+
+        /* --- ESCENARIO DE JUEGO --- */
+        .viewport { 
+            display: flex; 
+            flex: 1; 
+            padding: 30px; 
+            gap: 30px; 
+            position: relative; 
+            z-index: 1; 
+            overflow: visible; 
+        }
+
+        .model-panel { 
+            flex: 0 0 420px; 
+            background: var(--bg-panel); 
+            border-radius: 50px; 
+            padding: 30px; 
+            display: flex; 
+            flex-direction: column; 
+            border: 4px solid var(--accent); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); 
+            position: relative;
+            z-index: 10;
+        }
+
+        .model-view { 
+            flex: 1; 
+            background: rgba(0,0,0,0.3); 
+            border-radius: 30px; 
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        /* Clase para el Nivel 31+ */
+        .silhouette-mode polygon {
+            fill: #000 !important;
+            stroke: rgba(255,255,255,0.1);
+            stroke-width: 1px;
+        }
+
+        .main-stage { 
+            flex: 1; 
+            background: rgba(255,255,255,0.02); 
+            border: 6px dashed rgba(255,255,255,0.1); 
+            border-radius: 60px; 
+            position: relative; 
+            z-index: 5; 
+            overflow: visible;
+        }
+        
+        .inv-panel { 
+            flex: 0 0 420px; 
+            background: var(--bg-inv); 
+            border-radius: 50px; 
+            border: 2px solid rgba(255,255,255,0.1); 
+            position: relative; 
+            overflow: visible; 
+            z-index: 10;
+        }
+
+        /* --- PIEZAS --- */
+        .piece { 
+            position: absolute !important; 
+            cursor: grab; 
+            touch-action: none; 
+            z-index: 9999 !important; 
+            transition: filter 0.2s; 
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+        }
+        
+        .piece:active { 
+            cursor: grabbing; 
+            filter: brightness(1.2) scale(1.02); 
+            z-index: 10000 !important; 
+        }
+        
+        .piece svg { 
+            width: 100%; 
+            height: 100%; 
+        }
+
+        /* --- PIE DE PÁGINA --- */
+        .game-actions { 
+            height: 160px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 40px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); 
+            position: relative;
+            z-index: 20;
+        }
+        
+        .btn-action { 
+            padding: 30px 90px; 
+            border-radius: 100px; 
+            font-weight: 900; 
+            font-size: 1.8rem; 
+            border: none; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            transition: 0.3s; 
+        }
+        
+        .btn-check { 
+            background: var(--accent); 
+            color: var(--bg-deep); 
+            box-shadow: 0 10px 30px var(--accent-glow); 
+        }
+        
+        .btn-check:hover { 
+            transform: translateY(-5px) scale(1.05); 
+        }
+        
+        .btn-exit { 
+            background: var(--error); 
+            color: white; 
+        }
+
+        /* --- MODALES --- */
+        #feedback-overlay {
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15, 23, 42, 0.98);
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 200000;
+        }
+        
+        .modal-card { 
+            background: var(--bg-panel); 
+            padding: 80px; 
+            border-radius: 70px; 
+            text-align: center; 
+            border: 8px solid var(--accent); 
+            max-width: 850px; 
+            width: 95%;
+            animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        @keyframes modalPop { 
+            from { transform: scale(0.8); opacity: 0; } 
+            to { transform: scale(1); opacity: 1; } 
+        }
+        
+        .modal-card h2 { font-size: 5.5rem; margin: 0 0 20px 0; font-weight: 900; }
+        .modal-card p { font-size: 2.2rem; margin-bottom: 50px; color: var(--text-dim); }
+        .modal-main-btn { width: 100%; padding: 35px; border-radius: 60px; font-size: 2.8rem; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        
+        .success-theme { border-color: var(--accent); color: var(--accent); }
+        .error-theme { border-color: var(--error); color: var(--error); }
     </style>
 </head>
 <body>
 
     <div id="launcher">
-        <div class="logo-main">PERCEPTUM<span>PRO</span></div>
-        <div class="hero-section">
-            <h1 class="hero-title">CENTRO PERCEPTUM</h1>
-            <p class="hero-subtitle">TANGRAM VISUAL TRAINING</p>
-        </div>
-        
+        <h1 class="hero-title">CENTRO PERCEPTUM</h1>
+        <p class="hero-subtitle">Tangram Visual Training</p>
+
         <div class="config-container">
-            <div class="mode-card active" data-m="copy" onclick="selM(this)">
-                <h3>COPIA DIRECTA</h3>
-                <p>Misma posición y orientación. Ideal para trabajar atención y constancia de forma.</p>
+            <div class="mode-selection">
+                <div class="mode-option active" data-m="copy" onclick="selectMode(this)">
+                    <h3>COPIA DIRECTA</h3>
+                    <p>Misma posición y orientación. Ideal para trabajar atención y constancia de forma.</p>
+                </div>
+                <div class="mode-option" data-m="mirrorV" onclick="selectMode(this)">
+                    <h3>ESPEJO VERTICAL</h3>
+                    <p>Invierte el eje X. Trabaja la lateralidad y el cruce de línea media.</p>
+                </div>
+                <div class="mode-option" data-m="mirrorH" onclick="selectMode(this)">
+                    <h3>ESPEJO HORIZONTAL</h3>
+                    <p>Invierte el eje Y. Entrenamiento de las relaciones arriba-abajo.</p>
+                </div>
+                <div class="mode-option" data-m="rotate180" onclick="selectMode(this)">
+                    <h3>ROTACIÓN 180°</h3>
+                    <p>Giro completo. Máximo nivel de abstracción y rotación mental.</p>
+                </div>
             </div>
-            <div class="mode-card" data-m="mirrorV" onclick="selM(this)">
-                <h3>ESPEJO VERTICAL</h3>
-                <p>Invierte el eje X. Trabaja la lateralidad y el cruce de línea media.</p>
-            </div>
-            <div class="timer-panel">
-                <label class="radio-opt"><input type="radio" name="tt" value="cron" checked> CRONÓMETRO</label>
-                <label class="radio-opt"><input type="radio" name="tt" value="contra"> CONTRARRELOJ</label>
+
+            <div class="time-panel">
+                <div class="radio-box">
+                    <label class="radio-item">
+                        <input type="radio" name="timer-type" value="cron" checked onclick="toggleTimerUI(false)"> 
+                        CRONÓMETRO
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="timer-type" value="contra" onclick="toggleTimerUI(true)"> 
+                        CONTRARRELOJ
+                    </label>
+                </div>
+                
+                <div class="slider-box" id="timer-config">
+                    <span class="slider-label">DURACIÓN: <span id="val-time" style="color:var(--accent)">30</span> SEG</span>
+                    <input type="range" id="input-time" min="10" max="120" value="30">
+                </div>
             </div>
         </div>
 
-        <button class="btn-main-start" onclick="initGame()">INICIAR ENTRENAMIENTO</button>
-        <p style="margin-top:20px; color:var(--text-dim); font-weight:700;">REALIZAR TAREA A 40 CM DE DISTANCIA</p>
+        <button class="btn-start-engine" onclick="initEngine()">INICIAR ENTRENAMIENTO</button>
+        <p style="margin-top:30px; color:var(--text-dim); font-weight:700; letter-spacing:2px;">REALIZAR TAREA A 40 CM DE DISTANCIA</p>
     </div>
 
     <header>
-        <div class="logo-pro" style="font-weight:900; font-size:2rem;">PERCEPTUM<span>PRO</span></div>
-        <div class="hud">
-            <div class="hud-item"><small>Nivel Actual</small><b id="ui-lvl">1</b></div>
-            <div class="hud-item"><small>Reloj</small><b id="ui-time">00:00</b></div>
-            <div class="hud-item"><small>Vidas</small><b id="ui-hp" style="color:#ff4757">❤️❤️❤️</b></div>
+        <div style="font-weight:900; font-size:3rem; letter-spacing:-1px;">PERCEPTUM<span style="color:var(--accent)">PRO</span></div>
+        <div class="hud-group">
+            <div class="hud-card"><small>Nivel Actual</small><span id="hud-lvl">1</span></div>
+            <div class="hud-card"><small>Reloj</small><span id="hud-time">00:00</span></div>
+            <div class="hud-card"><small>Vidas</small><div id="hud-hp" class="hp-hearts">❤️❤️❤️</div></div>
         </div>
     </header>
 
-    <div class="game-world">
-        <div class="panel-side">
-            <div class="model-screen" id="model-area"></div>
-            <p style="text-align:center; font-weight:900; color:var(--accent); margin-top:15px; font-size:0.9rem;">MODELO OBJETIVO</p>
+    <div class="viewport">
+        <div class="model-panel">
+            <div class="model-view" id="model-screen"></div>
+            <div style="text-align:center; margin-top:20px; font-weight:900; color:var(--accent); font-size:1.5rem;">MODELO OBJETIVO</div>
         </div>
 
-        <div class="central-stage" id="drop-zone"></div>
+        <div class="main-stage" id="canvas-stage"></div>
 
-        <div class="inventory-panel">
-            <p style="text-align:center; padding:15px; color:var(--text-dim); font-weight:900; font-size:0.8rem;">PIEZAS</p>
-            <div id="inv-area" style="position:relative; height:100%;"></div>
+        <div class="inv-panel">
+            <div style="text-align:center; padding:20px; color:var(--text-dim); font-weight:700; border-bottom:1px solid rgba(255,255,255,0.1);">PIEZAS</div>
+            <div id="inventory-screen" style="height:100%; position:relative;"></div>
         </div>
     </div>
 
-    <div class="game-footer">
-        <button class="btn-foot btn-red" onclick="location.reload()">Cerrar</button>
-        <button class="btn-foot btn-green" onclick="validate()">Validar Figura</button>
+    <div class="game-actions">
+        <button class="btn-action btn-exit" onclick="location.reload()">Cerrar</button>
+        <button class="btn-action btn-check" onclick="runValidation()">Validar Figura</button>
     </div>
 
-    <div id="modal">
-        <div class="modal-box">
-            <h2 id="m-h" style="font-size:3rem; margin-bottom:15px; color:var(--accent);">¡LOGRADO!</h2>
-            <p id="m-p" style="font-size:1.2rem; margin-bottom:30px;"></p>
-            <button class="btn-main-start" id="m-btn" style="width:100%; font-size:1.5rem;">CONTINUAR</button>
+    <div id="feedback-overlay">
+        <div class="modal-card success-theme" id="modal-content">
+            <h2 id="m-header">¡LOGRADO!</h2>
+            <p id="m-text">El patrón visual es correcto.</p>
+            <button class="modal-main-btn" id="m-btn">CONTINUAR</button>
         </div>
     </div>
 
     <script>
         // --- BASE DE DATOS DE PIEZAS ---
-        const SHAPES = [
-            { id:0, pts: "0,0 100,0 50,50", c: 'var(--c1)', w:130, h:130 },
-            { id:1, pts: "100,0 100,100 50,50", c: 'var(--c2)', w:130, h:130 },
-            { id:2, pts: "0,0 50,50 0,100", c: 'var(--c3)', w:90, h:90 },
-            { id:3, pts: "50,50 100,100 0,100", c: 'var(--c4)', w:70, h:70 },
-            { id:4, pts: "0,0 50,0 25,25", c: 'var(--c5)', w:70, h:70 },
-            { id:5, pts: "0,0 50,0 50,50 0,50", c: 'var(--c6)', w:85, h:85 },
-            { id:6, pts: "25,0 75,0 50,50 0,50", c: 'var(--c7)', w:100, h:75 }
+        const MASTER_SHAPES = [
+            { id:0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180 },
+            { id:1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180 },
+            { id:2, pts: "0,0 100,0 100,100 0,100", color: 'var(--c3)', w: 110, h: 110 },
+            { id:3, pts: "50,50 150,150 0,150", color: 'var(--c4)', w: 120, h: 120 },
+            { id:4, pts: "0,0 100,0 0,100", color: 'var(--c5)', w: 140, h: 140 },
+            { id:5, pts: "40,0 140,0 100,100 0,100", color: 'var(--c6)', w: 160, h: 100 },
+            { id:6, pts: "0,0 50,0 50,100 0,100", color: 'var(--c7)', w: 80, h: 140 }
         ];
 
-        // --- LIBRERÍA DE FIGURAS REALES (COORDENADAS LIMPIAS) ---
-        const DESIGNS = [
-            { n: "EL CISNE", p: [{i:0,x:0,y:40,a:0},{i:5,x:0,y:-30,a:0},{i:3,x:-30,y:-70,a:0}] },
-            { n: "LA FLECHA", p: [{i:0,x:-30,y:0,a:90},{i:1,x:30,y:0,a:270},{i:6,x:0,y:60,a:0}] },
-            { n: "EL GATO", p: [{i:5,x:0,y:-50,a:0},{i:0,x:0,y:20,a:0},{i:6,x:40,y:60,a:90}] },
-            { n: "EL BARCO", p: [{i:0,x:-35,y:0,a:0},{i:1,x:35,y:0,a:0},{i:5,x:0,y:60,a:0}] }
+        // --- BIBLIOTECA DE FIGURAS (Coordenadas Reales para evitar superposición) ---
+        const TANGRAM_LIBRARY = [
+            { name: "Cisne", pieces: [{i:0,x:-40,y:20,a:0},{i:1,x:40,y:20,a:270},{i:2,x:0,y:-50,a:45}] },
+            { name: "Gato", pieces: [{i:2,x:0,y:-60,a:0},{i:0,x:0,y:10,a:0},{i:3,x:-50,y:50,a:0}] },
+            { name: "Casa", pieces: [{i:0,x:0,y:40,a:180},{i:2,x:0,y:-30,a:0},{i:4,x:40,y:-70,a:0}] },
+            { name: "Barco", pieces: [{i:0,x:-50,y:30,a:0},{i:1,x:50,y:30,a:0},{i:2,x:0,y:-20,a:45}] }
         ];
 
-        let state = { lvl:1, hp:3, time:0, mode:'copy', targets:[] };
+        let gameStatus = {
+            lvl: 1, hp: 3, clock: 0, 
+            mode: 'copy', type: 'cron', limit: 30,
+            targets: [], activeInterval: null
+        };
 
-        function selM(el) {
-            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+        function selectMode(el) {
+            document.querySelectorAll('.mode-option').forEach(m => m.classList.remove('active'));
             el.classList.add('active');
-            state.mode = el.dataset.m;
+            gameStatus.mode = el.dataset.m;
         }
 
-        function initGame() {
+        function toggleTimerUI(show) {
+            document.getElementById('timer-config').classList.toggle('visible', show);
+        }
+
+        document.getElementById('input-time').oninput = function() {
+            document.getElementById('val-time').innerText = this.value;
+            gameStatus.limit = parseInt(this.value);
+        }
+
+        function initEngine() {
+            gameStatus.type = document.querySelector('input[name="timer-type"]:checked').value;
             document.getElementById('launcher').style.display = 'none';
-            setInterval(() => { state.time++; updateHUD(); }, 1000);
-            loadLvl();
+            if(gameStatus.type === 'contra') gameStatus.clock = gameStatus.limit;
+            gameStatus.activeInterval = setInterval(updateClock, 1000);
+            renderLevel();
         }
 
-        function updateHUD() {
-            const m = Math.floor(state.time/60).toString().padStart(2,'0');
-            const s = (state.time%60).toString().padStart(2,'0');
-            document.getElementById('ui-time').innerText = `${m}:${s}`;
-            document.getElementById('ui-lvl').innerText = state.lvl;
-            document.getElementById('ui-hp').innerText = "❤️".repeat(state.hp);
+        function updateClock() {
+            if(gameStatus.type === 'cron') gameStatus.clock++;
+            else {
+                gameStatus.clock--;
+                if(gameStatus.clock <= 0) { 
+                    handleError("TIEMPO AGOTADO"); 
+                    gameStatus.clock = gameStatus.limit;
+                }
+            }
+            refreshHUD();
         }
 
-        function loadLvl() {
-            const mv = document.getElementById('model-area');
-            const iv = document.getElementById('inv-area');
-            mv.innerHTML = ''; iv.innerHTML = '';
-            
-            const design = DESIGNS[(state.lvl-1) % DESIGNS.length];
-            state.targets = [];
+        function refreshHUD() {
+            const m = Math.floor(Math.abs(gameStatus.clock)/60).toString().padStart(2,'0');
+            const s = (Math.abs(gameStatus.clock)%60).toString().padStart(2,'0');
+            document.getElementById('hud-time').innerText = `${m}:${s}`;
+            document.getElementById('hud-lvl').innerText = gameStatus.lvl;
+            document.getElementById('hud-hp').innerText = "❤️".repeat(gameStatus.hp);
+        }
 
-            design.p.forEach((p, idx) => {
-                const shape = SHAPES[p.i];
-                state.targets.push({ id: idx, x: p.x, y: p.y, a: p.a });
+        function renderLevel() {
+            const modelZone = document.getElementById('model-screen');
+            const invZone = document.getElementById('inventory-screen');
+            modelZone.innerHTML = ''; 
+            invZone.innerHTML = '';
+            gameStatus.targets = [];
 
-                // Modelo (Con silueta negra si nivel > 30)
-                draw(shape, mv, p.x, p.y, p.a, true, idx, state.lvl > 30);
-                // Inventario
-                draw(shape, iv, 0, (idx*80)-120, 0, false, idx, false);
+            // Selección de figura y Modo Silueta (Nivel 31+)
+            const design = TANGRAM_LIBRARY[(gameStatus.lvl - 1) % TANGRAM_LIBRARY.length];
+            if(gameStatus.lvl > 30) modelZone.classList.add('silhouette-mode');
+            else modelZone.classList.remove('silhouette-mode');
+
+            design.pieces.forEach((p, index) => {
+                const shape = MASTER_SHAPES[p.i];
+                gameStatus.targets.push({ id: index, x: p.x, y: p.y, a: p.a });
+                buildPiece(shape, modelZone, p.x, p.y, p.a, true, index);
+                buildPiece(shape, invZone, 0, (index * 120) - 220, 0, false, index);
             });
 
-            initInteract();
+            initDragLogic();
         }
 
-        function draw(shape, container, x, y, a, isRef, id, isSil) {
+        function buildPiece(shape, container, x, y, a, isRef, id) {
             const div = document.createElement('div');
             div.className = 'piece';
-            const scale = isRef ? 0.6 : 1;
-            div.style.width = (shape.w * scale) + 'px';
-            div.style.height = (shape.h * scale) + 'px';
+            const sizeMod = isRef ? 0.7 : 1.0;
+            div.style.width = (shape.w * sizeMod) + 'px';
+            div.style.height = (shape.h * sizeMod) + 'px';
             
             if(isRef) {
-                div.style.left = '50%'; div.style.top = '50%';
-                div.style.transform = `translate(-50%, -50%) translate(${x*scale}px, ${y*scale}px) rotate(${a}deg)`;
-                div.style.opacity = isSil ? "1" : "0.5";
+                div.style.left = '50%'; 
+                div.style.top = '50%';
+                div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
+                div.style.opacity = gameStatus.lvl > 30 ? "1" : "0.5"; 
+                div.style.pointerEvents = "none";
             } else {
-                div.style.left = '100px'; div.style.top = '220px';
-                div.setAttribute('data-id', id); div.setAttribute('data-ang', 0);
-                div.setAttribute('data-x', 0); div.setAttribute('data-y', 0);
+                div.style.left = '100px'; 
+                div.style.top = '250px';
+                div.setAttribute('data-id', id); 
+                div.setAttribute('data-ang', 0);
+                div.setAttribute('data-x', 0);
+                div.setAttribute('data-y', 0);
             }
 
-            const fill = isSil ? '#000' : shape.c;
-            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${shape.pts}" fill="${fill}" stroke="rgba(255,255,255,0.1)"/></svg>`;
+            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
             container.appendChild(div);
         }
 
-        function initInteract() {
-            interact('.piece:not([style*="left: 50%"])').draggable({
-                listeners: { move(e) {
-                    const t = e.target;
-                    const x = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
-                    const y = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
-                    t.style.transform = `translate(${x}px, ${y}px) rotate(${t.getAttribute('data-ang')}deg)`;
-                    t.setAttribute('data-x', x); t.setAttribute('data-y', y);
-                }}
-            }).on('tap', (e) => {
+        function initDragLogic() {
+            interact('.piece:not([style*="pointer-events: none"])').draggable({
+                listeners: { 
+                    move(e) {
+                        const t = e.target;
+                        const nx = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
+                        const ny = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
+                        t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
+                        t.setAttribute('data-x', nx); 
+                        t.setAttribute('data-y', ny);
+                    }
+                }
+            }).on('tap', function(e) {
                 const t = e.currentTarget;
                 let ang = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
                 t.setAttribute('data-ang', ang);
@@ -282,44 +616,52 @@
             });
         }
 
-        function validate() {
-            const stage = document.getElementById('drop-zone').getBoundingClientRect();
-            const cx = stage.left + stage.width/2;
-            const cy = stage.top + stage.height/2;
-            let hits = 0;
+        function runValidation() {
+            const stage = document.getElementById('canvas-stage').getBoundingClientRect();
+            let score = 0;
 
-            state.targets.forEach(tgt => {
+            gameStatus.targets.forEach(tgt => {
                 const p = document.querySelector(`[data-id="${tgt.id}"]`);
-                const r = p.getBoundingClientRect();
-                const curX = (r.left + r.width/2) - cx;
-                const curY = (r.top + r.height/2) - cy;
+                if(!p) return;
+                const pRect = p.getBoundingClientRect();
+                const curX = (pRect.left + pRect.width/2) - (stage.left + stage.width/2);
+                const curY = (pRect.top + pRect.height/2) - (stage.top + stage.height/2);
                 const curA = (parseInt(p.getAttribute('data-ang')) || 0) % 360;
 
                 let tx = tgt.x, ty = tgt.y, ta = tgt.a;
-                if(state.mode === 'mirrorV') tx = -tgt.x;
+                if(gameStatus.mode === 'mirrorV') tx = -tgt.x;
+                if(gameStatus.mode === 'mirrorH') ty = -tgt.y;
+                if(gameStatus.mode === 'rotate180') { tx = -tgt.x; ty = -tgt.y; ta = (tgt.a + 180) % 360; }
 
-                const d = Math.sqrt(Math.pow(curX - tx, 2) + Math.pow(curY - ty, 2));
-                if(d < 50 && (curA + 360)%360 === (ta + 360)%360) hits++;
+                const diff = Math.sqrt(Math.pow(curX - tx, 2) + Math.pow(curY - ty, 2));
+                if(diff < 65 && (curA + 360) % 360 === (ta + 360) % 360) score++;
             });
 
-            if(hits === state.targets.length) {
-                showModal("¡EXCELENTE!", "Figura completada correctamente.", () => {
-                    state.lvl++; document.getElementById('modal').style.display='none'; loadLvl();
-                }, false);
-            } else {
-                state.hp--; updateHUD();
-                if(state.hp <= 0) showModal("SESIÓN FINALIZADA", "Inténtalo de nuevo.", () => location.reload(), true);
-                else showModal("REINTENTAR", "La posición no es exacta.", () => document.getElementById('modal').style.display='none', true);
-            }
+            if(score === gameStatus.targets.length) triggerSuccess();
+            else handleError("POSICIÓN INCORRECTA");
         }
 
-        function showModal(h, p, act, isErr) {
-            document.getElementById('m-h').innerText = h;
-            document.getElementById('m-p').innerText = p;
-            document.getElementById('m-h').style.color = isErr ? 'var(--error)' : 'var(--accent)';
-            const btn = document.getElementById('m-btn');
-            btn.onclick = act;
-            document.getElementById('modal').style.display = 'flex';
+        function triggerSuccess() {
+            const overlay = document.getElementById('feedback-overlay');
+            const card = document.getElementById('modal-content');
+            const b = document.getElementById('m-btn');
+            document.getElementById('m-header').innerText = "¡LOGRADO!";
+            document.getElementById('m-text').innerText = "El patrón visual es correcto.";
+            card.className = "modal-card success-theme";
+            b.onclick = () => { gameStatus.lvl++; overlay.style.display = 'none'; renderLevel(); refreshHUD(); };
+            overlay.style.display = 'flex';
+        }
+
+        function handleError(msg) {
+            gameStatus.hp--; refreshHUD();
+            const overlay = document.getElementById('feedback-overlay');
+            const card = document.getElementById('modal-content');
+            const b = document.getElementById('m-btn');
+            document.getElementById('m-header').innerText = gameStatus.hp <= 0 ? "SESIÓN FINALIZADA" : "REINTENTAR";
+            document.getElementById('m-text').innerText = msg;
+            card.className = "modal-card error-theme";
+            b.onclick = () => { if(gameStatus.hp <= 0) location.reload(); else overlay.style.display = 'none'; };
+            overlay.style.display = 'flex';
         }
     </script>
 </body>
