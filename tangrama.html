@@ -491,12 +491,12 @@
             { id:6, pts: "0,0 50,0 50,100 0,100", color: 'var(--c7)', w: 80, h: 140 }
         ];
 
-        // --- BIBLIOTECA DE FIGURAS (Coordenadas Reales para evitar superposición) ---
+        // --- BIBLIOTECA DE FIGURAS (COORDENADAS CORREGIDAS PARA EVITAR SUPERPOSICIÓN) ---
         const TANGRAM_LIBRARY = [
-            { name: "Cisne", pieces: [{i:0,x:-40,y:20,a:0},{i:1,x:40,y:20,a:270},{i:2,x:0,y:-50,a:45}] },
-            { name: "Gato", pieces: [{i:2,x:0,y:-60,a:0},{i:0,x:0,y:10,a:0},{i:3,x:-50,y:50,a:0}] },
-            { name: "Casa", pieces: [{i:0,x:0,y:40,a:180},{i:2,x:0,y:-30,a:0},{i:4,x:40,y:-70,a:0}] },
-            { name: "Barco", pieces: [{i:0,x:-50,y:30,a:0},{i:1,x:50,y:30,a:0},{i:2,x:0,y:-20,a:45}] }
+            { name: "Cisne", pieces: [{i:0,x:-60,y:40,a:0},{i:1,x:80,y:20,a:270},{i:2,x:0,y:-80,a:45}] },
+            { name: "Gato", pieces: [{i:2,x:0,y:-100,a:0},{i:0,x:0,y:20,a:0},{i:3,x:-90,y:80,a:0}] },
+            { name: "Casa", pieces: [{i:0,x:0,y:80,a:180},{i:2,x:0,y:-20,a:0},{i:4,x:90,y:-90,a:0}] },
+            { name: "Barco", pieces: [{i:0,x:-100,y:60,a:0},{i:1,x:100,y:60,a:0},{i:2,x:0,y:-40,a:45}] }
         ];
 
         let gameStatus = {
@@ -610,7 +610,8 @@
                 }
             }).on('tap', function(e) {
                 const t = e.currentTarget;
-                let ang = (parseInt(t.getAttribute('data-ang')) || 0) + 90;
+                // --- CAMBIO A ROTACIÓN DE 45 GRADOS ---
+                let ang = (parseInt(t.getAttribute('data-ang')) || 0) + 45;
                 t.setAttribute('data-ang', ang);
                 t.style.transform = `translate(${t.getAttribute('data-x') || 0}px, ${t.getAttribute('data-y') || 0}px) rotate(${ang}deg)`;
             });
@@ -634,6 +635,7 @@
                 if(gameStatus.mode === 'rotate180') { tx = -tgt.x; ty = -tgt.y; ta = (tgt.a + 180) % 360; }
 
                 const diff = Math.sqrt(Math.pow(curX - tx, 2) + Math.pow(curY - ty, 2));
+                // Margen de validación para posición y ángulo
                 if(diff < 65 && (curA + 360) % 360 === (ta + 360) % 360) score++;
             });
 
