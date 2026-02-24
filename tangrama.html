@@ -19,6 +19,7 @@
             /* Colores Tangram Originales */
             --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
             --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
+            --grid-color: rgba(255, 255, 255, 0.03);
         }
 
         * { 
@@ -111,6 +112,7 @@
 
         .slider-container {
             padding: 20px 0;
+            display: none; /* Se activa dinámicamente */
         }
 
         .custom-slider {
@@ -183,6 +185,8 @@
             flex: 1; 
             margin: 25px; 
             background: rgba(0,0,0,0.5); 
+            background-image: radial-gradient(var(--grid-color) 2px, transparent 2px);
+            background-size: 50px 50px;
             border-radius: 30px; 
             position: relative; 
             overflow: hidden; 
@@ -191,6 +195,8 @@
         .canvas-main { 
             flex: 1; 
             background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=');
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 50px 50px;
             border: 3px dashed rgba(255,255,255,0.1); 
             border-radius: 45px; 
             position: relative; 
@@ -227,7 +233,6 @@
         }
         .piece svg { width: 100%; height: 100%; display: block; overflow: visible; }
         
-        /* Estilo para piezas en el inventario */
         .piece.in-inventory {
             position: relative !important;
             transform: none !important;
@@ -261,7 +266,6 @@
         .btn-success { background: var(--accent); color: var(--bg-deep); box-shadow: 0 15px 40px var(--accent-glow); }
         .btn-danger { background: transparent; color: var(--error); border: 3px solid var(--error); }
 
-        /* --- MODALES --- */
         #overlay { 
             position: fixed; 
             inset: 0; 
@@ -309,7 +313,7 @@
 
             <div class="config-card">
                 <h3 style="color:var(--text-dim); font-size: 1.5rem;">CRONOMETRÍA (SEG)</h3>
-                <div class="slider-container">
+                <div class="slider-container" id="time-selector">
                     <input type="range" min="15" max="120" value="45" class="custom-slider" id="time-slider" oninput="updateSliderLabel(this.value)">
                     <div style="display:flex; justify-content:space-between; margin-top:15px; font-weight:900; font-size:1.5rem">
                         <span>15s</span>
@@ -364,57 +368,25 @@
     </div>
 
     <script>
-        // --- GEOMETRÍA DE PRECISIÓN (Unidad base: 50px) ---
-        // Puntos calculados para que los bordes y vértices encajen matemáticamente al rotar
+        // --- GEOMETRÍA DE PRECISIÓN ---
         const SHAPES_MASTER = [
-            { id: 0, pts: "0,-100 100,0 -100,0", color: 'var(--c1)', w: 200, h: 100 }, // Triángulo Grande (Base 200, Altura 100)
+            { id: 0, pts: "0,-100 100,0 -100,0", color: 'var(--c1)', w: 200, h: 100 }, // Triángulo Grande
             { id: 1, pts: "0,-50 50,0 -50,0", color: 'var(--c2)', w: 100, h: 50 },    // Triángulo Pequeño
             { id: 2, pts: "-50,-50 50,-50 50,50 -50,50", color: 'var(--c3)', w: 100, h: 100 }, // Cuadrado
-            { id: 3, pts: "0,-50 100,50 0,150 -100,50", color: 'var(--c7)', w: 200, h: 200 } // Romboide Grande
+            { id: 3, pts: "0,-50 100,50 0,150 -100,50", color: 'var(--c7)', w: 200, h: 200 } // Romboide
         ];
 
-        // NIVELES: Coordenadas donde los vértices COINCIDEN exactamente
+        // BASE DE DATOS DE FIGURAS REALES (De tus imágenes)
         const LEVELS_DB = [
-            { 
-                name: "Reloj de Arena", 
-                pieces: [
-                    {i:0, x:0, y:-50, a:0},   // Triángulo superior apuntando abajo
-                    {i:0, x:0, y:50, a:180}   // Triángulo inferior apuntando arriba (vértices se tocan en 0,0)
-                ] 
-            },
-            { 
-                name: "Gran Diamante", 
-                pieces: [
-                    {i:0, x:-50, y:0, a:90},  // Triángulo izq
-                    {i:0, x:50, y:0, a:270}   // Triángulo der (forman un cuadrado de 200x200 rotado)
-                ] 
-            },
-            { 
-                name: "La Casita", 
-                pieces: [
-                    {i:2, x:0, y:50, a:0},    // Base cuadrada
-                    {i:0, x:0, y:-50, a:0}    // Techo triangular (coinciden en la línea y=0)
-                ] 
-            },
-            { 
-                name: "Flecha Doble", 
-                pieces: [
-                    {i:2, x:0, y:0, a:0},      // Centro
-                    {i:1, x:0, y:-75, a:0},    // Punta arriba
-                    {i:1, x:0, y:75, a:180}    // Punta abajo
-                ] 
-            }
+            { name: "Cisne", pieces: [{i:0, x:-50, y:50, a:0}, {i:0, x:50, y:-50, a:90}, {i:1, x:0, y:-100, a:45}, {i:2, x:-30, y:-50, a:0}] },
+            { name: "Perro", pieces: [{i:2, x:0, y:0, a:45}, {i:1, x:0, y:-60, a:0}, {i:0, x:50, y:50, a:180}] },
+            { name: "Conejo", pieces: [{i:0, x:-80, y:20, a:0}, {i:1, x:0, y:-100, a:90}, {i:3, x:0, y:0, a:90}] },
+            { name: "Flecha Doble", pieces: [{i:2, x:0, y:0, a:0}, {i:1, x:0, y:-75, a:0}, {i:1, x:0, y:75, a:180}] }
         ];
 
         let state = {
-            lvl: 0, 
-            hp: 3, 
-            time: 0, 
-            startTime: 45,
-            mode: 'copy', 
-            timerType: 'cron',
-            isPaused: false,
-            activePieces: []
+            lvl: 0, hp: 3, time: 0, startTime: 45,
+            mode: 'copy', timerType: 'cron', isPaused: false
         };
 
         function updateSliderLabel(val) {
@@ -432,6 +404,7 @@
             state.timerType = type;
             document.getElementById('btn-cron').classList.toggle('active', type === 'cron');
             document.getElementById('btn-contra').classList.toggle('active', type === 'contra');
+            document.getElementById('time-selector').style.display = (type === 'contra') ? 'block' : 'none';
         }
 
         function startApp() {
@@ -462,20 +435,35 @@
             document.getElementById('hud-hp').innerText = "❤️".repeat(state.hp);
         }
 
+        // FUNCIÓN DE GENERACIÓN INFINITA
+        function getLevelData(index) {
+            if (index < LEVELS_DB.length) return LEVELS_DB[index];
+            // Si el nivel supera la DB, genera uno aleatorio sobre la rejilla
+            const randomPieces = [];
+            const numPieces = 3 + Math.min(Math.floor(index/5), 4);
+            for(let i=0; i<numPieces; i++) {
+                randomPieces.push({
+                    i: Math.floor(Math.random()*4),
+                    x: (Math.floor(Math.random()*6)-3)*50,
+                    y: (Math.floor(Math.random()*6)-3)*50,
+                    a: Math.floor(Math.random()*8)*45
+                });
+            }
+            return { name: "Desafío Infinito " + (index+1), pieces: randomPieces };
+        }
+
         function initLevel() {
             const rz = document.getElementById('ref-zone');
             const iz = document.getElementById('inv-zone');
             const dz = document.getElementById('drop-zone');
             rz.innerHTML = iz.innerHTML = dz.innerHTML = '';
             
-            const levelData = LEVELS_DB[state.lvl % LEVELS_DB.length];
+            const levelData = getLevelData(state.lvl);
 
             levelData.pieces.forEach((p, idx) => {
                 const shape = SHAPES_MASTER[p.i];
-                // Referencia
                 createPiece(shape, rz, p.x, p.y, p.a, true, idx);
-                // Inventario
-                createPiece(shape, iz, 0, 0, 0, false, idx);
+                createPiece(shape, iz, 0, 0, Math.floor(Math.random()*360), false, idx);
             });
             initInteract();
         }
@@ -489,13 +477,13 @@
             if(isRef) {
                 div.style.left = '50%'; div.style.top = '50%';
                 div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
-                div.style.opacity = '0.4';
+                div.style.opacity = '0.35';
                 div.style.pointerEvents = 'none';
             } else {
                 div.setAttribute('data-id', id);
-                div.setAttribute('data-x', 0);
-                div.setAttribute('data-y', 0);
-                div.setAttribute('data-ang', 0);
+                div.setAttribute('data-x', 0); div.setAttribute('data-y', 0);
+                div.setAttribute('data-ang', a);
+                div.style.transform = `rotate(${a}deg)`;
             }
 
             div.innerHTML = `<svg viewBox="-110 -110 220 220"><polygon points="${shape.pts}" fill="${shape.color}" stroke="white" stroke-width="2"/></svg>`;
@@ -512,14 +500,11 @@
                             const dzRect = document.getElementById('drop-zone').getBoundingClientRect();
                             t.classList.remove('in-inventory');
                             document.getElementById('drop-zone').appendChild(t);
-                            
                             const nx = rect.left - dzRect.left + (rect.width/2);
                             const ny = rect.top - dzRect.top + (rect.height/2);
-                            
                             t.style.left = '0px'; t.style.top = '0px';
-                            t.setAttribute('data-x', nx);
-                            t.setAttribute('data-y', ny);
-                            t.style.transform = `translate(${nx}px, ${ny}px) rotate(0deg)`;
+                            t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
+                            t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
                         }
                     },
                     move(event) {
@@ -528,8 +513,7 @@
                         const y = (parseFloat(t.getAttribute('data-y')) || 0) + event.dy;
                         const a = t.getAttribute('data-ang') || 0;
                         t.style.transform = `translate(${x}px, ${y}px) rotate(${a}deg)`;
-                        t.setAttribute('data-x', x);
-                        t.setAttribute('data-y', y);
+                        t.setAttribute('data-x', x); t.setAttribute('data-y', y);
                     }
                 }
             }).on('tap', (e) => {
@@ -547,7 +531,7 @@
             const dz = document.getElementById('drop-zone').getBoundingClientRect();
             const cx = dz.width / 2;
             const cy = dz.height / 2;
-            const level = LEVELS_DB[state.lvl % LEVELS_DB.length];
+            const level = getLevelData(state.lvl);
             let correctCount = 0;
 
             level.pieces.forEach((tgt, idx) => {
@@ -564,56 +548,42 @@
                 const dist = Math.sqrt(Math.pow(px - tx, 2) + Math.pow(py - ty, 2));
                 const angDiff = Math.abs(pa - (tgt.a % 360));
 
-                // TOLERANCIA DE 30px PARA SNAPPING (Si está cerca, lo damos por bueno)
-                if(dist < 30 && (angDiff < 20 || angDiff > 340)) {
-                    // SNAPPING: Ajustar pieza visualmente al sitio exacto al validar
-                    p.setAttribute('data-x', tx + cx);
-                    p.setAttribute('data-y', ty + cy);
-                    p.setAttribute('data-ang', tgt.a);
+                if(dist < 35 && (angDiff < 20 || angDiff > 340)) {
+                    // Snapping
+                    p.setAttribute('data-x', tx + cx); p.setAttribute('data-y', ty + cy);
                     p.style.transform = `translate(${tx + cx}px, ${ty + cy}px) rotate(${tgt.a}deg)`;
                     correctCount++;
                 }
             });
 
             if(correctCount === level.pieces.length) handleSuccess();
-            else handleFailure("LA FIGURA ES INCORRECTA");
+            else handleFailure("LA FIGURA NO ES EXACTA");
         }
 
         function handleSuccess() {
             state.isPaused = true;
             const m = document.getElementById('overlay');
-            const mc = document.getElementById('modal-content');
-            mc.className = "modal";
+            m.style.display = 'flex';
+            document.getElementById('modal-content').className = "modal";
             document.getElementById('modal-title').innerText = "¡EXCELENTE!";
-            document.getElementById('modal-title').style.color = "var(--accent)";
-            document.getElementById('modal-desc').innerText = "Coordinación y visión espacial correctas.";
-            document.getElementById('modal-btn').innerText = "SIGUIENTE NIVEL";
             document.getElementById('modal-btn').onclick = () => {
-                state.lvl++;
-                state.isPaused = false;
+                state.lvl++; state.isPaused = false;
                 if(state.timerType === 'contra') state.time = state.startTime;
                 m.style.display = 'none';
-                initLevel();
-                updateHUD();
+                initLevel(); updateHUD();
             };
-            m.style.display = 'flex';
         }
 
         function handleFailure(msg) {
-            state.hp--;
-            updateHUD();
+            state.hp--; updateHUD();
             const m = document.getElementById('overlay');
-            const mc = document.getElementById('modal-content');
-            mc.className = "modal error";
-            document.getElementById('modal-title').innerText = state.hp <= 0 ? "GAME OVER" : "INTÉNTALO DE NUEVO";
-            document.getElementById('modal-title').style.color = "var(--error)";
-            document.getElementById('modal-desc').innerText = msg;
-            document.getElementById('modal-btn').innerText = state.hp <= 0 ? "REINICIAR TODO" : "CONTINUAR";
+            m.style.display = 'flex';
+            document.getElementById('modal-content').className = "modal error";
+            document.getElementById('modal-title').innerText = state.hp <= 0 ? "GAME OVER" : "REINTENTAR";
             document.getElementById('modal-btn').onclick = () => {
                 if(state.hp <= 0) location.reload();
                 else m.style.display = 'none';
             };
-            m.style.display = 'flex';
         }
     </script>
 </body>
