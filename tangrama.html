@@ -97,6 +97,7 @@
             margin-bottom: 15px;
             display: block;
             width: 100%;
+            color: white;
         }
 
         .mode-btn.active {
@@ -351,39 +352,28 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS GEOMÉTRICA ---
+        // --- BASE DE DATOS GEOMÉTRICA (7 PIEZAS OFICIALES TANGRAM) ---
         const SHAPES_MASTER = [
-            { id: 0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 180 }, // Triángulo Grande 1
-            { id: 1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 180, h: 180 }, // Triángulo Grande 2
-            { id: 2, pts: "0,0 100,0 100,100 0,100", color: 'var(--c3)', w: 110, h: 110 }, // Cuadrado
-            { id: 3, pts: "50,50 150,150 0,150", color: 'var(--c4)', w: 120, h: 120 }, // Triángulo Mediano
-            { id: 4, pts: "0,0 100,0 0,100", color: 'var(--c5)', w: 140, h: 140 }, // Triángulo Pequeño 1
-            { id: 5, pts: "40,0 140,0 100,100 0,100", color: 'var(--c6)', w: 160, h: 100 }, // Romboide
-            { id: 6, pts: "0,0 50,0 50,100 0,100", color: 'var(--c7)', w: 80, h: 140 } // Rectángulo Guía
+            { id: 0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 90 }, // Tri Grande 1
+            { id: 1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 90, h: 180 }, // Tri Grande 2
+            { id: 2, pts: "0,50 50,0 100,50 50,100", color: 'var(--c3)', w: 100, h: 100 }, // Cuadrado
+            { id: 3, pts: "0,0 100,100 0,100", color: 'var(--c4)', w: 120, h: 120 }, // Tri Mediano
+            { id: 4, pts: "0,0 50,50 0,100", color: 'var(--c5)', w: 60, h: 120 }, // Tri Pequeño 1
+            { id: 5, pts: "0,0 100,0 50,50", color: 'var(--c6)', w: 120, h: 60 }, // Tri Pequeño 2
+            { id: 6, pts: "0,0 75,0 100,50 25,50", color: 'var(--c7)', w: 160, h: 80 }  // Romboide
         ];
 
-        // --- LIBRERÍA DE FIGURAS (EXPANDIBLE A +3000) ---
         const LEVELS_DB = [
             { name: "Flecha Norte", pieces: [{i:0,x:0,y:-40,a:0}, {i:2,x:0,y:50,a:0}, {i:4,x:0,y:120,a:180}] },
             { name: "El Cisne", pieces: [{i:0,x:-30,y:20,a:45}, {i:2,x:50,y:-60,a:0}, {i:5,x:20,y:40,a:90}] },
             { name: "Casita", pieces: [{i:2,x:0,y:30,a:0}, {i:0,x:0,y:-55,a:180}, {i:6,x:70,y:30,a:0}] },
             { name: "Zorro", pieces: [{i:4,x:-40,y:-60,a:0}, {i:2,x:0,y:0,a:45}, {i:5,x:60,y:40,a:0}] },
-            { name: "Pez Espada", pieces: [{i:0,x:-20,y:0,a:90}, {i:5,x:70,y:0,a:0}, {i:4,x:-90,y:0,a:270}] },
-            { name: "Montaña", pieces: [{i:0,x:-50,y:30,a:0}, {i:1,x:50,y:30,a:0}, {i:3,x:0,y:-40,a:0}] },
-            { name: "Letra A", pieces: [{i:5,x:-40,y:20,a:70}, {i:5,x:40,y:20,a:-70}, {i:2,x:0,y:-30,a:0}] },
-            { name: "Cohete", pieces: [{i:3,x:0,y:-80,a:0}, {i:2,x:0,y:20,a:0}, {i:4,x:-60,y:60,a:90}, {i:4,x:60,y:60,a:-90}] }
-            // Se añaden aquí más objetos siguiendo el mismo formato
+            { name: "Pez Espada", pieces: [{i:0,x:-20,y:0,a:90}, {i:5,x:70,y:0,a:0}, {i:4,x:-90,y:0,a:270}] }
         ];
 
         let state = {
-            lvl: 1,
-            hp: 3,
-            time: 0,
-            mode: 'copy',
-            timerType: 'cron',
-            activeTargets: [],
-            isPaused: false,
-            engineInterval: null
+            lvl: 1, hp: 3, time: 0, mode: 'copy', timerType: 'cron',
+            activeTargets: [], isPaused: false, engineInterval: null
         };
 
         function setMode(btn) {
@@ -395,27 +385,19 @@
         function startApp() {
             state.timerType = document.getElementById('timer-type').value;
             if(state.timerType.includes('contra')) state.time = state.timerType === 'contra' ? 30 : 15;
-            
-            document.getElementById('launcher').style.fadeOut = "0.5s";
-            setTimeout(() => {
-                document.getElementById('launcher').style.display = 'none';
-                initLevel();
-                startEngine();
-            }, 500);
+            document.getElementById('launcher').style.display = 'none';
+            initLevel();
+            startEngine();
         }
 
         function startEngine() {
+            if(state.engineInterval) clearInterval(state.engineInterval);
             state.engineInterval = setInterval(() => {
                 if(state.isPaused) return;
-
-                if(state.timerType === 'cron') {
-                    state.time++;
-                } else {
+                if(state.timerType === 'cron') state.time++;
+                else {
                     state.time--;
-                    if(state.time <= 0) {
-                        handleError("¡TIEMPO AGOTADO!");
-                        state.time = state.timerType === 'contra' ? 30 : 15;
-                    }
+                    if(state.time <= 0) { handleError("¡TIEMPO AGOTADO!"); state.time = state.timerType === 'contra' ? 30 : 15; }
                 }
                 updateHUD();
             }, 1000);
@@ -433,30 +415,19 @@
             const refZone = document.getElementById('ref-zone');
             const invZone = document.getElementById('inv-zone');
             const dropZone = document.getElementById('drop-zone');
-            
-            refZone.innerHTML = '';
-            invZone.innerHTML = '';
-            dropZone.innerHTML = '';
+            refZone.innerHTML = invZone.innerHTML = dropZone.innerHTML = '';
             state.activeTargets = [];
 
-            // Selección circular de la DB para niveles infinitos
             const data = LEVELS_DB[(state.lvl - 1) % LEVELS_DB.length];
-            
-            // Si pasamos el nivel 10, activar modo silueta
             if(state.lvl > 10) refZone.classList.add('silhouette-mode');
             else refZone.classList.remove('silhouette-mode');
 
             data.pieces.forEach((p, idx) => {
                 const shape = SHAPES_MASTER[p.i];
                 state.activeTargets.push({ id: idx, x: p.x, y: p.y, a: p.a });
-
-                // Crear Pieza Referencia
                 createPiece(shape, refZone, p.x, p.y, p.a, true, idx);
-                
-                // Crear Pieza Juego (en inventario)
                 createPiece(shape, invZone, 0, (idx * 140), 0, false, idx);
             });
-
             initInteractions();
         }
 
@@ -464,52 +435,53 @@
             const div = document.createElement('div');
             div.className = 'piece';
             const scale = isRef ? 0.65 : 1.0;
-            
             div.style.width = (shape.w * scale) + 'px';
             div.style.height = (shape.h * scale) + 'px';
 
             if(isRef) {
-                div.style.left = '50%';
-                div.style.top = '50%';
+                div.style.left = '50%'; div.style.top = '50%';
                 div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
-                div.style.pointerEvents = 'none';
-                div.style.opacity = '0.8';
+                div.style.pointerEvents = 'none'; div.style.opacity = '0.8';
             } else {
-                div.style.left = '40px';
-                div.style.top = '20px';
-                div.setAttribute('data-id', id);
-                div.setAttribute('data-x', 0);
-                div.setAttribute('data-y', 0);
-                div.setAttribute('data-ang', 0);
+                div.style.left = '40px'; div.style.top = '20px';
+                div.setAttribute('data-id', id); div.setAttribute('data-x', 0);
+                div.setAttribute('data-y', 0); div.setAttribute('data-ang', 0);
             }
 
-            div.innerHTML = `<svg viewBox="0 0 100 100"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
+            div.innerHTML = `<svg viewBox="0 0 ${shape.w} ${shape.h}"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
             container.appendChild(div);
         }
 
         function initInteractions() {
-            interact('.piece:not([style*="pointer-events: none"])')
-            .draggable({
-                inertia: true,
+            interact('.piece:not([style*="pointer-events: none"])').draggable({
                 listeners: {
+                    start(event) {
+                        const t = event.target;
+                        if(t.parentNode.id === 'inv-zone') {
+                            const rect = t.getBoundingClientRect();
+                            const dropRect = document.getElementById('drop-zone').getBoundingClientRect();
+                            document.getElementById('drop-zone').appendChild(t);
+                            const nx = rect.left - dropRect.left;
+                            const ny = rect.top - dropRect.top;
+                            t.style.left = '0px'; t.style.top = '0px';
+                            t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
+                            t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
+                        }
+                    },
                     move(event) {
                         const target = event.target;
                         const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
                         const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
                         const ang = target.getAttribute('data-ang') || 0;
-
                         target.style.transform = `translate(${x}px, ${y}px) rotate(${ang}deg)`;
-                        target.setAttribute('data-x', x);
-                        target.setAttribute('data-y', y);
+                        target.setAttribute('data-x', x); target.setAttribute('data-y', y);
                     }
                 }
-            })
-            .on('tap', function (event) {
+            }).on('tap', function (event) {
                 const target = event.currentTarget;
                 let ang = (parseInt(target.getAttribute('data-ang')) || 0) + 45;
                 const x = target.getAttribute('data-x') || 0;
                 const y = target.getAttribute('data-y') || 0;
-                
                 target.setAttribute('data-ang', ang);
                 target.style.transform = `translate(${x}px, ${y}px) rotate(${ang}deg)`;
             });
@@ -519,88 +491,55 @@
             const dropRect = document.getElementById('drop-zone').getBoundingClientRect();
             const centerX = dropRect.left + dropRect.width / 2;
             const centerY = dropRect.top + dropRect.height / 2;
-            
             let correctCount = 0;
 
             state.activeTargets.forEach(tgt => {
                 const piece = document.querySelector(`.piece[data-id="${tgt.id}"]`);
-                if(!piece) return;
+                if(!piece || piece.parentNode.id === 'inv-zone') return;
 
                 const pRect = piece.getBoundingClientRect();
                 const pX = (pRect.left + pRect.width / 2) - centerX;
                 const pY = (pRect.top + pRect.height / 2) - centerY;
                 const pA = (parseInt(piece.getAttribute('data-ang')) || 0) % 360;
 
-                // Lógica de transformación según modo
-                let targetX = tgt.x, targetY = tgt.y, targetA = tgt.a;
+                let tX = tgt.x, tY = tgt.y, tA = tgt.a;
+                if(state.mode === 'mirrorV') tX = -tgt.x;
+                if(state.mode === 'mirrorH') tY = -tgt.y;
+                if(state.mode === 'rotate180') { tX = -tgt.x; tY = -tgt.y; tA = (tgt.a + 180) % 360; }
 
-                if(state.mode === 'mirrorV') targetX = -tgt.x;
-                if(state.mode === 'mirrorH') targetY = -tgt.y;
-                if(state.mode === 'rotate180') {
-                    targetX = -tgt.x;
-                    targetY = -tgt.y;
-                    targetA = (tgt.a + 180) % 360;
-                }
+                const dist = Math.sqrt(Math.pow(pX - tX, 2) + Math.pow(pY - tY, 2));
+                const angDiff = Math.abs((pA + 360) % 360 - (tA + 360) % 360);
 
-                const dist = Math.sqrt(Math.pow(pX - targetX, 2) + Math.pow(pY - targetY, 2));
-                const angDiff = Math.abs((pA + 360) % 360 - (targetA + 360) % 360);
-
-                if(dist < 50 && (angDiff < 10 || angDiff > 350)) {
-                    correctCount++;
-                }
+                if(dist < 50 && (angDiff < 10 || angDiff > 350)) correctCount++;
             });
 
-            if(correctCount === state.activeTargets.length) {
-                handleSuccess();
-            } else {
-                handleError("LA FIGURA NO COINCIDE");
-            }
+            if(correctCount === state.activeTargets.length) handleSuccess();
+            else handleError("LA FIGURA NO COINCIDE");
         }
 
         function handleSuccess() {
             state.isPaused = true;
             const modal = document.getElementById('overlay');
-            const box = document.getElementById('modal-box');
-            
-            box.style.borderColor = "var(--accent)";
             document.getElementById('modal-title').innerText = "¡LOGRADO!";
             document.getElementById('modal-title').style.color = "var(--accent)";
             document.getElementById('modal-desc').innerText = "Coordinación visomotora excelente.";
-            
-            const btn = document.getElementById('modal-btn');
-            btn.onclick = () => {
-                state.lvl++;
-                state.isPaused = false;
+            document.getElementById('modal-btn').onclick = () => {
+                state.lvl++; state.isPaused = false;
                 if(state.timerType.includes('contra')) state.time = state.timerType === 'contra' ? 30 : 15;
-                modal.style.display = 'none';
-                initLevel();
-                updateHUD();
+                modal.style.display = 'none'; initLevel(); updateHUD();
             };
-
             modal.style.display = 'flex';
         }
 
         function handleError(msg) {
-            state.hp--;
-            updateHUD();
-
+            state.hp--; updateHUD();
             const modal = document.getElementById('overlay');
-            const box = document.getElementById('modal-box');
-            
-            box.style.borderColor = "var(--error)";
             document.getElementById('modal-title').innerText = state.hp <= 0 ? "GAME OVER" : "REINTENTAR";
             document.getElementById('modal-title').style.color = "var(--error)";
             document.getElementById('modal-desc').innerText = msg;
-            
             const btn = document.getElementById('modal-btn');
             btn.innerText = state.hp <= 0 ? "REINICIAR TODO" : "CONTINUAR";
-            btn.onclick = () => {
-                if(state.hp <= 0) location.reload();
-                else {
-                    modal.style.display = 'none';
-                }
-            };
-
+            btn.onclick = () => { if(state.hp <= 0) location.reload(); else modal.style.display = 'none'; };
             modal.style.display = 'flex';
         }
     </script>
