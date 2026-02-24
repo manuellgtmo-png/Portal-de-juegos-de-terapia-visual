@@ -201,7 +201,7 @@
             z-index: 10;
         }
         .piece:active { cursor: grabbing; z-index: 1000 !important; }
-        .piece svg { width: 100%; height: 100%; display: block; }
+        .piece svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
         /* --- CONTROLES INFERIORES --- */
         footer { 
@@ -264,7 +264,7 @@
         .modal h2 { font-size: 4rem; margin-bottom: 20px; }
         .modal p { font-size: 1.5rem; color: var(--text-dim); margin-bottom: 40px; }
 
-        .silhouette-mode polygon { fill: #000 !important; stroke: rgba(255,255,255,0.2); stroke-width: 1; }
+        .silhouette-mode polygon { fill: #000 !important; stroke: rgba(255,255,255,0.2); stroke-width: 2; }
 
     </style>
 </head>
@@ -352,15 +352,15 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS GEOMÉTRICA (7 PIEZAS OFICIALES TANGRAM) ---
+        // --- BASE DE DATOS GEOMÉTRICA (COORDENADAS CENTRADAS) ---
         const SHAPES_MASTER = [
-            { id: 0, pts: "0,0 100,0 50,50", color: 'var(--c1)', w: 180, h: 90 }, // Tri Grande 1
-            { id: 1, pts: "0,0 0,100 50,50", color: 'var(--c2)', w: 90, h: 180 }, // Tri Grande 2
-            { id: 2, pts: "0,50 50,0 100,50 50,100", color: 'var(--c3)', w: 100, h: 100 }, // Cuadrado
-            { id: 3, pts: "0,0 100,100 0,100", color: 'var(--c4)', w: 120, h: 120 }, // Tri Mediano
-            { id: 4, pts: "0,0 50,50 0,100", color: 'var(--c5)', w: 60, h: 120 }, // Tri Pequeño 1
-            { id: 5, pts: "0,0 100,0 50,50", color: 'var(--c6)', w: 120, h: 60 }, // Tri Pequeño 2
-            { id: 6, pts: "0,0 75,0 100,50 25,50", color: 'var(--c7)', w: 160, h: 80 }  // Romboide
+            { id: 0, pts: "-70,-35 70,-35 0,35", color: 'var(--c1)', w: 140, h: 140 }, 
+            { id: 1, pts: "-35,-70 -35,70 35,0", color: 'var(--c2)', w: 140, h: 140 }, 
+            { id: 2, pts: "0,-40 40,0 0,40 -40,0", color: 'var(--c3)', w: 100, h: 100 }, 
+            { id: 3, pts: "-50,-50 50,50 -50,50", color: 'var(--c4)', w: 120, h: 120 }, 
+            { id: 4, pts: "-30,-30 30,30 -30,30", color: 'var(--c5)', w: 80, h: 80 }, 
+            { id: 5, pts: "-30,-30 30,-30 0,0", color: 'var(--c6)', w: 80, h: 80 }, 
+            { id: 6, pts: "-40,-20 20,-20 40,20 -20,20", color: 'var(--c7)', w: 120, h: 80 }
         ];
 
         const LEVELS_DB = [
@@ -426,7 +426,7 @@
                 const shape = SHAPES_MASTER[p.i];
                 state.activeTargets.push({ id: idx, x: p.x, y: p.y, a: p.a });
                 createPiece(shape, refZone, p.x, p.y, p.a, true, idx);
-                createPiece(shape, invZone, 0, (idx * 140), 0, false, idx);
+                createPiece(shape, invZone, 0, (idx * 140) + 60, 0, false, idx);
             });
             initInteractions();
         }
@@ -434,21 +434,21 @@
         function createPiece(shape, container, x, y, a, isRef, id) {
             const div = document.createElement('div');
             div.className = 'piece';
-            const scale = isRef ? 0.65 : 1.0;
-            div.style.width = (shape.w * scale) + 'px';
-            div.style.height = (shape.h * scale) + 'px';
+            div.style.width = shape.w + 'px';
+            div.style.height = shape.h + 'px';
 
             if(isRef) {
                 div.style.left = '50%'; div.style.top = '50%';
-                div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg)`;
+                div.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px) rotate(${a}deg) scale(0.65)`;
                 div.style.pointerEvents = 'none'; div.style.opacity = '0.8';
             } else {
-                div.style.left = '40px'; div.style.top = '20px';
+                div.style.left = '50%'; div.style.top = `${y}px`;
+                div.style.transform = `translateX(-50%) rotate(0deg)`;
                 div.setAttribute('data-id', id); div.setAttribute('data-x', 0);
                 div.setAttribute('data-y', 0); div.setAttribute('data-ang', 0);
             }
 
-            div.innerHTML = `<svg viewBox="0 0 ${shape.w} ${shape.h}"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
+            div.innerHTML = `<svg viewBox="-100 -100 200 200"><polygon points="${shape.pts}" fill="${shape.color}"/></svg>`;
             container.appendChild(div);
         }
 
@@ -461,8 +461,8 @@
                             const rect = t.getBoundingClientRect();
                             const dropRect = document.getElementById('drop-zone').getBoundingClientRect();
                             document.getElementById('drop-zone').appendChild(t);
-                            const nx = rect.left - dropRect.left;
-                            const ny = rect.top - dropRect.top;
+                            const nx = rect.left - dropRect.left + (parseFloat(t.style.width)/2);
+                            const ny = rect.top - dropRect.top + (parseFloat(t.style.height)/2);
                             t.style.left = '0px'; t.style.top = '0px';
                             t.setAttribute('data-x', nx); t.setAttribute('data-y', ny);
                             t.style.transform = `translate(${nx}px, ${ny}px) rotate(${t.getAttribute('data-ang')}deg)`;
@@ -489,17 +489,16 @@
 
         function validateSolution() {
             const dropRect = document.getElementById('drop-zone').getBoundingClientRect();
-            const centerX = dropRect.left + dropRect.width / 2;
-            const centerY = dropRect.top + dropRect.height / 2;
+            const centerX = dropRect.width / 2;
+            const centerY = dropRect.height / 2;
             let correctCount = 0;
 
             state.activeTargets.forEach(tgt => {
                 const piece = document.querySelector(`.piece[data-id="${tgt.id}"]`);
-                if(!piece || piece.parentNode.id === 'inv-zone') return;
+                if(!piece || piece.parentNode.id !== 'drop-zone') return;
 
-                const pRect = piece.getBoundingClientRect();
-                const pX = (pRect.left + pRect.width / 2) - centerX;
-                const pY = (pRect.top + pRect.height / 2) - centerY;
+                const pX = parseFloat(piece.getAttribute('data-x')) - centerX;
+                const pY = parseFloat(piece.getAttribute('data-y')) - centerY;
                 const pA = (parseInt(piece.getAttribute('data-ang')) || 0) % 360;
 
                 let tX = tgt.x, tY = tgt.y, tA = tgt.a;
@@ -510,7 +509,7 @@
                 const dist = Math.sqrt(Math.pow(pX - tX, 2) + Math.pow(pY - tY, 2));
                 const angDiff = Math.abs((pA + 360) % 360 - (tA + 360) % 360);
 
-                if(dist < 50 && (angDiff < 10 || angDiff > 350)) correctCount++;
+                if(dist < 50 && (angDiff < 15 || angDiff > 345)) correctCount++;
             });
 
             if(correctCount === state.activeTargets.length) handleSuccess();
