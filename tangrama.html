@@ -16,7 +16,7 @@
             --error: #ef4444;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            /* Colores Tangram Originales y Vibrantes */
+            /* Colores Tangram Originales */
             --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
             --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
             --grid-color: rgba(255, 255, 255, 0.03);
@@ -41,7 +41,7 @@
             flex-direction: column; 
         }
 
-        /* --- PANTALLA DE INICIO (LAUNCHER PROFESIONAL) --- */
+        /* --- PANTALLA DE INICIO (LAUNCHER COMPLETO) --- */
         #launcher { 
             position: fixed; 
             inset: 0; 
@@ -74,17 +74,19 @@
         .distance-alert {
             background: rgba(34, 197, 94, 0.1);
             border: 2px dashed var(--accent);
-            padding: 20px 40px;
-            border-radius: 20px;
+            padding: 25px 50px;
+            border-radius: 25px;
             color: var(--accent);
-            font-weight: 700;
+            font-size: 1.4rem;
+            font-weight: 900;
             margin-bottom: 40px;
+            text-align: center;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.02); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 0.8; }
             100% { transform: scale(1); opacity: 1; }
         }
 
@@ -127,7 +129,7 @@
         .mode-btn h4 { font-size: 1.6rem; color: var(--accent); margin-bottom: 5px; }
         .mode-btn p { font-size: 1rem; color: var(--text-dim); }
 
-        /* --- INTERFAZ DE USUARIO --- */
+        /* --- INTERFAZ PRINCIPAL --- */
         header { 
             height: 130px; 
             padding: 0 50px; 
@@ -154,7 +156,7 @@
         .hud-label { font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
         .hud-val { font-size: 2.2rem; font-weight: 900; color: var(--accent); }
 
-        /* --- ESCENARIO DE ENTRENAMIENTO --- */
+        /* --- ÁREA DE TRABAJO --- */
         .game-world { 
             display: flex; 
             flex: 1; 
@@ -187,8 +189,7 @@
 
         .canvas-main { 
             flex: 1; 
-            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), 
-                              linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 50px 50px;
             border: 3px dashed rgba(255,255,255,0.1); 
             border-radius: 45px; 
@@ -197,13 +198,24 @@
         }
 
         .panel-inventory { 
-            flex: 0 0 300px; 
+            flex: 0 0 350px; 
             background: var(--bg-inv); 
             border-radius: 45px; 
             border: 1px solid rgba(255,255,255,0.1); 
             display: flex;
             flex-direction: column;
             overflow: hidden;
+        }
+
+        .inv-scroll {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
         }
 
         /* --- PIEZAS TANGRAM --- */
@@ -221,10 +233,10 @@
             transform: none !important;
             left: auto !important;
             top: auto !important;
-            margin: 20px auto;
-            display: block;
+            margin-bottom: 40px;
         }
 
+        /* --- FOOTER --- */
         footer { 
             height: 150px; 
             background: rgba(15, 23, 42, 0.95); 
@@ -251,13 +263,23 @@
 
         /* MODALES */
         #overlay { 
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); 
-            z-index: 200000; display: none; align-items: center; justify-content: center; 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(15, 23, 42, 0.98); 
+            z-index: 200000; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
         }
 
         .modal { 
-            background: var(--bg-panel); padding: 80px; border-radius: 60px; 
-            text-align: center; max-width: 800px; width: 90%; border: 8px solid var(--accent); 
+            background: var(--bg-panel); 
+            padding: 80px; 
+            border-radius: 60px; 
+            text-align: center; 
+            max-width: 800px; 
+            width: 90%; 
+            border: 8px solid var(--accent); 
         }
 
     </style>
@@ -277,23 +299,23 @@
                 <h3 style="color:var(--text-dim); font-size: 1.5rem;">MODO TERAPÉUTICO</h3>
                 <button class="mode-btn active" data-mode="direct" onclick="setMode(this)">
                     <h4>Copia Directa</h4>
-                    <p>Misma orientación que el modelo.</p>
+                    <p>Orientación idéntica al modelo.</p>
                 </button>
                 <button class="mode-btn" data-mode="mirror" onclick="setMode(this)">
                     <h4>Inversión Lateral</h4>
-                    <p>Entrenamiento de hemisferios (Espejo).</p>
+                    <p>Estimulación bi-hemisférica (Espejo).</p>
                 </button>
             </div>
             <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.5rem;">INFORMACIÓN</h3>
-                <p style="color: var(--text-dim); font-size: 1.1rem; line-height: 1.6;">
-                    Este sistema utiliza niveles infinitos. El entrenamiento solo finaliza al perder todas las vidas. 
-                    Doble clic en la pieza para rotar 45°.
+                <h3 style="color:var(--text-dim); font-size: 1.5rem;">CRONOMETRÍA</h3>
+                <p style="color: var(--text-dim); line-height: 1.6;">
+                    El entrenamiento utiliza niveles infinitos generados proceduralmente.
+                    Cada error consume una vida. El juego termina al perder todas las vidas.
                 </p>
             </div>
         </div>
 
-        <button class="btn-main btn-success" style="font-size:3rem; padding:40px 150px" onclick="startApp()">INICIAR</button>
+        <button class="btn-main btn-success" style="font-size:3rem; padding:40px 150px" onclick="startApp()">INICIAR SISTEMA</button>
     </div>
 
     <header>
@@ -307,46 +329,48 @@
     <div class="game-world">
         <div class="panel-reference">
             <div class="ref-canvas" id="ref-zone"></div>
-            <div style="padding:25px; text-align:center; font-weight:900; color:var(--accent);">MODELO GUÍA</div>
+            <div style="padding:25px; text-align:center; font-weight:900; letter-spacing:4px; color:var(--accent); font-size: 1.5rem;">MODELO GUÍA</div>
         </div>
 
         <div class="canvas-main" id="drop-zone"></div>
 
         <div class="panel-inventory">
-            <div style="padding:25px; background:rgba(255,255,255,0.03); text-align:center; font-weight:700; color:var(--text-dim);">BANCO DE PIEZAS</div>
-            <div id="inv-zone" style="overflow-y:auto; flex:1; padding:20px;"></div>
+            <div style="padding:25px; background:rgba(255,255,255,0.03); text-align:center; font-weight:700; color:var(--text-dim); font-size: 1.2rem;">PIEZAS</div>
+            <div class="inv-scroll" id="inv-zone"></div>
         </div>
     </div>
 
     <footer>
-        <button class="btn-main btn-danger" onclick="location.reload()">Salir</button>
-        <button class="btn-main btn-success" onclick="validateSolution()">Validar Figura</button>
+        <button class="btn-main btn-danger" onclick="location.reload()">Finalizar Sesión</button>
+        <button class="btn-main btn-success" onclick="validateSolution()">Validar Posición</button>
     </footer>
 
     <div id="overlay">
         <div class="modal" id="modal-content">
-            <h2 id="modal-title" style="font-size: 4rem; margin-bottom: 20px;">¡PERFECTO!</h2>
+            <h2 id="modal-title" style="font-size: 4rem; margin-bottom: 30px;">¡EXCELENTE!</h2>
             <button class="btn-main btn-success" id="modal-btn">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
     <script>
-        // GEOMETRÍA TANGRAM REAL (7 PIEZAS CLÁSICAS)
-        const MASTER_SHAPES = [
-            { id: 0, pts: "0,0 160,0 80,80", color: "#ff4757", w: 160, h: 80 }, // Triángulo Grande 1
-            { id: 1, pts: "0,0 0,160 80,80", color: "#2e86de", w: 80, h: 160 }, // Triángulo Grande 2
-            { id: 2, pts: "80,80 160,80 160,160", color: "#ffa502", w: 80, h: 80 }, // Triángulo Mediano
-            { id: 3, pts: "0,160 80,160 40,120", color: "#2ed573", w: 80, h: 40 }, // Triángulo Pequeño 1
-            { id: 4, pts: "80,0 120,40 80,80", color: "#5352ed", w: 40, h: 80 },   // Triángulo Pequeño 2
-            { id: 5, pts: "40,0 80,40 40,80 0,40", color: "#e056fd", w: 80, h: 80 }, // CUADRADO PERFECTO
-            { id: 6, pts: "40,0 120,0 80,40 0,40", color: "#a4b0be", w: 120, h: 40 } // Romboide
+        // GEOMETRÍA TANGRAM MAESTRA (Normalizada para rotación sobre centro)
+        // El cuadrado se ha corregido para que el pivote sea el centro absoluto
+        const SHAPES = [
+            { id: 0, pts: "0,0 160,0 80,80", c: "var(--c1)", w: 160, h: 80 },  // Triángulo G1
+            { id: 1, pts: "0,0 0,160 80,80", c: "var(--c2)", w: 80, h: 160 },  // Triángulo G2
+            { id: 2, pts: "80,80 160,80 160,160", c: "var(--c3)", w: 80, h: 80 }, // Triángulo M
+            { id: 3, pts: "0,160 80,160 40,120", c: "var(--c4)", w: 80, h: 40 },  // Triángulo P1
+            { id: 4, pts: "80,0 120,40 80,80", c: "var(--c5)", w: 40, h: 80 },    // Triángulo P2
+            { id: 5, pts: "40,0 80,40 40,80 0,40", c: "var(--c6)", w: 80, h: 80 }, // Cuadrado Perfecto
+            { id: 6, pts: "40,0 120,0 80,40 0,40", c: "var(--c7)", w: 120, h: 40 }  // Romboide
         ];
 
-        // LIBRERÍA DE FIGURAS (Basadas en tus imágenes)
-        const FIGURES_DB = [
-            { name: "Cisne", data: [[0,-60,0], [0,20,0], [100,-100,45], [40,-80,0], [-40,-20,90], [0,100,0], [80,60,45]] },
-            { name: "Gato", data: [[0,0,45], [40,40,0], [-40,-40,180], [0,-100,0], [80,0,90], [-20,60,0], [60,80,45]] },
-            { name: "Conejo", data: [[-20,0,0], [20,40,90], [60,-40,0], [-60,80,45], [0,120,0], [40,-100,0], [-40,-80,90]] }
+        // LIBRERÍA DE FIGURAS REALES (Coordenadas relativas al centro)
+        const LEVELS_DB = [
+            { name: "Cisne", coords: [[0,-60,0], [0,20,0], [100,-100,45], [40,-80,0], [-40,-20,90], [0,100,0], [80,60,45]] },
+            { name: "Gato", coords: [[0,0,45], [40,40,0], [-40,-40,180], [0,-100,0], [80,0,90], [-20,60,0], [60,80,45]] },
+            { name: "Conejo", coords: [[-20,0,0], [20,40,90], [60,-40,0], [-60,80,45], [0,120,0], [40,-100,0], [-40,-80,90]] },
+            { name: "Casa", coords: [[-40,0,0], [40,0,0], [0,-80,0], [-80,40,0], [80,40,0], [0,40,0], [0,80,0]] }
         ];
 
         let state = { lvl: 0, hp: 3, mode: 'direct' };
@@ -368,54 +392,49 @@
             const dz = document.getElementById('drop-zone');
             gz.innerHTML = iz.innerHTML = dz.innerHTML = "";
 
-            // LÓGICA DE NIVELES INFINITOS: Si se acaba la DB, genera variaciones
-            let figData;
-            if(state.lvl < FIGURES_DB.length) {
-                figData = FIGURES_DB[state.lvl].data;
-            } else {
-                // Generador procedural de figuras "ordenadas"
-                figData = FIGURES_DB[state.lvl % FIGURES_DB.length].data.map(c => [c[0], c[1], c[2] + (state.lvl * 45)]);
-            }
-
-            MASTER_SHAPES.forEach((shape, i) => {
+            // Lógica Infinita
+            const fig = state.lvl < LEVELS_DB.length ? LEVELS_DB[state.lvl] : LEVELS_DB[state.lvl % LEVELS_DB.length];
+            
+            SHAPES.forEach((s, i) => {
+                const c = fig.coords[i];
                 // Crear Guía
-                createPiece(shape, gz, figData[i][0], figData[i][1], figData[i][2], true, i);
-                // Crear en Banco
-                createPiece(shape, iz, 0, 0, 0, false, i);
+                createPiece(s, gz, c[0], c[1], c[2], true, i);
+                // Crear Banco
+                createPiece(s, iz, 0, 0, 0, false, i);
             });
             initInteract();
             updateHUD();
         }
 
-        function createPiece(shape, container, x, y, r, isRef, id) {
+        function createPiece(s, container, x, y, r, isRef, id) {
             const div = document.createElement('div');
             div.className = isRef ? 'piece' : 'piece in-inventory';
-            div.style.width = shape.w + 'px';
-            div.style.height = shape.h + 'px';
+            div.style.width = s.w + 'px';
+            div.style.height = s.h + 'px';
             div.setAttribute('data-id', id);
 
             if(isRef) {
                 div.style.left = '50%'; div.style.top = '50%';
-                let finalX = x, finalR = r;
-                if(state.mode === 'mirror') { finalX = -x; finalR = (360 - r) % 360; }
-                div.style.transform = `translate(-50%, -50%) translate(${finalX}px, ${y}px) rotate(${finalR}deg)`;
-                div.style.opacity = '0.3';
+                let fx = x, fr = r;
+                if(state.mode === 'mirror') { fx = -x; fr = (360 - r) % 360; }
+                div.style.transform = `translate(-50%, -50%) translate(${fx}px, ${y}px) rotate(${fr}deg)`;
+                div.style.opacity = '0.35';
             } else {
                 div.setAttribute('data-x', 0); div.setAttribute('data-y', 0);
                 div.setAttribute('data-r', 0);
             }
 
-            div.innerHTML = `<svg viewBox="0 0 ${shape.w} ${shape.h}"><polygon points="${shape.pts}" fill="${shape.color}" stroke="white" stroke-width="2"/></svg>`;
+            div.innerHTML = `<svg viewBox="0 0 ${s.w} ${s.h}"><polygon points="${s.pts}" fill="${s.c}" stroke="white" stroke-width="2"/></svg>`;
             container.appendChild(div);
         }
 
         function initInteract() {
             interact('.piece:not(.in-inventory)').draggable({
                 listeners: {
-                    move(event) {
-                        const t = event.target;
-                        const x = (parseFloat(t.getAttribute('data-x')) || 0) + event.dx;
-                        const y = (parseFloat(t.getAttribute('data-y')) || 0) + event.dy;
+                    move(e) {
+                        const t = e.target;
+                        const x = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
+                        const y = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
                         const r = t.getAttribute('data-r') || 0;
                         t.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg)`;
                         t.setAttribute('data-x', x); t.setAttribute('data-y', y);
@@ -428,7 +447,6 @@
                 t.style.transform = `translate(${t.getAttribute('data-x')}px, ${t.getAttribute('data-y')}px) rotate(${r}deg)`;
             });
 
-            // Lógica para sacar del inventario
             interact('.piece.in-inventory').on('tap', (e) => {
                 const t = e.currentTarget;
                 const dz = document.getElementById('drop-zone');
@@ -445,23 +463,22 @@
 
         function validateSolution() {
             const dz = document.getElementById('drop-zone').getBoundingClientRect();
-            const cx = dz.width / 2;
-            const cy = dz.height / 2;
-            const currentFig = state.lvl < FIGURES_DB.length ? FIGURES_DB[state.lvl].data : FIGURES_DB[state.lvl % FIGURES_DB.length].data;
+            const cx = dz.width / 2, cy = dz.height / 2;
+            const fig = state.lvl < LEVELS_DB.length ? LEVELS_DB[state.lvl] : LEVELS_DB[state.lvl % LEVELS_DB.length];
             let hits = 0;
 
-            MASTER_SHAPES.forEach((s, i) => {
-                const p = document.querySelector(`.canvas-main .piece[data-id="${i}"]`);
+            SHAPES.forEach((s, i) => {
+                const p = document.querySelector(`#drop-zone [data-id="${i}"]`);
                 if(!p) return;
 
                 const px = parseFloat(p.getAttribute('data-x')) - cx + (p.offsetWidth/2);
                 const py = parseFloat(p.getAttribute('data-y')) - cy + (p.offsetHeight/2);
                 const pr = (parseInt(p.getAttribute('data-r')) % 360 + 360) % 360;
 
-                let tx = currentFig[i][0], tr = currentFig[i][2];
+                let tx = fig.coords[i][0], tr = fig.coords[i][2];
                 if(state.mode === 'mirror') { tx = -tx; tr = (360 - tr) % 360; }
 
-                if(Math.hypot(px-tx, py-currentFig[i][1]) < 35 && Math.abs(pr-tr) < 25) hits++;
+                if(Math.hypot(px-tx, py-fig.coords[i][1]) < 35 && Math.abs(pr-tr) < 25) hits++;
             });
 
             if(hits === 7) {
@@ -472,9 +489,8 @@
                     initLevel();
                 };
             } else {
-                state.hp--;
-                updateHUD();
-                alert(state.hp <= 0 ? "ENTRENAMIENTO FINALIZADO" : "FIGURA INCORRECTA");
+                state.hp--; updateHUD();
+                alert(state.hp <= 0 ? "ENTRENAMIENTO FINALIZADO" : "POSICIÓN INCORRECTA");
                 if(state.hp <= 0) location.reload();
             }
         }
@@ -483,7 +499,6 @@
             document.getElementById('hud-lvl').innerText = state.lvl + 1;
             document.getElementById('hud-hp').innerText = "❤️".repeat(state.hp);
         }
-
     </script>
 </body>
 </html>
