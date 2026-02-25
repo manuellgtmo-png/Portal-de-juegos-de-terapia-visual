@@ -16,7 +16,6 @@
             --error: #ef4444;
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
-            /* Colores Tangram Originales */
             --c1: #ff4757; --c2: #2e86de; --c3: #ffa502; 
             --c4: #2ed573; --c5: #a4b0be; --c6: #5352ed; --c7: #e056fd;
             --grid-color: rgba(255, 255, 255, 0.03);
@@ -128,6 +127,38 @@
 
         .mode-btn h4 { font-size: 1.6rem; color: var(--accent); margin-bottom: 5px; }
         .mode-btn p { font-size: 1rem; color: var(--text-dim); }
+
+        /* SLIDER DE TIEMPO RESTAURADO */
+        .time-slider-wrap {
+            margin-top: 10px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+        }
+        input[type=range] {
+            width: 100%;
+            height: 12px;
+            background: #2d3748;
+            border-radius: 10px;
+            appearance: none;
+            cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        .range-vals {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            color: var(--text-dim);
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
 
         /* --- INTERFAZ PRINCIPAL --- */
         header { 
@@ -296,7 +327,7 @@
 
         <div class="config-grid">
             <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.5rem;">MODO TERAPÉUTICO</h3>
+                <h3 style="color:var(--text-dim); font-size: 1.5rem; text-transform: uppercase;">Modo Terapéutico</h3>
                 <button class="mode-btn active" data-mode="direct" onclick="setMode(this)">
                     <h4>Copia Directa</h4>
                     <p>Orientación idéntica al modelo.</p>
@@ -307,11 +338,16 @@
                 </button>
             </div>
             <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.5rem;">CRONOMETRÍA</h3>
-                <p style="color: var(--text-dim); line-height: 1.6;">
-                    El entrenamiento utiliza niveles infinitos generados proceduralmente.
-                    Cada error consume una vida. El juego termina al perder todas las vidas.
-                </p>
+                <h3 style="color:var(--text-dim); font-size: 1.5rem; text-transform: uppercase;">Cronometría (Seg)</h3>
+                <div class="time-slider-wrap">
+                    <input type="range" id="time-range" min="15" max="120" value="45" oninput="document.getElementById('time-display').innerText = this.value + 's'">
+                    <div class="range-labels">
+                        <span>15s</span>
+                        <span id="time-display" style="color:var(--accent); font-size:2rem">45s</span>
+                        <span>120s</span>
+                    </div>
+                </div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-top: 10px;">Niveles infinitos. Se pierde al agotar las vidas.</p>
             </div>
         </div>
 
@@ -322,6 +358,7 @@
         <div class="logo">PERCEPTUM<span>PRO</span></div>
         <div class="hud-container">
             <div class="hud-item"><div class="hud-label">Nivel</div><div id="hud-lvl" class="hud-val">1</div></div>
+            <div class="hud-item"><div class="hud-label">Tiempo</div><div id="hud-timer" class="hud-val">45</div></div>
             <div class="hud-item"><div class="hud-label">Vidas</div><div id="hud-hp" class="hud-val" style="color:var(--error)">❤️❤️❤️</div></div>
         </div>
     </header>
@@ -353,27 +390,23 @@
     </div>
 
     <script>
-        // GEOMETRÍA TANGRAM MAESTRA (Normalizada para rotación sobre centro)
-        // El cuadrado se ha corregido para que el pivote sea el centro absoluto
         const SHAPES = [
-            { id: 0, pts: "0,0 160,0 80,80", c: "var(--c1)", w: 160, h: 80 },  // Triángulo G1
-            { id: 1, pts: "0,0 0,160 80,80", c: "var(--c2)", w: 80, h: 160 },  // Triángulo G2
-            { id: 2, pts: "80,80 160,80 160,160", c: "var(--c3)", w: 80, h: 80 }, // Triángulo M
-            { id: 3, pts: "0,160 80,160 40,120", c: "var(--c4)", w: 80, h: 40 },  // Triángulo P1
-            { id: 4, pts: "80,0 120,40 80,80", c: "var(--c5)", w: 40, h: 80 },    // Triángulo P2
-            { id: 5, pts: "40,0 80,40 40,80 0,40", c: "var(--c6)", w: 80, h: 80 }, // Cuadrado Perfecto
-            { id: 6, pts: "40,0 120,0 80,40 0,40", c: "var(--c7)", w: 120, h: 40 }  // Romboide
+            { id: 0, pts: "0,0 160,0 80,80", c: "var(--c1)", w: 160, h: 80 },
+            { id: 1, pts: "0,0 0,160 80,80", c: "var(--c2)", w: 80, h: 160 },
+            { id: 2, pts: "80,80 160,80 160,160", c: "var(--c3)", w: 80, h: 80 },
+            { id: 3, pts: "0,160 80,160 40,120", c: "var(--c4)", w: 80, h: 40 },
+            { id: 4, pts: "80,0 120,40 80,80", c: "var(--c5)", w: 40, h: 80 },
+            { id: 5, pts: "40,0 80,40 40,80 0,40", c: "var(--c6)", w: 80, h: 80 },
+            { id: 6, pts: "40,0 120,0 80,40 0,40", c: "var(--c7)", w: 120, h: 40 }
         ];
 
-        // LIBRERÍA DE FIGURAS REALES (Coordenadas relativas al centro)
         const LEVELS_DB = [
             { name: "Cisne", coords: [[0,-60,0], [0,20,0], [100,-100,45], [40,-80,0], [-40,-20,90], [0,100,0], [80,60,45]] },
             { name: "Gato", coords: [[0,0,45], [40,40,0], [-40,-40,180], [0,-100,0], [80,0,90], [-20,60,0], [60,80,45]] },
-            { name: "Conejo", coords: [[-20,0,0], [20,40,90], [60,-40,0], [-60,80,45], [0,120,0], [40,-100,0], [-40,-80,90]] },
-            { name: "Casa", coords: [[-40,0,0], [40,0,0], [0,-80,0], [-80,40,0], [80,40,0], [0,40,0], [0,80,0]] }
+            { name: "Barco", coords: [[-40,40,0], [40,40,0], [0,-40,0], [-80,80,0], [80,80,0], [0,80,0], [0,120,0]] }
         ];
 
-        let state = { lvl: 0, hp: 3, mode: 'direct' };
+        let state = { lvl: 0, hp: 3, mode: 'direct', baseTime: 45, currentSecs: 45, timer: null };
 
         function setMode(btn) {
             document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
@@ -382,35 +415,49 @@
         }
 
         function startApp() {
+            state.baseTime = parseInt(document.getElementById('time-range').value);
             document.getElementById('launcher').style.display = 'none';
             initLevel();
         }
 
         function initLevel() {
-            const gz = document.getElementById('ref-zone');
-            const iz = document.getElementById('inv-zone');
-            const dz = document.getElementById('drop-zone');
+            clearInterval(state.timer);
+            state.currentSecs = state.baseTime;
+            document.getElementById('hud-timer').innerText = state.currentSecs;
+            
+            const gz = document.getElementById('ref-zone'), iz = document.getElementById('inv-zone'), dz = document.getElementById('drop-zone');
             gz.innerHTML = iz.innerHTML = dz.innerHTML = "";
 
-            // Lógica Infinita
             const fig = state.lvl < LEVELS_DB.length ? LEVELS_DB[state.lvl] : LEVELS_DB[state.lvl % LEVELS_DB.length];
             
             SHAPES.forEach((s, i) => {
-                const c = fig.coords[i];
-                // Crear Guía
-                createPiece(s, gz, c[0], c[1], c[2], true, i);
-                // Crear Banco
+                createPiece(s, gz, fig.coords[i][0], fig.coords[i][1], fig.coords[i][2], true, i);
                 createPiece(s, iz, 0, 0, 0, false, i);
             });
+
+            startCountdown();
             initInteract();
             updateHUD();
+        }
+
+        function startCountdown() {
+            state.timer = setInterval(() => {
+                state.currentSecs--;
+                document.getElementById('hud-timer').innerText = state.currentSecs;
+                if(state.currentSecs <= 0) {
+                    clearInterval(state.timer);
+                    state.hp--;
+                    updateHUD();
+                    if(state.hp <= 0) { alert("ENTRENAMIENTO FINALIZADO"); location.reload(); }
+                    else { alert("¡TIEMPO AGOTADO!"); initLevel(); }
+                }
+            }, 1000);
         }
 
         function createPiece(s, container, x, y, r, isRef, id) {
             const div = document.createElement('div');
             div.className = isRef ? 'piece' : 'piece in-inventory';
-            div.style.width = s.w + 'px';
-            div.style.height = s.h + 'px';
+            div.style.width = s.w + 'px'; div.style.height = s.h + 'px';
             div.setAttribute('data-id', id);
 
             if(isRef) {
@@ -420,8 +467,7 @@
                 div.style.transform = `translate(-50%, -50%) translate(${fx}px, ${y}px) rotate(${fr}deg)`;
                 div.style.opacity = '0.35';
             } else {
-                div.setAttribute('data-x', 0); div.setAttribute('data-y', 0);
-                div.setAttribute('data-r', 0);
+                div.setAttribute('data-x', 0); div.setAttribute('data-y', 0); div.setAttribute('data-r', 0);
             }
 
             div.innerHTML = `<svg viewBox="0 0 ${s.w} ${s.h}"><polygon points="${s.pts}" fill="${s.c}" stroke="white" stroke-width="2"/></svg>`;
@@ -470,18 +516,16 @@
             SHAPES.forEach((s, i) => {
                 const p = document.querySelector(`#drop-zone [data-id="${i}"]`);
                 if(!p) return;
-
                 const px = parseFloat(p.getAttribute('data-x')) - cx + (p.offsetWidth/2);
                 const py = parseFloat(p.getAttribute('data-y')) - cy + (p.offsetHeight/2);
                 const pr = (parseInt(p.getAttribute('data-r')) % 360 + 360) % 360;
-
                 let tx = fig.coords[i][0], tr = fig.coords[i][2];
                 if(state.mode === 'mirror') { tx = -tx; tr = (360 - tr) % 360; }
-
                 if(Math.hypot(px-tx, py-fig.coords[i][1]) < 35 && Math.abs(pr-tr) < 25) hits++;
             });
 
             if(hits === 7) {
+                clearInterval(state.timer);
                 document.getElementById('overlay').style.display = 'flex';
                 document.getElementById('modal-btn').onclick = () => {
                     state.lvl++;
