@@ -128,13 +128,15 @@
         .mode-btn h4 { font-size: 1.6rem; color: var(--accent); margin-bottom: 5px; }
         .mode-btn p { font-size: 1rem; color: var(--text-dim); }
 
-        /* SLIDER DE TIEMPO RESTAURADO */
-        .time-slider-wrap {
+        /* Lógica del Slider */
+        #time-config-section {
+            display: none; /* Se activa por JS */
             margin-top: 10px;
             padding: 20px;
             background: rgba(0,0,0,0.2);
             border-radius: 20px;
         }
+
         input[type=range] {
             width: 100%;
             height: 12px;
@@ -142,6 +144,7 @@
             border-radius: 10px;
             appearance: none;
             cursor: pointer;
+            margin: 20px 0;
         }
         input[type=range]::-webkit-slider-thumb {
             appearance: none;
@@ -150,14 +153,6 @@
             background: var(--accent);
             border-radius: 50%;
             box-shadow: 0 0 15px var(--accent-glow);
-        }
-        .range-vals {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            color: var(--text-dim);
-            font-weight: 900;
-            font-size: 1.2rem;
         }
 
         /* --- INTERFAZ PRINCIPAL --- */
@@ -197,7 +192,7 @@
         }
 
         .panel-reference { 
-            flex: 0 0 500px; 
+            flex: 0 0 450px; 
             background: var(--bg-panel); 
             border-radius: 45px; 
             display: flex; 
@@ -212,7 +207,7 @@
             margin: 25px; 
             background: rgba(0,0,0,0.5); 
             background-image: radial-gradient(var(--grid-color) 2px, transparent 2px);
-            background-size: 50px 50px;
+            background-size: 40px 40px;
             border-radius: 30px; 
             position: relative; 
             overflow: hidden; 
@@ -229,7 +224,7 @@
         }
 
         .panel-inventory { 
-            flex: 0 0 350px; 
+            flex: 0 0 320px; 
             background: var(--bg-inv); 
             border-radius: 45px; 
             border: 1px solid rgba(255,255,255,0.1); 
@@ -246,7 +241,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 50px;
+            gap: 40px;
         }
 
         /* --- PIEZAS TANGRAM --- */
@@ -264,7 +259,7 @@
             transform: none !important;
             left: auto !important;
             top: auto !important;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
         }
 
         /* --- FOOTER --- */
@@ -279,9 +274,9 @@
         }
 
         .btn-main { 
-            padding: 30px 100px; 
+            padding: 30px 80px; 
             border-radius: 60px; 
-            font-size: 2rem; 
+            font-size: 1.8rem; 
             font-weight: 900; 
             border: none; 
             cursor: pointer; 
@@ -321,44 +316,48 @@
         <h1 class="hero-title">CENTRO PERCEPTUM</h1>
         <p class="hero-subtitle">Visual Training System</p>
         
-        <div class="distance-alert">
-            ⚠️ TAREA A REALIZAR A 40 CM DE DISTANCIA
-        </div>
+        <div class="distance-alert">⚠️ TAREA A REALIZAR A 40 CM DE DISTANCIA</div>
 
         <div class="config-grid">
             <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.5rem; text-transform: uppercase;">Modo Terapéutico</h3>
-                <button class="mode-btn active" data-mode="direct" onclick="setMode(this)">
+                <h3 style="color:var(--text-dim); font-size: 1.2rem; text-transform: uppercase;">Modo Terapéutico</h3>
+                <button class="mode-btn active" data-mode="direct" onclick="selectMode('direct', this)">
                     <h4>Copia Directa</h4>
                     <p>Orientación idéntica al modelo.</p>
                 </button>
-                <button class="mode-btn" data-mode="mirror" onclick="setMode(this)">
+                <button class="mode-btn" data-mode="mirror" onclick="selectMode('mirror', this)">
                     <h4>Inversión Lateral</h4>
                     <p>Estimulación bi-hemisférica (Espejo).</p>
                 </button>
+                <button class="mode-btn" data-mode="timed" onclick="selectMode('timed', this)">
+                    <h4>Contrareloj</h4>
+                    <p>Presión temporal configurable.</p>
+                </button>
             </div>
             <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.5rem; text-transform: uppercase;">Cronometría (Seg)</h3>
-                <div class="time-slider-wrap">
-                    <input type="range" id="time-range" min="15" max="120" value="45" oninput="document.getElementById('time-display').innerText = this.value + 's'">
-                    <div class="range-labels">
-                        <span>15s</span>
-                        <span id="time-display" style="color:var(--accent); font-size:2rem">45s</span>
-                        <span>120s</span>
+                <h3 style="color:var(--text-dim); font-size: 1.2rem; text-transform: uppercase;">Configuración</h3>
+                <div id="time-config-section">
+                    <p class="hud-label">Tiempo del Nivel</p>
+                    <input type="range" id="time-range" min="15" max="120" value="45" oninput="document.getElementById('ts-display').innerText = this.value + 's'">
+                    <div style="display:flex; justify-content:space-between; font-weight:900">
+                        <span>15s</span> <span id="ts-display" style="color:var(--accent)">45s</span> <span>120s</span>
                     </div>
                 </div>
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-top: 10px;">Niveles infinitos. Se pierde al agotar las vidas.</p>
+                <div id="infinite-note">
+                    <p style="color: var(--accent); font-weight: 900; font-size: 1.2rem;">MODO SIN LÍMITE</p>
+                    <p style="color: var(--text-dim); margin-top: 10px;">Niveles infinitos. Se pierde al agotar las 3 vidas.</p>
+                </div>
             </div>
         </div>
 
-        <button class="btn-main btn-success" style="font-size:3rem; padding:40px 150px" onclick="startApp()">INICIAR SISTEMA</button>
+        <button class="btn-main btn-success" style="font-size:2.5rem; width:500px" onclick="startApp()">INICIAR SISTEMA</button>
     </div>
 
     <header>
         <div class="logo">PERCEPTUM<span>PRO</span></div>
         <div class="hud-container">
             <div class="hud-item"><div class="hud-label">Nivel</div><div id="hud-lvl" class="hud-val">1</div></div>
-            <div class="hud-item"><div class="hud-label">Tiempo</div><div id="hud-timer" class="hud-val">45</div></div>
+            <div class="hud-item" id="hud-timer-box" style="visibility:hidden"><div class="hud-label">Tiempo</div><div id="hud-timer" class="hud-val">45</div></div>
             <div class="hud-item"><div class="hud-label">Vidas</div><div id="hud-hp" class="hud-val" style="color:var(--error)">❤️❤️❤️</div></div>
         </div>
     </header>
@@ -366,13 +365,13 @@
     <div class="game-world">
         <div class="panel-reference">
             <div class="ref-canvas" id="ref-zone"></div>
-            <div style="padding:25px; text-align:center; font-weight:900; letter-spacing:4px; color:var(--accent); font-size: 1.5rem;">MODELO GUÍA</div>
+            <div style="padding:20px; text-align:center; font-weight:900; letter-spacing:4px; color:var(--accent); font-size: 1.2rem;">MODELO GUÍA</div>
         </div>
 
         <div class="canvas-main" id="drop-zone"></div>
 
         <div class="panel-inventory">
-            <div style="padding:25px; background:rgba(255,255,255,0.03); text-align:center; font-weight:700; color:var(--text-dim); font-size: 1.2rem;">PIEZAS</div>
+            <div style="padding:20px; background:rgba(255,255,255,0.03); text-align:center; font-weight:700; color:var(--text-dim);">PIEZAS</div>
             <div class="inv-scroll" id="inv-zone"></div>
         </div>
     </div>
@@ -383,9 +382,9 @@
     </footer>
 
     <div id="overlay">
-        <div class="modal" id="modal-content">
-            <h2 id="modal-title" style="font-size: 4rem; margin-bottom: 30px;">¡EXCELENTE!</h2>
-            <button class="btn-main btn-success" id="modal-btn">SIGUIENTE NIVEL</button>
+        <div class="modal">
+            <h2 style="font-size: 4rem; margin-bottom: 30px; color: var(--accent);">¡EXCELENTE!</h2>
+            <button class="btn-main btn-success" onclick="nextLevel()">SIGUIENTE NIVEL</button>
         </div>
     </div>
 
@@ -406,50 +405,52 @@
             { name: "Barco", coords: [[-40,40,0], [40,40,0], [0,-40,0], [-80,80,0], [80,80,0], [0,80,0], [0,120,0]] }
         ];
 
-        let state = { lvl: 0, hp: 3, mode: 'direct', baseTime: 45, currentSecs: 45, timer: null };
+        let state = { lvl: 0, hp: 3, mode: 'direct', baseTime: 45, currentTime: 45, timer: null };
 
-        function setMode(btn) {
-            document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
+        function selectMode(m, btn) {
+            state.mode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            state.mode = btn.dataset.mode;
+            
+            document.getElementById('time-config-section').style.display = (m === 'timed') ? 'block' : 'none';
+            document.getElementById('infinite-note').style.display = (m === 'timed') ? 'none' : 'block';
         }
 
         function startApp() {
             state.baseTime = parseInt(document.getElementById('time-range').value);
             document.getElementById('launcher').style.display = 'none';
+            if(state.mode === 'timed') document.getElementById('hud-timer-box').style.visibility = 'visible';
             initLevel();
         }
 
         function initLevel() {
             clearInterval(state.timer);
-            state.currentSecs = state.baseTime;
-            document.getElementById('hud-timer').innerText = state.currentSecs;
-            
             const gz = document.getElementById('ref-zone'), iz = document.getElementById('inv-zone'), dz = document.getElementById('drop-zone');
             gz.innerHTML = iz.innerHTML = dz.innerHTML = "";
 
-            const fig = state.lvl < LEVELS_DB.length ? LEVELS_DB[state.lvl] : LEVELS_DB[state.lvl % LEVELS_DB.length];
+            const fig = LEVELS_DB[state.lvl % LEVELS_DB.length];
             
             SHAPES.forEach((s, i) => {
                 createPiece(s, gz, fig.coords[i][0], fig.coords[i][1], fig.coords[i][2], true, i);
                 createPiece(s, iz, 0, 0, 0, false, i);
             });
 
-            startCountdown();
+            if(state.mode === 'timed') {
+                state.currentTime = state.baseTime;
+                startCountdown();
+            }
             initInteract();
             updateHUD();
         }
 
         function startCountdown() {
+            document.getElementById('hud-timer').innerText = state.currentTime;
             state.timer = setInterval(() => {
-                state.currentSecs--;
-                document.getElementById('hud-timer').innerText = state.currentSecs;
-                if(state.currentSecs <= 0) {
+                state.currentTime--;
+                document.getElementById('hud-timer').innerText = state.currentTime;
+                if(state.currentTime <= 0) {
                     clearInterval(state.timer);
-                    state.hp--;
-                    updateHUD();
-                    if(state.hp <= 0) { alert("ENTRENAMIENTO FINALIZADO"); location.reload(); }
-                    else { alert("¡TIEMPO AGOTADO!"); initLevel(); }
+                    loseLife("¡TIEMPO AGOTADO!");
                 }
             }, 1000);
         }
@@ -457,15 +458,18 @@
         function createPiece(s, container, x, y, r, isRef, id) {
             const div = document.createElement('div');
             div.className = isRef ? 'piece' : 'piece in-inventory';
-            div.style.width = s.w + 'px'; div.style.height = s.h + 'px';
+            // Escala para el modelo guía para que no se corte
+            const scale = isRef ? 0.7 : 1;
+            div.style.width = (s.w * scale) + 'px'; 
+            div.style.height = (s.h * scale) + 'px';
             div.setAttribute('data-id', id);
 
             if(isRef) {
                 div.style.left = '50%'; div.style.top = '50%';
-                let fx = x, fr = r;
-                if(state.mode === 'mirror') { fx = -x; fr = (360 - r) % 360; }
-                div.style.transform = `translate(-50%, -50%) translate(${fx}px, ${y}px) rotate(${fr}deg)`;
-                div.style.opacity = '0.35';
+                let fx = x * scale, fr = r;
+                if(state.mode === 'mirror') { fx = -fx; fr = (360 - r) % 360; }
+                div.style.transform = `translate(-50%, -50%) translate(${fx}px, ${y * scale}px) rotate(${fr}deg)`;
+                div.style.opacity = '0.4';
             } else {
                 div.setAttribute('data-x', 0); div.setAttribute('data-y', 0); div.setAttribute('data-r', 0);
             }
@@ -495,14 +499,10 @@
 
             interact('.piece.in-inventory').on('tap', (e) => {
                 const t = e.currentTarget;
-                const dz = document.getElementById('drop-zone');
                 t.classList.remove('in-inventory');
-                dz.appendChild(t);
-                const rect = dz.getBoundingClientRect();
-                const x = rect.width/2 - t.offsetWidth/2;
-                const y = rect.height/2 - t.offsetHeight/2;
-                t.setAttribute('data-x', x); t.setAttribute('data-y', y);
-                t.style.transform = `translate(${x}px, ${y}px) rotate(0deg)`;
+                document.getElementById('drop-zone').appendChild(t);
+                t.setAttribute('data-x', 50); t.setAttribute('data-y', 50);
+                t.style.transform = "translate(50px, 50px) rotate(0deg)";
                 initInteract();
             });
         }
@@ -510,7 +510,7 @@
         function validateSolution() {
             const dz = document.getElementById('drop-zone').getBoundingClientRect();
             const cx = dz.width / 2, cy = dz.height / 2;
-            const fig = state.lvl < LEVELS_DB.length ? LEVELS_DB[state.lvl] : LEVELS_DB[state.lvl % LEVELS_DB.length];
+            const fig = LEVELS_DB[state.lvl % LEVELS_DB.length];
             let hits = 0;
 
             SHAPES.forEach((s, i) => {
@@ -519,24 +519,37 @@
                 const px = parseFloat(p.getAttribute('data-x')) - cx + (p.offsetWidth/2);
                 const py = parseFloat(p.getAttribute('data-y')) - cy + (p.offsetHeight/2);
                 const pr = (parseInt(p.getAttribute('data-r')) % 360 + 360) % 360;
+                
                 let tx = fig.coords[i][0], tr = fig.coords[i][2];
                 if(state.mode === 'mirror') { tx = -tx; tr = (360 - tr) % 360; }
-                if(Math.hypot(px-tx, py-fig.coords[i][1]) < 35 && Math.abs(pr-tr) < 25) hits++;
+                
+                if(Math.hypot(px-tx, py-fig.coords[i][1]) < 45 && Math.abs(pr-tr) < 30) hits++;
             });
 
             if(hits === 7) {
                 clearInterval(state.timer);
                 document.getElementById('overlay').style.display = 'flex';
-                document.getElementById('modal-btn').onclick = () => {
-                    state.lvl++;
-                    document.getElementById('overlay').style.display = 'none';
-                    initLevel();
-                };
             } else {
-                state.hp--; updateHUD();
-                alert(state.hp <= 0 ? "ENTRENAMIENTO FINALIZADO" : "POSICIÓN INCORRECTA");
-                if(state.hp <= 0) location.reload();
+                loseLife("POSICIÓN INCORRECTA");
             }
+        }
+
+        function loseLife(msg) {
+            state.hp--;
+            updateHUD();
+            if(state.hp <= 0) {
+                alert("ENTRENAMIENTO FINALIZADO - SIN VIDAS");
+                location.reload();
+            } else {
+                alert(msg);
+                initLevel();
+            }
+        }
+
+        function nextLevel() {
+            state.lvl++;
+            document.getElementById('overlay').style.display = 'none';
+            initLevel();
         }
 
         function updateHUD() {
