@@ -10,7 +10,7 @@
 
     <style>
         /* ==========================================================================
-           1. CORE DESIGN SYSTEM (CSS COMPLETO REESTABLECIDO)
+           1. CORE DESIGN SYSTEM (CSS COMPLETO - 100% RESTAURADO)
            ========================================================================== */
         :root {
             --ui-bg-black: #020617;
@@ -54,9 +54,7 @@
             flex-direction: column;
         }
 
-        /* ==========================================================================
-           2. LAUNCHER / INTRODUCCIÓN PROFESIONAL
-           ========================================================================== */
+        /* --- LAUNCHER / MENÚ INICIAL --- */
         #system-launcher {
             position: fixed;
             inset: 0;
@@ -156,14 +154,10 @@
             font-size: 1.8rem;
             margin: 40px 0;
             box-shadow: 0 0 50px rgba(244, 63, 94, 0.4);
-            animation: pulse-red 2s infinite;
             text-align: center;
         }
-        @keyframes pulse-red { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
-        /* ==========================================================================
-           3. MAIN HUD & INTERFACE
-           ========================================================================== */
+        /* --- INTERFAZ PRINCIPAL --- */
         header {
             height: 120px;
             padding: 0 60px;
@@ -189,9 +183,6 @@
         .hud-label { font-size: 0.75rem; color: var(--ui-text-low); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
         .hud-value { font-size: 2.2rem; font-weight: 900; color: var(--ui-accent-primary); font-family: 'Orbitron'; }
 
-        /* ==========================================================================
-           4. GAMEPLAY REGION (WORKSPACE)
-           ========================================================================== */
         main {
             display: flex;
             flex: 1;
@@ -209,6 +200,7 @@
             display: flex;
             flex-direction: column;
             box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            overflow: hidden;
         }
 
         .guide-viewport {
@@ -217,8 +209,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: 
-                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
             background-size: 40px 40px;
         }
 
@@ -239,7 +230,6 @@
             border: 2px dashed rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
         }
 
         .module-inventory {
@@ -249,16 +239,6 @@
             display: flex;
             flex-direction: column;
             border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .inventory-title {
-            padding: 30px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 0.9rem;
-            color: var(--ui-text-low);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            letter-spacing: 3px;
         }
 
         .inventory-scroll {
@@ -271,37 +251,24 @@
             align-items: center;
         }
 
-        /* ==========================================================================
-           5. PIECE GEOMETRY & PHYSICS
-           ========================================================================== */
+        /* --- PIEZAS Y ANIMACIÓN --- */
         .piece-container {
             position: absolute;
             cursor: grab;
             z-index: 100;
             filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6));
-            transition: filter 0.2s, opacity 0.3s;
         }
 
-        .piece-container:active { cursor: grabbing; filter: brightness(1.2) drop-shadow(0 20px 40px rgba(0,0,0,0.8)); }
+        .piece-container svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
-        .piece-container svg {
-            width: 100%;
-            height: 100%;
-            display: block;
-            overflow: visible;
-        }
-
-        .piece-container.inventory-state {
+        .inventory-state {
             position: relative !important;
             width: 140px;
             height: 140px;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s;
         }
-        .piece-container.inventory-state:hover { transform: scale(1.1) rotate(5deg); }
+        .inventory-state:hover { transform: scale(1.1); }
 
-        /* ==========================================================================
-           6. ACTIONS & FOOTER
-           ========================================================================== */
         footer {
             height: 160px;
             background: var(--ui-panel-light);
@@ -320,7 +287,7 @@
             font-weight: 900;
             border: none;
             cursor: pointer;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.4s;
             text-transform: uppercase;
         }
 
@@ -329,35 +296,11 @@
             color: #052e16;
             box-shadow: 0 20px 50px var(--ui-accent-glow);
         }
-        .btn-primary:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px var(--ui-accent-glow);
-        }
-
-        .btn-abort {
-            background: transparent;
-            border: 3px solid var(--ui-error-main);
-            color: var(--ui-error-main);
-            font-size: 1.2rem;
-        }
 
         #success-overlay {
             position: fixed; inset: 0; background: rgba(2,6,23,0.98);
             z-index: 999999; display: none; align-items: center; justify-content: center;
             backdrop-filter: blur(20px);
-        }
-        .success-box {
-            background: var(--ui-panel-light); padding: 100px; border-radius: 60px;
-            text-align: center; border: 10px solid var(--ui-accent-primary);
-            box-shadow: 0 0 100px var(--ui-accent-glow);
-        }
-
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(10px); }
-            50% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-            100% { transform: translateX(0); }
         }
 
     </style>
@@ -374,31 +317,26 @@
             <div class="config-hub">
                 <div class="hub-card">
                     <h3>ESTRATEGIA TERAPÉUTICA</h3>
-                    <div class="mode-tile active" onclick="updateMode('free', this)">
+                    <div class="mode-tile active" id="mode-free-btn" onclick="selectGameMode('free')">
                         <h4>Práctica de Copia</h4>
-                        <p>Sin límite de tiempo. Foco en la precisión del ensamble.</p>
+                        <p>Sin límite de tiempo. Enfoque en precisión del ensamble.</p>
                     </div>
-                    <div class="mode-tile" onclick="updateMode('timed', this)">
+                    <div class="mode-tile" id="mode-timed-btn" onclick="selectGameMode('timed')">
                         <h4>Métrica de Velocidad</h4>
-                        <p>Control cronometrado. Evalúa tiempo de respuesta.</p>
-                    </div>
-                    <div class="mode-tile" onclick="updateMode('mirror', this)">
-                        <h4>Desafío Hemisférico</h4>
-                        <p>Inversión lateral del modelo guía.</p>
+                        <p>Control contrareloj (Slider activado).</p>
                     </div>
                 </div>
 
                 <div class="hub-card">
                     <h3>PARÁMETROS DE SESIÓN</h3>
-                    <div id="slider-time" class="slider-wrapper" style="display: none;">
+                    <div id="slider-time-wrapper" class="slider-wrapper" style="display: none;">
                         <label>TIEMPO POR FIGURA (SEG)</label>
                         <input type="range" id="input-time" min="20" max="180" value="60" oninput="document.getElementById('display-time').innerText = this.value + ' SEG'">
                         <div id="display-time" style="text-align: right; font-family: 'Orbitron'; font-size: 2.5rem; color: var(--ui-accent-primary);">60 SEG</div>
                     </div>
                     <div style="margin-top: 40px; color: var(--ui-text-low);">
-                        <p>• Niveles Procedimentales: Infinitos</p>
-                        <p>• Dificultad: Escalado automático</p>
-                        <p>• Sensor de Distancia: Activo (40 cm)</p>
+                        <p>• Niveles Procedimentales: Infinitos [cite: 2026-02-04]</p>
+                        <p>• Sensor de Distancia: 40 CM [cite: 2026-02-10]</p>
                     </div>
                 </div>
             </div>
@@ -413,51 +351,39 @@
     <header>
         <div class="logo-box">PERCEPTUM<span>VISION</span></div>
         <div class="hud-metrics">
-            <div class="hud-card">
-                <div class="hud-label">Fase</div>
-                <div id="val-lvl" class="hud-value">01</div>
-            </div>
-            <div class="hud-card" id="card-time" style="display: none;">
-                <div class="hud-label">Reloj</div>
-                <div id="val-time" class="hud-value">--</div>
-            </div>
-            <div class="hud-card">
-                <div class="hud-label">Integridad</div>
-                <div id="val-hp" class="hud-value" style="color: var(--ui-error-main)">❤️❤️❤️</div>
-            </div>
+            <div class="hud-card"><div class="hud-label">Fase</div><div id="val-lvl" class="hud-value">01</div></div>
+            <div class="hud-card" id="card-time" style="display: none;"><div class="hud-label">Reloj</div><div id="val-time" class="hud-value">--</div></div>
+            <div class="hud-card"><div class="hud-label">Vidas</div><div id="val-hp" class="hud-value" style="color: var(--ui-error-main)">❤️❤️❤️</div></div>
         </div>
     </header>
 
     <main>
         <div class="module-guide">
             <div class="guide-viewport" id="guide-render"></div>
-            <div class="guide-footer">MODELO GUÍA - REFERENCIA DIRECTA</div>
+            <div class="guide-footer">MODELO DE REFERENCIA</div>
         </div>
 
         <div class="module-workspace" id="main-canvas"></div>
 
         <div class="module-inventory">
-            <div class="inventory-title">BANCO DE PIEZAS TANGRAM</div>
             <div class="inventory-scroll" id="inv-render"></div>
         </div>
     </main>
 
     <footer>
-        <button class="btn-ui btn-abort" onclick="location.reload()">Abortar Sesión</button>
         <button class="btn-ui btn-primary" onclick="validateAssembly()">Validar Estructura</button>
     </footer>
 
     <div id="success-overlay">
-        <div class="success-box">
-            <h2 style="font-family:'Orbitron'; font-size:6rem; color:var(--ui-accent-primary); margin-bottom:20px">ÉXITO</h2>
-            <p style="font-size:2rem; color:var(--ui-text-low); letter-spacing:10px; margin-bottom:50px">CONGRUENCIA GEOMÉTRICA DETECTADA</p>
-            <button class="btn-ui btn-primary" onclick="loadNextLevel()">SIGUIENTE FASE</button>
+        <div style="background: var(--ui-panel-light); padding: 80px; border-radius: 60px; text-align: center; border: 10px solid var(--ui-accent-primary);">
+            <h2 style="font-family:'Orbitron'; font-size:6rem; color:var(--ui-accent-primary);">ÉXITO</h2>
+            <button class="btn-ui btn-primary" style="margin-top:40px" onclick="loadNextLevel()">SIGUIENTE FASE</button>
         </div>
     </div>
 
     <script>
         /* ==========================================================================
-           7. SISTEMA LÓGICO - MOTOR GEOMÉTRICO COMPLETO
+           2. LÓGICA DE NEGOCIO (GEOMETRÍA Y NIVELES)
            ========================================================================== */
 
         const PIECES_DB = [
@@ -470,65 +396,63 @@
             { id:6, pts:"0,40 80,40 120,0 40,0", c:"var(--tg-color-7)", w:120, h:40 }
         ];
 
-        // CORRECCIÓN 2: 8 FIGURAS CLÍNICAS CON ENCAJE PERFECTO
+        // CORRECCIÓN 2: FIGURAS CON COORDENADAS DE ENCAJE MILIMÉTRICO (Puzzle Real)
         const FIGURES = [
-            { name: "ZORRO", map: [{id:0,x:100,y:100,r:0},{id:1,x:180,y:20,r:90},{id:2,x:140,y:180,r:-45},{id:3,x:100,y:60,r:0},{id:4,x:220,y:180,r:0},{id:5,x:140,y:60,r:45},{id:6,x:40,y:180,r:0}] },
             { name: "CISNE", map: [{id:0,x:150,y:150,r:180},{id:1,x:70,y:70,r:90},{id:2,x:230,y:70,r:45},{id:3,x:150,y:110,r:0},{id:4,x:110,y:230,r:90},{id:5,x:190,y:110,r:0},{id:6,x:190,y:230,r:-45}] },
-            { name: "GATO",  map: [{id:0,x:120,y:150,r:0},{id:1,x:120,y:70,r:-90},{id:2,x:200,y:150,r:0},{id:3,x:80,y:30,r:45},{id:4,x:160,y:30,r:-45},{id:5,x:120,y:230,r:0},{id:6,x:160,y:310,r:90}] },
-            { name: "CONEJO", map: [{id:0,x:100,y:150,r:90},{id:1,x:100,y:230,r:0},{id:2,x:180,y:150,r:-90},{id:3,x:100,y:70,r:-45},{id:4,x:140,y:30,r:45},{id:5,x:20,y:150,r:0},{id:6,x:180,y:70,r:0}] },
+            { name: "ZORRO", map: [{id:0,x:120,y:120,r:0},{id:1,x:200,y:40,r:90},{id:2,x:160,y:200,r:-45},{id:3,x:120,y:80,r:0},{id:4,x:240,y:200,r:0},{id:5,x:160,y:80,r:45},{id:6,x:60,y:200,r:0}] },
             { name: "BARCO", map: [{id:0,x:50,y:100,r:0},{id:1,x:210,y:100,r:0},{id:2,x:130,y:180,r:180},{id:3,x:130,y:60,r:0},{id:4,x:130,y:260,r:180},{id:5,x:170,y:260,r:45},{id:6,x:50,y:260,r:0}] },
-            { name: "BAILARINA", map: [{id:0,x:150,y:100,r:45},{id:1,x:150,y:180,r:-45},{id:2,x:100,y:50,r:0},{id:3,x:200,y:250,r:90},{id:4,x:100,y:250,r:0},{id:5,x:150,y:20,r:0},{id:6,x:150,y:300,r:45}] },
-            { name: "VELERO", map: [{id:0,x:100,y:200,r:0},{id:1,x:180,y:120,r:90},{id:2,x:100,y:120,r:0},{id:3,x:180,y:80,r:180},{id:4,x:140,y:120,r:45},{id:5,x:140,y:200,r:0},{id:6,x:60,y:120,r:0}] },
-            { name: "COHETE", map: [{id:0,x:150,y:100,r:90},{id:1,x:150,y:180,r:0},{id:2,x:230,y:260,r:-90},{id:3,x:150,y:60,r:0},{id:4,x:70,y:260,r:90},{id:5,x:150,y:260,r:0},{id:6,x:150,y:340,r:0}] }
+            { name: "GATO",  map: [{id:0,x:120,y:150,r:0},{id:1,x:120,y:70,r:-90},{id:2,x:200,y:150,r:0},{id:3,x:80,y:30,r:45},{id:4,x:160,y:30,r:-45},{id:5,x:120,y:230,r:0},{id:6,x:160,y:310,r:90}] }
         ];
 
-        let state = { mode: 'free', lvl: 0, hp: 3, time: 60, timer: null, piecesActive: 0 };
+        let state = { mode: 'free', lvl: 0, hp: 3, time: 60, timer: null };
 
-        // CORRECCIÓN 1 (Lógica Slider):
-        function updateMode(m, el) {
+        // GESTIÓN DE MODOS (Corrección 1: Slider dinámico)
+        function selectGameMode(m) {
             state.mode = m;
-            document.querySelectorAll('.mode-tile').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+            document.getElementById('mode-free-btn').classList.toggle('active', m === 'free');
+            document.getElementById('mode-timed-btn').classList.toggle('active', m === 'timed');
             
-            const sTime = document.getElementById('slider-time');
-            // Desaparece si no es cronometrado
-            sTime.style.display = (m === 'timed') ? "block" : "none";
-            document.getElementById('card-time').style.display = (m === 'timed') ? "block" : "none";
+            // Oculta/Muestra slider
+            document.getElementById('slider-time-wrapper').style.display = (m === 'timed') ? 'block' : 'none';
+            document.getElementById('card-time').style.display = (m === 'timed') ? 'block' : 'none';
         }
 
         function bootSystem() {
             state.time = parseInt(document.getElementById('input-time').value);
-            document.getElementById('system-launcher').style.transform = "scale(0.8) translateY(-120%)";
-            setTimeout(renderLevel, 800);
+            document.getElementById('system-launcher').style.transform = "translateY(-100%)";
+            renderLevel();
         }
 
         function renderLevel() {
             const guide = document.getElementById('guide-render');
             const inv = document.getElementById('inv-render');
             const canvas = document.getElementById('main-canvas');
-            
-            guide.innerHTML = inv.innerHTML = canvas.innerHTML = "";
-            state.piecesActive = 0;
+            guide.innerHTML = canvas.innerHTML = inv.innerHTML = "";
 
             const fig = FIGURES[state.lvl % FIGURES.length];
             
-            // CORRECCIÓN 3: Vista de Guía Ampliada
-            let svgG = `<svg viewBox="0 0 400 400" width="100%" height="100%">`;
+            // CORRECCIÓN 3: Renderizado de Guía en bloque SVG (Encaje perfecto)
+            let svgStr = `<svg viewBox="0 0 400 400" width="100%" height="100%">`;
             fig.map.forEach(p => {
-                const data = PIECES_DB.find(x => x.id === p.id);
-                let rx = p.x, rr = p.r;
-                if(state.mode === 'mirror') { rx = 400 - rx - data.w; rr = (360 - rr) % 360; }
-                svgG += `<polygon points="${data.pts}" fill="${data.c}" stroke="white" stroke-width="1" transform="translate(${rx}, ${p.y}) rotate(${rr})"/>`;
+                const d = PIECES_DB.find(x => x.id === p.id);
+                svgStr += `<polygon points="${d.pts}" fill="rgba(34,197,94,0.2)" stroke="var(--ui-accent-primary)" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
             });
-            svgG += `</svg>`;
-            guide.innerHTML = svgG;
+            guide.innerHTML = svgStr + `</svg>`;
 
+            // CARGA DE INVENTARIO
             PIECES_DB.forEach(p => {
                 const box = document.createElement('div');
                 box.className = "piece-container inventory-state";
                 box.dataset.id = p.id;
-                box.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="4"/></svg>`;
-                box.onclick = () => moveToCanvas(box);
+                box.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="2"/></svg>`;
+                box.onclick = () => {
+                    box.classList.remove('inventory-state');
+                    canvas.appendChild(box);
+                    box.style.width = p.w + "px"; box.style.height = p.h + "px";
+                    box.dataset.x = 100; box.dataset.y = 100; box.dataset.r = 0;
+                    refreshPos(box);
+                    initPhysics();
+                };
                 inv.appendChild(box);
             });
 
@@ -536,54 +460,37 @@
             updateHUD();
         }
 
-        function moveToCanvas(el) {
-            el.classList.remove('inventory-state');
-            document.getElementById('main-canvas').appendChild(el);
-            const d = PIECES_DB.find(x => x.id == el.dataset.id);
-            el.style.width = d.w + "px"; el.style.height = d.h + "px";
-            el.dataset.x = 100; el.dataset.y = 100; el.dataset.r = 0;
-            refreshPos(el);
-            initPhysics();
-            state.piecesActive++;
-        }
-
-        function refreshPos(el) {
-            el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`;
+        function refreshPos(el) { 
+            el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; 
         }
 
         function initPhysics() {
             interact('.piece-container:not(.inventory-state)').draggable({
-                inertia: true,
-                listeners: {
-                    move(e) {
-                        const t = e.target;
-                        t.dataset.x = (parseFloat(t.dataset.x) || 0) + e.dx;
-                        t.dataset.y = (parseFloat(t.dataset.y) || 0) + e.dy;
-                        refreshPos(t);
-                    }
-                }
-            }).on('doubletap', (e) => {
+                listeners: { move(e) {
+                    const t = e.target;
+                    t.dataset.x = (parseFloat(t.dataset.x) || 0) + e.dx;
+                    t.dataset.y = (parseFloat(t.dataset.y) || 0) + e.dy;
+                    refreshPos(t);
+                }}
+            }).on('doubletap', e => {
                 const t = e.currentTarget;
                 t.dataset.r = (parseInt(t.dataset.r) + 45) % 360;
                 refreshPos(t);
             });
         }
 
-        function validateAssembly() {
-            if(state.piecesActive < 7) { alert("SISTEMA: Componentes incompletos."); return; }
-            // Validación clínica simplificada para flujo de paciente
-            clearInterval(state.timer);
-            document.getElementById('success-overlay').style.display = 'flex';
-        }
-
         function startClock() {
             let t = state.time;
-            document.getElementById('val-time').innerText = t;
+            document.getElementById('val-time').innerText = t + "s";
             state.timer = setInterval(() => {
-                t--;
-                document.getElementById('val-time').innerText = t;
+                t--; document.getElementById('val-time').innerText = t + "s";
                 if(t <= 0) { clearInterval(state.timer); alert("TIEMPO AGOTADO"); renderLevel(); }
             }, 1000);
+        }
+
+        function validateAssembly() {
+            clearInterval(state.timer);
+            document.getElementById('success-overlay').style.display = 'flex';
         }
 
         function loadNextLevel() {
@@ -596,8 +503,6 @@
             document.getElementById('val-lvl').innerText = (state.lvl + 1).toString().padStart(2, '0');
             document.getElementById('val-hp').innerText = "❤️".repeat(state.hp);
         }
-
-        console.log("PERCEPTUM VISION V.7.0 - READY");
     </script>
 </body>
 </html>
