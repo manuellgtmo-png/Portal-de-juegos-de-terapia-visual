@@ -3,315 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM VISION - ADVANCED REHABILITATION MODULE</title>
+    <title>PERCEPTUM VISION - V.5.0.1</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. SISTEMA DE DISEÑO (ESTÉTICA DE LAS CAPTURAS)
+           1. CORE CLINICAL UI (REPLICANDO CAPTURAS)
            ========================================================================== */
         :root {
-            --ui-bg-black: #0b111e;
-            --ui-panel-dark: #111827;
-            --ui-accent-primary: #22c55e;
-            --ui-accent-glow: rgba(34, 197, 94, 0.4);
-            --ui-error: #ef4444;
-            --ui-text: #f8fafc;
-            --tg-color-1: #ff4d4d; --tg-color-2: #3b82f6; --tg-color-3: #94a3b8;
-            --tg-color-4: #f59e0b; --tg-color-5: #10b981; --tg-color-6: #6366f1;
-            --tg-color-7: #d946ef;
+            --bg-dark: #0f172a;
+            --bg-black: #020617;
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.4);
+            --error: #f43f5e;
+            --text: #f8fafc;
+            /* Paleta Tangram Original */
+            --t-red: #ff4757; --t-blue: #2e86de; --t-grey: #a4b0be;
+            --t-orange: #ffa502; --t-green: #2ed573; --t-purple: #5352ed;
+            --t-pink: #e056fd;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-user-select: none; user-select: none; touch-action: none; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--ui-bg-black); color: var(--ui-text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg-black); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
         /* ==========================================================================
-           2. INTRODUCCIÓN Y MENÚ PRINCIPAL (RESTAURADO)
+           2. INTRODUCCIÓN (TAMAÑO GRANDE Y RESPONSIVO)
            ========================================================================== */
         #launcher-screen {
-            position: fixed; inset: 0; background: radial-gradient(circle at center, #1e293b 0%, #0b111e 100%);
+            position: fixed; inset: 0; background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
             z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease, transform 0.6s ease;
+            padding: 20px; text-align: center;
         }
 
-        .launcher-box { width: 90%; max-width: 1000px; text-align: center; }
-        .main-title { font-family: 'Orbitron'; font-size: 3.5rem; color: var(--ui-accent-primary); letter-spacing: 4px; margin-bottom: 5px; }
-        .sub-title { font-size: 0.9rem; letter-spacing: 8px; color: #64748b; text-transform: uppercase; margin-bottom: 40px; }
+        .main-header h1 { font-family: 'Orbitron'; font-size: clamp(2.5rem, 8vw, 5rem); color: var(--accent); text-shadow: 0 0 30px var(--accent-glow); margin-bottom: 5px; }
+        .main-header p { font-size: clamp(0.6rem, 2vw, 1rem); letter-spacing: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 40px; }
 
-        .config-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
-        .panel-ui { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 30px; text-align: left; }
+        .distance-alert { background: #f43f5e; color: white; padding: clamp(10px, 2vw, 15px) clamp(20px, 5vw, 40px); border-radius: 50px; font-weight: 900; margin-bottom: 40px; font-size: clamp(0.7rem, 2vw, 0.9rem); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(0.98); } }
 
-        .mode-option { 
-            background: rgba(255,255,255,0.05); border: 2px solid transparent; padding: 20px; 
-            border-radius: 15px; margin-bottom: 15px; cursor: pointer; transition: 0.3s;
-        }
-        .mode-option.active { border-color: var(--ui-accent-primary); background: rgba(34, 197, 94, 0.1); }
-        .mode-option h4 { font-size: 1.1rem; margin-bottom: 5px; }
-        .mode-option p { font-size: 0.75rem; color: #94a3b8; }
+        .config-container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; width: 100%; max-width: 1100px; }
+        .config-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; padding: clamp(20px, 4vw, 40px); flex: 1; min-width: 320px; text-align: left; }
+        .box-title { font-family: 'Orbitron'; color: var(--accent); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 25px; border-left: 3px solid var(--accent); padding-left: 15px; }
 
-        /* Estilo del Slider de las capturas */
-        .slider-container { margin-top: 20px; }
-        input[type=range] { width: 100%; height: 8px; border-radius: 5px; background: #334155; appearance: none; outline: none; margin: 20px 0; }
-        input[type=range]::-webkit-slider-thumb { appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--ui-accent-primary); cursor: pointer; border: 4px solid #fff; }
+        .mode-btn { background: rgba(255,255,255,0.03); border: 2px solid transparent; padding: 20px; border-radius: 18px; margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
+        .mode-btn.active { border-color: var(--accent); background: rgba(34, 197, 94, 0.1); }
+        .mode-btn h4 { font-size: 1.1rem; margin-bottom: 5px; }
+        .mode-btn p { font-size: 0.75rem; color: #94a3b8; }
 
-        .distance-badge { background: #ef4444; color: white; padding: 12px 30px; border-radius: 50px; font-weight: 800; font-size: 0.9rem; margin-bottom: 30px; display: inline-block; }
+        /* REPARACIÓN: Control del Slider */
+        #timer-config { opacity: 0; transform: translateY(10px); pointer-events: none; transition: 0.5s; }
+        #timer-config.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
 
-        /* Botón Iniciar Protocolo */
-        .btn-start { 
-            background: var(--ui-accent-primary); color: #052e16; font-family: 'Orbitron'; 
-            font-size: 1.8rem; font-weight: 900; padding: 25px 80px; border-radius: 100px; 
-            border: none; cursor: pointer; transition: 0.4s; box-shadow: 0 15px 40px var(--ui-accent-glow);
-        }
-        .btn-start:hover { transform: translateY(-5px); filter: brightness(1.1); }
+        input[type=range] { width: 100%; height: 10px; border-radius: 5px; background: #1e293b; appearance: none; margin: 30px 0; outline: none; }
+        input[type=range]::-webkit-slider-thumb { appearance: none; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 4px solid white; box-shadow: 0 0 15px var(--accent-glow); }
+
+        .btn-init { background: var(--accent); color: #052e16; font-family: 'Orbitron'; font-size: clamp(1.2rem, 3vw, 2.2rem); font-weight: 900; padding: 25px 80px; border-radius: 100px; border: none; cursor: pointer; margin-top: 50px; transition: 0.4s; box-shadow: 0 20px 50px var(--accent-glow); }
+        .btn-init:hover { transform: translateY(-5px); filter: brightness(1.1); }
 
         /* ==========================================================================
-           3. INTERFAZ DE JUEGO (RESTAURADA)
+           3. INTERFAZ DE JUEGO (MULTI-DISPOSITIVO)
            ========================================================================== */
-        header { 
-            height: 90px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(15, 23, 42, 0.8); border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .hud-group { display: flex; gap: 20px; }
-        .hud-item { background: rgba(0,0,0,0.3); padding: 8px 25px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .hud-val { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--ui-accent-primary); font-weight: 900; }
+        header { height: 80px; padding: 0 40px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .hud-display { display: flex; gap: 15px; }
+        .hud-card { background: #020617; padding: 10px 25px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); min-width: 100px; text-align: center; }
+        .hud-label { font-size: 0.6rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
+        .hud-val { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--accent); font-weight: 900; }
 
-        main { flex: 1; display: flex; padding: 20px; gap: 20px; }
+        main { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
+
+        /* Modelo de Referencia Reparado */
+        #guide-panel { width: clamp(250px, 30vw, 400px); background: #000; border: 2px solid var(--accent); border-radius: 25px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        #guide-canvas { flex: 1; width: 100%; height: 100%; }
+        .guide-footer { background: var(--accent); color: #000; text-align: center; padding: 10px; font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; }
+
+        #work-canvas { flex: 1; background: rgba(255,255,255,0.01); border-radius: 25px; border: 2px dashed rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+
+        #piece-bank { width: 180px; background: var(--bg-dark); border-radius: 25px; padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+
+        .footer-nav { height: 100px; display: flex; justify-content: center; align-items: center; gap: 30px; }
+        .nav-btn { padding: 18px 45px; border-radius: 50px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; font-size: 0.9rem; }
+        .btn-alt { background: transparent; color: #64748b; border: 1px solid #334155; }
+        .btn-main { background: var(--accent); color: #052e16; }
+
+        .piece { position: absolute; cursor: grab; z-index: 10; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
+        .bank-piece { position: relative !important; width: 80px; height: 80px; margin: 0 auto; flex-shrink: 0; }
         
-        /* Modelo de Referencia */
-        #guide-panel { 
-            width: 380px; background: #000; border: 4px solid var(--ui-accent-primary); 
-            border-radius: 30px; display: flex; flex-direction: column; overflow: hidden;
+        @media (max-width: 768px) {
+            main { flex-direction: column; overflow-y: auto; }
+            #guide-panel, #piece-bank { width: 100%; height: 300px; }
+            #piece-bank { flex-direction: row; height: 120px; }
+            #work-canvas { height: 500px; flex: none; }
         }
-        #guide-canvas { flex: 1; position: relative; }
-        .guide-label { background: var(--ui-accent-primary); color: #000; text-align: center; padding: 10px; font-weight: 900; font-size: 0.8rem; letter-spacing: 2px; }
-
-        /* Área de Trabajo */
-        #work-area { flex: 1; position: relative; background: rgba(255,255,255,0.02); border-radius: 30px; border: 2px dashed rgba(255,255,255,0.1); }
-
-        /* Banco de Piezas */
-        #inventory { width: 280px; background: var(--ui-panel-dark); border-radius: 30px; padding: 20px; display: flex; flex-direction: column; gap: 20px; align-items: center; overflow-y: auto; }
-
-        /* Botones Inferiores */
-        .controls-footer { height: 120px; display: flex; justify-content: center; align-items: center; gap: 40px; padding-bottom: 20px; }
-        .btn-footer { padding: 20px 50px; border-radius: 50px; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-back { background: transparent; color: #64748b; border: 2px solid #334155; }
-        .btn-check { background: var(--ui-accent-primary); color: #052e16; }
-
-        /* Piezas */
-        .piece { position: absolute; cursor: grab; z-index: 10; }
-        .inventory-piece { position: relative !important; width: 100px; height: 100px; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
     <div id="launcher-screen">
-        <div class="launcher-box">
-            <h1 class="main-title">PERCEPTUM VISION</h1>
-            <p class="sub-title">Clinical Training System</p>
-            
-            <div class="distance-badge">⚠️ TAREA A REALIZAR A 40 CM DE DISTANCIA</div>
+        <div class="main-header">
+            <h1>CENTRO PERCEPTUM</h1>
+            <p>VISUAL TRAINING SYSTEM</p>
+        </div>
+        
+        <div class="distance-alert">⚠️ TAREA A REALIZAR A 40 CM DE DISTANCIA [cite: 2026-02-10]</div>
 
-            <div class="config-grid">
-                <div class="panel-ui">
-                    <h3 style="margin-bottom: 20px; color: var(--ui-accent-primary);">MODO TERAPÉUTICO</h3>
-                    <div class="mode-option active" onclick="selMode('copy', this)">
-                        <h4>Copia Directa</h4>
-                        <p>Reproducción isométrica del modelo. Enfoque en atención selectiva.</p>
-                    </div>
-                    <div class="mode-option" onclick="selMode('mirror', this)">
-                        <h4>Inversión Lateral</h4>
-                        <p>Desafío bi-hemisférico (Espejo). Ideal para negligencias visuales.</p>
-                    </div>
+        <div class="config-container">
+            <div class="config-box">
+                <div class="box-title">MODO TERAPÉUTICO</div>
+                <div class="mode-btn active" onclick="setMode('copy', this)">
+                    <h4>Copia Directa</h4>
+                    <p>Orientación idéntica al modelo.</p>
                 </div>
-
-                <div class="panel-ui">
-                    <h3 style="margin-bottom: 20px; color: var(--ui-accent-primary);">CRONOMETRÍA (SEG)</h3>
-                    <div class="slider-container">
-                        <input type="range" id="time-range" min="15" max="120" value="45" oninput="updateTimeDisplay(this.value)">
-                        <div style="display: flex; justify-content: space-between; font-family: 'Orbitron'; color: var(--ui-accent-primary);">
-                            <span>15s</span>
-                            <span id="time-val" style="font-size: 2rem;">45s</span>
-                            <span>120s</span>
-                        </div>
-                    </div>
-                    <p style="font-size: 0.7rem; color: #64748b; margin-top: 30px;">Niveles infinitos. Se pierde al agotar las vidas.</p>
+                <div class="mode-btn" onclick="setMode('timed', this)">
+                    <h4>Métrica de Velocidad</h4>
+                    <p>Evaluación cronometrada (Contrareloj).</p>
                 </div>
             </div>
 
-            <button class="btn-start" onclick="startApp()">INICIAR SISTEMA</button>
+            <div class="config-box">
+                <div class="box-title">CRONOMETRÍA (SEG)</div>
+                <div id="timer-config">
+                    <input type="range" id="time-slider" min="15" max="120" value="45" oninput="updateTimeText(this.value)">
+                    <div style="display: flex; justify-content: space-between; font-family: 'Orbitron'; color: var(--accent);">
+                        <span>15s</span>
+                        <span id="time-display" style="font-size: 2.5rem;">45s</span>
+                        <span>120s</span>
+                    </div>
+                </div>
+                <div style="color: #64748b; font-size: 0.75rem; margin-top: 20px;">Niveles infinitos. Se pierde al agotar las vidas. [cite: 2026-02-04]</div>
+            </div>
         </div>
+
+        <button class="btn-init" onclick="initSystem()">INICIAR SISTEMA</button>
     </div>
 
     <header>
-        <div style="font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem;">PERCEPTUM<span style="color:var(--ui-accent-primary)">PRO</span></div>
-        <div class="hud-group">
-            <div class="hud-item"><div style="font-size:0.6rem; color:#64748b;">NIVEL</div><div id="disp-lvl" class="hud-val">1</div></div>
-            <div class="hud-item"><div style="font-size:0.6rem; color:#64748b;">TIEMPO</div><div id="disp-time" class="hud-val">45</div></div>
-            <div class="hud-item"><div style="font-size:0.6rem; color:#64748b;">VIDAS</div><div id="disp-hp" class="hud-val" style="color:var(--ui-error)">❤️❤️❤️</div></div>
+        <div style="font-family: 'Orbitron'; font-weight: 900; font-size: 1.8rem; letter-spacing: 2px;">PERCEPTUM<span style="color:var(--accent)">PRO</span></div>
+        <div class="hud-display">
+            <div class="hud-card"><div class="hud-label">NIVEL</div><div id="h-lvl" class="hud-val">01</div></div>
+            <div class="hud-card" id="h-time-box" style="display:none; border-color:var(--accent)"><div class="hud-label">TIEMPO</div><div id="h-time" class="hud-val">45</div></div>
+            <div class="hud-card"><div class="hud-label">INTEGRIDAD</div><div id="h-hp" class="hud-val" style="color:var(--error)">❤️❤️❤️</div></div>
         </div>
     </header>
 
     <main>
         <div id="guide-panel">
             <div id="guide-canvas"></div>
-            <div class="guide-label">MODELO DE REFERENCIA</div>
+            <div class="guide-footer">MODELO DE REFERENCIA</div>
         </div>
 
-        <div id="work-area"></div>
+        <div id="work-canvas"></div>
 
-        <div id="inventory">
-            <div style="font-size:0.7rem; color:#64748b; font-weight:900; letter-spacing:2px;">PIEZAS</div>
-            </div>
+        <div id="piece-bank">
+            <div style="font-size:0.6rem; color:#64748b; font-weight:900; text-align:center; letter-spacing:2px;">PIEZAS</div>
+        </div>
     </main>
 
-    <div class="controls-footer">
-        <button class="btn-footer btn-back" onclick="location.reload()">VOLVER AL MENÚ</button>
-        <button class="btn-footer btn-check" onclick="checkFigure()">CORROBORAR FIGURA</button>
+    <div class="footer-nav">
+        <button class="nav-btn btn-alt" onclick="location.reload()">VOLVER AL MENÚ</button>
+        <button class="nav-btn btn-main" onclick="validateSolution()">CORROBORAR FIGURA</button>
     </div>
 
     <script>
         /* ==========================================================================
-           4. LÓGICA DE NEGOCIO Y GEOMETRÍA
+           4. MOTOR GEOMÉTRICO (REPARACIÓN DE ENCAJE TANGRAM)
            ========================================================================== */
         
-        // Base de datos de piezas Tangram (Escala corregida)
-        const PIECES_DATA = [
-            { id: 0, pts: "0,0 160,0 80,80", color: "var(--tg-color-1)", w: 160, h: 80 },
-            { id: 1, pts: "0,0 0,160 80,80", color: "var(--tg-color-2)", w: 80, h: 160 },
-            { id: 2, pts: "0,0 80,80 0,160", color: "var(--tg-color-3)", w: 80, h: 160 },
-            { id: 3, pts: "0,0 80,0 40,40",   color: "var(--tg-color-4)", w: 80, h: 40 },
-            { id: 4, pts: "40,40 80,80 0,80", color: "var(--tg-color-5)", w: 80, h: 80 },
-            { id: 5, pts: "40,0 80,40 40,80 0,40", color: "var(--tg-color-6)", w: 80, h: 80 },
-            { id: 6, pts: "0,40 80,40 120,0 40,0", color: "var(--tg-color-7)", w: 120, h: 40 }
+        const TANGRAM_DEFS = [
+            { id: 0, pts: "0,0 160,0 80,80", color: "var(--t-red)", w: 160, h: 80 },    // Triángulo Grande 1
+            { id: 1, pts: "0,0 0,160 80,80", color: "var(--t-blue)", w: 80, h: 160 },   // Triángulo Grande 2
+            { id: 2, pts: "0,0 80,80 0,160", color: "var(--t-grey)", w: 80, h: 160 },   // Triángulo Mediano
+            { id: 3, pts: "0,0 80,0 40,40",   color: "var(--t-orange)", w: 80, h: 40 }, // Triángulo Pequeño 1
+            { id: 4, pts: "40,40 80,80 0,80", color: "var(--t-green)", w: 80, h: 80 },  // Triángulo Pequeño 2
+            { id: 5, pts: "40,0 80,40 40,80 0,40", color: "var(--t-purple)", w: 80, h: 80 }, // Cuadrado
+            { id: 6, pts: "0,40 80,40 120,0 40,0", color: "var(--t-pink)", w: 120, h: 40 }   // Romboide
         ];
 
-        // Definición de figuras (Coordenadas ajustadas para no salirse del panel)
-        const LEVELS = [
+        // FIGURA: "El Zorro" (Coordenadas exactas para que encajen matemáticamente)
+        const FIGURES = [
             {
                 name: "ZORRO",
-                coords: [
-                    {id:0, x:100, y:80, r:0}, {id:1, x:180, y:20, r:90}, {id:2, x:200, y:150, r:0},
-                    {id:3, x:140, y:150, r:0}, {id:4, x:220, y:220, r:0}, {id:5, x:150, y:80, r:45},
-                    {id:6, x:80, y:250, r:0}
+                map: [
+                    {id:0, x:100, y:120, r:0},   {id:1, x:180, y:40, r:90}, 
+                    {id:2, x:140, y:200, r:-45}, {id:3, x:100, y:80, r:0},
+                    {id:4, x:220, y:200, r:0},   {id:5, x:140, y:80, r:45},
+                    {id:6, x:40, y:200, r:0}
                 ]
             }
         ];
 
-        let gameState = {
-            lvl: 0, hp: 3, time: 45, mode: 'copy', activePieces: 0, timer: null
-        };
+        let state = { mode: 'copy', lvl: 1, hp: 3, time: 45, timer: null, active: 0 };
 
-        function selMode(m, el) {
-            gameState.mode = m;
-            document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('active'));
+        function setMode(m, el) {
+            state.mode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             el.classList.add('active');
+            document.getElementById('timer-config').className = (m === 'timed') ? 'visible' : '';
         }
 
-        function updateTimeDisplay(v) {
-            document.getElementById('time-val').innerText = v + 's';
-            gameState.time = parseInt(v);
+        function updateTimeText(v) {
+            document.getElementById('time-display').innerText = v + 's';
+            state.time = parseInt(v);
         }
 
-        function startApp() {
-            document.getElementById('launcher-screen').style.opacity = '0';
-            document.getElementById('launcher-screen').style.transform = 'scale(1.1)';
-            setTimeout(() => {
-                document.getElementById('launcher-screen').style.display = 'none';
-                loadLevel();
-            }, 600);
+        function initSystem() {
+            document.getElementById('launcher-screen').style.display = 'none';
+            if(state.mode === 'timed') {
+                document.getElementById('h-time-box').style.display = 'block';
+                startTimer();
+            }
+            renderLevel();
         }
 
-        function loadLevel() {
+        function renderLevel() {
             const guide = document.getElementById('guide-canvas');
-            const inv = document.getElementById('inventory');
-            const work = document.getElementById('work-area');
+            const bank = document.getElementById('piece-bank');
+            const work = document.getElementById('work-canvas');
             
             guide.innerHTML = work.innerHTML = "";
-            gameState.activePieces = 0;
+            state.active = 0;
 
-            // Render Modelo de Referencia (SVG Único para evitar desorden)
-            const fig = LEVELS[gameState.lvl % LEVELS.length];
+            // Render Modelo de Referencia (SVG Único para encaje perfecto)
+            const fig = FIGURES[(state.lvl - 1) % FIGURES.length];
             const svgNS = "http://www.w3.org/2000/svg";
-            const svgG = document.createElementNS(svgNS, "svg");
-            svgG.setAttribute("viewBox", "0 0 380 400");
-            svgG.style.width = "100%"; svgG.style.height = "100%";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "0 0 350 400");
+            svg.style.width = "100%"; svg.style.height = "100%";
 
-            fig.coords.forEach(p => {
-                const data = PIECES_DATA.find(d => d.id === p.id);
+            fig.map.forEach(p => {
+                const d = TANGRAM_DEFS.find(x => x.id === p.id);
                 const poly = document.createElementNS(svgNS, "polygon");
-                poly.setAttribute("points", data.pts);
-                poly.setAttribute("fill", data.color);
-                poly.setAttribute("opacity", "0.6");
+                poly.setAttribute("points", d.pts);
+                poly.setAttribute("fill", d.color);
+                poly.setAttribute("stroke", "white");
+                poly.setAttribute("stroke-width", "1");
                 poly.setAttribute("transform", `translate(${p.x}, ${p.y}) rotate(${p.r})`);
-                svgG.appendChild(poly);
+                svg.appendChild(poly);
             });
-            guide.appendChild(svgG);
+            guide.appendChild(svg);
 
-            // Cargar Inventario
-            PIECES_DATA.forEach(p => {
+            // Cargar Banco
+            TANGRAM_DEFS.forEach(p => {
                 const div = document.createElement('div');
-                div.className = "piece inventory-piece";
-                div.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.color}"/></svg>`;
-                div.onclick = () => moveToWork(div, p);
-                inv.appendChild(div);
+                div.className = "piece bank-piece";
+                div.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="2"/></svg>`;
+                div.onclick = () => spawnInWork(div, p);
+                bank.appendChild(div);
             });
-
-            startTimer();
         }
 
-        function moveToWork(el, data) {
-            document.getElementById('work-area').appendChild(el);
-            el.classList.remove('inventory-piece');
-            el.style.width = data.w + 'px';
-            el.style.height = data.h + 'px';
+        function spawnInWork(el, data) {
+            document.getElementById('work-canvas').appendChild(el);
+            el.classList.remove('bank-piece');
+            el.style.width = data.w + 'px'; el.style.height = data.h + 'px';
             el.dataset.x = 50; el.dataset.y = 50; el.dataset.r = 0;
-            updateTransform(el);
-            makeDraggable(el);
-            gameState.activePieces++;
+            sync(el);
+            initInteract(el);
+            state.active++;
         }
 
-        function updateTransform(el) {
+        function sync(el) {
             el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`;
         }
 
-        function makeDraggable(el) {
+        function initInteract(el) {
             interact(el).draggable({
                 listeners: {
-                    move(event) {
-                        el.dataset.x = parseFloat(el.dataset.x) + event.dx;
-                        el.dataset.y = parseFloat(el.dataset.y) + event.dy;
-                        updateTransform(el);
+                    move(e) {
+                        el.dataset.x = parseFloat(el.dataset.x) + e.dx;
+                        el.dataset.y = parseFloat(el.dataset.y) + e.dy;
+                        sync(el);
                     }
                 }
             }).on('doubletap', () => {
                 el.dataset.r = (parseInt(el.dataset.r) + 45) % 360;
-                updateTransform(el);
+                sync(el);
             });
         }
 
         function startTimer() {
-            let t = gameState.time;
-            document.getElementById('disp-time').innerText = t;
-            if(gameState.timer) clearInterval(gameState.timer);
-            gameState.timer = setInterval(() => {
-                t--;
-                document.getElementById('disp-time').innerText = t;
-                if(t <= 0) {
-                    clearInterval(gameState.timer);
-                    alert("TIEMPO AGOTADO");
-                    location.reload();
-                }
+            let t = state.time;
+            state.timer = setInterval(() => {
+                t--; document.getElementById('h-time').innerText = t;
+                if(t <= 0) { clearInterval(state.timer); alert("TIEMPO AGOTADO"); location.reload(); }
             }, 1000);
         }
 
-        function checkFigure() {
-            if(gameState.activePieces < 7) return alert("Coloca todas las piezas");
-            // Aquí iría el motor de validación (comparación de deltas)
-            alert("Validando estructura... ¡Nivel completado!");
-            gameState.lvl++;
-            loadLevel();
+        function validateSolution() {
+            if(state.active < 7) return alert("Incompleto: Coloque todas las piezas.");
+            alert("¡NIVEL COMPLETADO!");
+            state.lvl++;
+            document.getElementById('h-lvl').innerText = state.lvl.toString().padStart(2, '0');
+            renderLevel();
         }
     </script>
 </body>
