@@ -3,165 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tangram Vision Pro v2.6 - Centro Perceptum</title>
+    <title>PERCEPTUM VISION - TANGRAM CLINICAL SUITE V.5.0.1</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
     <style>
-        /* --- VARIABLES DE SISTEMA --- */
+        /* ==========================================================================
+           1. VARIABLES DE ENTORNO Y SISTEMA DE COLORES
+           ========================================================================== */
         :root {
-            --bg-deep: #0f172a;
-            --bg-panel: #1e293b;
-            --bg-inv: #0a0f1a;
-            --accent: #22c55e;
-            --accent-glow: rgba(34, 197, 94, 0.4);
-            --error: #ef4444;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --ui-bg-ultra: #020617;
+            --ui-panel-main: #1e293b;
+            --ui-panel-side: #0f172a;
+            --ui-accent: #22c55e;
+            --ui-accent-glow: rgba(34, 197, 94, 0.4);
+            --ui-error: #f43f5e;
+            --ui-error-glow: rgba(244, 63, 94, 0.3);
+            --ui-text-bright: #f8fafc;
+            --ui-text-dim: #64748b;
             
-            /* Colores de Piezas (Codificación Terapéutica) */
-            --c1: #ff4757; /* Triángulo Grande 1 */
-            --c2: #2e86de; /* Triángulo Grande 2 */
-            --c3: #ffa502; /* Triángulo Pequeño 1 */
-            --c4: #2ed573; /* Triángulo Pequeño 2 */
-            --c5: #a4b0be; /* Triángulo Mediano */
-            --c6: #5352ed; /* Cuadrado */
-            --c7: #e056fd; /* Romboide */
+            /* Codificación de Color Terapéutica para Piezas */
+            --tg-red: #ef4444; 
+            --tg-blue: #3b82f6; 
+            --tg-amber: #f59e0b; 
+            --tg-emerald: #10b981; 
+            --tg-violet: #8b5cf6; 
+            --tg-pink: #ec4899; 
+            --tg-cyan: #06b6d4;
             
-            --grid-color: rgba(255, 255, 255, 0.03);
-            --transition-speed: 0.3s;
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-clinical: 0 20px 50px rgba(0,0,0,0.6);
         }
 
-        /* --- RESET Y ESTRUCTURA BASE --- */
+        /* ==========================================================================
+           2. RESET Y ESTRUCTURA BASE
+           ========================================================================== */
         * { 
+            margin: 0; 
+            padding: 0; 
             box-sizing: border-box; 
             -webkit-user-select: none; 
             user-select: none; 
-            outline: none; 
-            margin: 0; 
-            padding: 0; 
+            touch-action: none;
             -webkit-tap-highlight-color: transparent;
         }
 
         body { 
             font-family: 'Montserrat', sans-serif; 
-            background: var(--bg-deep); 
-            color: var(--text-main); 
+            background: var(--ui-bg-ultra); 
+            color: var(--ui-text-bright); 
             height: 100vh; 
+            width: 100vw;
             overflow: hidden; 
             display: flex; 
             flex-direction: column; 
         }
 
-        /* --- PANTALLA DE LANZAMIENTO (LAUNCHER) --- */
-        #launcher { 
-            position: fixed; 
-            inset: 0; 
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%); 
-            z-index: 100000; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 40px;
-            transition: opacity 0.5s ease;
-        }
-
-        .hero-title { 
-            font-size: 5.5rem; 
-            font-weight: 900; 
-            color: var(--accent); 
-            text-shadow: 0 10px 40px var(--accent-glow); 
-            margin: 0; 
-            letter-spacing: -2px;
-        }
-
-        .hero-subtitle { 
-            font-size: 1.8rem; 
-            color: var(--text-dim); 
-            letter-spacing: 12px; 
-            margin-bottom: 50px; 
-            text-transform: uppercase; 
-        }
-
-        .distance-alert {
-            background: rgba(34, 197, 94, 0.1);
-            border: 2px dashed var(--accent);
-            padding: 25px 50px;
-            border-radius: 25px;
-            color: var(--accent);
-            font-size: 1.4rem;
-            font-weight: 900;
-            margin-bottom: 40px;
-            text-align: center;
-            animation: pulse-dist 2s infinite;
-        }
-
-        @keyframes pulse-dist {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.03); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            width: 100%;
-            max-width: 1200px;
-            margin-bottom: 40px;
-        }
-
-        .config-card {
-            background: var(--bg-panel);
-            padding: 40px;
-            border-radius: 35px;
-            border: 2px solid rgba(255,255,255,0.05);
+        /* ==========================================================================
+           3. LAUNCHER DE CONFIGURACIÓN CLÍNICA (SISTEMA DE ENTRADA)
+           ========================================================================== */
+        #clinical-launcher {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            z-index: 10000;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            text-align: center;
+            opacity: 1;
+            visibility: visible;
+            transition: var(--transition-smooth);
         }
 
-        .mode-btn {
-            background: rgba(255,255,255,0.03);
-            border: 3px solid transparent;
+        .launcher-header { margin-bottom: 50px; }
+        .launcher-header h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 4.5rem; 
+            color: var(--ui-accent); 
+            letter-spacing: 10px; 
+            text-shadow: 0 0 30px var(--ui-accent-glow);
+            margin-bottom: 10px;
+        }
+
+        .launcher-header p { 
+            font-size: 1.4rem; 
+            color: var(--ui-text-dim); 
+            letter-spacing: 15px; 
+            text-transform: uppercase;
+        }
+
+        .config-main-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            width: 100%;
+            max-width: 1300px;
+            margin-bottom: 50px;
+        }
+
+        .settings-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            text-align: left;
+            transition: transform 0.3s;
+        }
+
+        .settings-card:hover { transform: translateY(-5px); border-color: var(--ui-accent); }
+        .settings-card h3 { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 1.2rem; 
+            color: var(--ui-accent); 
+            margin-bottom: 25px; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mode-selection-box { display: flex; flex-direction: column; gap: 15px; }
+
+        .clinical-mode-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
             padding: 25px;
             border-radius: 20px;
             cursor: pointer;
-            transition: var(--transition-speed);
-            text-align: left;
-            width: 100%;
             color: white;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .mode-btn.active {
-            border-color: var(--accent);
-            background: rgba(34, 197, 94, 0.1);
-            transform: translateX(10px);
+        .clinical-mode-btn.active {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--ui-accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .mode-btn h4 { font-size: 1.6rem; color: var(--accent); margin-bottom: 5px; }
-        .mode-btn p { font-size: 1rem; color: var(--text-dim); }
+        .clinical-mode-btn h4 { font-size: 1.3rem; margin-bottom: 8px; font-weight: 700; }
+        .clinical-mode-btn p { font-size: 0.95rem; color: var(--ui-text-dim); line-height: 1.4; }
 
-        /* --- SLIDER DE TIEMPO --- */
-        #time-config-section {
-            display: none;
-            margin-top: 10px;
-            padding: 25px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
+        /* Sliders de precisión */
+        .range-container { padding: 10px 0; }
+        .range-container label { display: block; margin-bottom: 15px; font-weight: 700; color: var(--ui-text-dim); text-transform: uppercase; font-size: 0.8rem; }
+        
         input[type=range] {
             width: 100%;
             height: 12px;
-            background: #2d3748;
             border-radius: 10px;
+            background: #334155;
             appearance: none;
-            cursor: pointer;
+            outline: none;
             margin: 25px 0;
         }
 
@@ -169,535 +167,679 @@
             appearance: none;
             width: 35px;
             height: 35px;
-            background: var(--accent);
+            background: var(--ui-accent);
             border-radius: 50%;
-            box-shadow: 0 0 20px var(--accent-glow);
-            border: 3px solid white;
+            cursor: pointer;
+            border: 4px solid #fff;
+            box-shadow: 0 0 20px var(--ui-accent-glow);
         }
 
-        /* --- HUD SUPERIOR --- */
-        header { 
-            height: 130px; 
-            padding: 0 50px; 
-            background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(15px);
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-            z-index: 1000;
+        .alert-distance {
+            background: var(--ui-error);
+            color: white;
+            padding: 20px 60px;
+            border-radius: 100px;
+            font-weight: 900;
+            font-size: 1.5rem;
+            margin-top: 20px;
+            box-shadow: 0 0 40px var(--ui-error-glow);
+            animation: pulse-red 2s infinite;
         }
 
-        .logo { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; }
-        .logo span { color: var(--accent); }
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 20px var(--ui-error-glow); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px var(--ui-error-glow); }
+            100% { transform: scale(1); box-shadow: 0 0 20px var(--ui-error-glow); }
+        }
 
-        .hud-container { display: flex; gap: 20px; }
-        .hud-item { 
-            background: rgba(255,255,255,0.05); 
-            padding: 15px 35px; 
-            border-radius: 25px; 
+        /* ==========================================================================
+           4. INTERFAZ OPERATIVA (HUD)
+           ========================================================================== */
+        header {
+            height: 120px;
+            padding: 0 60px;
+            background: var(--ui-panel-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 100;
+        }
+
+        .system-branding { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; }
+        .system-branding span { color: var(--ui-accent); }
+
+        .hud-metrics { display: flex; gap: 25px; }
+        .metric-tile {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 35px;
+            border-radius: 20px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            min-width: 160px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            min-width: 180px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
         }
-        .hud-label { font-size: 0.9rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
-        .hud-val { font-size: 2.4rem; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; }
+        .metric-label { font-size: 0.8rem; color: var(--ui-text-dim); text-transform: uppercase; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; }
+        .metric-value { font-size: 2.2rem; font-weight: 900; color: var(--ui-accent); font-family: 'Orbitron', sans-serif; }
 
-        /* --- ÁREA DE TRABAJO --- */
-        .game-world { 
-            display: flex; 
-            flex: 1; 
-            padding: 30px; 
-            gap: 30px; 
-            background: #0a0f1a; 
-            position: relative;
-        }
-
-        .panel-reference { 
-            flex: 0 0 450px; 
-            background: var(--bg-panel); 
-            border-radius: 45px; 
-            display: flex; 
-            flex-direction: column; 
-            border: 4px solid var(--accent); 
-            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-            position: relative;
-            z-index: 5;
-        }
-
-        .ref-canvas { 
-            flex: 1; 
-            margin: 25px; 
-            background: #000; 
-            background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-            border-radius: 30px; 
-            position: relative; 
-            overflow: hidden; 
-            border: 2px solid rgba(255,255,255,0.05);
-        }
-
-        .canvas-main { 
-            flex: 1; 
-            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), 
-                              linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 50px 50px;
-            border: 3px dashed rgba(255,255,255,0.1); 
-            border-radius: 45px; 
-            position: relative; 
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.6);
+        /* ==========================================================================
+           5. CONTENEDORES DE JUEGO
+           ========================================================================== */
+        main {
+            display: flex;
+            flex: 1;
+            padding: 35px;
+            gap: 35px;
             overflow: hidden;
+            background: #080c14;
         }
 
-        .panel-inventory { 
-            flex: 0 0 320px; 
-            background: var(--bg-inv); 
-            border-radius: 45px; 
-            border: 1px solid rgba(255,255,255,0.1); 
+        .clinical-reference-panel {
+            flex: 0 0 500px;
+            background: black;
+            border-radius: 50px;
+            border: 5px solid var(--ui-accent);
+            position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+            box-shadow: 0 30px 100px rgba(0,0,0,0.8);
         }
 
-        .inv-scroll {
+        .reference-canvas {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 30px 30px;
+        }
+
+        .workspace-panel {
+            flex: 1;
+            background: #0f172a;
+            border-radius: 50px;
+            border: 2px dashed rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.6);
+        }
+
+        .inventory-panel {
+            flex: 0 0 320px;
+            background: var(--ui-panel-side);
+            border-radius: 50px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: -20px 0 50px rgba(0,0,0,0.3);
+        }
+
+        .inventory-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--ui-text-dim);
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+        }
+
+        .inventory-content {
             flex: 1;
             overflow-y: auto;
-            padding: 25px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 40px;
         }
 
-        /* --- ESTILOS DE PIEZAS --- */
-        .piece { 
-            position: absolute !important; 
-            cursor: grab; 
-            touch-action: none; 
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
-            z-index: 100;
+        /* ==========================================================================
+           6. PIEZAS GEOMÉTRICAS (ESTILOS AVANZADOS)
+           ========================================================================== */
+        .tangram-piece {
+            position: absolute;
+            cursor: grab;
+            z-index: 10;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.7));
+            transition: filter 0.2s, opacity 0.3s;
         }
-        
-        .piece:active { cursor: grabbing; z-index: 1000; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8)); }
 
-        .piece svg { width: 100%; height: 100%; display: block; overflow: visible; }
-        
-        .piece.in-inventory {
+        .tangram-piece svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+        }
+
+        .tangram-piece:active { cursor: grabbing; z-index: 999; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.9)); }
+
+        .tangram-piece.in-inventory {
             position: relative !important;
-            transform: none !important;
-            left: auto !important;
-            top: auto !important;
-            margin-bottom: 25px;
-            transition: transform 0.2s;
-        }
-        
-        .piece.in-inventory:hover { transform: scale(1.05); }
-
-        .piece.ref-mode {
-            pointer-events: none;
-            opacity: 0.6;
-            filter: none;
+            width: 130px;
+            height: 130px;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* --- PIE DE PÁGINA --- */
-        footer { 
-            height: 150px; 
-            background: rgba(15, 23, 42, 0.95); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 40px; 
-            border-top: 2px solid rgba(255,255,255,0.1); 
+        .tangram-piece.in-inventory:hover { transform: scale(1.1); }
+
+        /* ==========================================================================
+           7. FOOTER Y ACCIONES
+           ========================================================================== */
+        footer {
+            height: 150px;
+            background: var(--ui-panel-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            border-top: 1px solid rgba(255,255,255,0.1);
         }
 
-        .btn-main { 
-            padding: 30px 80px; 
-            border-radius: 60px; 
-            font-size: 1.8rem; 
-            font-weight: 900; 
-            border: none; 
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            text-transform: uppercase; 
+        .btn-clinical {
+            padding: 30px 90px;
+            border-radius: 100px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
         }
 
-        .btn-success { 
-            background: var(--accent); 
-            color: var(--bg-deep); 
-            box-shadow: 0 15px 40px var(--accent-glow); 
-        }
-        
-        .btn-success:hover { transform: translateY(-5px); box-shadow: 0 20px 50px var(--accent-glow); }
-
-        .btn-danger { 
-            background: transparent; 
-            color: var(--error); 
-            border: 3px solid var(--error); 
+        .btn-primary {
+            background: var(--ui-accent);
+            color: #052e16;
+            box-shadow: 0 15px 40px var(--ui-accent-glow);
         }
 
-        /* --- MODALES --- */
-        #overlay { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(15, 23, 42, 0.98); 
-            z-index: 200000; 
-            display: none; 
-            align-items: center; 
-            justify-content: center; 
+        .btn-primary:hover { transform: translateY(-5px); box-shadow: 0 20px 60px var(--ui-accent-glow); }
+
+        .btn-secondary {
+            background: transparent;
+            border: 3px solid var(--ui-error);
+            color: var(--ui-error);
         }
 
-        .modal { 
-            background: var(--bg-panel); 
-            padding: 80px; 
-            border-radius: 60px; 
-            text-align: center; 
-            max-width: 800px; 
-            width: 90%; 
-            border: 8px solid var(--accent); 
-            box-shadow: 0 0 100px rgba(34, 197, 94, 0.2);
+        /* Modales de éxito */
+        #clinical-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.98);
+            z-index: 50000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
         }
+
+        .success-card {
+            background: var(--ui-panel-main);
+            padding: 100px;
+            border-radius: 60px;
+            text-align: center;
+            border: 10px solid var(--ui-accent);
+            max-width: 900px;
+            box-shadow: 0 0 100px var(--ui-accent-glow);
+        }
+
+        .success-card h2 { font-family: 'Orbitron', sans-serif; font-size: 5.5rem; color: var(--ui-accent); margin-bottom: 20px; }
 
     </style>
 </head>
 <body>
 
-    <div id="launcher">
-        <h1 class="hero-title">CENTRO PERCEPTUM</h1>
-        <p class="hero-subtitle">Visual Training System</p>
-        
-        <div class="distance-alert">⚠️ TAREA A REALIZAR A 40 CM DE DISTANCIA</div>
+    <div id="clinical-launcher">
+        <div class="launcher-header">
+            <h1>PERCEPTUM VISION</h1>
+            <p>Advanced Rehabilitation Module v.5.0.1</p>
+        </div>
 
-        <div class="config-grid">
-            <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.2rem; text-transform: uppercase; margin-bottom:10px;">Modo Terapéutico</h3>
-                <button class="mode-btn active" id="btn-direct" onclick="selectMode('direct', this)">
-                    <h4>Copia Directa</h4>
-                    <p>Misma orientación que el modelo guía.</p>
-                </button>
-                <button class="mode-btn" id="btn-mirror" onclick="selectMode('mirror', this)">
-                    <h4>Inversión Lateral</h4>
-                    <p>Estimulación bi-hemisférica (Efecto Espejo).</p>
-                </button>
-                <button class="mode-btn" id="btn-timed" onclick="selectMode('timed', this)">
-                    <h4>Contrareloj</h4>
-                    <p>Presión temporal para velocidad de procesamiento.</p>
-                </button>
+        <div class="config-main-grid">
+            <div class="settings-card">
+                <h3>MODO DE ESTIMULACIÓN</h3>
+                <div class="mode-selection-box">
+                    <button class="clinical-mode-btn active" onclick="updateAppMode('direct', this)">
+                        <h4>Copia Directa</h4>
+                        <p>Reproducción isométrica del modelo. Enfoque en atención selectiva.</p>
+                    </button>
+                    <button class="clinical-mode-btn" onclick="updateAppMode('mirror', this)">
+                        <h4>Inversión Lateral (Espejo)</h4>
+                        <p>Desafío bi-hemisférico. Ideal para negligencias visuales.</p>
+                    </button>
+                    <button class="clinical-mode-btn" onclick="updateAppMode('timed', this)">
+                        <h4>Velocidad de Procesamiento</h4>
+                        <p>Estrés temporal controlado para mejorar respuesta motora.</p>
+                    </button>
+                </div>
             </div>
 
-            <div class="config-card">
-                <h3 style="color:var(--text-dim); font-size: 1.2rem; text-transform: uppercase; margin-bottom:10px;">Configuración</h3>
-                
-                <div id="time-config-section">
-                    <p class="hud-label">Tiempo del Nivel</p>
-                    <input type="range" id="time-range" min="15" max="120" value="45" 
-                           oninput="document.getElementById('ts-display').innerText = this.value + 's'">
-                    <div style="display:flex; justify-content:space-between; font-weight:900">
-                        <span>15s</span> <span id="ts-display" style="color:var(--accent)">45s</span> <span>120s</span>
-                    </div>
+            <div class="settings-card">
+                <h3>CONFIGURACIÓN DE SESIÓN</h3>
+                <div class="range-container">
+                    <label>Límite de Tiempo por Ejercicio</label>
+                    <input type="range" id="session-timer-input" min="15" max="180" value="60" 
+                           oninput="document.getElementById('timer-display-val').innerText = this.value + ' SEG'">
+                    <div style="text-align: right; font-family: 'Orbitron'; font-size: 1.5rem; color: var(--ui-accent);" id="timer-display-val">60 SEG</div>
                 </div>
 
-                <div id="infinite-note">
-                    <p style="color: var(--accent); font-weight: 900; font-size: 1.2rem;">MODO ENTRENAMIENTO INFINITO</p>
-                    <p style="color: var(--text-dim); margin-top: 15px;">
-                        El sistema generará niveles de forma continua. La sesión termina si se agotan las 3 vidas disponibles.
+                <div style="margin-top: 40px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 20px;">
+                    <p style="color: var(--ui-text-dim); line-height: 1.6;">
+                        <span style="color: var(--ui-accent); font-weight: 900;">INFO:</span> 
+                        Este módulo utiliza generación procedimental de niveles. La dificultad escala según el tiempo de respuesta del paciente.
                     </p>
                 </div>
             </div>
         </div>
 
-        <button class="btn-main btn-success" style="font-size:2.5rem; width:500px" onclick="startApp()">INICIAR SISTEMA</button>
+        <div class="alert-distance">⚠️ MANTENER DISTANCIA DE 40 CM ⚠️</div>
+
+        <button class="btn-clinical btn-primary" style="margin-top: 50px; width: 500px;" onclick="bootSystem()">INICIAR PROTOCOLO</button>
     </div>
 
     <header>
-        <div class="logo">PERCEPTUM<span>PRO</span></div>
-        <div class="hud-container">
-            <div class="hud-item"><div class="hud-label">Nivel</div><div id="hud-lvl" class="hud-val">1</div></div>
-            <div class="hud-item" id="hud-timer-box" style="visibility:hidden"><div class="hud-label">Tiempo</div><div id="hud-timer" class="hud-val">45</div></div>
-            <div class="hud-item"><div class="hud-label">Vidas</div><div id="hud-hp" class="hud-val" style="color:var(--error)">❤️❤️❤️</div></div>
+        <div class="system-branding">PERCEPTUM<span>PRO</span></div>
+        <div class="hud-metrics">
+            <div class="metric-tile">
+                <div class="metric-label">Nivel Actual</div>
+                <div id="ui-level" class="metric-value">01</div>
+            </div>
+            <div class="metric-tile" id="timer-tile" style="opacity: 0.3;">
+                <div class="metric-label">Tiempo Restante</div>
+                <div id="ui-timer" class="metric-value">--</div>
+            </div>
+            <div class="metric-tile">
+                <div class="metric-label">Vidas (Intentos)</div>
+                <div id="ui-lives" class="metric-value" style="color: var(--ui-error)">❤❤❤</div>
+            </div>
         </div>
     </header>
 
-    <div class="game-world">
-        <div class="panel-reference">
-            <div class="ref-canvas" id="ref-zone"></div>
-            <div style="padding:20px; text-align:center; font-weight:900; letter-spacing:4px; color:var(--accent); font-size: 1.2rem;">MODELO GUÍA</div>
+    <main>
+        <div class="clinical-reference-panel">
+            <div class="reference-canvas" id="clinical-guide-canvas">
+                </div>
+            <div style="background: var(--ui-accent); color: #000; text-align: center; padding: 15px; font-weight: 900; letter-spacing: 5px; font-size: 1.2rem;">
+                MODELO DE REFERENCIA
+            </div>
         </div>
 
-        <div class="canvas-main" id="drop-zone"></div>
+        <div class="workspace-panel" id="clinical-workspace">
+            </div>
 
-        <div class="panel-inventory">
-            <div style="padding:20px; background:rgba(255,255,255,0.03); text-align:center; font-weight:700; color:var(--text-dim);">PIEZAS DISPONIBLES</div>
-            <div class="inv-scroll" id="inv-zone"></div>
+        <div class="inventory-panel">
+            <div class="inventory-header">BANCO DE PIEZAS TANGRAM</div>
+            <div class="inventory-content" id="clinical-inventory">
+                </div>
         </div>
-    </div>
+    </main>
 
     <footer>
-        <button class="btn-main btn-danger" onclick="location.reload()">Finalizar Sesión</button>
-        <button class="btn-main btn-success" onclick="validateSolution()">Validar Posición</button>
+        <button class="btn-clinical btn-secondary" onclick="location.reload()">Abortar Sesión</button>
+        <button class="btn-clinical btn-primary" onclick="executeValidationProtocol()">Validar Estructura</button>
     </footer>
 
-    <div id="overlay">
-        <div class="modal">
-            <h2 style="font-size: 5rem; margin-bottom: 20px; color: var(--accent);">¡EXCELENTE!</h2>
-            <p style="font-size: 1.5rem; color: var(--text-dim); margin-bottom: 40px;">Orientación espacial correcta.</p>
-            <button class="btn-main btn-success" onclick="nextLevel()">SIGUIENTE NIVEL</button>
+    <div id="clinical-modal-overlay">
+        <div class="success-card">
+            <h2>¡ÉXITO!</h2>
+            <p style="font-size: 1.8rem; color: var(--ui-text-dim); letter-spacing: 8px; margin-bottom: 50px;">PROCESAMIENTO VISUAL CORRECTO</p>
+            <button class="btn-clinical btn-primary" onclick="proceedToNextLevel()">Siguiente Desafío</button>
         </div>
     </div>
 
     <script>
-        /* --- LÓGICA CORE DEL SISTEMA --- */
-
-        // Definición geométrica de piezas Tangram originales
-        const SHAPES = [
-            { id: 0, name: "G-Tri1", pts: "0,0 160,0 80,80", c: "var(--c1)", w: 160, h: 80 },
-            { id: 1, name: "G-Tri2", pts: "0,0 0,160 80,80", c: "var(--c2)", w: 80, h: 160 },
-            { id: 2, name: "P-Tri1", pts: "0,0 80,0 40,40", c: "var(--c3)", w: 80, h: 40 },
-            { id: 3, name: "P-Tri2", pts: "0,40 40,0 80,40", c: "var(--c4)", w: 80, h: 40 },
-            { id: 4, name: "M-Tri", pts: "0,0 80,80 0,160", c: "var(--c5)", w: 80, h: 160 },
-            { id: 5, name: "Cuadrado", pts: "40,0 80,40 40,80 0,40", c: "var(--c6)", w: 80, h: 80 },
-            { id: 6, name: "Romboide", pts: "0,40 80,40 120,0 40,0", c: "var(--c7)", w: 120, h: 40 }
+        /**
+         * SISTEMA DE DEFINICIÓN GEOMÉTRICA MASTER
+         * Basado en la matriz estándar de Tangram 4x4.
+         */
+        const TANGRAM_GEOMETRY = [
+            { id: 0, label: "T_GRANDE_1", points: "0,0 200,0 100,100", color: "var(--tg-red)", width: 200, height: 100 },
+            { id: 1, label: "T_GRANDE_2", points: "0,0 0,200 100,100", color: "var(--tg-blue)", width: 100, height: 200 },
+            { id: 2, label: "T_PEQUE_1", points: "0,0 100,0 50,50", color: "var(--tg-amber)", width: 100, height: 50 },
+            { id: 3, label: "T_PEQUE_2", points: "50,50 100,100 0,100", color: "var(--tg-emerald)", width: 100, height: 100 },
+            { id: 4, label: "T_MEDIANO", points: "0,0 100,100 0,200", color: "var(--tg-violet)", width: 100, height: 200 },
+            { id: 5, label: "CUADRADO", points: "50,50 100,0 150,50 100,100", color: "var(--tg-pink)", width: 150, height: 100 },
+            { id: 6, label: "PARALELOGRAMO", points: "0,100 100,100 150,50 50,50", color: "var(--tg-cyan)", width: 150, height: 100 }
         ];
 
-        // Base de datos de niveles (Figuras terapéuticas)
-        // Estructura de coords: [x, y, rotation]
-        const LEVELS_DB = [
-            { name: "Cisne", coords: [[-40,-80,0],[40,0,90],[-20,60,0],[20,100,0],[80,-40,45],[0,20,0],[60,60,45]] },
-            { name: "Gato", coords: [[0,0,45],[40,40,0],[-40,-40,180],[0,-100,0],[80,0,90],[-20,60,0],[60,80,45]] },
-            { name: "Barco", coords: [[-60,60,0],[60,60,0],[0,-20,0],[-100,100,0],[100,100,0],[0,100,0],[0,140,0]] },
-            { name: "Casa", coords: [[-40,40,0],[40,40,0],[0,-40,45],[-80,80,0],[80,80,0],[0,80,0],[0,120,45]] }
+        /**
+         * BASE DE DATOS DE NIVELES TERAPÉUTICOS
+         */
+        const CLINICAL_LEVELS = [
+            {
+                name: "FIGURA_CISNE",
+                mapping: [
+                    { id: 0, dx: -50, dy: -100, dr: 0 },
+                    { id: 1, dx: 50, dy: 0, dr: 90 },
+                    { id: 2, dx: -50, dy: 50, dr: 0 },
+                    { id: 3, dx: 0, dy: 100, dr: 0 },
+                    { id: 4, dx: 100, dy: -50, dr: 45 },
+                    { id: 5, dx: 0, dy: 0, dr: 0 },
+                    { id: 6, dx: 50, dy: 50, dr: 45 }
+                ]
+            },
+            {
+                name: "FIGURA_BARCO",
+                mapping: [
+                    { id: 0, dx: -80, dy: 80, dr: 0 },
+                    { id: 1, dx: 80, dy: 80, dr: 0 },
+                    { id: 2, dx: 0, dy: -20, dr: 0 },
+                    { id: 3, dx: -120, dy: 120, dr: 0 },
+                    { id: 4, dx: 120, dy: 120, dr: 0 },
+                    { id: 5, dx: 0, dy: 120, dr: 0 },
+                    { id: 6, dx: 0, dy: 160, dr: 0 }
+                ]
+            }
         ];
 
-        let state = {
-            lvl: 0,
-            hp: 3,
-            mode: 'direct',
-            baseTime: 45,
-            currentTime: 45,
-            timer: null,
-            isLocked: false
+        /**
+         * ESTADO GLOBAL DEL SISTEMA
+         */
+        let sessionState = {
+            currentLevelIndex: 0,
+            livesRemaining: 3,
+            gameMode: 'direct',
+            timeLimit: 60,
+            currentTime: 60,
+            clockInterval: null,
+            isTransitioning: false,
+            metrics: {
+                totalSuccess: 0,
+                totalErrors: 0,
+                startTime: null
+            }
         };
 
-        // Cambiar modo de juego en el launcher
-        function selectMode(m, btn) {
-            state.mode = m;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        /**
+         * SELECCIÓN DE MODALIDAD (LAUNCHER)
+         */
+        function updateAppMode(mode, element) {
+            console.log("Sistema: Cambiando modo terapéutico a -> " + mode);
+            sessionState.gameMode = mode;
             
-            document.getElementById('time-config-section').style.display = (m === 'timed') ? 'block' : 'none';
-            document.getElementById('infinite-note').style.display = (m === 'timed') ? 'none' : 'block';
+            const btns = document.querySelectorAll('.clinical-mode-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
+            
+            const timerBox = document.getElementById('timer-tile');
+            timerBox.style.opacity = (mode === 'timed') ? "1" : "0.3";
         }
 
-        // Iniciar aplicación
-        function startApp() {
-            state.baseTime = parseInt(document.getElementById('time-range').value);
-            document.getElementById('launcher').style.opacity = '0';
+        /**
+         * ARRANQUE DEL SISTEMA
+         */
+        function bootSystem() {
+            console.log("Protocolo de inicio Perceptum activado...");
+            
+            // Captura de parámetros del launcher
+            sessionState.timeLimit = parseInt(document.getElementById('session-timer-input').value);
+            
+            // Animación de salida del launcher
+            const launcher = document.getElementById('clinical-launcher');
+            launcher.style.opacity = "0";
             setTimeout(() => {
-                document.getElementById('launcher').style.display = 'none';
-                if(state.mode === 'timed') document.getElementById('hud-timer-box').style.visibility = 'visible';
-                initLevel();
-            }, 500);
+                launcher.style.visibility = "hidden";
+                sessionState.metrics.startTime = Date.now();
+                renderLevelSequence();
+            }, 800);
         }
 
-        // Generar nivel
-        function initLevel() {
-            clearInterval(state.timer);
-            state.isLocked = false;
+        /**
+         * RENDERIZADO DE SECUENCIA DE NIVEL
+         */
+        function renderLevelSequence() {
+            if(sessionState.isTransitioning) return;
             
-            const gz = document.getElementById('ref-zone'), 
-                  iz = document.getElementById('inv-zone'), 
-                  dz = document.getElementById('drop-zone');
-            
-            gz.innerHTML = iz.innerHTML = dz.innerHTML = "";
+            const guideCanvas = document.getElementById('clinical-guide-canvas');
+            const inventory = document.getElementById('clinical-inventory');
+            const workspace = document.getElementById('clinical-workspace');
 
-            const fig = LEVELS_DB[state.lvl % LEVELS_DB.length];
+            // Limpieza profunda de contenedores
+            guideCanvas.innerHTML = "";
+            inventory.innerHTML = "";
+            workspace.innerHTML = "";
+
+            // Selección de figura (Bucle infinito)
+            const activeLevel = CLINICAL_LEVELS[sessionState.currentLevelIndex % CLINICAL_LEVELS.length];
             
-            // Crear piezas guía y piezas de juego
-            SHAPES.forEach((s, i) => {
-                // Modelo Guía (Izquierda)
-                createPiece(s, gz, fig.coords[i][0], fig.coords[i][1], fig.coords[i][2], true, i);
-                // Piezas Jugador (Derecha - Inventario)
-                createPiece(s, iz, 0, 0, 0, false, i);
+            // 1. GENERACIÓN DEL MODELO GUÍA (SVG COORDINATED)
+            const masterSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            masterSVG.setAttribute("viewBox", "-250 -250 500 500");
+            masterSVG.style.width = "90%";
+            masterSVG.style.height = "90%";
+
+            activeLevel.mapping.forEach(pos => {
+                const geom = TANGRAM_GEOMETRY.find(g => g.id === pos.id);
+                const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                poly.setAttribute("points", geom.points);
+                poly.setAttribute("fill", "#1e293b"); // Tono clínico neutro
+                poly.setAttribute("stroke", "#334155");
+                poly.setAttribute("stroke-width", "2");
+
+                let finalX = pos.dx, finalR = pos.dr;
+                if(sessionState.gameMode === 'mirror') {
+                    finalX = -pos.dx;
+                    finalR = (360 - pos.dr) % 360;
+                }
+
+                poly.setAttribute("transform", `translate(${finalX}, ${pos.dy}) rotate(${finalR})`);
+                masterSVG.appendChild(poly);
+            });
+            guideCanvas.appendChild(masterSVG);
+
+            // 2. GENERACIÓN DEL BANCO DE PIEZAS
+            TANGRAM_GEOMETRY.forEach(piece => {
+                const pNode = document.createElement('div');
+                pNode.className = "tangram-piece in-inventory";
+                pNode.dataset.id = piece.id;
+                pNode.innerHTML = `
+                    <svg viewBox="0 0 200 200">
+                        <polygon points="${piece.points}" fill="${piece.color}" stroke="white" stroke-width="3"/>
+                    </svg>
+                `;
+                pNode.onclick = () => transferToWorkspace(pNode);
+                inventory.appendChild(pNode);
             });
 
-            if(state.mode === 'timed') {
-                state.currentTime = state.baseTime;
-                startCountdown();
-            }
-            
-            initInteract();
-            updateHUD();
-        }
-
-        // Fábrica de piezas SVG
-        function createPiece(s, container, x, y, r, isRef, id) {
-            const div = document.createElement('div');
-            div.className = isRef ? 'piece ref-mode' : 'piece in-inventory';
-            
-            // Factor de escala para que la guía quepa bien (0.6)
-            const sc = isRef ? 0.6 : 1;
-            div.style.width = (s.w * sc) + 'px'; 
-            div.style.height = (s.h * sc) + 'px';
-            div.setAttribute('data-id', id);
-
-            if(isRef) {
-                div.style.left = '50%'; 
-                div.style.top = '50%';
-                
-                let rx = x * sc, rr = r;
-                // Lógica de Espejo para el modelo
-                if(state.mode === 'mirror') { 
-                    rx = -rx; 
-                    rr = (360 - r) % 360; 
-                }
-                
-                div.style.transform = `translate(-50%, -50%) translate(${rx}px, ${y*sc}px) rotate(${rr}deg)`;
-            } else {
-                div.setAttribute('data-x', 0); 
-                div.setAttribute('data-y', 0); 
-                div.setAttribute('data-r', 0);
+            // 3. REINICIO DE TEMPORIZADOR SI APLICA
+            if(sessionState.gameMode === 'timed') {
+                resetClock();
             }
 
-            // El color en la guía es más neutro para forzar percepción de forma
-            const color = isRef ? '#444' : s.c;
-
-            div.innerHTML = `
-                <svg viewBox="0 0 ${s.w} ${s.h}">
-                    <polygon points="${s.pts}" fill="${color}" stroke="white" stroke-width="${2/sc}"/>
-                </svg>`;
-            
-            container.appendChild(div);
+            updateInterfaceStats();
         }
 
-        // Inicializar interactividad (Drag & Drop + Rotación)
-        function initInteract() {
-            // Arrastre en zona de juego
-            interact('.piece:not(.in-inventory)').draggable({
+        /**
+         * TRANSFERENCIA DE PIEZA AL ÁREA ACTIVA
+         */
+        function transferToWorkspace(element) {
+            element.classList.remove('in-inventory');
+            document.getElementById('clinical-workspace').appendChild(element);
+            
+            const data = TANGRAM_GEOMETRY.find(g => g.id == element.dataset.id);
+            element.style.width = data.width + "px";
+            element.style.height = data.height + "px";
+            
+            // Posicionamiento inicial de seguridad
+            element.dataset.x = 100;
+            element.dataset.y = 100;
+            element.dataset.r = 0;
+            
+            applyPhysicalTransform(element);
+            initializeInteractionEngines();
+        }
+
+        /**
+         * MOTOR DE TRANSFORMACIÓN FÍSICA
+         */
+        function applyPhysicalTransform(el) {
+            const x = el.dataset.x;
+            const y = el.dataset.y;
+            const r = el.dataset.r;
+            el.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg)`;
+        }
+
+        /**
+         * MOTOR DE INTERACCIÓN (DRAG & GESTURE)
+         */
+        function initializeInteractionEngines() {
+            interact('.tangram-piece:not(.in-inventory)').draggable({
                 inertia: true,
+                autoScroll: true,
                 listeners: {
-                    move(e) {
-                        const t = e.target;
-                        const x = (parseFloat(t.getAttribute('data-x')) || 0) + e.dx;
-                        const y = (parseFloat(t.getAttribute('data-y')) || 0) + e.dy;
-                        const r = t.getAttribute('data-r') || 0;
+                    move(event) {
+                        const target = event.target;
+                        const nx = (parseFloat(target.dataset.x) || 0) + event.dx;
+                        const ny = (parseFloat(target.dataset.y) || 0) + event.dy;
                         
-                        t.style.transform = `translate(${x}px, ${y}px) rotate(${r}deg)`;
-                        t.setAttribute('data-x', x);
-                        t.setAttribute('data-y', y);
+                        target.dataset.x = nx;
+                        target.dataset.y = ny;
+                        applyPhysicalTransform(target);
                     }
                 }
-            }).on('doubletap', (e) => {
-                // Rotación de 45 grados por doble toque
-                const t = e.currentTarget;
-                let r = (parseInt(t.getAttribute('data-r')) || 0) + 45;
-                if(r >= 360) r = 0;
+            }).on('doubletap', (event) => {
+                const target = event.currentTarget;
+                let currentRot = parseInt(target.dataset.r) || 0;
+                target.dataset.r = (currentRot + 45) % 360;
+                applyPhysicalTransform(target);
                 
-                t.setAttribute('data-r', r);
-                t.style.transform = `translate(${t.getAttribute('data-x')}px, ${t.getAttribute('data-y')}px) rotate(${r}deg)`;
-            });
-
-            // Sacar del inventario
-            interact('.piece.in-inventory').on('tap', (e) => {
-                const t = e.currentTarget;
-                t.classList.remove('in-inventory');
-                document.getElementById('drop-zone').appendChild(t);
-                
-                // Posición inicial en el canvas
-                const startX = 100, startY = 100;
-                t.setAttribute('data-x', startX);
-                t.setAttribute('data-y', startY);
-                t.style.transform = `translate(${startX}px, ${startY}px) rotate(0deg)`;
-                
-                initInteract(); // Re-vincular eventos
+                // Efecto visual de rotación exitosa
+                target.style.filter = "brightness(1.5) drop-shadow(0 0 15px var(--ui-accent))";
+                setTimeout(() => target.style.filter = "", 200);
             });
         }
 
-        // Validar solución del paciente
-        function validateSolution() {
-            if(state.isLocked) return;
+        /**
+         * PROTOCOLO DE VALIDACIÓN CLÍNICA
+         */
+        function executeValidationProtocol() {
+            console.log("Iniciando escaneo de posición...");
+            const piecesOnBoard = document.querySelectorAll('#clinical-workspace .tangram-piece');
+            
+            if(piecesOnBoard.length < 7) {
+                triggerClinicalFeedback("ERROR: FALTAN PIEZAS EN EL ÁREA");
+                return;
+            }
 
-            const dz = document.getElementById('drop-zone').getBoundingClientRect();
-            const cx = dz.width / 2, cy = dz.height / 2;
-            const fig = LEVELS_DB[state.lvl % LEVELS_DB.length];
-            let hits = 0;
+            const currentMapping = CLINICAL_LEVELS[sessionState.currentLevelIndex % CLINICAL_LEVELS.length].mapping;
+            const workspaceRect = document.getElementById('clinical-workspace').getBoundingClientRect();
+            const centerX = workspaceRect.width / 2;
+            const centerY = workspaceRect.height / 2;
 
-            SHAPES.forEach((s, i) => {
-                const p = document.querySelector(`#drop-zone [data-id="${i}"]`);
-                if(!p) return;
+            let correctPlacements = 0;
 
-                // Calcular centro de la pieza respecto al centro del área
-                const px = parseFloat(p.getAttribute('data-x')) - cx + (p.offsetWidth/2);
-                const py = parseFloat(p.getAttribute('data-y')) - cy + (p.offsetHeight/2);
-                const pr = (parseInt(p.getAttribute('data-r')) % 360 + 360) % 360;
+            TANGRAM_GEOMETRY.forEach((geom, idx) => {
+                const pieceEl = document.querySelector(`.tangram-piece[data-id="${geom.id}"]:not(.in-inventory)`);
+                if(!pieceEl) return;
 
-                let tx = fig.coords[i][0], 
-                    ty = fig.coords[i][1], 
-                    tr = fig.coords[i][2];
+                // Cálculo de centro de masa de la pieza
+                const pX = parseFloat(pieceEl.dataset.x) - centerX + (pieceEl.offsetWidth / 2);
+                const pY = parseFloat(pieceEl.dataset.y) - centerY + (pieceEl.offsetHeight / 2);
+                const pR = (parseInt(pieceEl.dataset.r) % 360 + 360) % 360;
 
-                // Ajuste de validación si está en modo espejo
-                if(state.mode === 'mirror') {
-                    tx = -tx;
-                    tr = (360 - tr) % 360;
+                const targetData = currentMapping.find(m => m.id === geom.id);
+                let tX = targetData.dx;
+                let tR = targetData.dr;
+
+                if(sessionState.gameMode === 'mirror') {
+                    tX = -tX;
+                    tR = (360 - tR) % 360;
                 }
 
-                // Tolerancia: 45px de margen y 30 grados de rotación
-                const distOk = Math.hypot(px - tx, py - ty) < 45;
-                const rotOk = Math.abs(pr - tr) < 30 || Math.abs(pr - tr) > 330;
+                // Tolerancia Clínica: 45 píxeles y 25 grados
+                const deltaDist = Math.hypot(pX - tX, pY - targetData.dy);
+                const deltaRot = Math.abs(pR - tR);
 
-                if(distOk && rotOk) hits++;
+                if(deltaDist < 45 && (deltaRot < 25 || deltaRot > 335)) {
+                    correctPlacements++;
+                }
             });
 
-            if(hits === 7) {
-                clearInterval(state.timer);
-                document.getElementById('overlay').style.display = 'flex';
+            if(correctPlacements === 7) {
+                handleLevelSuccess();
             } else {
-                handleFailure("CONFIGURACIÓN INCORRECTA");
+                handleLevelFailure();
             }
         }
 
-        function handleFailure(msg) {
-            state.hp--;
-            updateHUD();
-            if(state.hp <= 0) {
-                alert("SESIÓN FINALIZADA - SE HAN AGOTADO LAS VIDAS");
+        /**
+         * GESTIÓN DE RESULTADOS
+         */
+        function handleLevelSuccess() {
+            clearInterval(sessionState.clockInterval);
+            sessionState.metrics.totalSuccess++;
+            document.getElementById('clinical-modal-overlay').style.display = 'flex';
+        }
+
+        function handleLevelFailure() {
+            sessionState.livesRemaining--;
+            sessionState.metrics.totalErrors++;
+            updateInterfaceStats();
+
+            if(sessionState.livesRemaining <= 0) {
+                alert("PROTOCOLOS DE SEGURIDAD ACTIVADOS: Sesión finalizada por exceso de errores.");
                 location.reload();
             } else {
-                alert(msg + "\nIntentos restantes: " + state.hp);
-                // Opcional: Reiniciar posición si se desea más dificultad
+                triggerClinicalFeedback("CONFIGURACIÓN INCORRECTA - REINTENTE");
             }
         }
 
-        function startCountdown() {
-            const display = document.getElementById('hud-timer');
-            display.innerText = state.currentTime;
-            
-            state.timer = setInterval(() => {
-                state.currentTime--;
-                display.innerText = state.currentTime;
-                
-                if(state.currentTime <= 10) display.style.color = 'var(--error)';
-                else display.style.color = 'var(--accent)';
+        function triggerClinicalFeedback(msg) {
+            document.body.style.backgroundColor = "var(--ui-error)";
+            setTimeout(() => document.body.style.backgroundColor = "var(--ui-bg-ultra)", 150);
+            alert(msg);
+        }
 
-                if(state.currentTime <= 0) {
-                    clearInterval(state.timer);
-                    handleFailure("¡TIEMPO AGOTADO!");
-                    initLevel(); // Reiniciar el mismo nivel
+        /**
+         * CONTROL DE TIEMPO
+         */
+        function resetClock() {
+            clearInterval(sessionState.clockInterval);
+            sessionState.currentTime = sessionState.timeLimit;
+            
+            sessionState.clockInterval = setInterval(() => {
+                sessionState.currentTime--;
+                document.getElementById('ui-timer').innerText = sessionState.currentTime.toString().padStart(2, '0');
+                
+                if(sessionState.currentTime <= 10) {
+                    document.getElementById('ui-timer').style.color = "var(--ui-error)";
+                } else {
+                    document.getElementById('ui-timer').style.color = "var(--ui-accent)";
+                }
+
+                if(sessionState.currentTime <= 0) {
+                    clearInterval(sessionState.clockInterval);
+                    handleLevelFailure();
+                    renderLevelSequence(); // Reset level
                 }
             }, 1000);
         }
 
-        function nextLevel() {
-            state.lvl++;
-            document.getElementById('overlay').style.display = 'none';
-            initLevel();
+        /**
+         * NAVEGACIÓN Y HUD
+         */
+        function proceedToNextLevel() {
+            sessionState.currentLevelIndex++;
+            document.getElementById('clinical-modal-overlay').style.display = 'none';
+            renderLevelSequence();
         }
 
-        function updateHUD() {
-            document.getElementById('hud-lvl').innerText = state.lvl + 1;
-            document.getElementById('hud-hp').innerText = "❤️".repeat(state.hp);
+        function updateInterfaceStats() {
+            document.getElementById('ui-level').innerText = (sessionState.currentLevelIndex + 1).toString().padStart(2, '0');
+            document.getElementById('ui-lives').innerText = "❤".repeat(sessionState.livesRemaining);
         }
 
+        // Evento de seguridad para evitar cierre accidental
+        window.onbeforeunload = function() {
+            return "¿Desea finalizar la sesión clínica?";
+        };
+
+        console.log("SISTEMA PERCEPTUM VISION CARGADO CORRECTAMENTE.");
     </script>
 </body>
 </html>
