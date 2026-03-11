@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM VISION PRO - CLINICAL TANGRAM SUITE V.7.0</title>
+    <title>PERCEPTUM VISION PRO - CLINICAL TANGRAM SUITE V.9.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. CORE DESIGN SYSTEM (CSS COMPLETO - 100% RESTAURADO)
+           1. CORE DESIGN SYSTEM (CSS INTEGRAL - ESTILO CYBERPUNK)
            ========================================================================== */
         :root {
             --ui-bg-black: #020617;
@@ -22,6 +22,7 @@
             --ui-text-main: #f8fafc;
             --ui-text-low: #64748b;
             
+            /* PALETA TANGRAM ORIGINAL */
             --tg-color-1: #ff4757; 
             --tg-color-2: #2e86de; 
             --tg-color-3: #a4b0be; 
@@ -130,8 +131,6 @@
             background: rgba(34, 197, 94, 0.1);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .mode-tile h4 { font-size: 1.3rem; margin-bottom: 5px; }
-        .mode-tile p { color: var(--ui-text-low); font-size: 0.9rem; }
 
         .slider-wrapper { padding: 20px 0; }
         .slider-wrapper label { font-weight: 900; color: var(--ui-text-low); font-size: 0.8rem; letter-spacing: 2px; }
@@ -172,7 +171,7 @@
         .logo-box span { color: var(--ui-accent-primary); }
 
         .hud-metrics { display: flex; gap: 30px; }
-        .hud-card {
+        .hud-card-metric {
             background: rgba(0,0,0,0.4);
             padding: 15px 40px;
             border-radius: 20px;
@@ -297,6 +296,12 @@
             box-shadow: 0 20px 50px var(--ui-accent-glow);
         }
 
+        .btn-secondary {
+            background: #334155;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
         #success-overlay {
             position: fixed; inset: 0; background: rgba(2,6,23,0.98);
             z-index: 999999; display: none; align-items: center; justify-content: center;
@@ -319,7 +324,7 @@
                     <h3>ESTRATEGIA TERAPÉUTICA</h3>
                     <div class="mode-tile active" id="mode-free-btn" onclick="selectGameMode('free')">
                         <h4>Práctica de Copia</h4>
-                        <p>Sin límite de tiempo. Enfoque en precisión del ensamble.</p>
+                        <p>Sin límite de tiempo. Enfoque en precisión del ensamble cromático.</p>
                     </div>
                     <div class="mode-tile" id="mode-timed-btn" onclick="selectGameMode('timed')">
                         <h4>Métrica de Velocidad</h4>
@@ -351,9 +356,9 @@
     <header>
         <div class="logo-box">PERCEPTUM<span>VISION</span></div>
         <div class="hud-metrics">
-            <div class="hud-card"><div class="hud-label">Fase</div><div id="val-lvl" class="hud-value">01</div></div>
-            <div class="hud-card" id="card-time" style="display: none;"><div class="hud-label">Reloj</div><div id="val-time" class="hud-value">--</div></div>
-            <div class="hud-card"><div class="hud-label">Vidas</div><div id="val-hp" class="hud-value" style="color: var(--ui-error-main)">❤️❤️❤️</div></div>
+            <div class="hud-card-metric"><div class="hud-label">Fase</div><div id="val-lvl" class="hud-value">01</div></div>
+            <div class="hud-card-metric" id="card-time" style="display: none;"><div class="hud-label">Reloj</div><div id="val-time" class="hud-value">--</div></div>
+            <div class="hud-card-metric"><div class="hud-label">Vidas</div><div id="val-hp" class="hud-value" style="color: var(--ui-error-main)">❤️❤️❤️</div></div>
         </div>
     </header>
 
@@ -371,7 +376,8 @@
     </main>
 
     <footer>
-        <button class="btn-ui btn-primary" onclick="validateAssembly()">Validar Estructura</button>
+        <button class="btn-ui btn-secondary" onclick="location.reload()">Menú Principal</button>
+        <button class="btn-ui btn-primary" onclick="validateAssembly()">Corroborar Imagen</button>
     </footer>
 
     <div id="success-overlay">
@@ -396,23 +402,21 @@
             { id:6, pts:"0,40 80,40 120,0 40,0", c:"var(--tg-color-7)", w:120, h:40 }
         ];
 
-        // CORRECCIÓN 2: FIGURAS CON COORDENADAS DE ENCAJE MILIMÉTRICO (Puzzle Real)
+        // FIGURAS CON COORDENADAS DE ENCAJE CENTRADAS (viewBox 400x400)
         const FIGURES = [
             { name: "CISNE", map: [{id:0,x:150,y:150,r:180},{id:1,x:70,y:70,r:90},{id:2,x:230,y:70,r:45},{id:3,x:150,y:110,r:0},{id:4,x:110,y:230,r:90},{id:5,x:190,y:110,r:0},{id:6,x:190,y:230,r:-45}] },
-            { name: "ZORRO", map: [{id:0,x:120,y:120,r:0},{id:1,x:200,y:40,r:90},{id:2,x:160,y:200,r:-45},{id:3,x:120,y:80,r:0},{id:4,x:240,y:200,r:0},{id:5,x:160,y:80,r:45},{id:6,x:60,y:200,r:0}] },
+            { name: "CONEJO", map: [{id:0,x:100,y:150,r:90},{id:1,x:100,y:230,r:0},{id:2,x:180,y:150,r:-90},{id:3,x:100,y:70,r:-45},{id:4,x:140,y:30,r:45},{id:5,x:20,y:150,r:0},{id:6,x:180,y:70,r:0}] },
             { name: "BARCO", map: [{id:0,x:50,y:100,r:0},{id:1,x:210,y:100,r:0},{id:2,x:130,y:180,r:180},{id:3,x:130,y:60,r:0},{id:4,x:130,y:260,r:180},{id:5,x:170,y:260,r:45},{id:6,x:50,y:260,r:0}] },
             { name: "GATO",  map: [{id:0,x:120,y:150,r:0},{id:1,x:120,y:70,r:-90},{id:2,x:200,y:150,r:0},{id:3,x:80,y:30,r:45},{id:4,x:160,y:30,r:-45},{id:5,x:120,y:230,r:0},{id:6,x:160,y:310,r:90}] }
         ];
 
         let state = { mode: 'free', lvl: 0, hp: 3, time: 60, timer: null };
 
-        // GESTIÓN DE MODOS (Corrección 1: Slider dinámico)
+        // GESTIÓN DE MODOS
         function selectGameMode(m) {
             state.mode = m;
             document.getElementById('mode-free-btn').classList.toggle('active', m === 'free');
             document.getElementById('mode-timed-btn').classList.toggle('active', m === 'timed');
-            
-            // Oculta/Muestra slider
             document.getElementById('slider-time-wrapper').style.display = (m === 'timed') ? 'block' : 'none';
             document.getElementById('card-time').style.display = (m === 'timed') ? 'block' : 'none';
         }
@@ -431,21 +435,23 @@
 
             const fig = FIGURES[state.lvl % FIGURES.length];
             
-            // CORRECCIÓN 3: Renderizado de Guía en bloque SVG (Encaje perfecto)
+            // RENDER GUÍA: COLORES REALES DE LAS PIEZAS CON OPACIDAD TERAPÉUTICA
             let svgStr = `<svg viewBox="0 0 400 400" width="100%" height="100%">`;
             fig.map.forEach(p => {
                 const d = PIECES_DB.find(x => x.id === p.id);
-                svgStr += `<polygon points="${d.pts}" fill="rgba(34,197,94,0.2)" stroke="var(--ui-accent-primary)" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
+                // Aquí corregimos el color: d.c ahora manda en la guía
+                svgStr += `<polygon points="${d.pts}" fill="${d.c}" opacity="0.6" stroke="rgba(255,255,255,0.8)" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
             });
             guide.innerHTML = svgStr + `</svg>`;
 
-            // CARGA DE INVENTARIO
+            // CARGA DE INVENTARIO (PIEZAS CLIMBABLES)
             PIECES_DB.forEach(p => {
                 const box = document.createElement('div');
                 box.className = "piece-container inventory-state";
                 box.dataset.id = p.id;
                 box.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="2"/></svg>`;
                 box.onclick = () => {
+                    if(!box.classList.contains('inventory-state')) return;
                     box.classList.remove('inventory-state');
                     canvas.appendChild(box);
                     box.style.width = p.w + "px"; box.style.height = p.h + "px";
@@ -480,11 +486,16 @@
         }
 
         function startClock() {
+            if(state.timer) clearInterval(state.timer);
             let t = state.time;
             document.getElementById('val-time').innerText = t + "s";
             state.timer = setInterval(() => {
                 t--; document.getElementById('val-time').innerText = t + "s";
-                if(t <= 0) { clearInterval(state.timer); alert("TIEMPO AGOTADO"); renderLevel(); }
+                if(t <= 0) { 
+                    clearInterval(state.timer); 
+                    alert("TIEMPO AGOTADO - REINTENTANDO FASE"); 
+                    renderLevel(); 
+                }
             }, 1000);
         }
 
@@ -494,7 +505,7 @@
         }
 
         function loadNextLevel() {
-            state.lvl++; // Niveles infinitos
+            state.lvl++; 
             document.getElementById('success-overlay').style.display = 'none';
             renderLevel();
         }
