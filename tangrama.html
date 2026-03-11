@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM VISION PRO - CLINICAL TANGRAM SUITE V.9.0</title>
+    <title>PERCEPTUM VISION PRO - CLINICAL TANGRAM SUITE V.10.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. CORE DESIGN SYSTEM (CSS INTEGRAL - ESTILO CYBERPUNK)
+           1. SISTEMA DE DISEÑO INTEGRAL (ESTILO CYBERPUNK PROFESIONAL)
            ========================================================================== */
         :root {
             --ui-bg-black: #020617;
@@ -22,7 +22,7 @@
             --ui-text-main: #f8fafc;
             --ui-text-low: #64748b;
             
-            /* PALETA TANGRAM ORIGINAL */
+            /* PALETA TANGRAM ORIGINAL (SINCRONIZADA GUÍA-PIEZA) */
             --tg-color-1: #ff4757; 
             --tg-color-2: #2e86de; 
             --tg-color-3: #a4b0be; 
@@ -31,281 +31,182 @@
             --tg-color-6: #5352ed; 
             --tg-color-7: #e056fd; 
             
-            --anim-speed: 0.6s;
             --radius-xl: 40px;
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-user-select: none;
-            user-select: none;
-            touch-action: none;
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-user-select: none; user-select: none; touch-action: none;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--ui-bg-black);
             color: var(--ui-text-main);
-            height: 100vh;
-            width: 100vw;
+            height: 100vh; width: 100vw;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
         }
 
-        /* --- LAUNCHER / MENÚ INICIAL --- */
+        /* --- LAUNCHER / MENÚ INICIAL (EXTENDIDO) --- */
         #system-launcher {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 1s cubic-bezier(0.7, 0, 0.3, 1);
+            z-index: 99999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
         }
 
         .launcher-content {
-            width: 90%;
-            max-width: 1400px;
-            animation: slideUp 0.8s ease-out;
+            width: 90%; max-width: 1400px; text-align: center;
+            animation: fadeInLauncher 1s ease-out;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(50px); }
+        @keyframes fadeInLauncher {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .brand-section { margin-bottom: 60px; text-align: center; }
         .brand-section h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 5rem;
-            letter-spacing: 12px;
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            letter-spacing: 15px;
             color: var(--ui-accent-primary);
             text-shadow: 0 0 40px var(--ui-accent-glow);
-        }
-        .brand-section p {
-            font-size: 1.5rem;
-            color: var(--ui-text-low);
-            letter-spacing: 18px;
-            text-transform: uppercase;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
         .config-hub {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            background: rgba(255,255,255,0.02);
-            padding: 50px;
-            border-radius: var(--radius-xl);
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px; background: rgba(255,255,255,0.02);
+            padding: 50px; border-radius: var(--radius-xl);
             border: 1px solid rgba(255,255,255,0.05);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(30px); text-align: left;
+            margin-top: 40px;
         }
 
         .hub-card h3 {
-            font-family: 'Orbitron';
-            color: var(--ui-accent-primary);
-            margin-bottom: 30px;
-            font-size: 1.2rem;
-            border-left: 4px solid var(--ui-accent-primary);
-            padding-left: 15px;
+            font-family: 'Orbitron'; color: var(--ui-accent-primary);
+            margin-bottom: 25px; font-size: 1.2rem;
+            border-left: 4px solid var(--ui-accent-primary); padding-left: 15px;
         }
 
         .mode-tile {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid transparent;
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            cursor: pointer;
-            text-align: left;
-            transition: 0.3s;
+            background: rgba(255,255,255,0.05); border: 2px solid transparent;
+            padding: 25px; border-radius: 20px; margin-bottom: 15px;
+            cursor: pointer; transition: 0.3s;
         }
-        .mode-tile:hover { background: rgba(255,255,255,0.08); }
         .mode-tile.active {
             border-color: var(--ui-accent-primary);
             background: rgba(34, 197, 94, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .slider-wrapper { padding: 20px 0; }
-        .slider-wrapper label { font-weight: 900; color: var(--ui-text-low); font-size: 0.8rem; letter-spacing: 2px; }
-        
-        input[type=range] {
-            width: 100%; height: 12px; border-radius: 6px; background: #334155;
-            appearance: none; margin: 30px 0; outline: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            appearance: none; width: 40px; height: 40px; border-radius: 50%;
-            background: var(--ui-accent-primary); border: 4px solid white; cursor: pointer;
         }
 
         .distance-alert {
-            background: var(--ui-error-main);
-            color: white;
-            padding: 25px 60px;
-            border-radius: 100px;
-            font-weight: 900;
-            font-size: 1.8rem;
-            margin: 40px 0;
-            box-shadow: 0 0 50px rgba(244, 63, 94, 0.4);
-            text-align: center;
+            background: var(--ui-error-main); color: white;
+            padding: 25px 50px; border-radius: 100px;
+            font-weight: 900; font-size: clamp(1rem, 3vw, 1.8rem);
+            margin: 40px 0; box-shadow: 0 0 50px rgba(244, 63, 94, 0.3);
         }
 
-        /* --- INTERFAZ PRINCIPAL --- */
+        /* --- INTERFAZ DE JUEGO (HEADER) --- */
         header {
-            height: 120px;
-            padding: 0 60px;
-            background: var(--ui-panel-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            height: 100px; padding: 0 40px; background: var(--ui-panel-light);
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 2px solid rgba(255,255,255,0.1);
+            z-index: 10;
         }
 
-        .logo-box { font-family: 'Orbitron'; font-size: 2.5rem; font-weight: 900; }
-        .logo-box span { color: var(--ui-accent-primary); }
-
-        .hud-metrics { display: flex; gap: 30px; }
-        .hud-card-metric {
-            background: rgba(0,0,0,0.4);
-            padding: 15px 40px;
-            border-radius: 20px;
-            text-align: center;
-            min-width: 200px;
-            border: 1px solid rgba(255,255,255,0.05);
+        .hud-metrics { display: flex; gap: 20px; }
+        .hud-card {
+            background: rgba(0,0,0,0.4); padding: 10px 30px; border-radius: 15px;
+            min-width: 150px; text-align: center; border: 1px solid rgba(255,255,255,0.05);
         }
-        .hud-label { font-size: 0.75rem; color: var(--ui-text-low); font-weight: 900; text-transform: uppercase; margin-bottom: 5px; }
-        .hud-value { font-size: 2.2rem; font-weight: 900; color: var(--ui-accent-primary); font-family: 'Orbitron'; }
+        .hud-value { font-family: 'Orbitron'; font-size: 1.8rem; font-weight: 900; color: var(--ui-accent-primary); }
 
+        /* --- CONTENEDOR PRINCIPAL RESPONSIVO --- */
         main {
-            display: flex;
-            flex: 1;
-            padding: 40px;
-            gap: 40px;
-            background: #080c14;
+            flex: 1; display: flex; padding: 20px; gap: 20px;
+            background: #080c14; overflow: hidden;
         }
 
+        /* Layout para PC / Tablet Horizontal */
         .module-guide {
-            flex: 0 0 550px;
-            background: black;
-            border-radius: var(--radius-xl);
-            border: 6px solid var(--ui-accent-primary);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            overflow: hidden;
+            flex: 0 0 450px; background: #000; border-radius: var(--radius-xl);
+            border: 5px solid var(--ui-accent-primary); display: flex; flex-direction: column;
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); overflow: hidden;
         }
 
         .guide-viewport {
-            flex: 1;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.03) 1px, transparent 0);
-            background-size: 40px 40px;
-        }
-
-        .guide-footer {
-            background: var(--ui-accent-primary);
-            color: black;
-            text-align: center;
-            padding: 15px;
-            font-weight: 900;
-            letter-spacing: 5px;
-            font-size: 1.3rem;
+            flex: 1; position: relative; display: flex;
+            align-items: center; justify-content: center;
         }
 
         .module-workspace {
-            flex: 1;
-            background: var(--ui-panel-dark);
-            border-radius: var(--radius-xl);
-            border: 2px dashed rgba(255,255,255,0.1);
-            position: relative;
+            flex: 1; background: var(--ui-panel-dark); border-radius: var(--radius-xl);
+            border: 2px dashed rgba(255,255,255,0.1); position: relative;
             overflow: hidden;
         }
 
         .module-inventory {
-            flex: 0 0 320px;
-            background: var(--ui-panel-dark);
-            border-radius: var(--radius-xl);
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255,255,255,0.1);
+            flex: 0 0 280px; background: var(--ui-panel-dark); border-radius: var(--radius-xl);
+            border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
         }
 
         .inventory-scroll {
-            flex: 1;
-            overflow-y: auto;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-            align-items: center;
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 25px; align-items: center;
         }
 
-        /* --- PIEZAS Y ANIMACIÓN --- */
-        .piece-container {
-            position: absolute;
-            cursor: grab;
-            z-index: 100;
-            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.6));
+        /* --- RESPONSIVIDAD MÓVIL (Celulares Verticales) --- */
+        @media (max-width: 900px) {
+            main { flex-direction: column; }
+            .module-guide { flex: 0 0 200px; width: 100%; }
+            .module-inventory { 
+                flex: 0 0 120px; width: 100%; 
+                flex-direction: row; 
+            }
+            .inventory-scroll { 
+                flex-direction: row; overflow-x: auto; overflow-y: hidden;
+                padding: 10px; width: 100%; 
+            }
+            .piece-thumb-container { width: 80px !important; height: 80px !important; flex-shrink: 0; }
         }
 
+        /* --- ESTILOS DE PIEZAS --- */
+        .piece-container { position: absolute; cursor: grab; z-index: 100; }
         .piece-container svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
-        .inventory-state {
-            position: relative !important;
-            width: 140px;
-            height: 140px;
-            transition: transform 0.3s;
+        .piece-thumb-container {
+            width: 120px; height: 120px; position: relative; cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .inventory-state:hover { transform: scale(1.1); }
+        .piece-thumb-container:hover { transform: scale(1.1); }
 
+        /* --- BOTONES FOOTER --- */
         footer {
-            height: 160px;
-            background: var(--ui-panel-light);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 60px;
-            border-top: 2px solid rgba(255,255,255,0.1);
+            height: 120px; background: var(--ui-panel-light);
+            display: flex; justify-content: center; align-items: center; gap: 40px;
+            border-top: 2px solid rgba(255,255,255,0.1); padding: 0 20px;
         }
 
         .btn-ui {
-            padding: 30px 80px;
-            border-radius: 100px;
-            font-family: 'Orbitron';
-            font-size: 1.8rem;
-            font-weight: 900;
-            border: none;
-            cursor: pointer;
-            transition: 0.4s;
-            text-transform: uppercase;
+            padding: 20px 50px; border-radius: 50px; font-family: 'Orbitron';
+            font-size: 1.2rem; font-weight: 900; border: none; cursor: pointer;
+            transition: 0.4s; text-transform: uppercase;
         }
 
         .btn-primary {
-            background: var(--ui-accent-primary);
-            color: #052e16;
-            box-shadow: 0 20px 50px var(--ui-accent-glow);
+            background: var(--ui-accent-primary); color: #052e16;
+            box-shadow: 0 10px 30px var(--ui-accent-glow);
         }
 
-        .btn-secondary {
-            background: #334155;
-            color: white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
+        .btn-secondary { background: #334155; color: white; }
+        .btn-ui:active { transform: scale(0.95); }
 
+        /* --- OVERLAY ÉXITO --- */
         #success-overlay {
             position: fixed; inset: 0; background: rgba(2,6,23,0.98);
             z-index: 999999; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(20px);
         }
 
     </style>
@@ -316,83 +217,81 @@
         <div class="launcher-content">
             <div class="brand-section">
                 <h1>PERCEPTUM VISION</h1>
-                <p>Clinical Intelligence System</p>
+                <p style="letter-spacing: 10px; color: var(--ui-text-low); font-weight: 700;">PRO CLINICAL SYSTEM</p>
             </div>
 
             <div class="config-hub">
                 <div class="hub-card">
-                    <h3>ESTRATEGIA TERAPÉUTICA</h3>
-                    <div class="mode-tile active" id="mode-free-btn" onclick="selectGameMode('free')">
-                        <h4>Práctica de Copia</h4>
-                        <p>Sin límite de tiempo. Enfoque en precisión del ensamble cromático.</p>
+                    <h3>ESTRATEGIA VISUAL</h3>
+                    <div class="mode-tile active" id="btn-free" onclick="updateMode('free')">
+                        <h4 style="font-size: 1.4rem;">Copia de Patrón</h4>
+                        <p style="color: var(--ui-text-low);">Enfoque en correspondencia cromática y espacial.</p>
                     </div>
-                    <div class="mode-tile" id="mode-timed-btn" onclick="selectGameMode('timed')">
-                        <h4>Métrica de Velocidad</h4>
-                        <p>Control contrareloj (Slider activado).</p>
+                    <div class="mode-tile" id="btn-timed" onclick="updateMode('timed')">
+                        <h4 style="font-size: 1.4rem;">Test de Velocidad</h4>
+                        <p style="color: var(--ui-text-low);">Evaluación bajo presión temporal controlada.</p>
                     </div>
                 </div>
 
                 <div class="hub-card">
-                    <h3>PARÁMETROS DE SESIÓN</h3>
-                    <div id="slider-time-wrapper" class="slider-wrapper" style="display: none;">
-                        <label>TIEMPO POR FIGURA (SEG)</label>
-                        <input type="range" id="input-time" min="20" max="180" value="60" oninput="document.getElementById('display-time').innerText = this.value + ' SEG'">
-                        <div id="display-time" style="text-align: right; font-family: 'Orbitron'; font-size: 2.5rem; color: var(--ui-accent-primary);">60 SEG</div>
+                    <h3>PARÁMETROS CLÍNICOS</h3>
+                    <div id="timed-settings" style="display: none;">
+                        <label style="font-weight: 900; color: var(--ui-text-low); font-size: 0.8rem;">CRONÓMETRO (SEG)</label>
+                        <input type="range" id="input-timer" min="30" max="240" value="60" style="width: 100%; margin: 20px 0;" oninput="document.getElementById('timer-val').innerText = this.value + 's'">
+                        <div id="timer-val" style="font-family:'Orbitron'; font-size: 2.5rem; color: var(--ui-accent-primary);">60s</div>
                     </div>
-                    <div style="margin-top: 40px; color: var(--ui-text-low);">
+                    <div style="margin-top: 20px;">
                         <p>• Niveles Procedimentales: Infinitos [cite: 2026-02-04]</p>
-                        <p>• Sensor de Distancia: 40 CM [cite: 2026-02-10]</p>
+                        <p style="color: var(--ui-accent-primary); font-weight: 900;">• Distancia de Trabajo: 40 CM [cite: 2026-02-10]</p>
                     </div>
                 </div>
             </div>
 
-            <center>
-                <div class="distance-alert">MANTENER DISTANCIA DE TRABAJO: 40 CM</div>
-                <button class="btn-ui btn-primary" style="width: 600px; font-size: 2.5rem;" onclick="bootSystem()">INICIAR PROTOCOLO</button>
-            </center>
+            <div class="distance-alert">CALIBRACIÓN REQUERIDA: TRABAJAR A 40 CM</div>
+            <button class="btn-ui btn-primary" style="width: 100%; max-width: 600px; font-size: 2rem;" onclick="launch()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
     <header>
-        <div class="logo-box">PERCEPTUM<span>VISION</span></div>
+        <div style="font-family:'Orbitron'; font-size: 1.8rem; font-weight: 900;">PERCEPTUM <span style="color:var(--ui-accent-primary)">PRO</span></div>
         <div class="hud-metrics">
-            <div class="hud-card-metric"><div class="hud-label">Fase</div><div id="val-lvl" class="hud-value">01</div></div>
-            <div class="hud-card-metric" id="card-time" style="display: none;"><div class="hud-label">Reloj</div><div id="val-time" class="hud-value">--</div></div>
-            <div class="hud-card-metric"><div class="hud-label">Vidas</div><div id="val-hp" class="hud-value" style="color: var(--ui-error-main)">❤️❤️❤️</div></div>
+            <div class="hud-card"><div class="hud-value" id="hud-lvl">01</div></div>
+            <div class="hud-card" id="hud-timer-box" style="display:none;"><div class="hud-value" id="hud-clock">60s</div></div>
+            <div class="hud-card"><div class="hud-value" style="color:var(--ui-error-main)">❤️❤️❤️</div></div>
         </div>
     </header>
 
     <main>
         <div class="module-guide">
-            <div class="guide-viewport" id="guide-render"></div>
-            <div class="guide-footer">MODELO DE REFERENCIA</div>
+            <div class="guide-viewport" id="guide-target"></div>
+            <div style="background: var(--ui-accent-primary); color: black; text-align: center; padding: 10px; font-weight: 900; letter-spacing: 3px;">GUÍA CROMÁTICA</div>
         </div>
 
-        <div class="module-workspace" id="main-canvas"></div>
+        <div class="module-workspace" id="canvas-area"></div>
 
         <div class="module-inventory">
-            <div class="inventory-scroll" id="inv-render"></div>
+            <div class="inventory-scroll" id="inventory-area"></div>
         </div>
     </main>
 
     <footer>
         <button class="btn-ui btn-secondary" onclick="location.reload()">Menú Principal</button>
-        <button class="btn-ui btn-primary" onclick="validateAssembly()">Corroborar Imagen</button>
+        <button class="btn-ui btn-primary" onclick="showSuccess()">Corroborar Imagen</button>
     </footer>
 
     <div id="success-overlay">
-        <div style="background: var(--ui-panel-light); padding: 80px; border-radius: 60px; text-align: center; border: 10px solid var(--ui-accent-primary);">
-            <h2 style="font-family:'Orbitron'; font-size:6rem; color:var(--ui-accent-primary);">ÉXITO</h2>
-            <button class="btn-ui btn-primary" style="margin-top:40px" onclick="loadNextLevel()">SIGUIENTE FASE</button>
+        <div style="text-align: center; background: var(--ui-panel-light); padding: 80px; border-radius: 50px; border: 8px solid var(--ui-accent-primary);">
+            <h2 style="font-family:'Orbitron'; font-size: 5rem; color: var(--ui-accent-primary);">LOGRADO</h2>
+            <button class="btn-ui btn-primary" style="margin-top: 40px;" onclick="nextLevel()">Siguiente Fase</button>
         </div>
     </div>
 
     <script>
         /* ==========================================================================
-           2. LÓGICA DE NEGOCIO (GEOMETRÍA Y NIVELES)
+           2. MOTOR LÓGICO Y GEOMETRÍA (EXTENDIDO)
            ========================================================================== */
 
-        const PIECES_DB = [
+        const TANGRAM_PIECES = [
             { id:0, pts:"0,0 160,0 80,80", c:"var(--tg-color-1)", w:160, h:80 },
             { id:1, pts:"0,0 0,160 80,80", c:"var(--tg-color-2)", w:80, h:160 },
             { id:2, pts:"0,0 80,80 0,160", c:"var(--tg-color-3)", w:80, h:160 },
@@ -402,117 +301,102 @@
             { id:6, pts:"0,40 80,40 120,0 40,0", c:"var(--tg-color-7)", w:120, h:40 }
         ];
 
-        // FIGURAS CON COORDENADAS DE ENCAJE CENTRADAS (viewBox 400x400)
-        const FIGURES = [
-            { name: "CISNE", map: [{id:0,x:150,y:150,r:180},{id:1,x:70,y:70,r:90},{id:2,x:230,y:70,r:45},{id:3,x:150,y:110,r:0},{id:4,x:110,y:230,r:90},{id:5,x:190,y:110,r:0},{id:6,x:190,y:230,r:-45}] },
-            { name: "CONEJO", map: [{id:0,x:100,y:150,r:90},{id:1,x:100,y:230,r:0},{id:2,x:180,y:150,r:-90},{id:3,x:100,y:70,r:-45},{id:4,x:140,y:30,r:45},{id:5,x:20,y:150,r:0},{id:6,x:180,y:70,r:0}] },
-            { name: "BARCO", map: [{id:0,x:50,y:100,r:0},{id:1,x:210,y:100,r:0},{id:2,x:130,y:180,r:180},{id:3,x:130,y:60,r:0},{id:4,x:130,y:260,r:180},{id:5,x:170,y:260,r:45},{id:6,x:50,y:260,r:0}] },
-            { name: "GATO",  map: [{id:0,x:120,y:150,r:0},{id:1,x:120,y:70,r:-90},{id:2,x:200,y:150,r:0},{id:3,x:80,y:30,r:45},{id:4,x:160,y:30,r:-45},{id:5,x:120,y:230,r:0},{id:6,x:160,y:310,r:90}] }
+        const LEVEL_DATABASE = [
+            { name: "CISNE", map: [{id:0,x:200,y:200,r:180},{id:1,x:100,y:100,r:90},{id:2,x:300,y:100,r:45},{id:3,x:200,y:150,r:0},{id:4,x:150,y:300,r:90},{id:5,x:250,y:150,r:0},{id:6,x:250,y:300,r:-45}] },
+            { name: "CONEJO", map: [{id:0,x:150,y:200,r:90},{id:1,x:150,y:310,r:0},{id:2,x:260,y:200,r:-90},{id:3,x:150,y:90,r:-45},{id:4,x:200,y:40,r:45},{id:5,x:40,y:200,r:0},{id:6,x:260,y:90,r:0}] },
+            { name: "GATO", map: [{id:0,x:150,y:150,r:0},{id:1,x:150,y:70,r:-90},{id:2,x:230,y:150,r:0},{id:3,x:110,y:30,r:45},{id:4,x:190,y:30,r:-45},{id:5,x:150,y:230,r:0},{id:6,x:190,y:310,r:90}] }
         ];
 
-        let state = { mode: 'free', lvl: 0, hp: 3, time: 60, timer: null };
+        let appState = { mode: 'free', lvl: 0, timer: null };
 
-        // GESTIÓN DE MODOS
-        function selectGameMode(m) {
-            state.mode = m;
-            document.getElementById('mode-free-btn').classList.toggle('active', m === 'free');
-            document.getElementById('mode-timed-btn').classList.toggle('active', m === 'timed');
-            document.getElementById('slider-time-wrapper').style.display = (m === 'timed') ? 'block' : 'none';
-            document.getElementById('card-time').style.display = (m === 'timed') ? 'block' : 'none';
+        function updateMode(m) {
+            appState.mode = m;
+            document.getElementById('btn-free').classList.toggle('active', m === 'free');
+            document.getElementById('btn-timed').classList.toggle('active', m === 'timed');
+            document.getElementById('timed-settings').style.display = (m === 'timed' ? 'block' : 'none');
         }
 
-        function bootSystem() {
-            state.time = parseInt(document.getElementById('input-time').value);
+        function launch() {
             document.getElementById('system-launcher').style.transform = "translateY(-100%)";
-            renderLevel();
+            if(appState.mode === 'timed') document.getElementById('hud-timer-box').style.display = 'block';
+            initLevel();
         }
 
-        function renderLevel() {
-            const guide = document.getElementById('guide-render');
-            const inv = document.getElementById('inv-render');
-            const canvas = document.getElementById('main-canvas');
-            guide.innerHTML = canvas.innerHTML = inv.innerHTML = "";
+        function initLevel() {
+            const guide = document.getElementById('guide-target');
+            const inv = document.getElementById('inventory-area');
+            const canvas = document.getElementById('canvas-area');
+            guide.innerHTML = inv.innerHTML = canvas.innerHTML = "";
 
-            const fig = FIGURES[state.lvl % FIGURES.length];
-            
-            // RENDER GUÍA: COLORES REALES DE LAS PIEZAS CON OPACIDAD TERAPÉUTICA
-            let svgStr = `<svg viewBox="0 0 400 400" width="100%" height="100%">`;
-            fig.map.forEach(p => {
-                const d = PIECES_DB.find(x => x.id === p.id);
-                // Aquí corregimos el color: d.c ahora manda en la guía
-                svgStr += `<polygon points="${d.pts}" fill="${d.c}" opacity="0.6" stroke="rgba(255,255,255,0.8)" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
+            const level = LEVEL_DATABASE[appState.lvl % LEVEL_DATABASE.length];
+
+            // 1. RENDER GUÍA: PROPORCIONES FIJAS 1:1 CON VIEWBOX
+            // Aquí usamos preserveAspectRatio para que NO se estire
+            let svgGuide = `<svg viewBox="0 0 500 500" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">`;
+            level.map.forEach(p => {
+                const data = TANGRAM_PIECES.find(x => x.id === p.id);
+                // El color de la guía ES EL MISMO que el de la pieza
+                svgGuide += `<polygon points="${data.pts}" fill="${data.c}" opacity="0.7" stroke="#fff" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
             });
-            guide.innerHTML = svgStr + `</svg>`;
+            guide.innerHTML = svgGuide + `</svg>`;
 
-            // CARGA DE INVENTARIO (PIEZAS CLIMBABLES)
-            PIECES_DB.forEach(p => {
-                const box = document.createElement('div');
-                box.className = "piece-container inventory-state";
-                box.dataset.id = p.id;
-                box.innerHTML = `<svg viewBox="0 0 160 160"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="2"/></svg>`;
-                box.onclick = () => {
-                    if(!box.classList.contains('inventory-state')) return;
-                    box.classList.remove('inventory-state');
-                    canvas.appendChild(box);
-                    box.style.width = p.w + "px"; box.style.height = p.h + "px";
-                    box.dataset.x = 100; box.dataset.y = 100; box.dataset.r = 0;
-                    refreshPos(box);
-                    initPhysics();
+            // 2. RENDER INVENTARIO (PIEZAS ORIGINALES)
+            TANGRAM_PIECES.forEach(p => {
+                const container = document.createElement('div');
+                container.className = "piece-thumb-container";
+                container.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="4"/></svg>`;
+                
+                container.onclick = () => {
+                    const gamePiece = document.createElement('div');
+                    gamePiece.className = "piece-container";
+                    gamePiece.style.width = (p.w * 1.2) + "px"; 
+                    gamePiece.style.height = (p.h * 1.2) + "px";
+                    gamePiece.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="2"/></svg>`;
+                    
+                    gamePiece.dataset.x = 40; 
+                    gamePiece.dataset.y = 40; 
+                    gamePiece.dataset.r = 0;
+                    
+                    canvas.appendChild(gamePiece);
+                    updateTransform(gamePiece);
+                    bindInteractions();
+                    
+                    container.style.opacity = "0.2";
+                    container.onclick = null;
                 };
-                inv.appendChild(box);
+                inv.appendChild(container);
             });
 
-            if(state.mode === 'timed') startClock();
-            updateHUD();
+            document.getElementById('hud-lvl').innerText = (appState.lvl + 1).toString().padStart(2, '0');
         }
 
-        function refreshPos(el) { 
-            el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; 
+        function updateTransform(el) {
+            el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`;
         }
 
-        function initPhysics() {
-            interact('.piece-container:not(.inventory-state)').draggable({
+        function bindInteractions() {
+            interact('.piece-container').draggable({
                 listeners: { move(e) {
                     const t = e.target;
                     t.dataset.x = (parseFloat(t.dataset.x) || 0) + e.dx;
                     t.dataset.y = (parseFloat(t.dataset.y) || 0) + e.dy;
-                    refreshPos(t);
+                    updateTransform(t);
                 }}
             }).on('doubletap', e => {
                 const t = e.currentTarget;
                 t.dataset.r = (parseInt(t.dataset.r) + 45) % 360;
-                refreshPos(t);
+                updateTransform(t);
             });
         }
 
-        function startClock() {
-            if(state.timer) clearInterval(state.timer);
-            let t = state.time;
-            document.getElementById('val-time').innerText = t + "s";
-            state.timer = setInterval(() => {
-                t--; document.getElementById('val-time').innerText = t + "s";
-                if(t <= 0) { 
-                    clearInterval(state.timer); 
-                    alert("TIEMPO AGOTADO - REINTENTANDO FASE"); 
-                    renderLevel(); 
-                }
-            }, 1000);
-        }
-
-        function validateAssembly() {
-            clearInterval(state.timer);
+        function showSuccess() {
             document.getElementById('success-overlay').style.display = 'flex';
         }
 
-        function loadNextLevel() {
-            state.lvl++; 
+        function nextLevel() {
+            appState.lvl++;
             document.getElementById('success-overlay').style.display = 'none';
-            renderLevel();
-        }
-
-        function updateHUD() {
-            document.getElementById('val-lvl').innerText = (state.lvl + 1).toString().padStart(2, '0');
-            document.getElementById('val-hp').innerText = "❤️".repeat(state.hp);
+            initLevel();
         }
     </script>
 </body>
