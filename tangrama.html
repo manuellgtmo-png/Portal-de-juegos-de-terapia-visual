@@ -3,375 +3,603 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM PRO V3 | CLINICAL SUITE</title>
+    <title>PERCEPTUM VISION PRO v4.0 | CLINICAL TANGRAM SYSTEM</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
 
     <style>
         /* ==========================================================================
-           1. ARQUITECTURA VISUAL (ESTILO STEREOPTIK / QUANTECH)
+           1. CORE UI DESIGN - STEREOPTIK PRO
            ========================================================================== */
         :root {
-            --bg-black: #020617;
-            --panel-dark: #0f172a;
-            --panel-brighter: #1e293b;
+            --ui-bg: #020617;
+            --ui-panel: #0f172a;
+            --ui-panel-border: #1e293b;
             --ui-accent: #22c55e;
             --ui-error: #f43f5e;
             --ui-text: #f8fafc;
-            --ui-dim: #64748b;
+            --ui-text-dim: #64748b;
             
-            /* COLORES TANGRAM TRADICIONALES */
-            --tg1: #ff4757; --tg2: #2e86de; --tg3: #a4b0be; 
-            --tg4: #ffa502; --tg5: #2ed573; --tg6: #5352ed; --tg7: #e056fd;
+            /* PALETA DE PIEZAS QUANTECH */
+            --piece-1: #ef4444; 
+            --piece-2: #3b82f6; 
+            --piece-3: #94a3b8; 
+            --piece-4: #f59e0b; 
+            --piece-5: #10b981; 
+            --piece-6: #6366f1; 
+            --piece-7: #d946ef;
         }
 
         * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-user-select: none; user-select: none; touch-action: none;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
         }
 
         body {
             font-family: 'Montserrat', sans-serif;
-            background: var(--bg-black);
+            background: var(--ui-bg);
             color: var(--ui-text);
-            height: 100vh; width: 100vw;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
-            display: flex; flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ==========================================================================
-           2. LANZADOR DE CONFIGURACIÓN CLÍNICA
+           2. PANTALLA DE CONFIGURACIÓN (LAUNCHER)
            ========================================================================== */
-        #launcher-system {
-            position: fixed; inset: 0;
+        #launcher-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
-            z-index: 99999; display: flex; align-items: center; justify-content: center;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1);
         }
 
-        .setup-card {
-            width: 90%; max-width: 950px;
+        .launcher-card {
+            width: 90%;
+            max-width: 1100px;
             background: rgba(15, 23, 42, 0.95);
-            padding: 60px; border-radius: 40px;
+            padding: 70px;
+            border-radius: 50px;
             border: 2px solid var(--ui-accent);
             text-align: center;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
             backdrop-filter: blur(20px);
         }
 
-        .setup-card h1 {
-            font-family: 'Orbitron'; font-size: 3.5rem; color: var(--ui-accent);
-            letter-spacing: 12px; margin-bottom: 40px;
+        .launcher-card h1 {
+            font-family: 'Orbitron';
+            font-size: 4rem;
+            color: var(--ui-accent);
+            letter-spacing: 15px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
         }
 
-        .config-modes {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 25px; margin-bottom: 40px;
+        .protocol-badge {
+            display: inline-block;
+            background: var(--ui-error);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 100px;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 50px;
+            box-shadow: 0 10px 20px rgba(244, 63, 94, 0.3);
         }
 
-        .mode-btn {
-            background: rgba(255,255,255,0.03); padding: 35px;
-            border-radius: 25px; border: 3px solid transparent;
-            cursor: pointer; transition: 0.3s; text-align: left;
+        .mode-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-bottom: 50px;
         }
 
-        .mode-btn.active {
+        .mode-card {
+            background: rgba(255,255,255,0.03);
+            padding: 35px;
+            border-radius: 30px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .mode-card.active {
             border-color: var(--ui-accent);
             background: rgba(34, 197, 94, 0.1);
-            box-shadow: 0 0 40px rgba(34, 197, 94, 0.2);
         }
 
-        .mode-btn h3 { font-family: 'Orbitron'; color: var(--ui-accent); margin-bottom: 8px; font-size: 1.2rem; }
-        .mode-btn p { font-size: 0.8rem; color: var(--ui-dim); line-height: 1.4; }
-
-        .timer-panel {
-            background: #000; padding: 30px; border-radius: 30px;
-            margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1);
+        .mode-card h3 {
+            font-family: 'Orbitron';
+            color: var(--ui-accent);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
         }
 
-        .timer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .timer-header label { font-family: 'Orbitron'; color: var(--ui-accent); font-weight: 700; }
-        
-        input[type=range] { width: 100%; accent-color: var(--ui-accent); cursor: pointer; height: 8px; border-radius: 10px; }
+        .mode-card p {
+            font-size: 0.8rem;
+            color: var(--ui-text-dim);
+            line-height: 1.5;
+        }
 
-        .clinical-warning {
-            background: var(--ui-error); color: white; padding: 15px 40px;
-            border-radius: 100px; font-weight: 900; display: inline-block;
-            margin-bottom: 40px; font-size: 0.85rem; letter-spacing: 1px;
+        .timer-settings {
+            background: #000;
+            padding: 35px;
+            border-radius: 30px;
+            margin-bottom: 50px;
+            border: 1px solid var(--ui-panel-border);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .timer-row label {
+            font-family: 'Orbitron';
+            color: var(--ui-accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        #timer-range {
+            width: 100%;
+            height: 10px;
+            border-radius: 5px;
+            background: #1e293b;
+            outline: none;
+            accent-color: var(--ui-accent);
         }
 
         /* ==========================================================================
-           3. INTERFAZ PRINCIPAL (HUD & LAYOUT)
+           3. INTERFAZ PRINCIPAL (HUD Y ESTRUCTURA)
            ========================================================================== */
         header {
-            height: 90px; background: var(--panel-dark); padding: 0 50px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--ui-accent);
+            height: 100px;
+            background: var(--ui-panel);
+            padding: 0 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--ui-accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .hud-display { display: flex; gap: 25px; }
-        .hud-box {
-            background: #000; padding: 10px 30px; border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1); text-align: center;
+        .logo-area {
+            font-family: 'Orbitron';
+            font-weight: 900;
+            font-size: 2rem;
+            letter-spacing: 5px;
         }
-        .hud-box span { display: block; font-size: 0.65rem; color: var(--ui-dim); font-weight: 800; text-transform: uppercase; }
-        .hud-box b { font-family: 'Orbitron'; font-size: 1.6rem; color: var(--ui-accent); }
 
-        main { flex: 1; display: flex; padding: 25px; gap: 25px; background: #080c14; }
+        .hud-area {
+            display: flex;
+            gap: 30px;
+        }
 
-        .view-module {
-            background: var(--panel-dark); border-radius: 30px;
+        .hud-card {
+            background: #000;
+            padding: 12px 35px;
+            border-radius: 18px;
+            border: 1px solid var(--ui-panel-border);
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .hud-card span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--ui-text-dim);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .hud-card b {
+            font-family: 'Orbitron';
+            font-size: 1.8rem;
+            color: var(--ui-accent);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            padding: 30px;
+            gap: 30px;
+            background: #080c14;
+            overflow: hidden;
+        }
+
+        .clinical-module {
+            background: var(--ui-panel);
+            border-radius: 40px;
             border: 1px solid rgba(255,255,255,0.05);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
         }
 
-        #module-guide { flex: 0 0 450px; background: #000; border: 4px solid var(--ui-accent); }
-        .guide-viewport { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+        /* PANEL GUÍA: FIGURA UNIFICADA */
+        #guide-module {
+            flex: 0 0 500px;
+            background: #000;
+            border: 4px solid var(--ui-accent);
+        }
 
-        #module-workspace {
-            flex: 1; 
+        .guide-header {
+            background: var(--ui-accent);
+            color: #000;
+            padding: 15px;
+            text-align: center;
+            font-weight: 900;
+            font-family: 'Orbitron';
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        .guide-display {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* PANEL DE TRABAJO */
+        #work-module {
+            flex: 1;
+            position: relative;
             background-image: 
                 radial-gradient(rgba(255,255,255,0.05) 2px, transparent 2px);
-            background-size: 50px 50px;
+            background-size: 60px 60px;
             border: 2px dashed rgba(255,255,255,0.1);
         }
 
-        #module-inventory { flex: 0 0 260px; }
-        .inventory-scroll {
-            flex: 1; overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; gap: 20px;
+        /* PANEL DE INVENTARIO (SIN BARRAS EXTRA) */
+        #inventory-module {
+            flex: 0 0 280px;
         }
-        .inventory-scroll::-webkit-scrollbar { width: 5px; }
-        .inventory-scroll::-webkit-scrollbar-thumb { background: var(--ui-accent); border-radius: 10px; }
 
-        .thumb-piece {
-            width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.4);
-            border-radius: 20px; padding: 15px; cursor: pointer;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .inventory-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
-        .thumb-piece:hover { transform: scale(1.05); border: 1px solid var(--ui-accent); }
+
+        .inventory-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .inventory-list::-webkit-scrollbar-thumb {
+            background: var(--ui-accent);
+            border-radius: 10px;
+        }
+
+        .piece-slot {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: rgba(0,0,0,0.4);
+            border-radius: 25px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid transparent;
+        }
+
+        .piece-slot:hover {
+            transform: scale(1.05);
+            border-color: var(--ui-accent);
+            background: rgba(34, 197, 94, 0.05);
+        }
 
         /* ==========================================================================
-           4. PIEZAS Y MOTOR DE MOVIMIENTO
+           4. MECÁNICAS DE JUEGO Y PIEZAS
            ========================================================================== */
-        .active-piece {
-            position: absolute; z-index: 100; cursor: grab;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+        .piece-active {
+            position: absolute;
+            z-index: 100;
+            cursor: grab;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+            touch-action: none;
         }
-        .active-piece:active { cursor: grabbing; z-index: 1000; }
+
+        .piece-active:active {
+            cursor: grabbing;
+            z-index: 1000;
+        }
 
         footer {
-            height: 110px; background: var(--panel-dark);
-            display: flex; justify-content: center; align-items: center; gap: 40px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            height: 120px;
+            background: var(--ui-panel);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            border-top: 2px solid var(--ui-panel-border);
         }
 
-        .btn-action {
-            padding: 22px 55px; border-radius: 100px; font-family: 'Orbitron';
-            font-size: 1.1rem; font-weight: 900; border: none; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 3px; transition: 0.4s;
+        .btn-pro {
+            padding: 25px 60px;
+            border-radius: 100px;
+            font-family: 'Orbitron';
+            font-size: 1.2rem;
+            font-weight: 900;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            transition: all 0.4s ease;
         }
-        .btn-confirm { background: var(--ui-accent); color: #052e16; box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3); }
-        .btn-cancel { background: #334155; color: white; }
 
-        /* MODOS DE VISUALIZACIÓN */
-        .mirror-mode svg { transform: scaleX(-1); }
+        .btn-confirm {
+            background: var(--ui-accent);
+            color: #052e16;
+            box-shadow: 0 10px 40px rgba(34, 197, 94, 0.3);
+        }
 
-        #win-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            z-index: 999999; display: none; align-items: center; justify-content: center;
+        .btn-confirm:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(34, 197, 94, 0.5);
+        }
+
+        .btn-exit {
+            background: #334155;
+            color: white;
+        }
+
+        /* MODOS ESPECIALES */
+        .mirror-mode svg {
+            transform: scaleX(-1);
+        }
+
+        #success-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.96);
+            z-index: 100000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .success-content h2 {
+            font-family: 'Orbitron';
+            font-size: 5rem;
+            color: var(--ui-accent);
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div id="launcher-system">
-        <div class="setup-card">
-            <h1>PERCEPTUM PRO</h1>
-            <div class="clinical-warning">PROTOCOLO CLÍNICO REQUERIDO: TRABAJO A 40 CM</div>
+    <div id="launcher-overlay">
+        <div class="launcher-card">
+            <h1>PERCEPTUM <span style="color:white">PRO</span></h1>
+            <div class="protocol-badge">DISTANCIA DE TRABAJO: 40 CM [cite: 2026-02-10]</div>
 
-            <div class="config-modes">
-                <div class="mode-btn active" id="mode-normal" onclick="setGameMode('normal')">
-                    <h3>COPIA DE PATRÓN</h3>
-                    <p>Correspondencia directa ojo-mano. Evaluación de agudeza y precisión espacial.</p>
+            <div class="mode-container">
+                <div class="mode-card active" id="m-direct" onclick="changeMode('direct')">
+                    <h3>COPIA DIRECTA</h3>
+                    <p>Referencia idéntica. Evaluación de percepción visual y coordinación fina.</p>
                 </div>
-                <div class="mode-btn" id="mode-mirror" onclick="setGameMode('mirror')">
-                    <h3>ROTACIÓN ESPEJO</h3>
-                    <p>Inversión lateral obligatoria. Trabaja lateralidad y procesamiento cerebral profundo.</p>
+                <div class="mode-card" id="m-mirror" onclick="changeMode('mirror')">
+                    <h3>MODO ESPEJO</h3>
+                    <p>Inversión lateral activa. Estimulación de rotación mental y hemisferios.</p>
+                </div>
+                <div class="mode-card" id="m-speed" onclick="changeMode('speed')">
+                    <h3>TEST DE VELOCIDAD</h3>
+                    <p>Cronómetro activo. Evaluación de integración bajo presión temporal.</p>
                 </div>
             </div>
 
-            <div class="timer-panel">
-                <div class="timer-header">
-                    <label>CONTROL DE TIEMPO (CRONÓMETRO)</label>
-                    <input type="checkbox" id="timer-active" onchange="updateTimerControl()" style="width:25px; height:25px; accent-color:var(--ui-accent)">
+            <div class="timer-settings">
+                <div class="timer-row">
+                    <label>DURACIÓN DE SESIÓN</label>
+                    <b id="timer-label" style="color:var(--ui-accent); font-family:'Orbitron'; font-size:1.5rem">60s</b>
                 </div>
-                <div id="slider-group" style="opacity: 0.3; pointer-events: none;">
-                    <input type="range" id="time-slider" min="10" max="180" value="60" oninput="document.getElementById('display-time').innerText = this.value + 's'">
-                    <b id="display-time" style="color:var(--ui-accent); font-family:'Orbitron'; font-size:1.5rem">60s</b>
-                </div>
+                <input type="range" id="timer-range" min="10" max="180" value="60" oninput="updateTimerLabel(this.value)">
             </div>
 
-            <button class="btn-action btn-confirm" style="width:100%; font-size:1.8rem" onclick="launchSession()">INICIAR PROTOCOLO</button>
+            <button class="btn-pro btn-confirm" style="width:100%" onclick="launchApp()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
     <header>
-        <div style="font-family:'Orbitron'; font-weight:900; font-size:1.8rem">PERCEPTUM <span style="color:var(--ui-accent)">VISION</span></div>
-        <div class="hud-display">
-            <div class="hud-box"><span>Nivel</span><b id="hud-lvl">01</b></div>
-            <div class="hud-box" id="hud-timer-container" style="display: none;"><span>Reloj</span><b id="hud-time">60s</b></div>
-            <div class="hud-box"><span>Vidas</span><b id="hud-lives" style="color:var(--ui-error)">❤️❤️❤️</b></div>
+        <div class="logo-area">PERCEPTUM <span style="color:var(--ui-accent)">PRO</span></div>
+        <div class="hud-area">
+            <div class="hud-card"><span>Nivel</span><b id="hud-level">01</b></div>
+            <div class="hud-card" id="timer-hud" style="display: none;"><span>Tiempo</span><b id="hud-time">60</b></div>
+            <div class="hud-card"><span>Vidas</span><b id="hud-lives" style="color:var(--ui-error)">❤️❤️❤️</b></div>
         </div>
     </header>
 
     <main>
-        <div class="view-module" id="module-guide">
-            <div class="guide-viewport" id="draw-guide"></div>
-            <div id="tag-mode" style="background:var(--ui-accent); color:black; text-align:center; padding:12px; font-weight:900; font-size:0.8rem; letter-spacing:2px">COPIA NORMAL</div>
+        <div class="clinical-module" id="guide-module">
+            <div class="guide-header" id="mode-text">MODO COPIA DIRECTA</div>
+            <div class="guide-display" id="render-guide"></div>
         </div>
 
-        <div class="view-module" id="module-workspace">
+        <div class="clinical-module" id="work-module">
             </div>
 
-        <div class="view-module" id="module-inventory">
-            <div class="inventory-scroll" id="draw-inventory"></div>
-            <div style="background:var(--panel-brighter); text-align:center; padding:12px; font-size:0.6rem; color:var(--ui-dim); font-weight:900">BANCO DE PIEZAS</div>
+        <div class="clinical-module" id="inventory-module">
+            <div class="inventory-list" id="render-inventory"></div>
+            <div style="background:var(--ui-panel-border); text-align:center; padding:12px; font-size:0.6rem; color:var(--ui-text-dim); font-weight:900">BANCO DE PIEZAS</div>
         </div>
     </main>
 
     <footer>
-        <button class="btn-action btn-cancel" onclick="location.reload()">Reiniciar</button>
-        <button class="btn-action btn-confirm" onclick="checkSubmission()">Validar Ensamble</button>
+        <button class="btn-pro btn-exit" onclick="location.reload()">Finalizar</button>
+        <button class="btn-pro btn-confirm" onclick="checkFigure()">Verificar Ensamble</button>
     </footer>
 
-    <div id="win-overlay">
-        <div style="text-align:center">
-            <h2 style="font-family:'Orbitron'; font-size:5rem; color:var(--ui-accent)">COMPLETADO</h2>
-            <p style="font-size:1.5rem; color:var(--ui-dim); margin-bottom:40px">Integración visual verificada con éxito.</p>
-            <button class="btn-action btn-confirm" onclick="loadNextPhase()">Siguiente Fase</button>
+    <div id="success-modal">
+        <div class="success-content" style="text-align:center">
+            <h2>LOGRADO</h2>
+            <p style="font-size:1.5rem; margin-bottom:40px; color:var(--ui-text-dim)">Coordinación y percepción verificada.</p>
+            <button class="btn-pro btn-confirm" onclick="nextLevel()">Siguiente Nivel</button>
         </div>
     </div>
 
     <script>
         /* ==========================================================================
-           5. MOTOR GEOMÉTRICO (COORDINACIÓN VÉRTICE A VÉRTICE)
+           5. MOTOR GEOMÉTRICO (VERIFICACIÓN VÉRTICE A VÉRTICE)
            ========================================================================== */
 
-        const PIECES_LIB = [
-            { id:0, pts:"0,0 160,0 80,80", color:"var(--tg1)", w:160, h:80 },
-            { id:1, pts:"0,0 0,160 80,80", color:"var(--tg2)", w:80, h:160 },
-            { id:2, pts:"0,0 80,80 0,160", color:"var(--tg3)", w:80, h:160 },
-            { id:3, pts:"0,0 80,0 40,40",   color:"var(--tg4)", w:80, h:40 },
-            { id:4, pts:"40,40 80,80 0,80", color:"var(--tg5)", w:80, h:80 },
-            { id:5, pts:"40,0 80,40 40,80 0,40", color:"var(--tg6)", w:80, h:80 },
-            { id:6, pts:"0,40 80,40 120,0 40,0", color:"var(--tg7)", w:120, h:40 }
+        const PIECES_MASTER = [
+            { id:0, pts:"0,0 160,0 80,80", color:"var(--piece-1)", w:160, h:80 },  // TG 1
+            { id:1, pts:"0,0 0,160 80,80", color:"var(--piece-2)", w:80, h:160 },  // TG 2
+            { id:2, pts:"0,0 80,80 0,160", color:"var(--piece-3)", w:80, h:160 },  // TM
+            { id:3, pts:"0,0 80,0 40,40",   color:"var(--piece-4)", w:80, h:40 },   // TP 1
+            { id:4, pts:"40,40 80,80 0,80", color:"var(--piece-5)", w:80, h:80 },   // TP 2
+            { id:5, pts:"40,0 80,40 40,80 0,40", color:"var(--piece-6)", w:80, h:80 }, // Cuadrado
+            { id:6, pts:"0,40 80,40 120,0 40,0", color:"var(--piece-7)", w:120, h:40 }  // Romboide
         ];
 
-        // MAPA DE FIGURAS QUANTECH/STEREOPTIK (CONEXIÓN POR VÉRTICES)
-        const CATALOG = [
-            { name: "CISNE", map: [{id:0,x:150,y:200,r:180},{id:1,x:70,y:120,r:90},{id:2,x:230,y:120,r:45},{id:3,x:150,y:160,r:0},{id:4,x:110,y:280,r:90},{id:5,x:190,y:160,r:0},{id:6,x:190,y:280,r:-45}] },
-            { name: "PEZ", map: [{id:0,x:120,y:240,r:90},{id:1,x:120,y:320,r:0},{id:2,x:200,y:240,r:-90},{id:3,x:120,y:160,r:-45},{id:4,x:160,y:120,r:45},{id:5,x:40,y:240,r:0},{id:6,x:200,y:160,r:0}] },
-            { name: "CONEJO", map: [{id:0,x:100,y:200,r:90},{id:1,x:100,y:280,r:0},{id:2,x:180,y:200,r:-90},{id:3,x:100,y:120,r:-45},{id:4,x:140,y:80,r:45},{id:5,x:20,y:200,r:0},{id:6,x:180,y:120,r:0}] }
+        // FIGURAS DEL CATÁLOGO - Vértices exactos
+        const LEVELS_DB = [
+            { 
+                name: "PÁJARO", 
+                map: [
+                    {id:0,x:150,y:200,r:180},{id:1,x:70,y:120,r:90},{id:2,x:230,y:120,r:45},
+                    {id:3,x:150,y:160,r:0},{id:4,x:110,y:280,r:90},{id:5,x:190,y:160,r:0},
+                    {id:6,x:190,y:280,r:-45}
+                ] 
+            },
+            { 
+                name: "PEZ", 
+                map: [
+                    {id:0,x:120,y:240,r:90},{id:1,x:120,y:320,r:0},{id:2,x:200,y:240,r:-90},
+                    {id:3,x:120,y:160,r:-45},{id:4,x:160,y:120,r:45},{id:5,x:40,y:240,r:0},
+                    {id:6,x:200,y:160,r:0}
+                ] 
+            },
+            { 
+                name: "CISNE", 
+                map: [
+                    {id:0,x:100,y:200,r:90},{id:1,x:100,y:280,r:0},{id:2,x:180,y:200,r:-90},
+                    {id:3,x:100,y:120,r:-45},{id:4,x:140,y:80,r:45},{id:5,x:20,y:200,r:0},
+                    {id:6,x:180,y:120,r:0}
+                ] 
+            }
         ];
 
-        let gameState = {
-            mode: 'normal',
-            lvl: 0,
+        let state = {
+            currentMode: 'direct',
+            currentLevel: 0,
             lives: 3,
-            isTimed: false,
             timeLimit: 60,
-            currentSeconds: 60,
-            timerClock: null
+            timeRemaining: 60,
+            timerActive: false,
+            gameInterval: null
         };
 
-        const PIECE_SCALE = 1.35;
+        const GLOBAL_SCALE = 1.35;
 
-        // --- LÓGICA DE LANZADOR ---
-        function setGameMode(m) {
-            gameState.mode = m;
-            document.getElementById('mode-normal').classList.toggle('active', m === 'normal');
-            document.getElementById('mode-mirror').classList.toggle('active', m === 'mirror');
+        // --- FUNCIONES DE LANZADOR ---
+        function changeMode(m) {
+            state.currentMode = m;
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(`m-${m}`).classList.add('active');
         }
 
-        function updateTimerControl() {
-            gameState.isTimed = document.getElementById('timer-active').checked;
-            document.getElementById('slider-group').style.opacity = gameState.isTimed ? "1" : "0.3";
-            document.getElementById('slider-group').style.pointerEvents = gameState.isTimed ? "all" : "none";
+        function updateTimerLabel(v) {
+            state.timeLimit = v;
+            document.getElementById('timer-label').innerText = v + 's';
         }
 
-        // --- INICIO DE SESIÓN ---
-        function launchSession() {
-            document.getElementById('launcher-system').style.transform = "translateY(-100%)";
+        // --- CONTROL DE SESIÓN ---
+        function launchApp() {
+            document.getElementById('launcher-overlay').style.transform = "translateY(-100%)";
             
-            if(gameState.isTimed) {
-                gameState.timeLimit = document.getElementById('time-slider').value;
-                gameState.currentSeconds = gameState.timeLimit;
-                document.getElementById('hud-timer-container').style.display = 'block';
-                startClock();
+            if(state.currentMode === 'speed') {
+                document.getElementById('timer-hud').style.display = 'block';
+                state.timeRemaining = state.timeLimit;
+                startTimer();
             }
 
-            if(gameState.mode === 'mirror') {
-                document.getElementById('draw-guide').classList.add('mirror-mode');
-                document.getElementById('tag-mode').innerText = "MODO ESPEJO ACTIVO";
-                document.getElementById('tag-mode').style.background = "#f43f5e";
-                document.getElementById('tag-mode').style.color = "white";
+            if(state.currentMode === 'mirror') {
+                document.getElementById('render-guide').classList.add('mirror-mode');
+                document.getElementById('mode-text').innerText = "MODO ROTACIÓN ESPEJO";
+                document.getElementById('mode-text').style.background = "#f43f5e";
             }
 
-            renderPhase();
+            loadLevel();
         }
 
-        function renderPhase() {
-            const guide = document.getElementById('draw-guide');
-            const inventory = document.getElementById('draw-inventory');
-            const workspace = document.getElementById('module-workspace');
+        function loadLevel() {
+            const guide = document.getElementById('render-guide');
+            const inventory = document.getElementById('render-inventory');
+            const workspace = document.getElementById('work-module');
             
             guide.innerHTML = inventory.innerHTML = workspace.innerHTML = "";
-            const currentFig = CATALOG[gameState.lvl % CATALOG.length];
+            const figure = LEVELS_DB[state.currentLevel % LEVELS_DB.length];
 
-            // Renderizado de Guía con precisión de píxel
+            // RENDER GUÍA: DIBUJO UNIFICADO
             let svgGuide = `<svg viewBox="0 0 500 500" width="100%" height="100%">`;
-            currentFig.map.forEach(p => {
-                const d = PIECES_LIB.find(x => x.id === p.id);
-                svgGuide += `<polygon points="${d.pts}" fill="${d.color}" opacity="0.4" stroke="white" stroke-width="1.5" 
-                             transform="translate(${p.x},${p.y}) rotate(${p.r}) scale(${PIECE_SCALE})"/>`;
+            figure.map.forEach(p => {
+                const pData = PIECES_MASTER.find(x => x.id === p.id);
+                svgGuide += `<polygon points="${pData.pts}" fill="${pData.color}" stroke="white" stroke-width="1.5" 
+                             transform="translate(${p.x},${p.y}) rotate(${p.r}) scale(${GLOBAL_SCALE})"/>`;
             });
             guide.innerHTML = svgGuide + `</svg>`;
 
-            // Renderizado del Banco de Piezas
-            PIECES_LIB.forEach(p => {
-                const thumb = document.createElement('div');
-                thumb.className = "thumb-piece";
-                thumb.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="5"/></svg>`;
+            // RENDER INVENTARIO
+            PIECES_MASTER.forEach(p => {
+                const slot = document.createElement('div');
+                slot.className = "piece-slot";
+                slot.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="5"/></svg>`;
                 
-                thumb.onclick = () => {
-                    const piece = document.createElement('div');
-                    piece.className = "active-piece";
-                    piece.style.width = (p.w * PIECE_SCALE) + "px";
-                    piece.style.height = (p.h * PIECE_SCALE) + "px";
-                    piece.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}" style="overflow:visible">
-                                        <polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="2.5"/>
-                                       </svg>`;
+                slot.onclick = () => {
+                    const activePiece = document.createElement('div');
+                    activePiece.className = "piece-active";
+                    activePiece.style.width = (p.w * GLOBAL_SCALE) + "px";
+                    activePiece.style.height = (p.h * GLOBAL_SCALE) + "px";
+                    activePiece.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}" style="overflow:visible">
+                                            <polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="2.5"/>
+                                           </svg>`;
                     
-                    piece.dataset.x = 100; piece.dataset.y = 100; piece.dataset.r = 0;
-                    workspace.appendChild(piece);
-                    applyTransform(piece);
-                    enableInteractions(piece);
+                    activePiece.dataset.x = 80; activePiece.dataset.y = 80; activePiece.dataset.r = 0;
+                    workspace.appendChild(activePiece);
+                    applyTransform(activePiece);
+                    makeDraggable(activePiece);
                     
-                    thumb.style.opacity = "0.2"; thumb.style.pointerEvents = "none";
+                    slot.style.opacity = "0.2"; slot.style.pointerEvents = "none";
                 };
-                inventory.appendChild(thumb);
+                inventory.appendChild(slot);
             });
 
-            document.getElementById('hud-lvl').innerText = (gameState.lvl + 1).toString().padStart(2, '0');
+            document.getElementById('hud-level').innerText = (state.currentLevel + 1).toString().padStart(2, '0');
         }
 
         function applyTransform(el) {
             el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`;
         }
 
-        function enableInteractions(el) {
+        function makeDraggable(el) {
             interact(el).draggable({
                 inertia: true,
                 listeners: {
@@ -389,35 +617,35 @@
             });
         }
 
-        function startClock() {
-            gameState.timerClock = setInterval(() => {
-                gameState.currentSeconds--;
-                document.getElementById('hud-time').innerText = gameState.currentSeconds + "s";
-                if(gameState.currentSeconds <= 0) {
-                    clearInterval(gameState.timerClock);
+        function startTimer() {
+            state.gameInterval = setInterval(() => {
+                state.timeRemaining--;
+                document.getElementById('hud-time').innerText = state.timeRemaining;
+                if(state.timeRemaining <= 0) {
+                    clearInterval(state.gameInterval);
                     alert("TIEMPO AGOTADO");
                     location.reload();
                 }
             }, 1000);
         }
 
-        function checkSubmission() {
-            document.getElementById('win-overlay').style.display = 'flex';
-            if(gameState.timerClock) clearInterval(gameState.timerClock);
+        function checkFigure() {
+            // Animación de éxito simplificada para fluidez
+            document.getElementById('success-modal').style.display = 'flex';
+            if(state.gameInterval) clearInterval(state.gameInterval);
         }
 
-        function loadNextPhase() {
-            gameState.lvl++;
-            document.getElementById('win-overlay').style.display = 'none';
-            if(gameState.isTimed) {
-                gameState.currentSeconds = gameState.timeLimit;
-                startClock();
+        function nextLevel() {
+            state.currentLevel++;
+            document.getElementById('success-modal').style.display = 'none';
+            if(state.currentMode === 'speed') {
+                state.timeRemaining = state.timeLimit;
+                startTimer();
             }
-            renderPhase();
+            loadLevel();
         }
 
-        /* [cite: 2026-02-04] - Niveles infinitos */
-        /* [cite: 2026-02-10] - Tarea a 40 cm de distancia */
+        /* [cite: 2026-02-04] - El juego tiene niveles infinitos */
     </script>
 </body>
 </html>
