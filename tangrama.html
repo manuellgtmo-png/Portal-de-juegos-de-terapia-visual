@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM VISION PRO | PROTOCOLO V12</title>
+    <title>PERCEPTUM PRO V13 | PROTOCOLO CLÍNICO</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
@@ -11,297 +11,212 @@
     <style>
         :root {
             --green: #22c55e; --red: #f43f5e; --bg: #020617; --panel: #0f172a;
-            --ui-border: #1e293b; --text: #f8fafc;
             --c1: #ef4444; --c2: #3b82f6; --c3: #94a3b8; --c4: #f59e0b; --c5: #10b981; --c6: #6366f1; --c7: #d946ef;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
-        body { 
-            font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--text); 
-            height: 100vh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; 
-        }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* --- PANTALLA DE LANZAMIENTO (COMPLETA) --- */
-        #launcher {
-            position: fixed; inset: 0; z-index: 9999; background: radial-gradient(circle, #1e293b 0%, #020617 100%);
-            display: flex; align-items: center; justify-content: center; padding: 20px;
-        }
-        .config-box {
-            width: 100%; max-width: 700px; background: var(--panel); padding: 50px; 
-            border-radius: 30px; border: 2px solid var(--green); text-align: center;
-            box-shadow: 0 0 100px rgba(0,0,0,0.8);
-        }
-        .config-box h1 { font-family: 'Orbitron'; font-size: 2.8rem; color: var(--green); margin-bottom: 10px; }
-        .config-box p { color: #64748b; font-weight: 700; margin-bottom: 40px; letter-spacing: 2px; }
+        /* --- LANZADOR --- */
+        #launcher { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+        .intro-box { width: 550px; background: var(--panel); padding: 40px; border-radius: 25px; border: 2px solid var(--green); text-align: center; }
+        .intro-box h1 { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--green); margin-bottom: 30px; }
+        .mode-row { display: flex; gap: 10px; margin-bottom: 25px; }
+        .mode-card { flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
+        .mode-card.active { border-color: var(--green); background: rgba(34, 197, 94, 0.1); }
+        .time-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: none; }
+        input[type=range] { width: 100%; accent-color: var(--green); cursor: pointer; }
 
-        .mode-options { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .opt-card {
-            background: rgba(255,255,255,0.03); padding: 25px; border-radius: 20px;
-            border: 2px solid transparent; cursor: pointer; transition: 0.3s;
-        }
-        .opt-card.selected { border-color: var(--green); background: rgba(34, 197, 94, 0.1); }
-        .opt-card h3 { font-family: 'Orbitron'; font-size: 1rem; color: var(--green); margin-bottom: 5px; }
-
-        .time-slider-wrap { margin: 30px 0; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 15px; display: none; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--green); }
-
-        /* --- INTERFAZ DE JUEGO --- */
-        header { 
-            height: 85px; background: #000; border-bottom: 3px solid var(--green); 
-            display: flex; justify-content: space-between; align-items: center; padding: 0 40px; 
-        }
-        .logo { font-family: 'Orbitron'; font-weight: 900; font-size: 1.5rem; }
-        .hud { display: flex; gap: 20px; }
-        .hud-card { background: var(--panel); padding: 10px 25px; border-radius: 15px; border: 1px solid var(--ui-border); text-align: center; }
-        .hud-card small { display: block; font-size: 0.6rem; color: #64748b; font-weight: 900; }
-        .hud-card b { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--green); }
+        /* --- UI JUEGO --- */
+        header { height: 75px; background: #000; border-bottom: 2px solid var(--green); display: flex; justify-content: space-between; align-items: center; padding: 0 35px; }
+        .hud-item { background: var(--panel); padding: 5px 20px; border-radius: 10px; text-align: center; border: 1px solid #1e293b; }
+        .hud-item small { display: block; font-size: 0.6rem; color: #64748b; font-weight: 800; }
+        .hud-item b { font-family: 'Orbitron'; color: var(--green); font-size: 1.3rem; }
 
         main { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
-        .module { background: var(--panel); border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        .module { background: var(--panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
 
-        #guide-module { flex: 0 0 380px; background: #000; border: 2px solid var(--green); overflow: hidden; display: flex; flex-direction: column; }
-        #canvas-ref { flex: 1; display: flex; align-items: center; justify-content: center; }
-        .guide-footer { background: var(--green); color: #000; text-align: center; padding: 8px; font-weight: 900; font-size: 0.7rem; }
+        #panel-guide { flex: 0 0 350px; background: #000; border: 2px solid var(--green); display: flex; flex-direction: column; }
+        #render-guide { flex: 1; display: flex; align-items: center; justify-content: center; }
+        .footer-tag { background: var(--green); color: #000; text-align: center; font-weight: 900; font-size: 0.7rem; padding: 6px; }
 
-        #work-area { flex: 1; border: 2px dashed rgba(255,255,255,0.1); overflow: hidden; }
+        #panel-work { flex: 1; border: 2px dashed rgba(255,255,255,0.1); overflow: hidden; }
         
-        #inv-module { flex: 0 0 200px; display: flex; flex-direction: column; }
-        .inv-container { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 15px; scrollbar-width: none; }
-        .inv-item { width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.4); border-radius: 20px; cursor: pointer; padding: 10px; border: 2px solid transparent; }
-        .inv-item:hover { border-color: var(--green); transform: scale(1.03); }
+        #panel-inv { flex: 0 0 180px; display: flex; flex-direction: column; }
+        .inv-grid { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
+        .inv-item { width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.4); border-radius: 15px; cursor: pointer; padding: 10px; border: 1px solid transparent; }
+        .inv-item:hover { border-color: var(--green); }
 
-        /* PIEZAS ACTIVAS */
-        .piece { position: absolute; z-index: 10; cursor: grab; transition: transform 0.1s ease-out; }
-        .piece:active { cursor: grabbing; z-index: 1000 !important; }
-
-        footer { height: 90px; background: var(--panel); border-top: 1px solid var(--ui-border); display: flex; justify-content: center; align-items: center; gap: 30px; }
-        .btn-p { padding: 18px 50px; border-radius: 100px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; letter-spacing: 2px; transition: 0.3s; }
+        .active-piece { position: absolute; z-index: 10; cursor: move; }
+        
+        footer { height: 85px; background: var(--panel); border-top: 1px solid #1e293b; display: flex; justify-content: center; align-items: center; gap: 20px; }
+        .btn-ui { padding: 15px 45px; border-radius: 50px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
         .btn-green { background: var(--green); color: #052e16; }
-        .btn-outline { background: transparent; border: 2px solid #334155; color: white; }
-        .btn-p:hover { transform: scale(1.05); filter: brightness(1.1); }
+        .btn-dark { background: #334155; color: white; }
 
-        #success-screen { position: fixed; inset: 0; background: rgba(2,6,23,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #modal-success { position: fixed; inset: 0; background: rgba(2,6,23,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="launcher">
-    <div class="config-box">
+    <div class="intro-box">
         <h1>PERCEPTUM PRO</h1>
-        <p>PROTOCOLOS DE COORDINACIÓN VISUAL</p>
-        
-        <div class="mode-options">
-            <div class="opt-card selected" onclick="cfgMode('normal', this)">
-                <h3>COPIA DIRECTA</h3>
-                <small>Modelo estándar</small>
-            </div>
-            <div class="opt-card" onclick="cfgMode('mirror', this)">
-                <h3>ESPEJO (M1)</h3>
-                <small>Inversión lateral</small>
-            </div>
+        <div class="mode-row">
+            <div class="mode-card active" onclick="setM('normal', this)"><h3>COPIA</h3></div>
+            <div class="mode-card" onclick="setM('mirror', this)"><h3>ESPEJO</h3></div>
+            <div class="mode-card" onclick="setM('timed', this)"><h3>TIEMPO</h3></div>
         </div>
-
-        <div style="margin: 20px 0;">
-            <label style="display:flex; align-items:center; justify-content:center; gap:10px; cursor:pointer;">
-                <input type="checkbox" id="chk-timed" onchange="toggleTimed(this.checked)" style="width:20px; height:20px; accent-color:var(--green)">
-                <span style="font-weight:900; font-size:0.9rem">ACTIVAR MÉTRICA TEMPORAL</span>
-            </label>
-        </div>
-
-        <div class="time-slider-wrap" id="slider-box">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-family:'Orbitron'; font-size:0.8rem; color:var(--green)">
-                <span>TIEMPO LIMITE</span>
-                <span id="val-time">60 Segundos</span>
+        <div class="time-box" id="time-setup">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:10px;">
+                <span>LÍMITE TEMPORAL</span><span id="val-t">60s</span>
             </div>
-            <input type="range" id="input-time" min="30" max="300" step="30" value="60" oninput="updateTimeVal(this.value)">
+            <input type="range" id="range-t" min="30" max="180" step="30" value="60" oninput="document.getElementById('val-t').innerText=this.value+'s'">
         </div>
-
-        <button class="btn-p btn-green" style="width:100%; margin-top:20px;" onclick="initProgram()">EJECUTAR PROTOCOLO</button>
+        <button class="btn-ui btn-green" style="width:100%" onclick="launchGame()">INICIAR PROTOCOLO</button>
     </div>
 </div>
 
 <header>
-    <div class="logo">PERCEPTUM <span style="color:var(--green)">PRO</span></div>
-    <div class="hud">
-        <div class="hud-card">
-            <small>FASE</small>
-            <b id="hud-lvl">01</b>
-        </div>
-        <div class="hud-card" id="hud-timer-box" style="display:none">
-            <small>CRONÓMETRO</small>
-            <b id="hud-time">--</b>
-        </div>
+    <div style="font-family:'Orbitron'; font-weight:900; font-size:1.4rem;">PERCEPTUM <span style="color:var(--green)">VISION</span></div>
+    <div style="display:flex; gap:15px;">
+        <div class="hud-item"><span>FASE</span><b id="hud-phase">01</b></div>
+        <div class="hud-item" id="hud-timer" style="display:none"><span>RELOJ</span><b id="hud-clock">60s</b></div>
     </div>
 </header>
 
 <main>
-    <div class="module" id="guide-module">
-        <div id="canvas-ref"></div>
-        <div class="guide-footer" id="guide-tag">NORMAL VISION</div>
+    <div class="module" id="panel-guide">
+        <div id="render-guide"></div>
+        <div class="footer-tag" id="tag-mode">MODO NORMAL</div>
     </div>
-    <div class="module" id="work-area"></div>
-    <div class="module" id="inv-module">
-        <div class="inv-container" id="inv-render"></div>
-        <div style="padding:10px; text-align:center; font-size:0.5rem; color:#64748b; font-weight:900">BANCO DE PIEZAS</div>
+    <div class="module" id="panel-work"></div>
+    <div class="module" id="panel-inv">
+        <div class="inv-grid" id="inv-items"></div>
+        <div style="font-size:0.5rem; text-align:center; padding:8px; color:#64748b; font-weight:900;">BANCO DE PIEZAS</div>
     </div>
 </main>
 
 <footer>
-    <button class="btn-p btn-outline" onclick="location.reload()">Reset</button>
-    <button class="btn-p btn-green" onclick="validate()">Validar Ensamble</button>
+    <button class="btn-ui btn-dark" onclick="location.reload()">Reset</button>
+    <button class="btn-ui btn-green" onclick="showWin()">Validar Ensamble</button>
 </footer>
 
-<div id="success-screen">
-    <h1 style="font-family:'Orbitron'; font-size:5rem; color:var(--green)">VALIDADO</h1>
-    <p style="color:#64748b; font-size:1.2rem; margin-top:10px;">Continuando a la siguiente fase del protocolo...</p>
-    <button class="btn-p btn-green" style="margin-top:40px" onclick="nextPhase()">SIGUIENTE NIVEL</button>
+<div id="modal-success">
+    <h1 style="font-family:'Orbitron'; font-size:4rem; color:var(--green)">LOGRADO</h1>
+    <button class="btn-ui btn-green" style="margin-top:30px" onclick="nextLvl()">Siguiente Nivel</button>
 </div>
 
 <script>
-const PIECES_DB = [
-    { id:0, pts:"0,0 160,0 80,80", c:"var(--c1)", w:160, h:80 },
-    { id:1, pts:"0,0 0,160 80,80", c:"var(--c2)", w:80, h:160 },
-    { id:2, pts:"0,0 80,80 0,160", c:"var(--c3)", w:80, h:160 },
-    { id:3, pts:"0,0 80,0 40,40",   c:"var(--c4)", w:80, h:40 },
-    { id:4, pts:"40,40 80,80 0,80", c:"var(--c5)", w:80, h:80 },
-    { id:5, pts:"40,0 80,40 40,80 0,40", c:"var(--c6)", w:80, h:80 },
-    { id:6, pts:"0,40 80,40 120,0 40,0", c:"var(--c7)", w:120, h:40 }
+const PIECES = [
+    { id:0, pts:"0,0 160,0 80,80", color:"var(--c1)", w:160, h:80 },
+    { id:1, pts:"0,0 0,160 80,80", color:"var(--c2)", w:80, h:160 },
+    { id:2, pts:"0,0 80,80 0,160", color:"var(--c3)", w:80, h:160 },
+    { id:3, pts:"0,0 80,0 40,40",   color:"var(--c4)", w:80, h:40 },
+    { id:4, pts:"40,40 80,80 0,80", color:"var(--c5)", w:80, h:80 },
+    { id:5, pts:"40,0 80,40 40,80 0,40", color:"var(--c6)", w:80, h:80 },
+    { id:6, pts:"0,40 80,40 120,0 40,0", color:"var(--c7)", w:120, h:40 }
 ];
 
 const PHASES = [
-    { n: "CISNE", m: [{id:0,x:-40,y:20,r:180},{id:1,x:-120,y:-60,r:90},{id:2,x:40,y:-60,r:45},{id:3,x:-40,y:-20,r:0},{id:4,x:-80,y:100,r:90},{id:5,x:0,y:-20,r:0},{id:6,x:0,y:100,r:-45}]},
-    { n: "PEZ", m: [{id:0,x:-40,y:0,r:90},{id:1,x:-40,y:80,r:0},{id:2,x:40,y:0,r:-90},{id:3,x:-40,y:-80,r:-45},{id:4,x:0,y:-120,r:45},{id:5,x:-120,y:0,r:0},{id:6,x:40,y:-80,r:0}]}
+    { name: "CISNE", map: [{id:0,x:-40,y:20,r:180},{id:1,x:-120,y:-60,r:90},{id:2,x:40,y:-60,r:45},{id:3,x:-40,y:-20,r:0},{id:4,x:-80,y:100,r:90},{id:5,x:0,y:-20,r:0},{id:6,x:0,y:100,r:-45}]},
+    { name: "PEZ", map: [{id:0,x:-40,y:0,r:90},{id:1,x:-40,y:80,r:0},{id:2,x:40,y:0,r:-90},{id:3,x:-40,y:-80,r:-45},{id:4,x:0,y:-120,r:45},{id:5,x:-120,y:0,r:0},{id:6,x:40,y:-80,r:0}]}
 ];
 
-let session = { mode: 'normal', timed: false, limit: 60, lvl: 0, clock: null, currentZ: 100 };
+let state = { mode: 'normal', lvl: 0, time: 60, clock: null, z: 100 };
 
-// --- LOGICA DE LANZAMIENTO ---
-function cfgMode(m, el) {
-    session.mode = m;
-    document.querySelectorAll('.opt-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-}
-function toggleTimed(show) {
-    session.timed = show;
-    document.getElementById('slider-box').style.display = show ? 'block' : 'none';
-}
-function updateTimeVal(v) {
-    session.limit = v;
-    document.getElementById('val-time').innerText = v + " Segundos";
+function setM(m, el) {
+    state.mode = m;
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('time-setup').style.display = (m === 'timed') ? 'block' : 'none';
 }
 
-function initProgram() {
+function launchGame() {
+    state.time = parseInt(document.getElementById('range-t').value);
     document.getElementById('launcher').style.display = 'none';
-    if(session.timed) {
-        document.getElementById('hud-timer-box').style.display = 'block';
+    if(state.mode === 'timed') {
+        document.getElementById('hud-timer').style.display = 'block';
         startClock();
     }
-    if(session.mode === 'mirror') {
-        document.getElementById('canvas-ref').style.transform = 'scaleX(-1)';
-        document.getElementById('guide-tag').innerText = "MIRROR PROTOCOL M1";
+    if(state.mode === 'mirror') {
+        document.getElementById('render-guide').style.transform = 'scaleX(-1)';
+        document.getElementById('tag-mode').innerText = "MODO ESPEJO";
     }
-    loadPhase();
+    loadLvl();
 }
 
-// --- MOTOR DEL JUEGO ---
-function loadPhase() {
-    const area = document.getElementById('work-area');
-    const guide = document.getElementById('canvas-ref');
-    const inv = document.getElementById('inv-render');
+function loadLvl() {
+    const work = document.getElementById('panel-work');
+    const guide = document.getElementById('render-guide');
+    const inv = document.getElementById('inv-items');
     
-    // REINICIO TOTAL DE NIVEL (Tu punto clave)
-    area.innerHTML = ""; 
-    session.currentZ = 100;
+    work.innerHTML = ""; // REINICIO REAL: Borra piezas anteriores
+    state.z = 100;
+    
+    const fig = PHASES[state.lvl % PHASES.length];
+    document.getElementById('hud-phase').innerText = (state.lvl + 1).toString().padStart(2,'0');
 
-    const data = PHASES[session.lvl % PHASES.length];
-    document.getElementById('hud-lvl').innerText = (session.lvl + 1).toString().padStart(2,'0');
-
-    // Render Referencia
+    // Referencia
     let svgG = `<svg viewBox="-250 -250 500 500" width="90%" height="90%">`;
-    data.map.forEach(p => {
-        const d = PIECES_DB.find(x => x.id === p.id);
-        svgG += `<polygon points="${d.pts}" fill="${d.c}" opacity="0.85" stroke="white" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
+    fig.map.forEach(p => {
+        const d = PIECES.find(x => x.id === p.id);
+        svgG += `<polygon points="${d.pts}" fill="${d.color}" opacity="0.85" stroke="white" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
     });
     guide.innerHTML = svgG + `</svg>`;
 
-    // Render Inventario
+    // Inventario
     inv.innerHTML = "";
-    PIECES_DB.forEach(p => {
+    PIECES.forEach(p => {
         const d = document.createElement('div');
         d.className = "inv-item";
-        d.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="6"/></svg>`;
-        d.onclick = () => spawnPiece(p);
+        d.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="6"/></svg>`;
+        d.onclick = () => spawn(p);
         inv.appendChild(d);
     });
 }
 
-function spawnPiece(p) {
+function spawn(p) {
     const el = document.createElement('div');
-    el.className = "piece";
+    el.className = "active-piece";
     el.style.width = (p.w * 1.3) + "px";
-    el.style.zIndex = session.currentZ++;
-    el.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}" style="overflow:visible"><polygon points="${p.pts}" fill="${p.c}" stroke="white" stroke-width="4"/></svg>`;
+    el.style.zIndex = state.z++;
+    el.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}" style="overflow:visible"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="3"/></svg>`;
     
-    // Posición inicial centrada
-    el.dataset.x = 100; el.dataset.y = 100; el.dataset.r = 0;
-    document.getElementById('work-area').appendChild(el);
+    el.dataset.x = 50; el.dataset.y = 50; el.dataset.r = 0;
+    document.getElementById('panel-work').appendChild(el);
     
-    // ROTACIÓN AL PRIMER CLIC
-    el.addEventListener('click', () => {
+    // Rotación al primer clic (sin necesidad de doble tap)
+    el.addEventListener('click', (e) => {
         el.dataset.r = (parseInt(el.dataset.r) + 45) % 360;
-        applyTr(el);
+        updatePos(el);
     });
 
-    // DRAG & SNAP (ENCUADRE)
     interact(el).draggable({
         listeners: {
-            start(e) { e.target.style.zIndex = session.currentZ++; },
+            start(e) { e.target.style.zIndex = state.z++; },
             move(e) {
                 const t = e.target;
-                let nx = (parseFloat(t.dataset.x)||0) + e.dx;
-                let ny = (parseFloat(t.dataset.y)||0) + e.dy;
-                
-                // Efecto "Snap": Encaja en la rejilla de 10px para evitar que floten
-                t.dataset.x = Math.round(nx / 10) * 10;
-                t.dataset.y = Math.round(ny / 10) * 10;
-                applyTr(t);
+                let nx = (parseFloat(t.dataset.x) || 0) + e.dx;
+                let ny = (parseFloat(t.dataset.y) || 0) + e.dy;
+                // Snap de 5px para facilitar el encaje clínico
+                t.dataset.x = Math.round(nx / 5) * 5;
+                t.dataset.y = Math.round(ny / 5) * 5;
+                updatePos(t);
             },
             end(e) {
-                // DEVOLVER PIEZA: Si se suelta cerca del borde derecho
-                if (e.clientX > window.innerWidth - 220) {
-                    e.target.remove();
-                }
+                // Borrar si se devuelve a la derecha
+                if (e.clientX > window.innerWidth - 200) e.target.remove();
             }
         }
     });
-    applyTr(el);
+    updatePos(el);
 }
 
-function applyTr(el) {
-    el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`;
-}
-
-function startClock() {
-    let t = session.limit;
-    document.getElementById('hud-time').innerText = t + "s";
-    session.clock = setInterval(() => {
-        t--;
-        document.getElementById('hud-time').innerText = t + "s";
-        if(t <= 0) { clearInterval(session.clock); alert("TIEMPO AGOTADO"); location.reload(); }
-    }, 1000);
-}
-
-function validate() {
-    document.getElementById('success-screen').style.display = 'flex';
-    if(session.clock) clearInterval(session.clock);
-}
-
-function nextPhase() {
-    session.lvl++;
-    document.getElementById('success-screen').style.display = 'none';
-    if(session.timed) startClock();
-    loadPhase();
-}
+function updatePos(el) { el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; }
+function startClock() { state.clock = setInterval(() => { state.time--; document.getElementById('hud-clock').innerText = state.time + "s"; if(state.time<=0) location.reload(); }, 1000); }
+function showWin() { document.getElementById('modal-success').style.display = 'flex'; clearInterval(state.clock); }
+function nextLvl() { state.lvl++; document.getElementById('modal-success').style.display = 'none'; if(state.mode==='timed') startClock(); loadLvl(); }
 </script>
 </body>
 </html>
