@@ -3,220 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM PRO V13 | PROTOCOLO CLÍNICO</title>
-    
+    <title>PERCEPTUM VISION | V14 FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/interact.js/1.10.11/interact.min.js"></script>
-
     <style>
         :root {
-            --green: #22c55e; --red: #f43f5e; --bg: #020617; --panel: #0f172a;
-            --c1: #ef4444; --c2: #3b82f6; --c3: #94a3b8; --c4: #f59e0b; --c5: #10b981; --c6: #6366f1; --c7: #d946ef;
+            --green: #22c55e; --bg: #020617; --panel: #0f172a; --ui: #1e293b;
+            --c1:#ef4444; --c2:#3b82f6; --c3:#94a3b8; --c4:#f59e0b; --c5:#10b981; --c6:#6366f1; --c7:#d946ef;
         }
+        * { margin:0; padding:0; box-sizing:border-box; touch-action:none; user-select:none; }
+        body { font-family:'Montserrat', sans-serif; background:var(--bg); color:white; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; user-select: none; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); color: white; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        /* INTRODUCCIÓN */
+        #launcher { position:fixed; inset:0; z-index:9999; background:var(--bg); display:flex; align-items:center; justify-content:center; }
+        .intro-card { width:500px; background:var(--panel); padding:40px; border-radius:30px; border:2px solid var(--green); text-align:center; }
+        .intro-card h1 { font-family:'Orbitron'; font-size:2.2rem; color:var(--green); margin-bottom:5px; }
+        .intro-card p { font-size:0.7rem; color: #f43f5e; font-weight:900; letter-spacing:2px; margin-bottom:30px; }
+        .mode-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:25px; }
+        .m-btn { background:var(--ui); padding:15px 5px; border-radius:12px; border:2px solid transparent; cursor:pointer; font-size:0.7rem; font-weight:700; }
+        .m-btn.active { border-color:var(--green); background:rgba(34,197,94,0.1); }
+        #t-config { background:rgba(0,0,0,0.3); padding:15px; border-radius:15px; margin-bottom:20px; display:none; }
+        input[type=range] { width:100%; accent-color:var(--green); }
 
-        /* --- LANZADOR --- */
-        #launcher { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
-        .intro-box { width: 550px; background: var(--panel); padding: 40px; border-radius: 25px; border: 2px solid var(--green); text-align: center; }
-        .intro-box h1 { font-family: 'Orbitron'; font-size: 2.5rem; color: var(--green); margin-bottom: 30px; }
-        .mode-row { display: flex; gap: 10px; margin-bottom: 25px; }
-        .mode-card { flex: 1; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 2px solid transparent; cursor: pointer; }
-        .mode-card.active { border-color: var(--green); background: rgba(34, 197, 94, 0.1); }
-        .time-box { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; display: none; }
-        input[type=range] { width: 100%; accent-color: var(--green); cursor: pointer; }
+        /* HEADER */
+        header { height:70px; background:#000; border-bottom:2px solid var(--green); display:flex; justify-content:space-between; align-items:center; padding:0 30px; }
+        .hud { display:flex; gap:15px; }
+        .hud-v { background:var(--panel); padding:5px 20px; border-radius:10px; border:1px solid var(--ui); text-align:center; }
+        .hud-v span { display:block; font-size:0.5rem; color:#64748b; font-weight:900; }
+        .hud-v b { font-family:'Orbitron'; color:var(--green); font-size:1.2rem; }
 
-        /* --- UI JUEGO --- */
-        header { height: 75px; background: #000; border-bottom: 2px solid var(--green); display: flex; justify-content: space-between; align-items: center; padding: 0 35px; }
-        .hud-item { background: var(--panel); padding: 5px 20px; border-radius: 10px; text-align: center; border: 1px solid #1e293b; }
-        .hud-item small { display: block; font-size: 0.6rem; color: #64748b; font-weight: 800; }
-        .hud-item b { font-family: 'Orbitron'; color: var(--green); font-size: 1.3rem; }
-
-        main { flex: 1; display: flex; padding: 20px; gap: 20px; overflow: hidden; }
-        .module { background: var(--panel); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); position: relative; }
-
-        #panel-guide { flex: 0 0 350px; background: #000; border: 2px solid var(--green); display: flex; flex-direction: column; }
-        #render-guide { flex: 1; display: flex; align-items: center; justify-content: center; }
-        .footer-tag { background: var(--green); color: #000; text-align: center; font-weight: 900; font-size: 0.7rem; padding: 6px; }
-
-        #panel-work { flex: 1; border: 2px dashed rgba(255,255,255,0.1); overflow: hidden; }
+        /* MAIN */
+        main { flex:1; display:flex; padding:15px; gap:15px; overflow:hidden; }
+        .box { background:var(--panel); border-radius:20px; border:1px solid rgba(255,255,255,0.05); position:relative; }
         
-        #panel-inv { flex: 0 0 180px; display: flex; flex-direction: column; }
-        .inv-grid { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: none; }
-        .inv-item { width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.4); border-radius: 15px; cursor: pointer; padding: 10px; border: 1px solid transparent; }
-        .inv-item:hover { border-color: var(--green); }
+        #guide-box { flex:0 0 320px; background:#000; border:2px solid var(--green); display:flex; flex-direction:column; overflow:hidden; }
+        #canvas-ref { flex:1; display:flex; align-items:center; justify-content:center; }
+        .tag { background:var(--green); color:#000; text-align:center; font-weight:900; font-size:0.7rem; padding:5px; }
 
-        .active-piece { position: absolute; z-index: 10; cursor: move; }
+        #game-box { flex:1; border:2px dashed rgba(255,255,255,0.1); overflow:hidden; position:relative; }
         
-        footer { height: 85px; background: var(--panel); border-top: 1px solid #1e293b; display: flex; justify-content: center; align-items: center; gap: 20px; }
-        .btn-ui { padding: 15px 45px; border-radius: 50px; font-family: 'Orbitron'; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-green { background: var(--green); color: #052e16; }
-        .btn-dark { background: #334155; color: white; }
+        #inv-box { flex:0 0 160px; display:flex; flex-direction:column; }
+        .inv-list { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:10px; scrollbar-width:none; }
+        .inv-item { width:100%; aspect-ratio:1/1; background:rgba(0,0,0,0.4); border-radius:15px; padding:10px; cursor:pointer; }
 
-        #modal-success { position: fixed; inset: 0; background: rgba(2,6,23,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        /* PIEZA EN TABLERO */
+        .tg { position:absolute; z-index:100; cursor:grab; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
+        .tg:active { cursor:grabbing; }
+
+        footer { height:80px; background:var(--panel); border-top:1px solid var(--ui); display:flex; justify-content:center; align-items:center; gap:20px; }
+        .btn { padding:14px 40px; border-radius:50px; font-family:'Orbitron'; font-weight:900; border:none; cursor:pointer; text-transform:uppercase; transition:0.2s; }
+        .b-ok { background:var(--green); color:#052e16; }
+        .b-rs { background:#334155; color:white; }
+
+        #win { position:fixed; inset:0; background:rgba(2,6,23,0.98); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
 
 <div id="launcher">
-    <div class="intro-box">
+    <div class="intro-card">
         <h1>PERCEPTUM PRO</h1>
-        <div class="mode-row">
-            <div class="mode-card active" onclick="setM('normal', this)"><h3>COPIA</h3></div>
-            <div class="mode-card" onclick="setM('mirror', this)"><h3>ESPEJO</h3></div>
-            <div class="mode-card" onclick="setM('timed', this)"><h3>TIEMPO</h3></div>
+        <p>PROTOCOLO CLÍNICO OBLIGATORIO</p>
+        <div class="mode-grid">
+            <div class="m-btn active" onclick="selM('normal',this)">COPIA<br><small>Visión Directa</small></div>
+            <div class="m-btn" onclick="selM('mirror',this)">ESPEJO<br><small>Inversión Lateral</small></div>
+            <div class="m-btn" onclick="selM('timed',this)">MÉTRICA<br><small>Tiempo Límite</small></div>
         </div>
-        <div class="time-box" id="time-setup">
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:10px;">
-                <span>LÍMITE TEMPORAL</span><span id="val-t">60s</span>
-            </div>
-            <input type="range" id="range-t" min="30" max="180" step="30" value="60" oninput="document.getElementById('val-t').innerText=this.value+'s'">
+        <div id="t-config">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:8px;"><span>TIEMPO</span><span id="v-t">60s</span></div>
+            <input type="range" id="i-t" min="30" max="240" step="30" value="60" oninput="document.getElementById('v-t').innerText=this.value+'s'">
         </div>
-        <button class="btn-ui btn-green" style="width:100%" onclick="launchGame()">INICIAR PROTOCOLO</button>
+        <button class="btn b-ok" style="width:100%" onclick="init()">INICIAR PROGRAMA</button>
     </div>
 </div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-weight:900; font-size:1.4rem;">PERCEPTUM <span style="color:var(--green)">VISION</span></div>
-    <div style="display:flex; gap:15px;">
-        <div class="hud-item"><span>FASE</span><b id="hud-phase">01</b></div>
-        <div class="hud-item" id="hud-timer" style="display:none"><span>RELOJ</span><b id="hud-clock">60s</b></div>
+    <div style="font-family:'Orbitron'; font-weight:900; font-size:1.3rem;">PERCEPTUM <span style="color:var(--green)">VISION</span></div>
+    <div class="hud">
+        <div class="hud-v"><span>FASE</span><b id="h-lvl">01</b></div>
+        <div class="hud-v" id="h-time-box" style="display:none"><span>RELOJ</span><b id="h-clock">60s</b></div>
     </div>
 </header>
 
 <main>
-    <div class="module" id="panel-guide">
-        <div id="render-guide"></div>
-        <div class="footer-tag" id="tag-mode">MODO NORMAL</div>
+    <div class="box" id="guide-box">
+        <div id="canvas-ref"></div>
+        <div class="tag" id="mode-label">COPIA NORMAL</div>
     </div>
-    <div class="module" id="panel-work"></div>
-    <div class="module" id="panel-inv">
-        <div class="inv-grid" id="inv-items"></div>
-        <div style="font-size:0.5rem; text-align:center; padding:8px; color:#64748b; font-weight:900;">BANCO DE PIEZAS</div>
+    <div class="box" id="game-box"></div>
+    <div class="box" id="inv-box">
+        <div class="inv-list" id="render-inv"></div>
+        <div style="font-size:0.5rem; text-align:center; padding:8px; color:#64748b; font-weight:900">BANCO DE PIEZAS</div>
     </div>
 </main>
 
 <footer>
-    <button class="btn-ui btn-dark" onclick="location.reload()">Reset</button>
-    <button class="btn-ui btn-green" onclick="showWin()">Validar Ensamble</button>
+    <button class="btn b-rs" onclick="location.reload()">Reiniciar</button>
+    <button class="btn b-ok" onclick="document.getElementById('win').style.display='flex'">Validar Resultado</button>
 </footer>
 
-<div id="modal-success">
-    <h1 style="font-family:'Orbitron'; font-size:4rem; color:var(--green)">LOGRADO</h1>
-    <button class="btn-ui btn-green" style="margin-top:30px" onclick="nextLvl()">Siguiente Nivel</button>
+<div id="win">
+    <h1 style="font-family:'Orbitron'; font-size:4rem; color:var(--green)">VALIDADO</h1>
+    <button class="btn b-ok" style="margin-top:30px" onclick="next()">Siguiente Fase</button>
 </div>
 
 <script>
-const PIECES = [
-    { id:0, pts:"0,0 160,0 80,80", color:"var(--c1)", w:160, h:80 },
-    { id:1, pts:"0,0 0,160 80,80", color:"var(--c2)", w:80, h:160 },
-    { id:2, pts:"0,0 80,80 0,160", color:"var(--c3)", w:80, h:160 },
-    { id:3, pts:"0,0 80,0 40,40",   color:"var(--c4)", w:80, h:40 },
-    { id:4, pts:"40,40 80,80 0,80", color:"var(--c5)", w:80, h:80 },
-    { id:5, pts:"40,0 80,40 40,80 0,40", color:"var(--c6)", w:80, h:80 },
-    { id:6, pts:"0,40 80,40 120,0 40,0", color:"var(--c7)", w:120, h:40 }
+const DB = [
+    {id:0, p:"0,0 160,0 80,80", c:"var(--c1)", w:160, h:80},
+    {id:1, p:"0,0 0,160 80,80", c:"var(--c2)", w:80, h:160},
+    {id:2, p:"0,0 80,80 0,160", c:"var(--c3)", w:80, h:160},
+    {id:3, p:"0,0 80,0 40,40",   c:"var(--c4)", w:80, h:40},
+    {id:4, p:"40,40 80,80 0,80", c:"var(--c5)", w:80, h:80},
+    {id:5, p:"40,0 80,40 40,80 0,40", c:"var(--c6)", w:80, h:80},
+    {id:6, p:"0,40 80,40 120,0 40,0", c:"var(--c7)", w:120, h:40}
 ];
 
-const PHASES = [
-    { name: "CISNE", map: [{id:0,x:-40,y:20,r:180},{id:1,x:-120,y:-60,r:90},{id:2,x:40,y:-60,r:45},{id:3,x:-40,y:-20,r:0},{id:4,x:-80,y:100,r:90},{id:5,x:0,y:-20,r:0},{id:6,x:0,y:100,r:-45}]},
-    { name: "PEZ", map: [{id:0,x:-40,y:0,r:90},{id:1,x:-40,y:80,r:0},{id:2,x:40,y:0,r:-90},{id:3,x:-40,y:-80,r:-45},{id:4,x:0,y:-120,r:45},{id:5,x:-120,y:0,r:0},{id:6,x:40,y:-80,r:0}]}
+const LVLS = [
+    {n:"CISNE", m:[{id:0,x:-40,y:20,r:180},{id:1,x:-120,y:-60,r:90},{id:2,x:40,y:-60,r:45},{id:3,x:-40,y:-20,r:0},{id:4,x:-80,y:100,r:90},{id:5,x:0,y:-20,r:0},{id:6,x:0,y:100,r:-45}]},
+    {n:"PEZ", m:[{id:0,x:-40,y:0,r:90},{id:1,x:-40,y:80,r:0},{id:2,x:40,y:0,r:-90},{id:3,x:-40,y:-80,r:-45},{id:4,x:0,y:-120,r:45},{id:5,x:-120,y:0,r:0},{id:6,x:40,y:-80,r:0}]}
 ];
 
-let state = { mode: 'normal', lvl: 0, time: 60, clock: null, z: 100 };
+let app = { mode:'normal', lvl:0, t:60, z:100, drag:null };
 
-function setM(m, el) {
-    state.mode = m;
-    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('time-setup').style.display = (m === 'timed') ? 'block' : 'none';
+function selM(m, btn) {
+    app.mode = m;
+    document.querySelectorAll('.m-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('t-config').style.display = (m==='timed'?'block':'none');
 }
 
-function launchGame() {
-    state.time = parseInt(document.getElementById('range-t').value);
+function init() {
+    app.t = parseInt(document.getElementById('i-t').value);
     document.getElementById('launcher').style.display = 'none';
-    if(state.mode === 'timed') {
-        document.getElementById('hud-timer').style.display = 'block';
-        startClock();
+    if(app.mode==='timed') document.getElementById('h-time-box').style.display='block';
+    if(app.mode==='mirror') {
+        document.getElementById('canvas-ref').style.transform = 'scaleX(-1)';
+        document.getElementById('mode-label').innerText = 'MODO ESPEJO';
     }
-    if(state.mode === 'mirror') {
-        document.getElementById('render-guide').style.transform = 'scaleX(-1)';
-        document.getElementById('tag-mode').innerText = "MODO ESPEJO";
-    }
-    loadLvl();
+    load();
 }
 
-function loadLvl() {
-    const work = document.getElementById('panel-work');
-    const guide = document.getElementById('render-guide');
-    const inv = document.getElementById('inv-items');
+function load() {
+    const work = document.getElementById('game-box');
+    const guide = document.getElementById('canvas-ref');
+    const inv = document.getElementById('render-inv');
     
-    work.innerHTML = ""; // REINICIO REAL: Borra piezas anteriores
-    state.z = 100;
+    work.innerHTML = ""; // LIMPIEZA TOTAL: Aquí se soluciona el error del segundo nivel
+    app.z = 100;
     
-    const fig = PHASES[state.lvl % PHASES.length];
-    document.getElementById('hud-phase').innerText = (state.lvl + 1).toString().padStart(2,'0');
+    const f = LVLS[app.lvl % LVLS.length];
+    document.getElementById('h-lvl').innerText = (app.lvl+1).toString().padStart(2,'0');
 
-    // Referencia
-    let svgG = `<svg viewBox="-250 -250 500 500" width="90%" height="90%">`;
-    fig.map.forEach(p => {
-        const d = PIECES.find(x => x.id === p.id);
-        svgG += `<polygon points="${d.pts}" fill="${d.color}" opacity="0.85" stroke="white" stroke-width="2" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
+    // Referencia Visual
+    let svg = `<svg viewBox="-250 -250 500 500" width="90%" height="90%">`;
+    f.m.forEach(i => {
+        const d = DB.find(x=>x.id===i.id);
+        svg += `<polygon points="${d.p}" fill="${d.c}" opacity="0.8" stroke="white" stroke-width="2" transform="translate(${i.x},${i.y}) rotate(${i.r})"/>`;
     });
-    guide.innerHTML = svgG + `</svg>`;
+    guide.innerHTML = svg + `</svg>`;
 
     // Inventario
     inv.innerHTML = "";
-    PIECES.forEach(p => {
-        const d = document.createElement('div');
-        d.className = "inv-item";
-        d.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="6"/></svg>`;
-        d.onclick = () => spawn(p);
-        inv.appendChild(d);
+    DB.forEach(d => {
+        const div = document.createElement('div');
+        div.className = "inv-item";
+        div.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${d.p}" fill="${d.c}" stroke="white" stroke-width="6"/></svg>`;
+        div.onclick = () => spawn(d);
+        inv.appendChild(div);
     });
 }
 
-function spawn(p) {
+function spawn(d) {
     const el = document.createElement('div');
-    el.className = "active-piece";
-    el.style.width = (p.w * 1.3) + "px";
-    el.style.zIndex = state.z++;
-    el.innerHTML = `<svg viewBox="0 0 ${p.w} ${p.h}" style="overflow:visible"><polygon points="${p.pts}" fill="${p.color}" stroke="white" stroke-width="3"/></svg>`;
+    el.className = "tg";
+    el.style.width = (d.w * 1.3) + "px";
+    el.style.zIndex = app.z++;
+    el.innerHTML = `<svg viewBox="0 0 ${d.w} ${d.h}" style="overflow:visible"><polygon points="${d.p}" fill="${d.c}" stroke="white" stroke-width="4"/></svg>`;
     
-    el.dataset.x = 50; el.dataset.y = 50; el.dataset.r = 0;
-    document.getElementById('panel-work').appendChild(el);
+    // Posición inicial y rotación
+    el.dataset.x = 40; el.dataset.y = 40; el.dataset.r = 0;
+    document.getElementById('game-box').appendChild(el);
     
-    // Rotación al primer clic (sin necesidad de doble tap)
-    el.addEventListener('click', (e) => {
-        el.dataset.r = (parseInt(el.dataset.r) + 45) % 360;
-        updatePos(el);
-    });
-
-    interact(el).draggable({
-        listeners: {
-            start(e) { e.target.style.zIndex = state.z++; },
-            move(e) {
-                const t = e.target;
-                let nx = (parseFloat(t.dataset.x) || 0) + e.dx;
-                let ny = (parseFloat(t.dataset.y) || 0) + e.dy;
-                // Snap de 5px para facilitar el encaje clínico
-                t.dataset.x = Math.round(nx / 5) * 5;
-                t.dataset.y = Math.round(ny / 5) * 5;
-                updatePos(t);
-            },
-            end(e) {
-                // Borrar si se devuelve a la derecha
-                if (e.clientX > window.innerWidth - 200) e.target.remove();
-            }
+    // Rotación al primer clic
+    el.addEventListener('pointerdown', (e) => {
+        if(e.detail === 1) { // Click simple
+            app.drag = { target: el, x: e.clientX - el.dataset.x, y: e.clientY - el.dataset.y };
+            el.style.zIndex = app.z++;
         }
     });
-    updatePos(el);
+
+    el.onclick = () => {
+        el.dataset.r = (parseInt(el.dataset.r) + 45) % 360;
+        upd(el);
+    };
+
+    upd(el);
 }
 
-function updatePos(el) { el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; }
-function startClock() { state.clock = setInterval(() => { state.time--; document.getElementById('hud-clock').innerText = state.time + "s"; if(state.time<=0) location.reload(); }, 1000); }
-function showWin() { document.getElementById('modal-success').style.display = 'flex'; clearInterval(state.clock); }
-function nextLvl() { state.lvl++; document.getElementById('modal-success').style.display = 'none'; if(state.mode==='timed') startClock(); loadLvl(); }
+// SISTEMA DE ARRASTRE NATIVO (Sin librerías externas para evitar errores)
+window.addEventListener('pointermove', (e) => {
+    if(!app.drag) return;
+    const t = app.drag.target;
+    const rect = document.getElementById('game-box').getBoundingClientRect();
+    
+    let nx = e.clientX - rect.left - (t.offsetWidth/2);
+    let ny = e.clientY - rect.top - (t.offsetHeight/2);
+
+    // SNAP: Encaje de 10px para que las piezas se unan bien
+    t.dataset.x = Math.round(nx / 10) * 10;
+    t.dataset.y = Math.round(ny / 10) * 10;
+    upd(t);
+});
+
+window.addEventListener('pointerup', (e) => {
+    if(!app.drag) return;
+    // BORRAR: Si se suelta sobre el inventario
+    if(e.clientX > window.innerWidth - 180) app.drag.target.remove();
+    app.drag = null;
+});
+
+function upd(el) { el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; }
+function next() { app.lvl++; document.getElementById('win').style.display='none'; load(); }
 </script>
 </body>
 </html>
