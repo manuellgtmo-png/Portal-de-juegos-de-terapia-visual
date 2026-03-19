@@ -3,226 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PERCEPTUM VISION | V14 FINAL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>PERCEPTUM VISION PRO | FINAL EYELAB STYLE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --green: #22c55e; --bg: #020617; --panel: #0f172a; --ui: #1e293b;
+            --green: #22c55e; --bg: #020617; --panel: #0f172a;
             --c1:#ef4444; --c2:#3b82f6; --c3:#94a3b8; --c4:#f59e0b; --c5:#10b981; --c6:#6366f1; --c7:#d946ef;
         }
         * { margin:0; padding:0; box-sizing:border-box; touch-action:none; user-select:none; }
         body { font-family:'Montserrat', sans-serif; background:var(--bg); color:white; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
 
-        /* INTRODUCCIÓN */
+        /* INTRODUCCIÓN EYELAB */
         #launcher { position:fixed; inset:0; z-index:9999; background:var(--bg); display:flex; align-items:center; justify-content:center; }
-        .intro-card { width:500px; background:var(--panel); padding:40px; border-radius:30px; border:2px solid var(--green); text-align:center; }
-        .intro-card h1 { font-family:'Orbitron'; font-size:2.2rem; color:var(--green); margin-bottom:5px; }
-        .intro-card p { font-size:0.7rem; color: #f43f5e; font-weight:900; letter-spacing:2px; margin-bottom:30px; }
-        .mode-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:25px; }
-        .m-btn { background:var(--ui); padding:15px 5px; border-radius:12px; border:2px solid transparent; cursor:pointer; font-size:0.7rem; font-weight:700; }
-        .m-btn.active { border-color:var(--green); background:rgba(34,197,94,0.1); }
-        #t-config { background:rgba(0,0,0,0.3); padding:15px; border-radius:15px; margin-bottom:20px; display:none; }
+        .setup-card { width:550px; background:var(--panel); padding:40px; border-radius:20px; border:2px solid var(--green); text-align:center; box-shadow:0 0 50px rgba(0,0,0,0.5); }
+        .setup-card h1 { font-family:'Orbitron'; color:var(--green); font-size:2.2rem; margin-bottom:20px; letter-spacing:4px; }
+        .mode-row { display:flex; gap:10px; margin-bottom:25px; }
+        .mode-item { flex:1; background:#1e293b; padding:15px; border-radius:10px; cursor:pointer; border:2px solid transparent; font-size:0.8rem; }
+        .mode-item.active { border-color:var(--green); background:rgba(34,197,94,0.1); }
+        #slider-time { background:rgba(0,0,0,0.2); padding:15px; border-radius:10px; margin-bottom:20px; display:none; }
         input[type=range] { width:100%; accent-color:var(--green); }
 
-        /* HEADER */
+        /* HEADER HUD */
         header { height:70px; background:#000; border-bottom:2px solid var(--green); display:flex; justify-content:space-between; align-items:center; padding:0 30px; }
-        .hud { display:flex; gap:15px; }
-        .hud-v { background:var(--panel); padding:5px 20px; border-radius:10px; border:1px solid var(--ui); text-align:center; }
-        .hud-v span { display:block; font-size:0.5rem; color:#64748b; font-weight:900; }
-        .hud-v b { font-family:'Orbitron'; color:var(--green); font-size:1.2rem; }
+        .hud-box { background:var(--panel); padding:5px 20px; border-radius:8px; border:1px solid #1e293b; text-align:center; }
+        .hud-box span { display:block; font-size:0.5rem; color:#64748b; }
+        .hud-box b { font-family:'Orbitron'; color:var(--green); font-size:1.2rem; }
 
-        /* MAIN */
+        /* AREAS */
         main { flex:1; display:flex; padding:15px; gap:15px; overflow:hidden; }
-        .box { background:var(--panel); border-radius:20px; border:1px solid rgba(255,255,255,0.05); position:relative; }
+        .panel { background:var(--panel); border-radius:15px; border:1px solid rgba(255,255,255,0.05); position:relative; overflow:hidden; }
         
-        #guide-box { flex:0 0 320px; background:#000; border:2px solid var(--green); display:flex; flex-direction:column; overflow:hidden; }
-        #canvas-ref { flex:1; display:flex; align-items:center; justify-content:center; }
-        .tag { background:var(--green); color:#000; text-align:center; font-weight:900; font-size:0.7rem; padding:5px; }
+        #p-guide { flex:0 0 350px; background:#000; border:2px solid var(--green); display:flex; flex-direction:column; }
+        #p-work { flex:1; background:#000; cursor: crosshair; }
+        #p-inv { flex:0 0 180px; display:flex; flex-direction:column; }
 
-        #game-box { flex:1; border:2px dashed rgba(255,255,255,0.1); overflow:hidden; position:relative; }
-        
-        #inv-box { flex:0 0 160px; display:flex; flex-direction:column; }
-        .inv-list { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:10px; scrollbar-width:none; }
-        .inv-item { width:100%; aspect-ratio:1/1; background:rgba(0,0,0,0.4); border-radius:15px; padding:10px; cursor:pointer; }
+        .inv-item { width:100%; aspect-ratio:1/1; background:rgba(0,0,0,0.4); border-radius:10px; margin-bottom:10px; padding:10px; cursor:pointer; border:1px solid transparent; }
+        .inv-item:hover { border-color:var(--green); }
+        .inv-scroll { flex:1; overflow-y:auto; padding:10px; scrollbar-width:none; }
 
-        /* PIEZA EN TABLERO */
-        .tg { position:absolute; z-index:100; cursor:grab; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
-        .tg:active { cursor:grabbing; }
+        footer { height:80px; background:var(--panel); border-top:1px solid #1e293b; display:flex; justify-content:center; align-items:center; gap:20px; }
+        .btn { padding:15px 40px; border-radius:50px; font-family:'Orbitron'; font-weight:900; border:none; cursor:pointer; text-transform:uppercase; }
+        .btn-ok { background:var(--green); color:#052e16; }
+        .btn-rs { background:#334155; color:white; }
 
-        footer { height:80px; background:var(--panel); border-top:1px solid var(--ui); display:flex; justify-content:center; align-items:center; gap:20px; }
-        .btn { padding:14px 40px; border-radius:50px; font-family:'Orbitron'; font-weight:900; border:none; cursor:pointer; text-transform:uppercase; transition:0.2s; }
-        .b-ok { background:var(--green); color:#052e16; }
-        .b-rs { background:#334155; color:white; }
-
-        #win { position:fixed; inset:0; background:rgba(2,6,23,0.98); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; }
+        #overlay { position:fixed; inset:0; background:rgba(2,6,23,0.98); z-index:10000; display:none; flex-direction:column; align-items:center; justify-content:center; }
     </style>
 </head>
 <body>
 
 <div id="launcher">
-    <div class="intro-card">
+    <div class="setup-card">
         <h1>PERCEPTUM PRO</h1>
-        <p>PROTOCOLO CLÍNICO OBLIGATORIO</p>
-        <div class="mode-grid">
-            <div class="m-btn active" onclick="selM('normal',this)">COPIA<br><small>Visión Directa</small></div>
-            <div class="m-btn" onclick="selM('mirror',this)">ESPEJO<br><small>Inversión Lateral</small></div>
-            <div class="m-btn" onclick="selM('timed',this)">MÉTRICA<br><small>Tiempo Límite</small></div>
+        <div class="mode-row">
+            <div class="mode-item active" onclick="setMode('normal',this)">COPIA</div>
+            <div class="mode-item" onclick="setMode('mirror',this)">ESPEJO</div>
+            <div class="mode-item" onclick="setMode('timed',this)">TIEMPO</div>
         </div>
-        <div id="t-config">
-            <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:8px;"><span>TIEMPO</span><span id="v-t">60s</span></div>
-            <input type="range" id="i-t" min="30" max="240" step="30" value="60" oninput="document.getElementById('v-t').innerText=this.value+'s'">
+        <div id="slider-time">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:10px;"><span>DURACIÓN</span><span id="txt-t">60s</span></div>
+            <input type="range" id="val-t" min="30" max="300" step="30" value="60" oninput="document.getElementById('txt-t').innerText=this.value+'s'">
         </div>
-        <button class="btn b-ok" style="width:100%" onclick="init()">INICIAR PROGRAMA</button>
+        <button class="btn btn-ok" style="width:100%" onclick="init()">INICIAR PROTOCOLO</button>
     </div>
 </div>
 
 <header>
-    <div style="font-family:'Orbitron'; font-weight:900; font-size:1.3rem;">PERCEPTUM <span style="color:var(--green)">VISION</span></div>
-    <div class="hud">
-        <div class="hud-v"><span>FASE</span><b id="h-lvl">01</b></div>
-        <div class="hud-v" id="h-time-box" style="display:none"><span>RELOJ</span><b id="h-clock">60s</b></div>
+    <div style="font-family:'Orbitron'; font-weight:900;">EYELAB <span style="color:var(--green)">VISION</span></div>
+    <div style="display:flex; gap:10px;">
+        <div class="hud-box"><span>FASE</span><b id="h-lvl">01</b></div>
+        <div class="hud-box" id="h-clock-box" style="display:none"><span>TIEMPO</span><b id="h-clock">--</b></div>
     </div>
 </header>
 
 <main>
-    <div class="box" id="guide-box">
-        <div id="canvas-ref"></div>
-        <div class="tag" id="mode-label">COPIA NORMAL</div>
+    <div class="panel" id="p-guide">
+        <div id="svg-guide-container" style="flex:1"></div>
+        <div style="background:var(--green); color:black; text-align:center; font-weight:900; font-size:0.7rem; padding:5px;" id="lbl-mode">MODO COPIA</div>
     </div>
-    <div class="box" id="game-box"></div>
-    <div class="box" id="inv-box">
-        <div class="inv-list" id="render-inv"></div>
-        <div style="font-size:0.5rem; text-align:center; padding:8px; color:#64748b; font-weight:900">BANCO DE PIEZAS</div>
+    <div class="panel" id="p-work">
+        <svg id="main-svg" width="100%" height="100%" viewBox="0 0 800 600">
+            <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            <g id="pieces-layer"></g>
+        </svg>
+    </div>
+    <div class="panel" id="p-inv">
+        <div class="inv-scroll" id="inv-render"></div>
     </div>
 </main>
 
 <footer>
-    <button class="btn b-rs" onclick="location.reload()">Reiniciar</button>
-    <button class="btn b-ok" onclick="document.getElementById('win').style.display='flex'">Validar Resultado</button>
+    <button class="btn btn-rs" onclick="location.reload()">Reset</button>
+    <button class="btn btn-ok" onclick="document.getElementById('overlay').style.display='flex'">Validar</button>
 </footer>
 
-<div id="win">
-    <h1 style="font-family:'Orbitron'; font-size:4rem; color:var(--green)">VALIDADO</h1>
-    <button class="btn b-ok" style="margin-top:30px" onclick="next()">Siguiente Fase</button>
+<div id="overlay">
+    <h1 style="font-family:'Orbitron'; font-size:4rem; color:var(--green)">COMPLETO</h1>
+    <button class="btn btn-ok" style="margin-top:20px" onclick="next()">Siguiente Nivel</button>
 </div>
 
 <script>
-const DB = [
-    {id:0, p:"0,0 160,0 80,80", c:"var(--c1)", w:160, h:80},
-    {id:1, p:"0,0 0,160 80,80", c:"var(--c2)", w:80, h:160},
-    {id:2, p:"0,0 80,80 0,160", c:"var(--c3)", w:80, h:160},
-    {id:3, p:"0,0 80,0 40,40",   c:"var(--c4)", w:80, h:40},
-    {id:4, p:"40,40 80,80 0,80", c:"var(--c5)", w:80, h:80},
-    {id:5, p:"40,0 80,40 40,80 0,40", c:"var(--c6)", w:80, h:80},
-    {id:6, p:"0,40 80,40 120,0 40,0", c:"var(--c7)", w:120, h:40}
+const SHAPES = [
+    {id:0, d:"M0,0 L160,0 L80,80 Z", c:"var(--c1)", w:160, h:80},
+    {id:1, d:"M0,0 L0,160 L80,80 Z", c:"var(--c2)", w:80, h:160},
+    {id:2, d:"M0,0 L80,80 L0,160 Z", c:"var(--c3)", w:80, h:160},
+    {id:3, d:"M0,0 L80,0 L40,40 Z",   c:"var(--c4)", w:80, h:40},
+    {id:4, d:"M40,40 L80,80 L0,80 Z", c:"var(--c5)", w:80, h:80},
+    {id:5, d:"M40,0 L80,40 L40,80 L0,40 Z", c:"var(--c6)", w:80, h:80},
+    {id:6, d:"M0,40 L80,40 L120,0 L40,0 Z", c:"var(--c7)", w:120, h:40}
 ];
 
-const LVLS = [
-    {n:"CISNE", m:[{id:0,x:-40,y:20,r:180},{id:1,x:-120,y:-60,r:90},{id:2,x:40,y:-60,r:45},{id:3,x:-40,y:-20,r:0},{id:4,x:-80,y:100,r:90},{id:5,x:0,y:-20,r:0},{id:6,x:0,y:100,r:-45}]},
-    {n:"PEZ", m:[{id:0,x:-40,y:0,r:90},{id:1,x:-40,y:80,r:0},{id:2,x:40,y:0,r:-90},{id:3,x:-40,y:-80,r:-45},{id:4,x:0,y:-120,r:45},{id:5,x:-120,y:0,r:0},{id:6,x:40,y:-80,r:0}]}
+const DATA = [
+    {n:"CISNE", p:[{id:0,x:350,y:200,r:180},{id:1,x:270,y:120,r:90},{id:2,x:430,y:120,r:45},{id:3,x:350,y:160,r:0},{id:4,x:310,y:280,r:90},{id:5,x:390,y:160,r:0},{id:6,x:390,y:280,r:-45}]},
+    {n:"PEZ", p:[{id:0,x:300,y:250,r:90},{id:1,x:300,y:330,r:0},{id:2,x:380,y:250,r:-90},{id:3,x:300,y:170,r:-45},{id:4,x:340,y:130,r:45},{id:5,x:220,y:250,r:0},{id:6,x:380,y:170,r:0}]}
 ];
 
-let app = { mode:'normal', lvl:0, t:60, z:100, drag:null };
+let game = { mode:'normal', lvl:0, time:60, active:null, offset:{x:0,y:0} };
 
-function selM(m, btn) {
-    app.mode = m;
-    document.querySelectorAll('.m-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('t-config').style.display = (m==='timed'?'block':'none');
+function setMode(m, el) {
+    game.mode = m;
+    document.querySelectorAll('.mode-item').forEach(i=>i.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('slider-time').style.display = (m==='timed'?'block':'none');
 }
 
 function init() {
-    app.t = parseInt(document.getElementById('i-t').value);
+    game.time = parseInt(document.getElementById('val-t').value);
     document.getElementById('launcher').style.display = 'none';
-    if(app.mode==='timed') document.getElementById('h-time-box').style.display='block';
-    if(app.mode==='mirror') {
-        document.getElementById('canvas-ref').style.transform = 'scaleX(-1)';
-        document.getElementById('mode-label').innerText = 'MODO ESPEJO';
+    if(game.mode==='timed') document.getElementById('h-clock-box').style.display='block';
+    if(game.mode==='mirror') {
+        document.getElementById('svg-guide-container').style.transform = 'scaleX(-1)';
+        document.getElementById('lbl-mode').innerText = 'MODO ESPEJO';
     }
-    load();
+    loadLvl();
 }
 
-function load() {
-    const work = document.getElementById('game-box');
-    const guide = document.getElementById('canvas-ref');
-    const inv = document.getElementById('render-inv');
+function loadLvl() {
+    const layer = document.getElementById('pieces-layer');
+    const guide = document.getElementById('svg-guide-container');
+    const inv = document.getElementById('inv-render');
     
-    work.innerHTML = ""; // LIMPIEZA TOTAL: Aquí se soluciona el error del segundo nivel
-    app.z = 100;
-    
-    const f = LVLS[app.lvl % LVLS.length];
-    document.getElementById('h-lvl').innerText = (app.lvl+1).toString().padStart(2,'0');
+    layer.innerHTML = ""; // REINICIO TOTAL
+    const level = DATA[game.lvl % DATA.length];
+    document.getElementById('h-lvl').innerText = (game.lvl+1).toString().padStart(2,'0');
 
-    // Referencia Visual
-    let svg = `<svg viewBox="-250 -250 500 500" width="90%" height="90%">`;
-    f.m.forEach(i => {
-        const d = DB.find(x=>x.id===i.id);
-        svg += `<polygon points="${d.p}" fill="${d.c}" opacity="0.8" stroke="white" stroke-width="2" transform="translate(${i.x},${i.y}) rotate(${i.r})"/>`;
+    // Guía
+    let svgG = `<svg viewBox="0 0 800 600" width="100%" height="100%">`;
+    level.p.forEach(p => {
+        const s = SHAPES.find(x=>x.id===p.id);
+        svgG += `<path d="${s.d}" fill="${s.c}" opacity="0.5" stroke="white" transform="translate(${p.x},${p.y}) rotate(${p.r})"/>`;
     });
-    guide.innerHTML = svg + `</svg>`;
+    guide.innerHTML = svgG + `</svg>`;
 
     // Inventario
     inv.innerHTML = "";
-    DB.forEach(d => {
-        const div = document.createElement('div');
-        div.className = "inv-item";
-        div.innerHTML = `<svg viewBox="-10 -10 180 180"><polygon points="${d.p}" fill="${d.c}" stroke="white" stroke-width="6"/></svg>`;
-        div.onclick = () => spawn(d);
-        inv.appendChild(div);
+    SHAPES.forEach(s => {
+        const d = document.createElement('div');
+        d.className = "inv-item";
+        d.innerHTML = `<svg viewBox="-10 -10 180 180"><path d="${s.d}" fill="${s.c}" stroke="white" stroke-width="4"/></svg>`;
+        d.onclick = () => spawn(s);
+        inv.appendChild(d);
     });
 }
 
-function spawn(d) {
-    const el = document.createElement('div');
-    el.className = "tg";
-    el.style.width = (d.w * 1.3) + "px";
-    el.style.zIndex = app.z++;
-    el.innerHTML = `<svg viewBox="0 0 ${d.w} ${d.h}" style="overflow:visible"><polygon points="${d.p}" fill="${d.c}" stroke="white" stroke-width="4"/></svg>`;
+function spawn(s) {
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
     
-    // Posición inicial y rotación
-    el.dataset.x = 40; el.dataset.y = 40; el.dataset.r = 0;
-    document.getElementById('game-box').appendChild(el);
+    p.setAttribute("d", s.d);
+    p.setAttribute("fill", s.c);
+    p.setAttribute("stroke", "white");
+    p.setAttribute("stroke-width", "2");
     
-    // Rotación al primer clic
-    el.addEventListener('pointerdown', (e) => {
-        if(e.detail === 1) { // Click simple
-            app.drag = { target: el, x: e.clientX - el.dataset.x, y: e.clientY - el.dataset.y };
-            el.style.zIndex = app.z++;
-        }
+    g.dataset.x = 50; g.dataset.y = 50; g.dataset.r = 0;
+    g.appendChild(p);
+    document.getElementById('pieces-layer').appendChild(g);
+    
+    g.addEventListener('pointerdown', (e) => {
+        game.active = g;
+        const rect = document.getElementById('main-svg').getBoundingClientRect();
+        game.offset.x = (e.clientX - rect.left) * (800/rect.width) - g.dataset.x;
+        game.offset.y = (e.clientY - rect.top) * (600/rect.height) - g.dataset.y;
+        e.stopPropagation();
     });
 
-    el.onclick = () => {
-        el.dataset.r = (parseInt(el.dataset.r) + 45) % 360;
-        upd(el);
+    g.onclick = () => {
+        g.dataset.r = (parseInt(g.dataset.r) + 45) % 360;
+        upd(g);
     };
-
-    upd(el);
+    upd(g);
 }
 
-// SISTEMA DE ARRASTRE NATIVO (Sin librerías externas para evitar errores)
 window.addEventListener('pointermove', (e) => {
-    if(!app.drag) return;
-    const t = app.drag.target;
-    const rect = document.getElementById('game-box').getBoundingClientRect();
+    if(!game.active) return;
+    const rect = document.getElementById('main-svg').getBoundingClientRect();
+    let mx = (e.clientX - rect.left) * (800/rect.width) - game.offset.x;
+    let my = (e.clientY - rect.top) * (600/rect.height) - game.offset.y;
     
-    let nx = e.clientX - rect.left - (t.offsetWidth/2);
-    let ny = e.clientY - rect.top - (t.offsetHeight/2);
-
-    // SNAP: Encaje de 10px para que las piezas se unan bien
-    t.dataset.x = Math.round(nx / 10) * 10;
-    t.dataset.y = Math.round(ny / 10) * 10;
-    upd(t);
+    // SNAP DE 5px PARA ENCAJE CLÍNICO
+    game.active.dataset.x = Math.round(mx / 5) * 5;
+    game.active.dataset.y = Math.round(my / 5) * 5;
+    upd(game.active);
 });
 
 window.addEventListener('pointerup', (e) => {
-    if(!app.drag) return;
-    // BORRAR: Si se suelta sobre el inventario
-    if(e.clientX > window.innerWidth - 180) app.drag.target.remove();
-    app.drag = null;
+    if(!game.active) return;
+    if(e.clientX > window.innerWidth - 180) game.active.remove();
+    game.active = null;
 });
 
-function upd(el) { el.style.transform = `translate(${el.dataset.x}px, ${el.dataset.y}px) rotate(${el.dataset.r}deg)`; }
-function next() { app.lvl++; document.getElementById('win').style.display='none'; load(); }
+function upd(g) {
+    g.setAttribute("transform", `translate(${g.dataset.x},${g.dataset.y}) rotate(${g.dataset.r})`);
+}
+
+function next() {
+    game.lvl++;
+    document.getElementById('overlay').style.display='none';
+    loadLvl();
+}
 </script>
 </body>
 </html>
