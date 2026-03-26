@@ -151,13 +151,22 @@
             updateVis();
         }
 
+        // --- MODIFICACIÓN TÉCNICA: Adaptabilidad ---
         function updateVis() {
             const sep = levels[currentLvl];
-            document.getElementById('box-l').style.transform = `translateX(${-sep}px)`;
-            document.getElementById('box-r').style.transform = `translateX(${sep}px)`;
+            
+            // Calculamos un factor de conversión píxel-a-vw basado en una pantalla estándar (ej. 1000px)
+            // Esto asegura que la separación física sea proporcional al tamaño de la pantalla.
+            const vwFactor = sep / 10; // 60px en monitor -> 6vw en móvil.
+            
+            document.getElementById('box-l').style.transform = `translateX(${-vwFactor}vw)`;
+            document.getElementById('box-r').style.transform = `translateX(${vwFactor}vw)`;
+            
             document.getElementById('lvl-num').innerText = currentLvl;
+            // Mantenemos tu cálculo de demanda clínica original intacto
             document.getElementById('delta-val').innerText = Math.max(1, Math.floor((sep * 2) / 4));
         }
+        // ------------------------------------------
 
         function startGame() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
