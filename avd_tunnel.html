@@ -13,6 +13,11 @@
             --error: #ff4757;
             --success: #22c55e;
             --panel: rgba(28, 35, 49, 0.95);
+            
+            /* Unidades dinámicas para adaptabilidad total */
+            --header-h: 10vh;
+            --controls-h: 22vh;
+            --stage-h: calc(100vh - var(--header-h) - var(--controls-h));
         }
 
         body, html {
@@ -24,21 +29,21 @@
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
             color: white;
-            transition: background 0.3s ease;
             -webkit-user-select: none;
             user-select: none;
+            touch-action: none;
         }
 
-        /* HEADER DETALLADO */
+        /* HEADER ADAPTATIVO */
         #header {
-            height: 70px;
+            height: var(--header-h);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 25px;
+            padding: 0 5%;
             background: var(--panel);
-            border-bottom: 3px solid var(--accent);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border-bottom: 0.5vh solid var(--accent);
+            box-shadow: 0 0.5vh 2vh rgba(0,0,0,0.5);
             position: relative;
             z-index: 1000;
         }
@@ -50,28 +55,34 @@
         }
 
         .stat-label {
-            font-size: 0.7rem;
+            font-size: 1.2vh;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
             color: var(--neon);
             font-weight: 700;
         }
 
         .stat-value {
-            font-size: 1.4rem;
+            font-size: 2.8vh;
             font-weight: 900;
         }
 
-        /* ESCENARIO DE JUEGO */
+        #v-lives {
+            font-size: 3vh;
+            letter-spacing: 0.5vw;
+        }
+
+        /* ESCENARIO DE JUEGO DINÁMICO */
         #stage {
             position: relative;
             width: 100%;
-            height: calc(100vh - 210px);
+            height: var(--stage-h);
             display: flex;
             align-items: center;
             justify-content: center;
             background: radial-gradient(circle, #1a1f2c 0%, #0b101b 100%);
             perspective: 1000px;
+            overflow: hidden;
         }
 
         .snellen-e {
@@ -80,17 +91,15 @@
             color: white;
             opacity: 0;
             pointer-events: none;
-            text-shadow: 0 0 20px var(--neon), 0 0 40px rgba(0, 242, 255, 0.3);
+            text-shadow: 0 0 2vh var(--neon);
             will-change: transform, opacity;
         }
 
-        /* CONTROLES TÁCTILES PROFESIONALES */
+        /* CONTROLES TÁCTILES PROPORCIONALES */
         #controls-container {
-            height: 140px;
+            height: var(--controls-h);
             background: #161b2a;
-            border-top: 2px solid #2e3748;
-            position: absolute;
-            bottom: 0;
+            border-top: 0.3vh solid #2e3748;
             width: 100%;
             display: flex;
             align-items: center;
@@ -101,35 +110,34 @@
         #controls-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            width: 100%;
+            gap: 2vw;
+            width: 92%;
             max-width: 600px;
-            padding: 0 15px;
         }
 
         .control-btn {
             background: #242b3d;
-            border: 3px solid var(--accent);
-            border-radius: 20px;
+            border: 0.4vh solid var(--accent);
+            border-radius: 2vh;
             color: white;
-            font-size: 2rem;
-            height: 85px;
+            font-size: 4.5vh;
+            height: 10vh;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 6px 0 var(--accent);
+            transition: all 0.1s;
+            box-shadow: 0 0.6vh 0 var(--accent);
             -webkit-tap-highlight-color: transparent;
         }
 
         .control-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 var(--accent);
+            transform: translateY(0.4vh);
+            box-shadow: 0 0.2vh 0 var(--accent);
             background: var(--accent);
         }
 
-        /* MODALES Y OVERLAYS COMPLETO */
+        /* OVERLAYS Y MODALES */
         .overlay {
             position: fixed;
             inset: 0;
@@ -138,97 +146,75 @@
             align-items: center;
             justify-content: center;
             z-index: 5000;
-            padding: 20px;
-            backdrop-filter: blur(5px);
+            padding: 5vw;
+            backdrop-filter: blur(10px);
         }
 
         .modal {
             background: #1c2331;
-            padding: 40px;
-            border-radius: 40px;
-            border: 4px solid var(--accent);
+            padding: 4vh 3vh;
+            border-radius: 4vh;
+            border: 0.6vh solid var(--accent);
             width: 100%;
-            max-width: 500px;
+            max-width: 450px;
             text-align: center;
-            box-shadow: 0 0 50px rgba(188, 19, 254, 0.3);
         }
 
         .modal h1 {
             color: var(--neon);
             font-weight: 900;
-            font-size: 2.8rem;
-            margin: 0 0 20px 0;
-            text-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
-        }
-
-        .instruction-box {
-            text-align: left;
-            margin: 25px 0;
+            font-size: 4vh;
+            margin-bottom: 2vh;
         }
 
         .step {
             display: flex;
-            align-items: flex-start;
-            margin-bottom: 18px;
-            font-size: 1.25rem;
-            line-height: 1.4;
+            align-items: center;
+            margin-bottom: 2vh;
+            font-size: 1.8vh;
+            text-align: left;
         }
 
         .step-num {
             background: var(--accent);
-            color: white;
-            width: 30px;
-            height: 30px;
+            width: 3.5vh;
+            height: 3.5vh;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 900;
-            margin-right: 15px;
+            margin-right: 2vh;
             flex-shrink: 0;
-            font-size: 1rem;
         }
 
         .btn-main {
             background: linear-gradient(45deg, var(--accent), var(--neon));
             color: white;
-            padding: 22px;
-            border-radius: 20px;
+            padding: 2.5vh;
+            border-radius: 2vh;
             border: none;
             font-weight: 900;
             width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
+            margin-top: 2vh;
             text-transform: uppercase;
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
+            font-size: 2.2vh;
+            letter-spacing: 1px;
         }
 
-        .btn-main:active {
-            transform: scale(0.95);
-        }
-
-        /* FEEDBACK VISUAL */
         .flash-red { background-color: var(--error) !important; }
         .flash-green { background-color: var(--success) !important; }
 
         #result-table {
             width: 100%;
-            margin: 25px 0;
-            border-collapse: collapse;
+            margin: 2vh 0;
         }
 
         #result-table td {
-            padding: 12px;
+            padding: 1.5vh;
+            font-size: 2vh;
             border-bottom: 1px solid #3e4859;
-            font-size: 1.2rem;
         }
-
-        .label-cell { font-weight: 700; color: var(--neon); }
-        .value-cell { text-align: right; font-weight: 900; }
-
     </style>
 </head>
 <body>
@@ -238,7 +224,7 @@
             <span class="stat-label">Nivel</span>
             <span id="v-lvl" class="stat-value">1</span>
         </div>
-        <div id="v-lives" style="font-size: 2rem; letter-spacing: 5px;">❤️❤️❤️</div>
+        <div id="v-lives">❤️❤️❤️</div>
         <div class="stat-box">
             <span class="stat-label">Aciertos</span>
             <span class="stat-value"><span id="v-hits">0</span>/7</span>
@@ -254,28 +240,19 @@
     <div id="intro-modal" class="overlay">
         <div class="modal">
             <h1>TÚNEL SNELLEN</h1>
-            <div class="instruction-box">
-                <div class="step">
-                    <div class="step-num">1</div>
-                    <div>Identifica la orientación de la letra "E" mientras se acerca.</div>
-                </div>
-                <div class="step">
-                    <div class="step-num">2</div>
-                    <div>Presiona la flecha correcta. ¡Cuidado! Los botones cambian de lugar.</div>
-                </div>
-                <div class="step">
-                    <div class="step-num">3</div>
-                    <div>Completa 7 aciertos para subir de nivel y recuperar vidas.</div>
-                </div>
+            <div style="margin: 3vh 0;">
+                <div class="step"><div class="step-num">1</div><div>Identifica la orientación de la "E".</div></div>
+                <div class="step"><div class="step-num">2</div><div>Presiona la flecha correcta rápido.</div></div>
+                <div class="step"><div class="step-num">3</div><div>¡Los botones cambian de lugar!</div></div>
             </div>
-            <button class="btn-main" onclick="startGame()">¡EMPEZAR JUEGO!</button>
+            <button class="btn-main" onclick="startGame()">¡EMPEZAR!</button>
         </div>
     </div>
 
     <div id="level-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 2rem; margin:0;">¡NIVEL SUPERADO!</h2>
-            <p id="lvl-msg" style="font-size: 1.3rem; margin: 25px 0;">Preparando el siguiente desafío...</p>
+            <h2 id="lvl-title" style="color:var(--neon); font-weight:900; font-size: 3.5vh;">¡NIVEL SUPERADO!</h2>
+            <p id="lvl-msg" style="font-size: 2vh; margin: 3vh 0;">Preparando el siguiente desafío...</p>
             <button class="btn-main" onclick="nextLevel()">CONTINUAR</button>
         </div>
     </div>
@@ -284,17 +261,17 @@
         <div class="modal">
             <h1>FIN DEL JUEGO</h1>
             <table id="result-table">
-                <tr><td class="label-cell">Nivel Final:</td><td id="res-lvl" class="value-cell">0</td></tr>
-                <tr><td class="label-cell">Aciertos:</td><td id="res-hits" class="value-cell">0</td></tr>
-                <tr><td class="label-cell">Fallos:</td><td id="res-fails" class="value-cell">0</td></tr>
+                <tr><td style="text-align:left; color:var(--neon)">Nivel Final:</td><td id="res-lvl" style="text-align:right; font-weight:900;">1</td></tr>
+                <tr><td style="text-align:left; color:var(--neon)">Aciertos:</td><td id="res-hits" style="text-align:right; font-weight:900;">0</td></tr>
+                <tr><td style="text-align:left; color:var(--neon)">Fallos:</td><td id="res-fails" style="text-align:right; font-weight:900;">0</td></tr>
             </table>
-            <p id="status-msg" style="color: var(--neon); font-weight: 700;">Enviando datos al servidor...</p>
+            <p id="status-msg" style="color: var(--neon); font-weight: 700; margin-bottom: 2vh;">Sincronizando con Perceptum...</p>
             <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIGURACIÓN DE CONEXIÓN (Google Forms) ---
+        // CONFIGURACIÓN GOOGLE
         const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
         const ENTRY_PACIENTE = "entry.369874016";
         const ENTRY_JUEGO = "entry.1353470174";
@@ -304,7 +281,6 @@
         const ENTRY_EXTRA = "entry.1303309812";
         const ENTRY_FECHA = "entry.845098414";
 
-        // --- VARIABLES DE ESTADO ---
         let lvl = 1;
         let hits = 0;
         let totalHits = 0;
@@ -315,14 +291,12 @@
         const stage = document.getElementById('stage');
         const controlsGrid = document.getElementById('controls-grid');
 
-        // --- LÓGICA DE INICIO ---
         function startGame() {
             document.getElementById('intro-modal').style.display = 'none';
             active = true;
             spawn();
         }
 
-        // --- SISTEMA ANTIMEMORIA (SHUFFLE) ---
         function shuffleControls() {
             controlsGrid.innerHTML = '';
             const btns = [
@@ -331,20 +305,18 @@
                 { rot: 90, icon: '⬇️' },
                 { rot: 0, icon: '➡️' }
             ];
-            
             btns.sort(() => Math.random() - 0.5);
-            
             btns.forEach(b => {
                 const div = document.createElement('div');
                 div.className = 'control-btn';
                 div.innerHTML = b.icon;
-                div.onmousedown = (e) => { e.preventDefault(); checkDir(b.rot); };
-                div.ontouchstart = (e) => { e.preventDefault(); checkDir(b.rot); };
+                const action = (e) => { e.preventDefault(); checkDir(b.rot); };
+                div.onmousedown = action;
+                div.ontouchstart = action;
                 controlsGrid.appendChild(div);
             });
         }
 
-        // --- GENERACIÓN DE TARGETS ---
         function spawn() {
             if(!active) return;
             stage.innerHTML = '';
@@ -355,15 +327,16 @@
             const orientations = [0, 90, 180, 270];
             currentRot = orientations[Math.floor(Math.random() * orientations.length)];
             
-            // Tamaño dinámico basado en nivel
-            const baseSize = Math.max(30, 140 - (lvl * 5));
+            // Tamaño relativo al alto del stage
+            const stageH = stage.clientHeight;
+            const baseSize = Math.max(stageH * 0.05, (stageH * 0.25) - (lvl * 5));
+            
             e.style.fontSize = baseSize + 'px';
             e.innerHTML = 'E';
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            // Velocidad progresiva
-            const duration = Math.max(550, 4500 - (lvl * 400));
+            const duration = Math.max(600, 4500 - (lvl * 400));
             
             const animation = e.animate([
                 { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
@@ -382,20 +355,14 @@
             };
         }
 
-        // --- VALIDACIÓN ---
         function checkDir(userSelection) {
             if(!active) return;
-            
             if(userSelection === currentRot) {
                 hits++;
                 totalHits++;
                 document.getElementById('v-hits').innerText = hits;
-                
-                if(hits >= 7) {
-                    pauseForLevel();
-                } else {
-                    spawn();
-                }
+                if(hits >= 7) pauseForLevel();
+                else spawn();
             } else {
                 totalFails++;
                 handleFail();
@@ -406,43 +373,30 @@
             lives--;
             document.body.classList.add('flash-red');
             setTimeout(() => document.body.classList.remove('flash-red'), 200);
-            
             updateLivesUI();
-            
-            if(lives <= 0) {
-                endGame();
-            } else {
-                spawn();
-            }
+            if(lives <= 0) endGame();
+            else spawn();
         }
 
         function updateLivesUI() {
-            const display = lives > 0 ? "❤️".repeat(lives) : "💀";
-            document.getElementById('v-lives').innerText = display;
+            document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
         }
 
-        // --- GESTIÓN DE NIVELES ---
         function pauseForLevel() {
             active = false;
             stage.innerHTML = '';
-            
             const modal = document.getElementById('level-modal');
             const title = document.getElementById('lvl-title');
-            const msg = document.getElementById('lvl-msg');
-
             if(lvl % 4 === 0 && lives < 3) {
                 lives++;
                 title.innerText = "¡BONUS DE VIDA!";
                 title.style.color = "var(--success)";
-                msg.innerText = "Tu constancia ha restaurado un ❤️.";
                 document.body.classList.add('flash-green');
                 setTimeout(() => document.body.classList.remove('flash-green'), 600);
             } else {
                 title.innerText = "¡NIVEL SUPERADO!";
                 title.style.color = "var(--neon)";
-                msg.innerText = "Has completado los 7 aciertos.";
             }
-            
             updateLivesUI();
             modal.style.display = 'flex';
         }
@@ -457,27 +411,21 @@
             spawn();
         }
 
-        // --- FINALIZACIÓN Y ENVÍO ---
         function endGame() {
             active = false;
             stage.innerHTML = '';
-            
             document.getElementById('res-lvl').innerText = lvl;
             document.getElementById('res-hits').innerText = totalHits;
             document.getElementById('res-fails').innerText = totalFails;
             document.getElementById('res-modal').style.display = 'flex';
-            
             registrarEnSheets();
         }
 
         function registrarEnSheets() {
             const fecha = new Date().toISOString().split('T')[0];
-            const paciente = "PACIENTE_SNELLEN"; // O capturar de variable global si existe
-            const juego = "Tunel_Snellen_Dinamico";
-
             const url = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
-                        `${ENTRY_PACIENTE}=${encodeURIComponent(paciente)}&` +
-                        `${ENTRY_JUEGO}=${encodeURIComponent(juego)}&` +
+                        `${ENTRY_PACIENTE}=PACIENTE_SNELLEN&` +
+                        `${ENTRY_JUEGO}=Tunel_Snellen_v4.6&` +
                         `${ENTRY_NIVEL}=${lvl}&` +
                         `${ENTRY_ACIERTOS}=${totalHits}&` +
                         `${ENTRY_FALLOS}=${totalFails}&` +
@@ -487,10 +435,12 @@
 
             fetch(url, { mode: 'no-cors' })
                 .then(() => {
-                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados con éxito.";
+                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados.";
+                    document.getElementById('status-msg').style.color = "var(--success)";
                 })
                 .catch(() => {
-                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión, datos no guardados.";
+                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión.";
+                    document.getElementById('status-msg').style.color = "var(--error)";
                 });
         }
     </script>
