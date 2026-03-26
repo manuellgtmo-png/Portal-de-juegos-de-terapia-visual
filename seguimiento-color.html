@@ -3,266 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Seguimiento Mágico - Perceptum</title>
+    <title>Seguimiento Mágico - Perceptum Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            margin: 0; 
-            background: #000; 
-            color: white; 
-            font-family: 'Montserrat', sans-serif; 
-            overflow: hidden; 
-            touch-action: none; 
-        }
+        :root { --primary: #6366f1; --success: #22c55e; --bg: #0f172a; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
         
-        /* PANTALLAS DE INTERFAZ ORIGINALES */
-        #intro-screen, #result-screen, #sync-screen, #pause-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: #1e293b; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 30px; 
-            text-align: center; 
-            z-index: 200; 
-        }
-
-        #pause-screen {
-            background: rgba(30, 41, 59, 0.98);
-            display: none;
-        }
+        /* PANTALLAS */
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200; backdrop-filter: blur(8px); }
+        .card { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 450px; width: 100%; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 4px solid var(--primary); }
         
-        .card { 
-            background: white; 
-            color: #1e293b; 
-            padding: 40px; 
-            border-radius: 40px; 
-            max-width: 500px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
-        }
+        .habilidades-box { background: #f1f5f9; border: 2px dashed var(--primary); color: #4338ca; padding: 15px; border-radius: 15px; font-size: 0.85rem; margin: 15px 0; }
         
-        .habilidades-box { 
-            background: #f0f9ff; 
-            border: 2px dashed #0ea5e9; 
-            color: #0369a1; 
-            padding: 15px; 
-            border-radius: 20px; 
-            font-size: 0.9rem; 
-            margin: 20px 0; 
-            line-height: 1.4; 
-        }
+        button { background: var(--success); color: white; border: none; padding: 18px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 8px 0 #16a34a; width: 100%; transition: 0.1s; }
+        button:active { transform: translateY(4px); box-shadow: 0 4px 0 #16a34a; }
+
+        /* HUD */
+        #ui-layer { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 100; box-sizing: border-box; }
+        .stat-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); padding: 10px 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); min-width: 70px; text-align: center; pointer-events: auto; }
+        .label { font-size: 0.65rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 700; }
+        .value { font-weight: 900; font-size: 1.2rem; }
+
+        #goal-bar-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 2px solid white; }
+        #goal-bar-fill { width: 0%; height: 100%; background: var(--success); transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .loader { border: 6px solid #f3f3f3; border-top: 6px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 15px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
         
-        button { 
-            background: #22c55e; 
-            color: white; 
-            border: none; 
-            padding: 20px 50px; 
-            border-radius: 60px; 
-            font-size: 1.4rem; 
-            cursor: pointer; 
-            font-weight: 900; 
-            text-transform: uppercase; 
-            box-shadow: 0 10px 0 #16a34a; 
-            transition: all 0.1s; 
-            width: 100%; 
-        }
-        button:active { 
-            transform: translateY(5px); 
-            box-shadow: 0 5px 0 #16a34a; 
-        }
-
-        /* HUD DEL JUEGO (STATS) */
-        #ui-layer { 
-            position: absolute; 
-            top: 0; 
-            width: 100%; 
-            padding: 20px; 
-            display: flex; 
-            justify-content: space-between; 
-            box-sizing: border-box; 
-            pointer-events: none; 
-            z-index: 100; 
-            display: none; 
-        }
-        .stat-box { 
-            background: rgba(255,255,255,0.2); 
-            backdrop-filter: blur(10px); 
-            padding: 12px 20px; 
-            border-radius: 20px; 
-            font-weight: 900; 
-            border: 1px solid rgba(255,255,255,0.3); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-width: 80px; 
-            pointer-events: auto; 
-        }
-        .label { 
-            font-size: 0.7rem; 
-            text-transform: uppercase; 
-            opacity: 0.8; 
-            margin-bottom: 2px; 
-        }
-
-        #patient-display {
-            position: absolute;
-            top: 90px;
-            left: 20px;
-            font-size: 0.8rem;
-            background: rgba(99, 102, 241, 0.5);
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        /* BARRA DE PROGRESO */
-        #goal-bar-container { 
-            position: absolute; 
-            bottom: 30px; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            width: 70%; 
-            height: 20px; 
-            background: rgba(255,255,255,0.2); 
-            border-radius: 20px; 
-            display:none; 
-            overflow: hidden; 
-            border: 2px solid white; 
-        }
-        #goal-bar-fill { 
-            width: 0%; 
-            height: 100%; 
-            background: #22c55e; 
-            transition: width 0.2s; 
-        }
-
-        /* LOADER DE SINCRONIZACIÓN */
-        .loader { 
-            border: 8px solid #f3f3f3; 
-            border-top: 8px solid #22c55e; 
-            border-radius: 50%; 
-            width: 50px; 
-            height: 50px; 
-            animation: spin 1s linear infinite; 
-            margin: 0 auto 20px; 
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        canvas { display: block; }
+        canvas { display: block; cursor: crosshair; }
     </style>
 </head>
 <body>
 
-    <div id="intro-screen">
+    <div id="intro-screen" class="overlay">
         <div class="card">
-            <h1 style="margin:0; font-size: 2.2rem;">🌈 Seguimiento Mágico</h1>
+            <h1 style="margin:0; font-size: 1.8rem;">✨ Seguimiento Mágico</h1>
             <div class="habilidades-box">
-                <strong>🎯 Habilidades a trabajar:</strong><br>
-                Seguimiento Visual Suave, Fijación Sostenida y Motilidad Ocular.
+                <strong>OBJETIVO CLÍNICO:</strong><br>
+                Seguimiento Suave, Motilidad y Estabilidad de Fijación.
             </div>
-            <p style="color: #64748b; font-weight: bold;">¡Instrucciones!</p>
-            <p style="color: #64748b; font-size: 0.9rem;">Mantén el contacto con el círculo para escuchar el sonido mágico.</p>
-            <button onclick="iniciarJuego()">¡EMPEZAR!</button>
+            <p style="color: #64748b; font-size: 0.9rem;">Sigue el círculo con el dedo o puntero. El sonido indica que lo estás haciendo bien.</p>
+            <button onclick="iniciarJuego()">¡COMENZAR!</button>
         </div>
     </div>
 
-    <div id="pause-screen">
+    <div id="pause-screen" class="overlay" style="display:none">
         <div class="card">
-            <h2 style="margin:0; font-size: 2rem; color: #6366f1;">PAUSA</h2>
-            <p style="color: #64748b;">La sesión está detenida temporalmente.</p>
-            <button onclick="reanudarJuego()" style="background: #6366f1; box-shadow: 0 10px 0 #4338ca;">REANUDAR</button>
+            <h2 style="color: var(--primary)">SESIÓN EN PAUSA</h2>
+            <p style="color: #64748b">Descansa la vista un momento.</p>
+            <button onclick="reanudarJuego()" style="background: var(--primary); box-shadow: 0 8px 0 #4338ca;">CONTINUAR</button>
         </div>
     </div>
 
-    <div id="sync-screen" style="display: none;">
+    <div id="sync-screen" class="overlay" style="display:none">
         <div class="card">
             <div class="loader"></div>
-            <h2 style="margin:0;">Sincronizando con Excel...</h2>
-            <p>Guardando resultados finales del paciente.</p>
+            <h3>Guardando sesión...</h3>
         </div>
     </div>
 
-    <div id="result-screen" style="display: none;">
+    <div id="result-screen" class="overlay" style="display:none">
         <div class="card">
-            <h2 id="result-title">✨ ¡Logrado! ✨</h2>
-            <p id="result-text" style="color: #64748b; margin-bottom: 25px;"></p>
+            <h2 id="result-title">¡Excelente!</h2>
+            <div id="metrics-summary" style="text-align: left; margin-bottom: 20px; font-size: 0.9rem; color: #475569;"></div>
             <button id="next-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            <a href="javascript:location.reload()" id="back-link" style="display:block; margin-top:25px; color:#6366f1; text-decoration:none; font-weight:bold;">VOLVER AL INICIO</a>
+            <button id="retry-btn" onclick="location.reload()" style="background:#94a3b8; box-shadow:0 8px 0 #64748b; margin-top:10px;">Finalizar</button>
         </div>
     </div>
 
-    <div id="ui-layer">
-        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
-        <div class="stat-box" onclick="pausarJuego()" style="cursor: pointer;"><span class="label">⏱️ Cronómetro</span><span id="txt-cronometro">00:00</span></div>
-        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
-        <div id="patient-display">Paciente: <span id="txt-paciente">---</span></div>
+    <div id="ui-layer" style="display:none">
+        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel" class="value">1</span></div>
+        <div class="stat-box" onclick="pausarJuego()" style="cursor:pointer"><span class="label">Tiempo</span><span id="txt-cronometro" class="value">00:00</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
     </div>
-    
-    <div id="goal-bar-container"><div id="goal-bar-fill"></div></div>
+
+    <div id="goal-bar-container" style="display:none"><div id="goal-bar-fill"></div></div>
     <canvas id="gameCanvas"></canvas>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // AUDIOS TERAPÉUTICOS
+        // Audios (Mixkit direct links corregidos)
         const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
         const audioContact = new Audio('https://assets.mixkit.co/active_storage/sfx/610/610-preview.mp3'); 
-        audioContact.loop = true; // El sonido se mantiene mientras hay contacto
-        audioContact.volume = 0.3;
+        audioContact.loop = true;
+        audioContact.volume = 0.2;
 
+        // Configuración Google Sheets (Perceptum SpA)
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const ENTRIES = {
-            paciente: "entry.369874016",
-            juego: "entry.1353470174",
-            nivel: "entry.721051298",
-            aciertos: "entry.873272199",
-            fallos: "entry.1030094511",
-            tiempo: "entry.1303309812",
-            fecha: "entry.845098414"
-        };
+        const ENTRIES = { paciente: "entry.369874016", juego: "entry.1353470174", nivel: "entry.721051298", aciertos: "entry.873272199", fallos: "entry.1030094511", tiempo: "entry.1303309812", fecha: "entry.845098414" };
 
-        let nivelActual = 1, vidas = 3, segundosTotales = 0, segundosContacto = 0, fallosTotales = 0, tiempoMeta = 15;
-        let juegoActivo = false, enContacto = false, framesFuera = 0, x, y, dx, dy, radio, animationId;
-        const colores = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
-
-        window.onbeforeunload = function() {
-            if(juegoActivo || segundosTotales > 0) return "Atención: La sesión está en curso.";
-        };
-
-        function enviarDatosFinales(callback) {
-            const nombre = localStorage.getItem('paciente') || "Paciente Prueba";
-            const hoy = new Date().toISOString().split('T')[0];
-            const data = new FormData();
-            data.append(ENTRIES.paciente, nombre);
-            data.append(ENTRIES.juego, "Seguimiento Mágico");
-            data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, segundosContacto); 
-            data.append(ENTRIES.fallos, fallosTotales);
-            data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
-            data.append(ENTRIES.fecha, hoy);
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-            setTimeout(callback, 2000); 
-        }
+        let nivelActual = 1, vidas = 3, segundosTotales = 0, segundosContacto = 0, fallosTotales = 0;
+        let juegoActivo = false, enContacto = false, frameCount = 0;
+        let x, y, dx, dy, radio, animId;
+        const colores = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#a855f7'];
 
         function ajustarDificultad() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            radio = Math.max(50, 140 - (nivelActual * 5)); 
-            let velocidad = 1.6 + (nivelActual * 0.4);
-            dx = velocidad; dy = velocidad;
-            tiempoMeta = 10 + (nivelActual * 5); 
-            x = canvas.width / 2; y = canvas.height / 2;
+            // Reducción de tamaño más gradual para control clínico
+            radio = Math.max(40, 100 - (nivelActual * 6));
+            // Velocidad: progresión suave para evitar saltos sacádicos involuntarios
+            let vel = 1.8 + (nivelActual * 0.5);
+            dx = vel; dy = vel;
+            // Meta: tiempo de contacto necesario para pasar
+            tiempoMeta = 10 + (nivelActual * 5);
+            if(!x) { x = canvas.width / 2; y = canvas.height / 2; }
         }
 
         function iniciarJuego() {
-            document.getElementById('txt-paciente').innerText = localStorage.getItem('paciente') || "Anónimo";
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('result-screen').style.display = 'none';
-            document.getElementById('sync-screen').style.display = 'none';
-            document.getElementById('pause-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('goal-bar-container').style.display = 'block';
             ajustarDificultad();
@@ -272,16 +124,16 @@
             render();
         }
 
-        function pausarJuego() { 
-            juegoActivo = false; 
+        function pausarJuego() {
+            juegoActivo = false;
             audioContact.pause();
-            document.getElementById('pause-screen').style.display = 'flex'; 
+            document.getElementById('pause-screen').style.display = 'flex';
         }
-        
-        function reanudarJuego() { 
-            document.getElementById('pause-screen').style.display = 'none'; 
-            juegoActivo = true; 
-            render(); 
+
+        function reanudarJuego() {
+            document.getElementById('pause-screen').style.display = 'none';
+            juegoActivo = true;
+            render();
         }
 
         function actualizarUI() {
@@ -289,80 +141,118 @@
             document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
             document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
             let min = Math.floor(segundosTotales / 60), seg = segundosTotales % 60;
-            document.getElementById('txt-cronometro').innerText = `${min < 10 ? '0' : ''}${min}:${seg < 10 ? '0' : ''}${seg}`;
+            document.getElementById('txt-cronometro').innerText = `${min}:${seg < 10 ? '0' : ''}${seg}`;
         }
 
-        const check = (ex, ey) => {
+        const handleInput = (ex, ey) => {
+            if(!juegoActivo) return;
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
             enContacto = dist < radio;
             
-            // Lógica de sonido en tiempo real
-            if (enContacto && juegoActivo) {
+            if (enContacto) {
                 if (audioContact.paused) audioContact.play().catch(()=>{});
             } else {
                 audioContact.pause();
             }
         };
 
-        canvas.addEventListener('mousemove', (e) => check(e.clientX, e.clientY));
-        canvas.addEventListener('touchstart', (e) => check(e.touches[0].clientX, e.touches[0].clientY));
+        canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY));
+        canvas.addEventListener('touchstart', (e) => handleInput(e.touches[0].clientX, e.touches[0].clientY));
         canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            check(e.touches[0].clientX, e.touches[0].clientY);
+            handleInput(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: false });
 
         function finalizarJuego(exito) {
             juegoActivo = false;
             audioContact.pause();
-            cancelAnimationFrame(animationId);
+            cancelAnimationFrame(animId);
+            
             if(exito) {
-                document.getElementById('result-screen').style.display = 'flex';
                 audioWin.play();
-                document.getElementById('result-title').innerText = "✨ ¡Nivel Logrado! ✨";
-                document.getElementById('next-btn').style.display = "block";
+                mostrarResultados("¡NIVEL COMPLETADO!", true);
             } else {
-                document.getElementById('ui-layer').style.display = 'none';
                 document.getElementById('sync-screen').style.display = 'flex';
-                enviarDatosFinales(() => {
+                enviarDatos(() => {
                     document.getElementById('sync-screen').style.display = 'none';
-                    document.getElementById('result-screen').style.display = 'flex';
-                    document.getElementById('result-title').innerText = "💔 Fin del Juego";
+                    mostrarResultados("SESIÓN FINALIZADA", false);
                 });
             }
+        }
+
+        function mostrarResultados(titulo, exito) {
+            const screen = document.getElementById('result-screen');
+            document.getElementById('result-title').innerText = titulo;
+            document.getElementById('metrics-summary').innerHTML = `
+                • Tiempo Total: ${document.getElementById('txt-cronometro').innerText}<br>
+                • Tiempo en Contacto: ${segundosContacto}s<br>
+                • Pérdidas de Seguimiento: ${fallosTotales}
+            `;
+            document.getElementById('next-btn').style.display = exito ? "block" : "none";
+            screen.style.display = 'flex';
+        }
+
+        function enviarDatos(callback) {
+            const nombre = localStorage.getItem('paciente') || "Paciente_Anonimo";
+            const data = new FormData();
+            data.append(ENTRIES.paciente, nombre);
+            data.append(ENTRIES.juego, "Seguimiento Mágico");
+            data.append(ENTRIES.nivel, nivelActual);
+            data.append(ENTRIES.aciertos, segundosContacto);
+            data.append(ENTRIES.fallos, fallosTotales);
+            data.append(ENTRIES.tiempo, document.getElementById('txt-cronometro').innerText);
+            data.append(ENTRIES.fecha, new Date().toISOString().split('T')[0]);
+
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data })
+                .then(() => setTimeout(callback, 1500));
         }
 
         function proximoNivel() { nivelActual++; iniciarJuego(); }
 
         function render() {
             if(!juegoActivo) return;
-            ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Efecto de rastro suave
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (!enContacto) {
-                framesFuera++; ctx.globalAlpha = 0.2;
-                if(framesFuera > 90) { 
-                    vidas--; fallosTotales++; framesFuera = 0; actualizarUI();
+                frameCount++;
+                ctx.globalAlpha = 0.3;
+                // Si pasa 1.5 segundos fuera (90 frames a 60fps), pierde vida
+                if(frameCount > 90) { 
+                    vidas--; fallosTotales++; frameCount = 0; 
+                    actualizarUI();
                     if(vidas <= 0) return finalizarJuego(false);
                 }
             } else { 
-                framesFuera = 0; ctx.globalAlpha = 1.0;
-                ctx.shadowBlur = 25; ctx.shadowColor = "white";
-                if (nivelActual >= 2 && Math.random() < 0.005) {
-                    x = Math.random() * (canvas.width - radio * 2) + radio;
-                    y = Math.random() * (canvas.height - radio * 2) + radio;
-                }
+                frameCount = 0; 
+                ctx.globalAlpha = 1.0;
+                // Glow effect cuando hay contacto
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = colores[(nivelActual - 1) % colores.length];
             }
 
-            ctx.beginPath(); ctx.arc(x, y, radio, 0, Math.PI * 2);
-            ctx.fillStyle = colores[(nivelActual - 1) % colores.length]; ctx.fill();
-            ctx.strokeStyle = "white"; ctx.lineWidth = 8; ctx.stroke(); ctx.closePath();
+            // Dibujo del estímulo
+            ctx.beginPath();
+            ctx.arc(x, y, radio, 0, Math.PI * 2);
+            ctx.fillStyle = colores[(nivelActual - 1) % colores.length];
+            ctx.fill();
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = 5;
+            ctx.stroke();
+            ctx.closePath();
             ctx.shadowBlur = 0;
 
+            // Movimiento
             x += dx; y += dy;
             if(x + radio > canvas.width || x - radio < 0) dx = -dx;
             if(y + radio > canvas.height || y - radio < 0) dy = -dy;
-            animationId = requestAnimationFrame(render);
+
+            animId = requestAnimationFrame(render);
         }
 
+        // Timer de segundos
         setInterval(() => {
             if(juegoActivo) {
                 segundosTotales++;
