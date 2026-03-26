@@ -31,7 +31,7 @@
             margin: 0;
             padding: 0;
             user-select: none;
-            touch-action: none;
+            touch-action: none; /* Crucial para evitar scroll en tablets */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             -webkit-tap-highlight-color: transparent;
@@ -53,7 +53,7 @@
         }
 
         /* ========================================================================
-           2. CAPAS DE INTERFAZ (MENÚ + SELECTOR DE TIEMPO)
+           2. CAPAS DE INTERFAZ
            ======================================================================== */
         .capa-interfaz-total {
             position: fixed;
@@ -163,7 +163,7 @@
         }
 
         /* ========================================================================
-           3. HUD DINÁMICO (BARRA ROJA Y WIDGETS)
+           3. HUD DINÁMICO
            ======================================================================== */
         #envoltura-cronometro-hud {
             position: absolute;
@@ -207,7 +207,7 @@
         .valor-estado-hud { font-size: 2.4rem; font-weight: 900; }
 
         /* ========================================================================
-           4. ESCENARIO DE EVALUACIÓN (CENTRALIZADO)
+           4. ESCENARIO DE EVALUACIÓN
            ======================================================================== */
         #contenedor-maestro-vernier {
             position: absolute;
@@ -365,9 +365,6 @@
     <iframe name="target_silencioso" id="target_silencioso" style="display:none;"></iframe>
 
     <script>
-        /**
-         * MOTOR LÓGICO VERNIE PRO v25.0 - RECALIBRADO GOOGLE SHEETS
-         */
         const CORE = {
             active: false, 
             modo: 'tiempo', 
@@ -487,7 +484,6 @@
             document.getElementById('hud-txt-vidas').innerText = CORE.vidas > 0 ? "❤️".repeat(CORE.vidas) : "💀";
         }
 
-        // --- FUNCIÓN DE CONEXIÓN REPARADA ---
         function enviarDatosHaciaSheets(p, x, a) {
             const hoy = new Date().toISOString().split('T')[0];
             const form = document.createElement("form");
@@ -496,7 +492,7 @@
             form.target = "target_silencioso";
 
             const data = {
-                "entry.369874016": "ANONIMO",
+                "entry.369874016": localStorage.getItem('pacienteActual') || "ANONIMO",
                 "entry.1353470174": "VERNIER_PRO_V25",
                 "entry.721051298": p,
                 "entry.873272199": x.toFixed(2),
@@ -527,25 +523,45 @@
             }
         }
 
+        /* INTEGRACIÓN TÁCTIL UNIFICADA (RESPETANDO DRAGMODE ORIGINAL) */
         let isDown = false, dragMode = null;
-        window.onmousedown = (e) => {
+        
+        const startInteraction = (x, y, target) => {
             if (!CORE.active) return;
-            if (e.target.dataset.action === 'rotar') dragMode = 'rotar';
-            else if (e.target.id === 'linea-paciente-interactiva') dragMode = 'mover';
+            if (target.dataset.action === 'rotar') dragMode = 'rotar';
+            else if (target.id === 'linea-paciente-interactiva' || target.closest('#linea-paciente-interactiva')) dragMode = 'mover';
             if (dragMode) isDown = true;
         };
 
-        window.onmousemove = (e) => {
+        const moveInteraction = (x, movementX) => {
             if (!isDown) return;
             if (dragMode === 'mover') {
-                CORE.pac.x = (e.clientX / window.innerWidth) * 100;
+                CORE.pac.x = (x / window.innerWidth) * 100;
             } else if (dragMode === 'rotar') {
-                CORE.pac.a += e.movementX * 0.8;
+                CORE.pac.a += (movementX || 0) * 0.8;
             }
             render();
         };
 
+        // Eventos Mouse
+        window.onmousedown = (e) => startInteraction(e.clientX, e.clientY, e.target);
+        window.onmousemove = (e) => moveInteraction(e.clientX, e.movementX);
         window.onmouseup = () => { isDown = false; dragMode = null; };
+
+        // Eventos Touch (Adaptación sin pérdida de lógica)
+        let lastTouchX = 0;
+        window.ontouchstart = (e) => {
+            const touch = e.touches[0];
+            lastTouchX = touch.clientX;
+            startInteraction(touch.clientX, touch.clientY, e.target);
+        };
+        window.ontouchmove = (e) => {
+            const touch = e.touches[0];
+            const movementX = touch.clientX - lastTouchX;
+            lastTouchX = touch.clientX;
+            moveInteraction(touch.clientX, movementX);
+        };
+        window.ontouchend = () => { isDown = false; dragMode = null; };
 
         function nudgeManual(prop, val) {
             if (!CORE.active) return;
@@ -558,12 +574,6 @@
         }
 
         function stopNudge() { clearInterval(CORE.nudgeRef); }
-
-        window.ontouchmove = (e) => {
-            if (!CORE.active) return;
-            CORE.pac.x = (e.touches[0].clientX / window.innerWidth) * 100;
-            render();
-        };
     </script>
 </body>
 </html>
