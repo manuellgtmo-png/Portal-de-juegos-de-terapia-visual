@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laberinto Espacial - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #e91e63; --bg: #0b101b; --wall: #1e293b; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
+        
+        .overlay { position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+        .card { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 400px; text-align: center; border: 4px solid var(--primary); }
+        
+        #ui-layer { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 100; }
+        .stat-box { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; min-width: 80px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+        .label { font-size: 0.6rem; text-transform: uppercase; display: block; opacity: 0.7; }
+        
+        /* D-PAD TÁCTIL */
+        #controls { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(2, 60px); gap: 10px; }
+        .btn-dir { background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ad1457; cursor: pointer; }
+        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 #ad1457; }
+        
+        canvas { display: block; margin: auto; }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen" class="overlay">
+        <div class="card">
+            <h1 style="color: var(--primary)">🚀 Laberinto Espacial</h1>
+            <p>Lleva al astronauta a la meta usando las flechas. ¡No toques las paredes!</p>
+            <button onclick="iniciarJuego()" style="background:var(--primary); color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:900; cursor:pointer;">¡DESPEGAR!</button>
+        </div>
+    </div>
+
+    <div id="ui-layer" style="display:none">
+        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
+        <div class="stat-box"><span class="label">Forma</span><span id="txt-forma">Cuadrado</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="controls" style="display:none">
+        <div style="grid-column: 2"><button class="btn-dir" onclick="mover('up')">↑</button></div>
+        <button class="btn-dir" onclick="mover('left')">←</button>
+        <button class="btn-dir" onclick="mover('down')">↓</button>
+        <button class="btn-dir" onclick="mover('right')">→</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const audioHurt = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+
+        let nivel = 1, vidas = 3, cellSize, grid = [], cols, rows;
+        let player = { x: 0, y: 0 }, goal = { x: 0, y: 0 };
+        const formas = ["Rectangular", "Circular", "Triangular"];
+
+        function iniciarJuego() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            document.getElementById('controls').style.display = 'grid';
+            generarNivel();
+        }
+
+        function generarNivel() {
+            const size = Math.min(window.innerWidth, window.innerHeight) * 0.8;
+            canvas.width = size; canvas.height = size;
+            
+            // Dificultad incremental
+            cols = 5 + nivel; rows = cols;
+            cellSize = size / cols;
+            
+            // Crear rejilla vacía
+            grid = Array(cols).fill().map(() => Array(rows).fill(true)); 
+            
+            // Algoritmo simple de "Camino excavado" para asegurar que siempre haya salida
+            player = { x: 0, y: 0 };
+            goal = { x: cols-1, y: rows-1 };
+            
+            generarCaminoAleatorio();
+            document.getElementById('txt-nivel').innerText = nivel;
+            document.getElementById('txt-forma').innerText = formas[(nivel-1) % formas.length];
+            actualizarUI();
+            dibujar();
+        }
+
+        function generarCaminoAleatorio() {
+            // Excavamos el laberinto (simplificado para rendimiento)
+            for(let i=0; i<cols; i++) {
+                for(let j=0; j<rows; j++) {
+                    if(Math.random() > 0.3) grid[i][j] = false; // El suelo es falso (libre)
+                }
+            }
+            grid[0][0] = false; // Inicio libre
+            grid[cols-1][rows-1] = false; // Meta libre
+        }
+
+        function mover(dir) {
+            let nextX = player.x, nextY = player.y;
+            if(dir === 'up') nextY--;
+            if(dir === 'down') nextY++;
+            if(dir === 'left') nextX--;
+            if(dir === 'right') nextX++;
+
+            // Límites y colisiones
+            if(nextX >= 0 && nextX < cols && nextY >= 0 && nextY < rows) {
+                if(grid[nextX][nextY]) { // Es una pared
+                    chocar();
+                } else {
+                    player.x = nextX; player.y = nextY;
+                    if(player.x === goal.x && player.y === goal.y) subirNivel();
+                }
+            }
+            dibujar();
+        }
+
+        function chocar() {
+            vidas--;
+            audioHurt.play();
+            player = { x: 0, y: 0 }; // Reiniciar posición
+            actualizarUI();
+            if(vidas <= 0) {
+                alert("Fin del juego. Nivel alcanzado: " + nivel);
+                location.reload();
+            }
+        }
+
+        function actualizarUI() {
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(vidas);
+        }
+
+        function subirNivel() {
+            nivel++;
+            generarNivel();
+        }
+
+        function dibujar() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            
+            // Dibujar Laberinto
+            for(let i=0; i<cols; i++) {
+                for(let j=0; j<rows; j++) {
+                    ctx.fillStyle = grid[i][j] ? 'var(--wall)' : 'transparent';
+                    if(grid[i][j]) ctx.fillRect(i*cellSize, j*cellSize, cellSize-2, cellSize-2);
+                }
+            }
+
+            // Meta
+            ctx.fillStyle = "#4caf50";
+            ctx.font = `${cellSize*0.8}px Arial`;
+            ctx.fillText("🏁", goal.x * cellSize, (goal.y + 0.8) * cellSize);
+
+            // Jugador
+            ctx.fillText("🚀", player.x * cellSize, (player.y + 0.8) * cellSize);
+        }
+
+        window.onresize = generarNivel;
+    </script>
+</body>
+</html>
