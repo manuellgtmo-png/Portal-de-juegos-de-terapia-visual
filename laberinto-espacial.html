@@ -2,25 +2,59 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laberinto Espacial - Perceptum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Laberinto Espacial Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #e91e63; --bg: #0b101b; --wall: #1e293b; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
+        :root {
+            --primary: #e91e63;
+            --bg: #0b101b;
+            --wall: #1e293b;
+            --accent: #00f2fe;
+            --danger: #ef4444;
+        }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; -webkit-font-smoothing: antialiased; }
         
-        .overlay { position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
-        .card { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 400px; text-align: center; border: 4px solid var(--primary); }
+        /* OVERLAYS Y PANTALLAS */
+        .overlay { position: fixed; inset: 0; background: rgba(11, 16, 27, 0.96); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
+        .card { background: white; color: #1e293b; padding: 35px; border-radius: 30px; max-width: 380px; width: 90%; text-align: center; border: 4px solid var(--primary); box-shadow: 0 10px 40px rgba(233, 30, 99, 0.3); }
         
-        #ui-layer { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; box-sizing: border-box; z-index: 100; }
-        .stat-box { background: rgba(255,255,255,0.1); padding: 10px; border-radius: 15px; min-width: 80px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
-        .label { font-size: 0.6rem; text-transform: uppercase; display: block; opacity: 0.7; }
+        /* HUD SUPERIOR */
+        #ui-layer { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box; z-index: 100; pointer-events: none; }
+        .stat-box { background: rgba(255,255,255,0.08); backdrop-filter: blur(5px); padding: 8px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); text-align: center; min-width: 70px; }
+        .label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; font-weight: 700; display: block; }
+        .value { font-weight: 900; font-size: 1.1rem; color: var(--accent); }
         
-        /* D-PAD TÁCTIL */
-        #controls { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(2, 60px); gap: 10px; }
-        .btn-dir { background: var(--primary); color: white; border: none; border-radius: 15px; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 0 #ad1457; cursor: pointer; }
-        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 #ad1457; }
-        
+        /* BOTÓN SALIR */
+        #btn-salir {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(239, 68, 68, 0.2); color: var(--danger);
+            border: 2px solid var(--danger); padding: 8px 15px; border-radius: 10px;
+            font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.7rem;
+            z-index: 150; pointer-events: auto;
+        }
+
+        /* D-PAD TÁCTIL (BOTONES DE PALANCA) */
+        #controls {
+            position: absolute; bottom: 30px; right: 30px;
+            display: grid; grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px 60px;
+            gap: 10px; z-index: 150; pointer-events: auto;
+        }
+        .btn-dir {
+            background: var(--clin-card); border: 3px solid var(--primary);
+            color: var(--primary); border-radius: 15px; font-size: 1.8rem; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 5px 0 var(--dark); transition: 0.1s;
+        }
+        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--dark); }
+
+        /* Posicionamiento en cruz */
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 3; }
+
         canvas { display: block; margin: auto; }
     </style>
 </head>
@@ -28,136 +62,198 @@
 
     <div id="intro-screen" class="overlay">
         <div class="card">
-            <h1 style="color: var(--primary)">🚀 Laberinto Espacial</h1>
-            <p>Lleva al astronauta a la meta usando las flechas. ¡No toques las paredes!</p>
-            <button onclick="iniciarJuego()" style="background:var(--primary); color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:900; cursor:pointer;">¡DESPEGAR!</button>
+            <h1 style="color: var(--primary); margin:0; font-size: 2.2rem;">🚀 Laberinto</h1>
+            <p style="font-weight: bold; color: #64748b; font-size: 0.9rem;">Relaciones Espaciales Pro</p>
+            <p style="font-size: 0.85rem; color: #475569; line-height: 1.4;">Guía el cohete por los pasillos hasta la meta 🏁.<br>Usa el control de mando táctil. ¡Evita los muros!</p>
+            <button onclick="iniciarJuego()" style="background:var(--primary); color:white; border:none; padding:18px 40px; border-radius:40px; font-weight:900; cursor:pointer; width:100%; font-size:1.1rem; box-shadow: 0 8px 0 #ad1457; text-transform:uppercase;">¡DESPEGAR!</button>
         </div>
     </div>
 
     <div id="ui-layer" style="display:none">
-        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel">1</span></div>
-        <div class="stat-box"><span class="label">Forma</span><span id="txt-forma">Cuadrado</span></div>
-        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas">❤️❤️❤️</span></div>
+        <div class="stat-box" style="margin-left: 100px;"><span class="label">Nivel</span><span id="txt-nivel" class="value">1</span></div>
+        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
     </div>
+
+    <button id="btn-salir" style="display:none;" onclick="location.reload()">SALIR</button>
 
     <canvas id="gameCanvas"></canvas>
 
     <div id="controls" style="display:none">
-        <div style="grid-column: 2"><button class="btn-dir" onclick="mover('up')">↑</button></div>
-        <button class="btn-dir" onclick="mover('left')">←</button>
-        <button class="btn-dir" onclick="mover('down')">↓</button>
-        <button class="btn-dir" onclick="mover('right')">→</button>
+        <button id="btn-up" class="btn-dir" onclick="mover(0,-1)">↑</button>
+        <button id="btn-left" class="btn-dir" onclick="mover(-1,0)">←</button>
+        <button id="btn-right" class="btn-dir" onclick="mover(1,0)">→</button>
+        <button id="btn-down" class="btn-dir" onclick="mover(0,1)">↓</button>
     </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        
+        // Configuración Sheets Perceptum SpA
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        
+        let nivel = 1, vidas = 3, grid = [], cols, rows, cellSize;
+        let player = {x:1, y:1}, goal = {x:0, y:0};
+        let juegoActivo = false;
+        
+        // Audios Terapéuticos
+        const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3');
         const audioHurt = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
-
-        let nivel = 1, vidas = 3, cellSize, grid = [], cols, rows;
-        let player = { x: 0, y: 0 }, goal = { x: 0, y: 0 };
-        const formas = ["Rectangular", "Circular", "Triangular"];
 
         function iniciarJuego() {
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('controls').style.display = 'grid';
+            document.getElementById('btn-salir').style.display = 'block';
+            juegoActivo = true;
             generarNivel();
         }
 
         function generarNivel() {
-            const size = Math.min(window.innerWidth, window.innerHeight) * 0.8;
-            canvas.width = size; canvas.height = size;
+            // Adaptabilidad Responsiva
+            const displaySize = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7);
+            canvas.width = displaySize; canvas.height = displaySize;
             
-            // Dificultad incremental
-            cols = 5 + nivel; rows = cols;
-            cellSize = size / cols;
+            // Densidad del laberinto (Niveles infinitos)
+            cols = 10 + nivel * 2; if(cols > 40) cols = 40; 
+            rows = cols;
+            cellSize = displaySize / cols;
             
-            // Crear rejilla vacía
-            grid = Array(cols).fill().map(() => Array(rows).fill(true)); 
-            
-            // Algoritmo simple de "Camino excavado" para asegurar que siempre haya salida
-            player = { x: 0, y: 0 };
-            goal = { x: cols-1, y: rows-1 };
-            
-            generarCaminoAleatorio();
-            document.getElementById('txt-nivel').innerText = nivel;
-            document.getElementById('txt-forma').innerText = formas[(nivel-1) % formas.length];
+            // 1. Crear grilla llena de muros (true)
+            grid = Array(cols).fill().map(() => Array(rows).fill(true));
+
+            // 2. Algoritmo DIVISION RECURSIVA (Pasillos Reales)
+            generarPasillos(1, 1, cols - 2, rows - 2);
+
+            // 3. Definir Inicio y Meta (siempre en suelo, false)
+            player = {x:1, y:1}; grid[1][1] = false;
+            goal = {x: cols-2, y: rows-2}; grid[goal.x][goal.y] = false;
+
+            // 4. Aplicar Forma Geométrica (Recortar laberinto)
+            recortarForma();
+
             actualizarUI();
             dibujar();
         }
 
-        function generarCaminoAleatorio() {
-            // Excavamos el laberinto (simplificado para rendimiento)
-            for(let i=0; i<cols; i++) {
-                for(let j=0; j<rows; j++) {
-                    if(Math.random() > 0.3) grid[i][j] = false; // El suelo es falso (libre)
-                }
+        // --- ALGORITMO CORE: GENERACIÓN DE LABERINTOS REALES ---
+        function generarPasillos(x, y, w, h) {
+            if (w < 2 || h < 2) return;
+            const horizontal = Math.random() < 0.5;
+            if (horizontal) {
+                let py = y + Math.floor(Math.random() * (h - 1));
+                for (let px = x; px < x + w; px++) grid[px][py] = true;
+                grid[x + Math.floor(Math.random() * w)][py] = false; // Hueco
+                generarPasillos(x, y, w, py - y);
+                generarPasillos(x, py + 1, w, y + h - py - 1);
+            } else {
+                let px = x + Math.floor(Math.random() * (w - 1));
+                for (let py = y; py < y + h; py++) grid[px][py] = true;
+                grid[px][y + Math.floor(Math.random() * h)] = false; // Hueco
+                generarPasillos(x, y, px - x, h);
+                generarPasillos(px + 1, y, x + w - px - 1, h);
             }
-            grid[0][0] = false; // Inicio libre
-            grid[cols-1][rows-1] = false; // Meta libre
         }
 
-        function mover(dir) {
-            let nextX = player.x, nextY = player.y;
-            if(dir === 'up') nextY--;
-            if(dir === 'down') nextY++;
-            if(dir === 'left') nextX--;
-            if(dir === 'right') nextX++;
+        // --- MÁSCARA GEOMÉTRICA (TRABAJO ESPACIAL PEDIÁTRICO) ---
+        function recortarForma() {
+            const cx = (cols-1)/2, cy = (rows-1)/2;
+            for(let x=0; x<cols; x++) {
+                for(let y=0; y<rows; y++) {
+                    const dist = Math.sqrt((x-cx)**2 + (y-cy)**2);
+                    // Nivel Circular
+                    if(nivel % 3 === 2 && dist > (cols/2) - 1) grid[x][y] = true; 
+                    // Nivel Triangular
+                    if(nivel % 3 === 0 && (y < x/2 || y < (cols-x)/2)) grid[x][y] = true;
+                }
+            }
+        }
 
-            // Límites y colisiones
-            if(nextX >= 0 && nextX < cols && nextY >= 0 && nextY < rows) {
-                if(grid[nextX][nextY]) { // Es una pared
-                    chocar();
+        function mover(dx, dy) {
+            if(!juegoActivo) return;
+            let nx = player.x + dx, ny = player.y + dy;
+            
+            // Colisiones y límites
+            if(nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
+                if(grid[nx][ny]) {
+                    // CHOQUE CON PARED (PASILLO)
+                    vidas--; audioHurt.play(); 
+                    player = {x:1, y:1}; // Reiniciar posición
+                    actualizarUI();
+                    if(vidas <= 0) finalizarSesion(false);
                 } else {
-                    player.x = nextX; player.y = nextY;
-                    if(player.x === goal.x && player.y === goal.y) subirNivel();
+                    player.x = nx; player.y = ny;
+                    if(player.x === goal.x && player.y === goal.y) { 
+                        audioWin.play(); nivel++; generarNivel(); 
+                    }
                 }
             }
             dibujar();
-        }
-
-        function chocar() {
-            vidas--;
-            audioHurt.play();
-            player = { x: 0, y: 0 }; // Reiniciar posición
-            actualizarUI();
-            if(vidas <= 0) {
-                alert("Fin del juego. Nivel alcanzado: " + nivel);
-                location.reload();
-            }
-        }
-
-        function actualizarUI() {
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(vidas);
-        }
-
-        function subirNivel() {
-            nivel++;
-            generarNivel();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            
-            // Dibujar Laberinto
-            for(let i=0; i<cols; i++) {
-                for(let j=0; j<rows; j++) {
-                    ctx.fillStyle = grid[i][j] ? 'var(--wall)' : 'transparent';
-                    if(grid[i][j]) ctx.fillRect(i*cellSize, j*cellSize, cellSize-2, cellSize-2);
+            for(let x=0; x<cols; x++) {
+                for(let y=0; y<rows; y++) {
+                    if(grid[x][y]) {
+                        ctx.fillStyle = 'var(--wall)';
+                        // Muros redondeados y estéticos
+                        const r = cellSize * 0.2;
+                        dibujarRectRedondo(ctx, x*cellSize+1, y*cellSize+1, cellSize-2, cellSize-2, r);
+                    }
                 }
             }
-
-            // Meta
-            ctx.fillStyle = "#4caf50";
-            ctx.font = `${cellSize*0.8}px Arial`;
-            ctx.fillText("🏁", goal.x * cellSize, (goal.y + 0.8) * cellSize);
-
-            // Jugador
-            ctx.fillText("🚀", player.x * cellSize, (player.y + 0.8) * cellSize);
+            // Emojis responsivos
+            ctx.font = `${cellSize*0.7}px Arial`;
+            ctx.fillText("🏁", goal.x*cellSize + cellSize*0.1, (goal.y+1)*cellSize - cellSize*0.2);
+            ctx.fillText("🚀", player.x*cellSize + cellSize*0.1, (player.y+1)*cellSize - cellSize*0.2);
         }
 
-        window.onresize = generarNivel;
+        function actualizarUI() {
+            document.getElementById('txt-nivel').innerText = nivel;
+            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
+        }
+
+        function finalizarSesion(exito) {
+            juegoActivo = false;
+            document.getElementById('gameCanvas').style.display = 'none';
+            document.getElementById('controls').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'flex';
+            document.getElementById('intro-screen').innerHTML = '<div class="card"><div class="loader"></div><h3>Sincronizando...</h3></div>';
+
+            const nombre = localStorage.getItem('paciente') || "Anonimo";
+            const hoy = new Date().toISOString().split('T')[0];
+            const data = new FormData();
+            data.append("entry.369874016", nombre);
+            data.append("entry.1353470174", "Laberinto Espacial Pro");
+            data.append("entry.721051298", nivel);
+            data.append("entry.845098414", hoy);
+            
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data })
+            .then(() => {
+                location.reload(); 
+            });
+        }
+        
+        // Utilitario para muros estéticos
+        function dibujarRectRedondo(ctx, x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
+            ctx.beginPath(); ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath(); ctx.fill();
+        }
+
+        // Teclado para PC
+        window.onkeydown = (e) => {
+            if(e.key === "ArrowUp") mover(0,-1);
+            if(e.key === "ArrowDown") mover(0,1);
+            if(e.key === "ArrowLeft") mover(-1,0);
+            if(e.key === "ArrowRight") mover(1,0);
+        };
+
+        window.addEventListener('resize', generarNivel);
     </script>
 </body>
 </html>
