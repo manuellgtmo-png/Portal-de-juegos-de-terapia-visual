@@ -4,22 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Laberinto Espacial Pro - Perceptum</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
         /* ========================================================================
-           1. ARQUITECTURA DE DISEÑO Y VARIABLES DE SISTEMA (ADN PERCEPTUM)
+           1. ARQUITECTURA DE DISEÑO Y VARIABLES (ADN PERCEPTUM)
            ======================================================================== */
         :root {
             --clin-bg: #0b101b;
             --clin-card: #1c2331;
             --clin-accent: #e91e63;
-            --clin-success: #22c55e;
-            --clin-error: #ef4444;
             --clin-text: #ffffff;
-            --clin-text-dim: #94a3b8;
-            --border-clin: 2px solid rgba(255,255,255,0.05);
+            --clin-error: #ef4444;
+            --clin-success: #22c55e;
+            --wall: #1e293b; /* Color de los muros grises */
             --curva: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -27,86 +24,84 @@
 
         body {
             margin: 0; background-color: var(--clin-bg); color: var(--clin-text);
-            font-family: 'Montserrat', sans-serif; height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; position: fixed;
+            font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
         }
 
         /* ========================================================================
            2. CAPAS DE INTERFAZ (INTRO, CONFIG, FEEDBACK, SYNC)
            ======================================================================== */
         .overlay {
-            position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
+            position: fixed; inset: 0; background: rgba(11, 16, 27, 0.96);
             display: flex; align-items: center; justify-content: center;
             z-index: 2000; padding: 20px; backdrop-filter: blur(15px);
             transition: opacity 0.5s var(--curva);
         }
 
         .card-clinica {
-            background: #ffffff; color: #1e293b; padding: 40px;
-            border-radius: 30px; text-align: center; max-width: 420px; width: 100%;
-            border: 5px solid var(--clin-accent); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: #ffffff; color: #1e293b; padding: 35px;
+            border-radius: 30px; text-align: center; max-width: 400px; width: 100%;
+            border: 5px solid var(--clin-accent); box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
 
         .clin-btn {
             background: var(--clin-accent); color: white; border: none;
             padding: 18px 40px; border-radius: 50px; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; margin-top: 20px;
+            cursor: pointer; text-transform: uppercase; margin-top: 15px;
             box-shadow: 0 8px 0 #ad1457; transition: 0.1s; width: 100%;
         }
         .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
-        
         .clin-btn-alt { background: #64748b; box-shadow: 0 8px 0 #475569; }
         .clin-btn-alt:active { box-shadow: 0 4px 0 #475569; }
 
-        /* CONFIGURACIÓN DE MODOS */
-        .config-box { background: #f1f5f9; border-radius: 15px; padding: 20px; margin: 20px 0; border: 2px dashed #cbd5e1; }
+        /* CONFIG MODOS */
+        .config-box { background: #f1f5f9; border-radius: 15px; padding: 15px; margin: 15px 0; }
         .modo-btn {
             background: white; border: 3px solid #cbd5e1; color: #64748b;
-            padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;
-            margin: 5px; width: 45%; transition: 0.2s;
+            padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 45%;
         }
         .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
-
         input[type=range] { width: 100%; accent-color: var(--clin-accent); margin-top: 10px; }
 
         /* ========================================================================
            3. HUD DINÁMICO (STATS, SALIR, BARRA TIEMPO)
            ======================================================================== */
         #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
-        
-        .hud-btn {
+        .hud-btn-salir {
             background: rgba(239, 68, 68, 0.15); color: var(--clin-error);
-            border: 2px solid var(--clin-error); padding: 10px 20px; border-radius: 12px;
-            font-weight: 900; cursor: pointer; pointer-events: auto; text-transform: uppercase; font-size: 0.8rem;
+            border: 2px solid var(--clin-error); padding: 8px 15px; border-radius: 10px;
+            font-weight: bold; cursor: pointer; pointer-events: auto; text-transform: uppercase; font-size: 0.7rem;
         }
-
-        .stat-group { display: flex; gap: 10px; }
+        .stat-group { display: flex; gap: 8px; }
         .stat-box {
-            background: rgba(255,255,255,0.05); padding: 10px 15px; border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1); text-align: center; min-width: 80px;
+            background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center;
         }
-        .label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; font-weight: 700; display: block; color: var(--clin-text-dim); }
-        .value { font-weight: 900; font-size: 1.2rem; color: #00f2fe; }
+        .label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.7; font-weight: 700; display: block; color: #94a3b8; }
+        .value { font-weight: 900; font-size: 1.1rem; color: #00f2fe; }
 
         /* BARRA CONTRALORELOJ */
-        #time-bar-container { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); width: 40%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; overflow: hidden; }
+        #time-bar-container { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); width: 40%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; display: none; overflow: hidden; }
         #time-bar-fill { width: 100%; height: 100%; background: var(--clin-success); transition: width 0.1s linear; }
 
         /* ========================================================================
-           4. ESCENARIO DE JUEGO (CANVAS, D-PAD)
+           4. ESCENARIO DE JUEGO (CANVAS, FONDO, D-PAD)
            ======================================================================== */
-        #gameCanvas { display: block; margin: auto; z-index: 10; cursor: grab; }
+        /* Fondo Dinámico de Estrellas */
+        #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); opacity: 0.5; }
+
+        #gameCanvas { display: block; margin: auto; z-index: 10; position: relative; cursor: grab; }
         #gameCanvas:active { cursor: grabbing; }
 
-        /* D-PAD TÁCTIL (JOYSTICK) */
+        /* D-PAD TÁCTIL (JOYSTICK CLÍNICO) */
         #controls { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 70px); grid-template-rows: repeat(3, 70px); gap: 10px; z-index: 150; }
         .btn-dir {
             background: var(--clin-card); border: 3px solid var(--clin-accent); color: var(--clin-accent);
-            border-radius: 20px; font-size: 2rem; font-weight: 900;
+            border-radius: 20px; font-size: 1.8rem; font-weight: 900;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 6px 0 #ad1457; transition: 0.1s;
+            cursor: pointer; box-shadow: 0 5px 0 #0f172a; transition: 0.1s;
         }
-        .btn-dir:active { transform: translateY(3px); box-shadow: 0 3px 0 #ad1457; }
+        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 #0f172a; }
         #btn-up { grid-column: 2; grid-row: 1; }
         #btn-left { grid-column: 1; grid-row: 2; }
         #btn-right { grid-column: 3; grid-row: 2; }
@@ -119,12 +114,14 @@
 </head>
 <body>
 
+    <canvas id="starfield"></canvas>
+
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <h1 style="color: var(--clin-accent); margin:0; font-size: 2.5rem;">🚀 Laberinto</h1>
-            <p style="font-weight: 700; color: #64748b;">Relaciones Espaciales Pro v25</p>
-            <p style="color: #475569; font-size: 0.9rem; line-height: 1.4; margin-top: 20px;">
-                Planifica tu ruta y guía el cohete hasta la meta 🏁.<br>Evita los muros para no perder vidas (3❤️).
+            <h1 style="color: var(--clin-accent); margin:0;">🚀 Laberinto</h1>
+            <p style="font-weight: 700; color: #64748b;">Planificación Espacial v2</p>
+            <p style="color: #475569; font-size: 0.9rem; line-height: 1.4; margin: 20px 0;">
+                Guía el cohete por los pasillos hasta la meta 🏁.<br>Evita los muros o perderás vidas (3❤️).
             </p>
             <button class="clin-btn" onclick="nextStep('scr-intro', 'scr-config')">CONFIGURAR</button>
             <button class="clin-btn clin-btn-alt" onclick="window.location.href='menu-relaciones.html'">VOLVER AL MENÚ</button>
@@ -137,364 +134,213 @@
             <div class="config-box">
                 <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">CRONOMETRADO</button>
                 <button id="mode-contrareloj" class="modo-btn" onclick="setModo('contrareloj')">CONTRARELOJ</button>
-                
                 <div id="config-time" style="display:none; margin-top: 20px;">
-                    <label style="font-weight: bold; color: #64748b;">TIEMPO LÍMITE: <b id="val-time">30</b>s</label>
-                    <input type="range" id="slider-time" min="10" max="120" step="5" value="30" oninput="document.getElementById('val-time').innerText = this.value">
+                    <label style="font-weight: bold; color: #64748b;">TIEMPO: <b id="val-time">30</b>s</label>
+                    <input type="range" id="slider-time" min="15" max="120" step="5" value="30" oninput="document.getElementById('val-time').innerText = this.value">
                 </div>
             </div>
-            <button class="clin-btn" onclick="iniciarProtocolo()">¡EMPEZAR!</button>
-        </div>
-    </div>
-
-    <div id="scr-sync" class="overlay" style="display:none">
-        <div class="card-clinica">
-            <div class="loader"></div>
-            <h3>Sincronizando con Perceptum...</h3>
-            <p style="color: #64748b;">Guardando resultados clínicos.</p>
-        </div>
-    </div>
-
-    <div id="scr-final" class="overlay" style="display:none">
-        <div class="card-clinica">
-            <h1 id="txt-final-titulo" style="font-size: 3rem;">FIN</h1>
-            <div id="metrics-summary" style="text-align: left; background: #f1f5f9; padding: 20px; border-radius: 15px; margin: 20px 0;"></div>
-            <button class="clin-btn" onclick="location.reload()">REINTENTAR</button>
-            <button class="clin-btn clin-btn-alt" onclick="window.location.href='menu-relaciones.html'">MENU PRINCIPAL</button>
+            <button class="clin-btn" onclick="iniciarProtocolo()">¡DESPEGAR!</button>
         </div>
     </div>
 
     <div id="ui-layer" style="display:none">
-        <button id="btn-salir-hud" class="hud-btn" onclick="location.reload()">SALIR</button>
+        <button id="btn-salir-hud" class="hud-btn-salir" onclick="location.reload()">SALIR</button>
         <div class="stat-group">
-            <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel" class="value">1</span></div>
-            <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
+            <div class="stat-box"><span id="txt-nivel" class="value">Nivel 1</span></div>
+            <div class="stat-box"><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
         </div>
     </div>
-    
     <div id="time-bar-container"><div id="time-bar-fill"></div></div>
 
     <canvas id="gameCanvas"></canvas>
 
     <div id="controls" style="display:none">
-        <button id="btn-up" class="btn-dir" ontouchstart="premover(0,-1)">↑</button>
-        <button id="btn-left" class="btn-dir" ontouchstart="premover(-1,0)">←</button>
-        <button id="btn-right" class="btn-dir" ontouchstart="premover(1,0)">→</button>
-        <button id="btn-down" class="btn-dir" ontouchstart="premover(0,1)">↓</button>
+        <button id="btn-up" class="btn-dir" onclick="remover(0,-1)">↑</button>
+        <button id="btn-left" class="btn-dir" onclick="remover(-1,0)">←</button>
+        <button id="btn-right" class="btn-dir" onclick="remover(1,0)">→</button>
+        <button id="btn-down" class="btn-dir" onclick="remover(0,1)">↓</button>
     </div>
 
-    <iframe name="target_silencioso" style="display:none;"></iframe>
+    <div id="scr-sync" class="overlay" style="display:none"> <div class="card-clinica"> <div class="loader"></div><h3>Sincronizando...</h3></div></div>
+    <div id="scr-final" class="overlay" style="display:none"> <div class="card-clinica"> <h1 id="txt-final-titulo">FIN</h1> <div id="metrics-summary"></div> <button class="clin-btn" onclick="location.reload()">REINTENTAR</button> <button class="clin-btn clin-btn-alt" onclick="window.location.href='menu-relaciones.html'">MENU</button> </div></div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Configuración Sheets Perceptum SpA
+        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+        const starCanvas = document.getElementById('starfield'); const starCtx = starCanvas.getContext('2d');
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        
-        // Estado del Juego
-        const CORE = {
-            active: false, modo: 'crono', nivel: 1, vidas: 3,
-            tBase: 30, tCurr: 30, segTotales: 0, fallos: 0,
-            grid: [], cols: 0, rows: 0, cellSize: 0,
-            player: {x:1, y:1}, goal: {x:0, y:0},
-            timers: { game: null, bar: null },
-            drag: { active: false, lastX: 0, lastY: 0 }
-        };
+        const AUDIO = { win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'), hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'), init: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3') };
 
-        // Audios Terapéuticos (Mixkit direct links)
-        const AUDIO = {
-            win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'),
-            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
-            init: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3')
-        };
+        // ESTADO GLOBAL CORE (Terapéutico)
+        const GAME = { active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [], cols: 0, rows: 0, cellSize: 0, player: {x:1,y:1}, goal: {x:0,y:0}, portales: [], seg Totales: 0, fallos: 0, tBase: 30, tCurr: 30, timers: { game: null, bar: null }, drag: { active: false, lastX: 0, lastY: 0 } };
 
-        // Navegación de Interfaz
-        function nextStep(hide, show) {
-            document.getElementById(hide).style.display = 'none';
-            document.getElementById(show).style.display = 'flex';
-        }
+        function nextStep(h,s){ document.getElementById(h).style.display='none'; document.getElementById(s).style.display='flex'; }
+        function setModo(m){ GAME.modo=m; document.getElementById('mode-crono').classList.toggle('active',m==='crono'); document.getElementById('mode-contrareloj').classList.toggle('active',m==='contrareloj'); document.getElementById('config-time').style.display=(m==='contrareloj')?'block':'none'; }
 
-        // Configuración de Modo
-        function setModo(m) {
-            CORE.modo = m;
-            document.getElementById('mode-crono').classList.toggle('active', m === 'crono');
-            document.getElementById('mode-contrareloj').classList.toggle('active', m === 'contrareloj');
-            document.getElementById('config-time').style.display = (m === 'contrareloj') ? 'block' : 'none';
-        }
-
-        // INICIAR PROTOCOLO CLÍNICO
         function iniciarProtocolo() {
-            AUDIO.init.play();
-            CORE.tBase = parseInt(document.getElementById('slider-time').value);
-            CORE.tCurr = CORE.tBase;
-            
-            document.getElementById('scr-config').style.display = 'none';
-            document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('controls').style.display = 'grid';
-            
-            if(CORE.modo === 'contrareloj') document.getElementById('time-bar-container').style.display = 'block';
-
-            CORE.active = true;
-            // Cronómetro de sesión
-            CORE.timers.game = setInterval(() => { if(CORE.active) CORE.segTotales++; }, 1000);
-            generarNivel();
-            initDragAndDrop(); // Habilitar touch directo
+            AUDIO.init.play(); GAME.tBase = parseInt(document.getElementById('slider-time').value); GAME.tCurr = GAME.tBase;
+            nextStep('scr-config', 'scr-intro'); // Ocultar config
+            document.getElementById('ui-layer').style.display = 'flex'; document.getElementById('controls').style.display = 'grid';
+            if(GAME.modo === 'contrareloj') document.getElementById('time-bar-container').style.display = 'block';
+            GAME.active = true; GAME.timers.game = setInterval(()=>{ if(GAME.active) GAME.segTotales++; }, 1000);
+            generarNivel(); initDragAndDrop(); initEstrellas();
         }
 
-        // GENERACIÓN DE LABERINTO REAL (ALGORITMO DE PRIM)
+        // ========================================================================
+        // 5. MOTOR DE GENERACIÓN DE LABERINTOS REALES (ALGORITMO DE PRIM)
+        // ========================================================================
         function generarNivel() {
-            // Adaptabilidad Responsiva Total (apta para todas pantallas)
             const displaySize = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.70, 800);
             canvas.width = displaySize; canvas.height = displaySize;
             
-            // Complejidad Progresiva
-            CORE.cols = 7 + (CORE.nivel * 2); if(CORE.cols > 35) CORE.cols = 35;
-            CORE.rows = CORE.cols;
-            CORE.cellSize = displaySize / CORE.cols;
+            // Complejidad Progresiva (Reto Real)
+            GAME.cols = 7 + (GAME.nivel * 2); if(GAME.cols > 35) GAME.cols = 35;
+            GAME.rows = GAME.cols; GAME.cellSize = displaySize / GAME.cols;
             
             // 1. Grilla llena de muros (true)
-            CORE.grid = Array(CORE.cols).fill().map(() => Array(CORE.rows).fill(true));
+            GAME.grid = Array(GAME.cols).fill().map(() => Array(GAME.rows).fill(true));
             
-            // 2. Algoritmo de Prim Simplificado (Laberinto Perfecto con un solo camino)
+            // 2. Algoritmo Prim Simplificado (Crear pasillos reales)
             const paredes = [];
             function excavar(x, y) {
-                CORE.grid[x][y] = false; // Suelo
+                GAME.grid[x][y] = false; // Suelo
                 const vecinos = [[x+2,y,x+1,y],[x-2,y,x-1,y],[x,y+2,x,y+1],[x,y-2,x,y-1]];
                 vecinos.forEach(v => {
-                    if(v[0]>0 && v[0]<CORE.cols-1 && v[1]>0 && v[1]<CORE.rows-1 && CORE.grid[v[0]][v[1]]) paredes.push(v);
+                    if(v[0]>0 && v[0]<GAME.cols-1 && v[1]>0 && v[1]<GAME.rows-1 && GAME.grid[v[0]][v[1]]) paredes.push(v);
                 });
             }
-
             excavar(1, 1);
             while(paredes.length > 0) {
-                const index = Math.floor(Math.random() * paredes.length);
-                const [nx, ny, px, py] = paredes.splice(index, 1)[0];
-                if(CORE.grid[nx][ny]) {
-                    CORE.grid[px][py] = false; // Romper muro intermedio
-                    excavar(nx, ny);
-                }
+                const [nx,ny,px,py] = paredes.splice(Math.floor(Math.random()*paredes.length), 1)[0];
+                if(GAME.grid[nx][ny]) { GAME.grid[px][py] = false; excavar(nx, ny); }
             }
 
-            // 3. Posicionar Inicio y Meta
-            CORE.player = {x:1, y:1};
-            CORE.goal = {x: CORE.cols - 2, y: CORE.rows - 2};
+            // 3. Inicio, Meta y Portales
+            GAME.player = {x:1, y:1}; GAME.grid[1][1] = false;
+            GAME.goal = {x: GAME.cols-2, y: GAME.rows-2}; GAME.grid[GAME.goal.x][GAME.goal.y] = false;
+            generarPortales();
             
-            // Asegurar caminos alrededor (evitar bloqueos por mala suerte del algoritmo)
-            CORE.grid[1][1] = false; CORE.grid[1][2] = false; CORE.grid[2][1] = false;
-            CORE.grid[CORE.goal.x][CORE.goal.y] = false; CORE.grid[CORE.goal.x-1][CORE.goal.y] = false; CORE.grid[CORE.goal.x][CORE.goal.y-1] = false;
-
-            // Reiniciar Contrareloj si aplica
-            if(CORE.modo === 'contrareloj') iniciarContrareloj();
-
-            actualizarHUD();
-            dibujar();
+            if(GAME.modo === 'contrareloj') iniciarContrareloj();
+            actualizarHUD(); dibujar();
         }
 
-        // GESTIÓN DE MOVIMIENTO (Crucial para coordinación y planificación)
-        function remover(dx, dy) { if(CORE.active) moverLogic(dx, dy); }
+        // --- SISTEMA DE TELETRANSPORTACIÓN (PORTALES) ---
+        function generarPortales() {
+            GAME.portales = [];
+            // Solo añadir portales en niveles más complejos (vibrabilidad perceptual)
+            if(GAME.nivel < 3) return; 
+            for(let i=0; i < Math.floor(GAME.nivel / 2); i++) {
+                let p1 = buscarSueloLibre(), p2 = buscarSueloLibre();
+                if(p1 && p2) GAME.portales.push({entrada: p1, salida: p2, color: i % 2 === 0 ? '#00f2fe' : '#a855f7'});
+            }
+        }
+        function buscarSueloLibre() {
+            for(let i=0; i<100; i++) {
+                let x = Math.floor(Math.random()*(GAME.cols-2))+1, y = Math.floor(Math.random()*(GAME.rows-2))+1;
+                if(!GAME.grid[x][y] && (x!==1||y!==1) && (x!==GAME.goal.x||y!==GAME.goal.y)) return {x,y};
+            } return null;
+        }
+
+        // ========================================================================
+        // 6. MOTOR DE FÍSICA Y MOVIMIENTO (Crucial para Planificación)
+        // ========================================================================
+        function remover(dx, dy) { if(GAME.active) moverLogic(dx, dy); }
 
         function moverLogic(dx, dy) {
-            let nx = CORE.player.x + dx;
-            let ny = CORE.player.y + dy;
-            
-            // Límites y Colisiones reales
-            if(nx >= 0 && nx < CORE.cols && ny >= 0 && ny < CORE.rows) {
-                if(CORE.grid[nx][ny]) {
+            let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
+            if(nx >= 0 && nx < GAME.cols && ny >= 0 && ny < GAME.rows) {
+                if(GAME.grid[nx][ny]) {
                     // CHOQUE (Trabajo de inhibición de error)
-                    CORE.vidas--; CORE.fallos++;
-                    AUDIO.hurt.play();
-                    flashError();
-                    actualizarHUD();
-                    CORE.player = {x:1, y:1}; // Reinicio clínico
-                    if(CORE.vidas <= 0) finalizarExamen("SESIÓN FINALIZADA (SIN VIDAS)");
+                    GAME.vidas--; GAME.fallos++; AUDIO.hurt.play(); flashError(); actualizarHUD();
+                    GAME.player = {x:1, y:1}; // Reinicio clínico
+                    if(GAME.vidas <= 0) finalizarExamen("SESIÓN FINALIZADA (SIN VIDAS)");
                 } else {
                     // MOVIMIENTO VÁLIDO
-                    CORE.player.x = nx; CORE.player.y = ny;
-                    if(CORE.player.x === CORE.goal.x && CORE.player.y === CORE.goal.y) ganarNivel();
+                    GAME.player.x = nx; GAME.player.y = ny;
+                    verificarPortales();
+                    if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) ganarNivel();
                 }
             }
             dibujar();
         }
 
-        // INTEGRACIÓN DE ARRASTRE (TOUCH DIRECTO SOBRE EL COHETE)
-        function initDragAndDrop() {
-            canvas.addEventListener('touchstart', (e) => {
-                if(!CORE.active) return;
-                const rect = canvas.getBoundingClientRect();
-                const touchX = (e.touches[0].clientX - rect.left) / CORE.cellSize;
-                const touchY = (e.touches[0].clientY - rect.top) / CORE.cellSize;
-                
-                // Verificar si toca cerca del cohete (tolerancia clínica)
-                if(Math.abs(touchX - CORE.player.x) < 1.5 && Math.abs(touchY - CORE.player.y) < 1.5) {
-                    CORE.drag.active = true;
-                    CORE.drag.lastX = Math.floor(touchX);
-                    CORE.drag.lastY = Math.floor(touchY);
+        function verificarPortales() {
+            GAME.portales.forEach(p => {
+                if(GAME.player.x === p.entrada.x && GAME.player.y === p.entrada.y) {
+                    GAME.player = {x: p.salida.x, y: p.salida.y}; // Teleport
+                    ctx.fillStyle = p.color; ctx.fillRect(0,0,canvas.width,canvas.height); // Flash visual
                 }
             });
+        }
 
-            window.addEventListener('touchmove', (e) => {
-                if(!CORE.drag.active || !CORE.active) return;
+        // --- SISTEMA DE ARRASTRE (TOUCH DIRECTO SOBRE COHETE) ---
+        function initDragAndDrop() {
+            canvas.addEventListener('touchstart', (e) => {
+                if(!GAME.active) return;
                 const rect = canvas.getBoundingClientRect();
-                const currX = Math.floor((e.touches[0].clientX - rect.left) / CORE.cellSize);
-                const currY = Math.floor((e.touches[0].clientY - rect.top) / CORE.cellSize);
-
-                // Detección de cambio de celda para mover
-                if(currX !== CORE.drag.lastX || currY !== CORE.drag.lastY) {
-                    const dx = currX - CORE.drag.lastX;
-                    const dy = currY - CORE.drag.lastY;
-                    
-                    // Solo permitir movimientos ortogonales (evitar diagonales raras)
-                    if(Math.abs(dx) + Math.abs(dy) === 1) {
-                        moverLogic(dx, dy);
-                        CORE.drag.lastX = currX;
-                        CORE.drag.lastY = currY;
-                    }
+                const tx = (e.touches[0].clientX - rect.left) / GAME.cellSize;
+                const ty = (e.touches[0].clientY - rect.top) / GAME.cellSize;
+                // Tolerancia de toque clínica
+                if(Math.abs(tx - GAME.player.x) < 1.2 && Math.abs(ty - GAME.player.y) < 1.2) {
+                    GAME.drag.active = true; GAME.drag.lastX = Math.floor(tx); GAME.drag.lastY = Math.floor(ty);
+                }
+            });
+            window.addEventListener('touchmove', (e) => {
+                if(!GAME.drag.active || !GAME.active) return;
+                const rect = canvas.getBoundingClientRect();
+                const cx = Math.floor((e.touches[0].clientX - rect.left) / GAME.cellSize);
+                const cy = Math.floor((e.touches[0].clientY - rect.top) / GAME.cellSize);
+                if(cx !== GAME.drag.lastX || cy !== GAME.drag.lastY) {
+                    moverLogic(cx - GAME.drag.lastX, cy - GAME.drag.lastY);
+                    GAME.drag.lastX = cx; GAME.drag.lastY = cy;
                 }
             }, {passive: false});
-
-            window.addEventListener('touchend', () => { CORE.drag.active = false; });
+            window.addEventListener('touchend', () => { GAME.drag.active = false; });
         }
 
-        // LÓGICA DE CONTRARELOJ
-        function iniciarContrareloj() {
-            CORE.tCurr = CORE.tBase;
-            clearInterval(CORE.timers.bar);
-            document.getElementById('time-bar-fill').style.width = '100%';
-            document.getElementById('time-bar-fill').style.background = 'var(--clin-success)';
-
-            CORE.timers.bar = setInterval(() => {
-                if(!CORE.active) return;
-                CORE.tCurr -= 0.1;
-                const pct = (CORE.tCurr / CORE.tBase) * 100;
-                document.getElementById('time-bar-fill').style.width = pct + '%';
-                
-                if(pct < 30) document.getElementById('time-bar-fill').style.background = 'var(--clin-error)';
-                if(CORE.tCurr <= 0) {
-                    clearInterval(CORE.timers.bar);
-                    finalizarExamen("TIEMPO AGOTADO");
-                }
-            }, 100);
-        }
-
-        // GANAR NIVEL Y ESCALAR DIFICULTAD
-        function ganarNivel() {
-            AUDIO.win.play();
-            CORE.active = false;
-            ctx.fillStyle = 'rgba(34, 197, 94, 0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height); // Flash verde
-            
-            setTimeout(() => {
-                CORE.nivel++;
-                CORE.vidas = 3; // Reset de vidas clínico por nivel
-                CORE.active = true;
-                generarNivel();
-            }, 600);
-        }
-
-        // DIBUJO ESTÉTICO CLÍNICO
+        // ========================================================================
+        // 7. MOTOR GRÁFICO (Canvas Estético y Responsivo)
+        // ========================================================================
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            for(let x=0; x<CORE.cols; x++) {
-                for(let y=0; y<CORE.rows; y++) {
-                    if(CORE.grid[x][y]) {
-                        ctx.fillStyle = 'var(--wall)';
-                        // Muros redondeados para suavidad visual
-                        dibujarRectRedondo(ctx, x*CORE.cellSize+1, y*CORE.cellSize+1, CORE.cellSize-2, CORE.cellSize-2, CORE.cellSize*0.2);
+            for(let x=0; x<GAME.cols; x++) {
+                for(let y=0; y<GAME.rows; y++) {
+                    if(GAME.grid[x][y]) {
+                        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--wall').trim();
+                        const r = GAME.cellSize * 0.2; // Muros redondeados
+                        dibujarRectRedondo(ctx, x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2, r);
                     }
                 }
             }
+            // Dibujar Portales (Efecto Vortex)
+            GAME.portales.forEach(p => { ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc((p.entrada.x+0.5)*GAME.cellSize, (p.entrada.y+0.5)*GAME.cellSize, GAME.cellSize*0.4, 0, Math.PI*2); ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = 'white'; ctx.stroke(); });
             // Emojis Responsivos
-            ctx.font = `${CORE.cellSize*0.7}px Arial`;
-            ctx.fillText("🏁", CORE.goal.x*CORE.cellSize + CORE.cellSize*0.15, (CORE.goal.y+1)*CORE.cellSize - CORE.cellSize*0.25);
-            ctx.fillText("🚀", CORE.player.x*CORE.cellSize + CORE.cellSize*0.15, (CORE.player.y+1)*CORE.cellSize - CORE.cellSize*0.25);
+            ctx.font = `${GAME.cellSize*0.7}px Arial`;
+            ctx.fillText("🏁", GAME.goal.x*GAME.cellSize+GAME.cellSize*0.15, (GAME.goal.y+1)*GAME.cellSize-GAME.cellSize*0.25);
+            ctx.fillText("🚀", GAME.player.x*GAME.cellSize+GAME.cellSize*0.15, (GAME.player.y+1)*GAME.cellSize-GAME.cellSize*0.25);
         }
 
-        // HUD Y EFECTOS
-        function actualizarHUD() {
-            document.getElementById('txt-nivel').innerText = CORE.nivel;
-            document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, CORE.vidas * 2);
+        // --- FONDO DINÁMICO DE ESTRELLAS ---
+        function initEstrellas() {
+            starCanvas.width = window.innerWidth; starCanvas.height = window.innerHeight;
+            const stars = Array(200).fill().map(() => ({ x: Math.random()*starCanvas.width, y: Math.random()*starCanvas.height, r: Math.random()*1.5, v: Math.random()*0.5 }));
+            function animarEstrellas() {
+                starCtx.clearRect(0,0,starCanvas.width, starCanvas.height);
+                starCtx.fillStyle = 'white';
+                stars.forEach(s => { starCtx.beginPath(); starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2); starCtx.fill(); s.y += s.v; if(s.y > starCanvas.height) s.y = 0; });
+                if(GAME.active) requestAnimationFrame(animarEstrellas);
+            } animarEstrellas();
         }
+
+        // --- UTILITARIOS ---
+        function actualizarHUD() { document.getElementById('txt-nivel').innerText = "Nivel " + GAME.nivel; document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas * 2); }
         function flashError() { document.getElementById('gameCanvas').style.boxShadow = "0 0 30px #ef4444"; setTimeout(() => { document.getElementById('gameCanvas').style.boxShadow = "none"; }, 150); }
-
-        // Utilitario dibujo
-        function dibujarRectRedondo(ctx, x, y, w, h, r) {
-            if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2;
-            ctx.beginPath(); ctx.moveTo(x + r, y);
-            ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
-            ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
-            ctx.closePath(); ctx.fill();
-        }
-
-        // FINALIZACIÓN Y SINCRONIZACIÓN DE DATOS PERCEPTUM SpA
-        function finalizarExamen(titulo) {
-            CORE.active = false;
-            clearInterval(CORE.timers.game); clearInterval(CORE.timers.bar);
-            
-            // Ocultar HUD y Controles
-            document.getElementById('ui-layer').style.display = 'none';
-            document.getElementById('controls').style.display = 'none';
-            document.getElementById('time-bar-container').style.display = 'none';
-            
-            // Mostrar Sync Visual
-            document.getElementById('scr-sync').style.display = 'flex';
-
-            // Formateo de datos clínicos
-            const nombre = localStorage.getItem('pacienteActual') || "Anonimo";
-            const hoy = new Date().toISOString().split('T')[0];
-            const min = Math.floor(CORE.segTotales / 60);
-            const seg = CORE.segTotales % 60;
-            const tiempoStr = `${min}:${seg < 10 ? '0' : ''}${seg}`;
-
-            // Creación de formulario dinámico para Google Sheets
-            const form = document.createElement("form");
-            form.method = "POST";
-            form.action = FORM_URL;
-            form.target = "target_silencioso";
-
-            const data = {
-                "entry.369874016": nombre,
-                "entry.1353470174": `Laberinto_v25_${CORE.modo.toUpperCase()}`,
-                "entry.721051298": CORE.nivel,
-                "entry.873272199": CORE.nivel - 1, // Niveles completados
-                "entry.1030094511": CORE.fallos,
-                "entry.1303309812": tiempoStr,
-                "entry.845098414": hoy
-            };
-
-            for (let key in data) {
-                const input = document.createElement("input");
-                input.type = "hidden"; input.name = key; input.value = data[key];
-                form.appendChild(input);
-            }
-
-            document.body.appendChild(form);
-            form.submit(); // Envío silencioso
-            
-            // Mostrar Feedback final tras 2 segundos de sync
-            setTimeout(() => {
-                document.getElementById('scr-sync').style.display = 'none';
-                const scrFinal = document.getElementById('scr-final');
-                scrFinal.style.display = 'flex';
-                document.getElementById('txt-final-titulo').innerText = titulo;
-                document.getElementById('metrics-summary').innerHTML = `
-                    • Nivel Alcanzado: ${CORE.nivel}<br>
-                    • Tiempo Total: ${tiempoStr}<br>
-                    • Choques con muros: ${CORE.fallos}
-                `;
-            }, 2000);
-        }
-
-        // Soporte de Teclado PC para el terapeuta/paciente
-        window.onkeydown = (e) => {
-            if(!CORE.active) return;
-            if(e.key === "ArrowUp") { e.preventDefault(); moverLogic(0,-1); }
-            if(e.key === "ArrowDown") { e.preventDefault(); moverLogic(0,1); }
-            if(e.key === "ArrowLeft") { e.preventDefault(); moverLogic(-1,0); }
-            if(e.key === "ArrowRight") { e.preventDefault(); moverLogic(1,0); }
-        };
-
-        // Redimensionamiento Adaptativo
-        window.addEventListener('resize', () => { if(CORE.active) generarNivel(); });
+        function dibujarRectRedondo(ctx, x, y, w, h, r) { if (w < 2 * r) r = w / 2; if (h < 2 * r) r = h / 2; ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); ctx.fill(); }
+        function iniciarContrareloj() { GAME.tCurr = GAME.tBase; clearInterval(GAME.timers.bar); document.getElementById('time-bar-fill').style.width = '100%'; document.getElementById('time-bar-fill').style.background = 'var(--clin-success)'; GAME.timers.bar = setInterval(() => { if(!GAME.active) return; GAME.tCurr -= 0.1; const pct = (GAME.tCurr / GAME.tBase) * 100; document.getElementById('time-bar-fill').style.width = pct + '%'; if(pct < 30) document.getElementById('time-bar-fill').style.background = 'var(--clin-error)'; if(GAME.tCurr <= 0) { clearInterval(GAME.timers.bar); finalizarExamen("TIEMPO AGOTADO"); } }, 100); }
+        function ganarNivel() { AUDIO.win.play(); GAME.active = false; ctx.fillStyle = 'rgba(34, 197, 94, 0.5)'; ctx.fillRect(0,0,canvas.width,canvas.height); setTimeout(() => { GAME.nivel++; GAME.vidas = 3; GAME.active = true; generarNivel(); }, 600); }
+        function finalizarExamen(t) { GAME.active = false; clearInterval(GAME.timers.game); clearInterval(CORE.timers.bar); nextStep('ui-layer','scr-sync'); document.getElementById('controls').style.display='none'; document.getElementById('time-bar-container').style.display='none'; const n=localStorage.getItem('pacienteActual')||"Anonimo", h=new Date().toISOString().split('T')[0], m=Math.floor(GAME.segTotales/60), s=GAME.segTotales%60, time=`${m}:${s<10?'0':''}${s}`; const form=document.createElement("form"); form.method="POST"; form.action=FORM_URL; form.target="target_silencioso"; const data={"entry.369874016":n,"entry.1353470174":`Laberinto_v2_${GAME.modo.toUpperCase()}`,"entry.721051298":GAME.nivel,"entry.873272199":GAME.nivel-1,"entry.1030094511":GAME.fallos,"entry.1303309812":time,"entry.845098414":h}; for(let key in data){const input=document.createElement("input");input.type="hidden";input.name=key;input.value=data[key];form.appendChild(input);} document.body.appendChild(form);form.submit(); setTimeout(()=>{document.getElementById('scr-sync').style.display='none';nextStep('scr-sync','scr-final');document.getElementById('txt-final-titulo').innerText=t;document.getElementById('metrics-summary').innerHTML=`• Nivel: ${GAME.nivel}<br>• Tiempo: ${time}<br>• Choques: ${GAME.fallos}`;},2000); }
+        window.onkeydown=(e)=>{if(!GAME.active)return;if(e.key==="ArrowUp"){e.preventDefault();moverLogic(0,-1);}if(e.key==="ArrowDown"){e.preventDefault();moverLogic(0,1);}if(e.key==="ArrowLeft"){e.preventDefault();moverLogic(-1,0);}if(e.key==="ArrowRight"){e.preventDefault();moverLogic(1,0);}};
+        window.addEventListener('resize',()=>{if(GAME.active)generarNivel();});
     </script>
+    <iframe name="target_silencioso" style="display:none;"></iframe>
 </body>
 </html>
