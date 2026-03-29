@@ -25,7 +25,7 @@
         }
 
         /* ---------------------------------------------------------
-           INTERFAZ GIGANTE (INTRODUCCIÓN Y CONFIGURACIÓN)
+           INTERFAZ GIGANTE (CORRECCIÓN DE TEXTOS QUE NO CALZAN)
         --------------------------------------------------------- */
         .overlay {
             position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
@@ -34,48 +34,56 @@
         }
 
         .card-clinica {
-            background: #ffffff; color: #1e293b; padding: 50px;
-            border-radius: 40px; text-align: center; max-width: 600px; width: 100%;
+            background: #ffffff; color: #1e293b; padding: 40px;
+            border-radius: 40px; text-align: center; max-width: 600px; width: 95%;
             border: 8px solid var(--clin-accent); box-shadow: 0 30px 60px rgba(0,0,0,0.6);
         }
 
-        h1 { font-size: 4rem; color: var(--clin-accent); margin: 0; font-weight: 900; text-transform: uppercase; }
-        h2 { font-size: 2.5rem; color: var(--clin-accent); margin-bottom: 20px; font-weight: 900; }
-        .instrucciones { font-size: 1.6rem; color: #475569; line-height: 1.5; margin: 30px 0; font-weight: 700; }
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); color: var(--clin-accent); margin: 0; font-weight: 900; text-transform: uppercase; }
+        h2 { font-size: 2.2rem; color: var(--clin-accent); margin-bottom: 15px; font-weight: 900; }
+        .instrucciones { font-size: 1.4rem; color: #475569; line-height: 1.4; margin: 25px 0; font-weight: 700; }
 
         .clin-btn {
             background: var(--clin-accent); color: white; border: none;
-            padding: 25px 50px; border-radius: 60px; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; margin-top: 20px;
+            padding: 20px; border-radius: 60px; font-weight: 900;
+            cursor: pointer; text-transform: uppercase; margin-top: 15px;
             box-shadow: 0 10px 0 #ad1457; transition: 0.1s; width: 100%;
-            font-size: 1.8rem;
+            font-size: 1.6rem; display: flex; align-items: center; justify-content: center;
         }
         .clin-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #ad1457; }
-        .clin-btn-alt { background: #64748b; box-shadow: 0 10px 0 #475569; font-size: 1.4rem; }
+        .clin-btn-alt { background: #64748b; box-shadow: 0 10px 0 #475569; font-size: 1.2rem; }
 
-        /* AJUSTE DE BOTONES DE MODO (Sin salirse del cuadro) */
-        .config-box { background: #f1f5f9; border-radius: 25px; padding: 30px; margin: 25px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        /* AJUSTE DE BOTONES DE MODO */
+        .config-box { background: #f1f5f9; border-radius: 25px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; gap: 15px; }
+        .modo-row { display: flex; gap: 10px; width: 100%; }
+        
         .modo-btn {
-            background: white; border: 5px solid #cbd5e1; color: #64748b;
-            padding: 20px; border-radius: 20px; cursor: pointer; font-weight: 900; width: 45%;
-            font-size: 1.1rem; transition: 0.2s; text-align: center;
+            flex: 1; background: white; border: 4px solid #cbd5e1; color: #64748b;
+            padding: 15px 5px; border-radius: 15px; cursor: pointer; font-weight: 900;
+            font-size: 0.95rem; transition: 0.2s; text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; transform: scale(1.05); }
+        .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
+
+        /* SLIDER DE TIEMPO (Solo aparece en contrareloj) */
+        .slider-container { width: 100%; margin-top: 10px; display: none; }
+        .slider-container.visible { display: block; }
+        input[type=range] { width: 100%; height: 15px; border-radius: 10px; background: #cbd5e1; outline: none; -webkit-appearance: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: var(--clin-accent); border-radius: 50%; cursor: pointer; }
 
         /* ---------------------------------------------------------
-           ESCENARIO DE JUEGO Y HUD
+           JUEGO
         --------------------------------------------------------- */
         #gameCanvas { display: block; margin: auto; z-index: 10; position: relative; border-radius: 20px; background: #161d2b; }
+        #ui-layer { position: absolute; top: 0; width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
+        .hud-btn-salir { background: #ef4444; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 900; cursor: pointer; pointer-events: auto; font-size: 1rem; }
         
-        #ui-layer { position: absolute; top: 0; width: 100%; padding: 30px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
-        .hud-btn-salir { background: #ef4444; color: white; border: none; padding: 15px 30px; border-radius: 15px; font-weight: 900; cursor: pointer; pointer-events: auto; font-size: 1.2rem; }
-        .stat-box { background: rgba(255,255,255,0.1); padding: 15px 25px; border-radius: 15px; border: 2px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
-        .value { font-weight: 900; font-size: 1.8rem; color: #00f2fe; }
+        /* BARRA DE PROGRESO SUPERIOR */
+        #progress-container { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); width: 60%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: none; }
+        #progress-bar { width: 100%; height: 100%; background: var(--clin-success); transition: width 0.1s linear; }
 
-        /* JOYSTICK */
-        #controls { position: absolute; bottom: 40px; right: 40px; display: grid; grid-template-columns: repeat(3, 90px); grid-template-rows: repeat(3, 90px); gap: 15px; z-index: 150; }
-        .btn-dir { background: var(--clin-card); border: 4px solid var(--clin-accent); color: var(--clin-accent); border-radius: 25px; font-size: 2.5rem; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 0 #000; }
-        .btn-dir:active { transform: translateY(3px); box-shadow: 0 3px 0 #000; }
+        #controls { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 85px); grid-template-rows: repeat(3, 85px); gap: 12px; z-index: 150; }
+        .btn-dir { background: var(--clin-card); border: 4px solid var(--clin-accent); color: var(--clin-accent); border-radius: 20px; font-size: 2.2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
     </style>
@@ -87,7 +95,7 @@
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
             <h1>🚀 LABERINTO</h1>
-            <p class="instrucciones">PLANIFICACIÓN ESPACIAL<br><br>Lleva el cohete a la meta 🏁.<br>Evita los muros y obstáculos.</p>
+            <p class="instrucciones">PLANIFICACIÓN ESPACIAL PRO<br><br>Lleva el cohete a la meta 🏁.<br>¡Cuidado con los muros!</p>
             <button class="clin-btn" onclick="mostrarConfig()">INICIAR</button>
             <button class="clin-btn clin-btn-alt" onclick="window.location.href='menu-relaciones.html'">VOLVER AL MENÚ</button>
         </div>
@@ -97,8 +105,14 @@
         <div class="card-clinica">
             <h2>MODO DE JUEGO</h2>
             <div class="config-box">
-                <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">CRONOMETRADO</button>
-                <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">CONTRARELOJ</button>
+                <div class="modo-row">
+                    <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">CRONOMETRADO</button>
+                    <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">CONTRARELOJ</button>
+                </div>
+                <div id="cont-slider" class="slider-container">
+                    <p style="font-weight:900; margin:10px 0;">TIEMPO: <span id="val-tiempo">30</span>s</p>
+                    <input type="range" id="input-tiempo" min="10" max="120" value="30" oninput="document.getElementById('val-tiempo').innerText=this.value">
+                </div>
             </div>
             <button class="clin-btn" onclick="iniciarJuego()">¡DESPEGAR!</button>
         </div>
@@ -106,11 +120,13 @@
 
     <div id="ui-layer" style="display:none">
         <button class="hud-btn-salir" onclick="location.reload()">SALIR</button>
-        <div style="display:flex; gap:20px;">
-            <div class="stat-box"><span id="txt-nivel" class="value">Nivel 1</span></div>
-            <div class="stat-box"><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
+        <div style="display:flex; gap:15px;">
+            <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; border:1px solid var(--clin-accent);"><span id="txt-nivel" style="font-weight:900; color:#00f2fe;">NV 1</span></div>
+            <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; border:1px solid var(--clin-accent);"><span id="txt-vidas" style="letter-spacing:2px;">❤️❤️❤️</span></div>
         </div>
     </div>
+    
+    <div id="progress-container"><div id="progress-bar"></div></div>
 
     <canvas id="gameCanvas"></canvas>
 
@@ -121,11 +137,10 @@
         <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
     </div>
 
-    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><h2>Sincronizando...</h2></div></div>
     <div id="scr-final" class="overlay" style="display:none">
         <div class="card-clinica">
-            <h1 id="txt-final-titulo">FIN</h1>
-            <div id="metrics-summary" style="font-size: 1.5rem; margin: 25px 0;"></div>
+            <h1 id="txt-final-titulo">¡LOGRADO!</h1>
+            <div id="metrics-summary" style="font-size: 1.5rem; margin: 25px 0; font-weight:700;"></div>
             <button class="clin-btn" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
@@ -138,24 +153,45 @@
             win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
         };
 
-        const GAME = { active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [], player: {x:1, y:1}, goal: {x:0, y:0}, seg: 0, fallos: 0, drag: false };
-        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const GAME = { active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [], player: {x:1, y:1}, goal: {x:0, y:0}, seg: 0, fallos: 0, drag: false, maxTime: 30, currentTime: 30 };
 
         function mostrarConfig() { document.getElementById('scr-intro').style.display = 'none'; document.getElementById('scr-config').style.display = 'flex'; }
-        function setModo(m) { GAME.modo = m; document.getElementById('mode-crono').classList.toggle('active', m==='crono'); document.getElementById('mode-reloj').classList.toggle('active', m==='contrareloj'); }
+        
+        function setModo(m) { 
+            GAME.modo = m; 
+            document.getElementById('mode-crono').classList.toggle('active', m==='crono'); 
+            document.getElementById('mode-reloj').classList.toggle('active', m==='contrareloj');
+            document.getElementById('cont-slider').classList.toggle('visible', m==='contrareloj');
+        }
 
         function iniciarJuego() {
+            GAME.maxTime = parseInt(document.getElementById('input-tiempo').value);
+            GAME.currentTime = GAME.maxTime;
             document.getElementById('scr-config').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('controls').style.display = 'grid';
+            if(GAME.modo === 'contrareloj') document.getElementById('progress-container').style.display = 'block';
+            
             GAME.active = true;
-            setInterval(() => { if(GAME.active) GAME.seg++; }, 1000);
+            loopPrincipal();
             generarNivel();
             initDrag();
             initEstrellas();
         }
 
-        // ALGORITMO DE PRIM REAL (Laberinto complejo)
+        function loopPrincipal() {
+            if(!GAME.active) return;
+            if(GAME.modo === 'contrareloj') {
+                GAME.currentTime -= 0.1;
+                let pct = (GAME.currentTime / GAME.maxTime) * 100;
+                document.getElementById('progress-bar').style.width = pct + "%";
+                if(GAME.currentTime <= 0) finalizar("TIEMPO AGOTADO");
+            } else {
+                GAME.seg += 0.1;
+            }
+            setTimeout(loopPrincipal, 100);
+        }
+
         function generarNivel() {
             const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.7);
             canvas.width = size; canvas.height = size;
@@ -187,7 +223,7 @@
                 if(GAME.grid[nx][ny]) {
                     GAME.vidas--; GAME.fallos++; AUDIO.hurt.play();
                     GAME.player = {x:1, y:1};
-                    if(GAME.vidas <= 0) finalizar();
+                    if(GAME.vidas <= 0) finalizar("SIN VIDAS");
                 } else {
                     GAME.player.x = nx; GAME.player.y = ny;
                     AUDIO.move.play();
@@ -205,7 +241,9 @@
                 for(let y=0; y<GAME.grid.length; y++) {
                     if(GAME.grid[x][y]) {
                         ctx.fillStyle = "#1e293b";
-                        ctx.fillRect(x*GAME.cellSize, y*GAME.cellSize, GAME.cellSize-1, GAME.cellSize-1);
+                        ctx.beginPath();
+                        ctx.roundRect(x*GAME.cellSize, y*GAME.cellSize, GAME.cellSize-2, GAME.cellSize-2, 5);
+                        ctx.fill();
                     }
                 }
             }
@@ -215,7 +253,7 @@
         }
 
         function actualizarHUD() {
-            document.getElementById('txt-nivel').innerText = "Nivel " + GAME.nivel;
+            document.getElementById('txt-nivel').innerText = "NV " + GAME.nivel;
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
         }
 
@@ -236,23 +274,11 @@
             window.addEventListener('touchend', () => GAME.drag = false);
         }
 
-        function finalizar() {
+        function finalizar(motivo) {
             GAME.active = false;
-            document.getElementById('scr-sync').style.display = 'flex';
-            // Sincronización Real Perceptum
-            const n = localStorage.getItem('pacienteActual') || "Anonimo";
-            const form = new FormData();
-            form.append("entry.369874016", n);
-            form.append("entry.1353470174", "Laberinto_" + GAME.modo);
-            form.append("entry.721051298", GAME.nivel);
-            form.append("entry.1030094511", GAME.fallos);
-            fetch(FORM_URL, { method: "POST", mode: "no-cors", body: form });
-
-            setTimeout(() => {
-                document.getElementById('scr-sync').style.display = 'none';
-                document.getElementById('scr-final').style.display = 'flex';
-                document.getElementById('metrics-summary').innerHTML = `Nivel: ${GAME.nivel}<br>Choques: ${GAME.fallos}<br>Tiempo: ${GAME.seg}s`;
-            }, 1500);
+            document.getElementById('scr-final').style.display = 'flex';
+            document.getElementById('txt-final-titulo').innerText = motivo;
+            document.getElementById('metrics-summary').innerHTML = `Nivel: ${GAME.nivel}<br>Choques: ${GAME.fallos}<br>Modo: ${GAME.modo}`;
         }
 
         function initEstrellas() {
