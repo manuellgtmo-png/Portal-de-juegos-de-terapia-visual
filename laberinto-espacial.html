@@ -6,42 +6,51 @@
     <title>Laberinto Espacial Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
+        /* ========================================================================
+           1. ARQUITECTURA DE DISEÑO Y VARIABLES (ADN PERCEPTUM)
+           ======================================================================== */
         :root {
             --clin-bg: #0b101b;
             --clin-card: #1c2331;
             --clin-accent: #e91e63;
             --clin-text: #ffffff;
+            --clin-error: #ef4444;
+            --clin-success: #22c55e;
+            --path-glow: #00f2fe; /* Color neón para el trazo */
             --wall: #1e293b;
-            --path-glow: #00f2fe;
+            --curva: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; }
 
         body {
             margin: 0; background-color: var(--clin-bg); color: var(--clin-text);
             font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; position: fixed;
         }
 
-        /* ---------------------------------------------------------
-           INTERFAZ GIGANTE (PERCEPTUM STANDARD)
-        --------------------------------------------------------- */
+        /* ========================================================================
+           2. CAPAS DE INTERFAZ GIGANTE (INTRO, CONFIG, FEEDBACK, SYNC)
+           ======================================================================== */
         .overlay {
             position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
             display: flex; align-items: center; justify-content: center;
             z-index: 2000; padding: 20px; backdrop-filter: blur(15px);
+            transition: opacity 0.5s var(--curva);
         }
 
         .card-clinica {
-            background: #ffffff; color: #1e293b; padding: 40px;
-            border-radius: 40px; text-align: center; max-width: 600px; width: 95%;
-            border: 8px solid var(--clin-accent); box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            background: #ffffff; color: #1e293b; padding: 35px;
+            border-radius: 30px; text-align: center; max-width: 420px; width: 100%;
+            border: 5px solid var(--clin-accent); box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
 
-        h1 { font-size: clamp(2.2rem, 7vw, 3.5rem); color: var(--clin-accent); margin: 0; font-weight: 900; text-transform: uppercase; }
+        /* Títulos Responsivos */
+        h1 { font-size: clamp(2rem, 8vw, 3.5rem); color: var(--clin-accent); margin: 0; font-weight: 900; text-transform: uppercase; }
         h2 { font-size: 2rem; color: var(--clin-accent); margin-bottom: 15px; font-weight: 900; }
         .instrucciones { font-size: 1.2rem; color: #475569; line-height: 1.4; margin: 20px 0; font-weight: 700; }
 
+        /* Botones Clínicos GIGANTES */
         .clin-btn {
             background: var(--clin-accent); color: white; border: none;
             padding: 22px; border-radius: 60px; font-weight: 900;
@@ -52,36 +61,78 @@
         .clin-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #ad1457; }
         .clin-btn-alt { background: #64748b; box-shadow: 0 10px 0 #475569; font-size: 1.1rem; }
 
-        /* CONFIG Y MODOS */
-        .config-box { background: #f1f5f9; border-radius: 25px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; gap: 15px; }
+        /* CONFIGURACIÓN Y MODO (Arreglado para celular image_12.png) */
+        .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
         .modo-row { display: flex; gap: 10px; width: 100%; }
+        
         .modo-btn {
             flex: 1; background: white; border: 4px solid #cbd5e1; color: #64748b;
             padding: 15px; border-radius: 15px; cursor: pointer; font-weight: 900;
-            font-size: 0.9rem; transition: 0.2s;
+            font-size: 1rem; transition: 0.2s;
+            /* Prevención de corte de texto image_12.png */
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
         }
-        .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
+        .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; transform: scale(1.03); }
 
+        /* Slider de Tiempo */
         .slider-container { width: 100%; margin-top: 10px; display: none; }
         .slider-container.visible { display: block; }
         input[type=range] { width: 100%; height: 15px; border-radius: 10px; background: #cbd5e1; outline: none; -webkit-appearance: none; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: var(--clin-accent); border-radius: 50%; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: var(--clin-accent); border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
-        /* ---------------------------------------------------------
-           ESCENARIO Y CONTROLES
-        --------------------------------------------------------- */
-        #gameCanvas { display: block; margin: auto; z-index: 10; position: relative; border-radius: 20px; background: #161d2b; }
+        /* ========================================================================
+           3. ESCENARIO DE JUEGO Y HUD (ADAPTABLE)
+           ======================================================================== */
+        #gameCanvas { display: block; margin: auto; z-index: 10; position: relative; border-radius: 20px; background: #161d2b; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        
+        /* HUD Dinámico */
         #ui-layer { position: absolute; top: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
         .hud-btn-salir { background: #ef4444; color: white; border: none; padding: 12px 25px; border-radius: 12px; font-weight: 900; cursor: pointer; pointer-events: auto; }
+        .stat-group { display: flex; gap: 10px; }
+        .stat-box { background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 10px; border: 1px solid var(--clin-accent); text-align: center; }
         
+        /* Barra de Progreso Superior (image_13.png) */
         #progress-container { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); width: 60%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; display: none; }
         #progress-bar { width: 100%; height: 100%; background: #22c55e; transition: width 0.1s linear; }
 
-        #controls { position: absolute; bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 85px); grid-template-rows: repeat(3, 85px); gap: 12px; z-index: 150; }
-        .btn-dir { background: var(--clin-card); border: 4px solid var(--clin-accent); color: var(--clin-accent); border-radius: 20px; font-size: 2.2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 0 #000; }
+        /* ========================================================================
+           4. CONTROLES Y ADAPTABILIDAD DE PANTALLA
+           ======================================================================== */
+        /* Joystick Táctil (image_13.png) */
+        #controls { position: absolute; z-index: 150; }
+        .btn-dir { background: var(--clin-card); border: 4px solid var(--clin-accent); color: var(--clin-accent); border-radius: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 6px 0 #000; }
         .btn-dir:active { transform: translateY(3px); box-shadow: 0 3px 0 #000; }
 
+        /* --- MEDIA QUERIES PARA ADAPTACIÓN AUTOMÁTICA --- */
+        
+        /* A. Móvil Vertical (Ajuste para image_13.png) */
+        @media (max-width: 600px) and (orientation: portrait) {
+            #gameCanvas { width: 95vw; height: 95vw; margin-top: 100px; }
+            #controls { bottom: 10px; left: 10px; display: flex; gap: 8px; }
+            .btn-dir { width: 60px; height: 60px; font-size: 1.5rem; border-radius: 15px; }
+            .card-clinica { padding: 25px; }
+            h1 { font-size: 2.2rem; }
+            .clin-btn { padding: 18px; font-size: 1.3rem; }
+            .modo-btn { font-size: 0.85rem; padding: 12px 5px; }
+        }
+
+        /* B. Tablet / PC (Por defecto) */
+        @media (min-width: 601px) {
+            #controls { bottom: 30px; right: 30px; display: grid; grid-template-columns: repeat(3, 85px); grid-template-rows: repeat(3, 85px); gap: 12px; }
+            .btn-dir { width: 85px; height: 85px; font-size: 2.2rem; }
+        }
+
+        /* C. Móvil Horizontal (Ajuste de HUD) */
+        @media (max-height: 500px) {
+            #scr-intro .card-clinica, #scr-config .card-clinica { max-height: 90vh; overflow-y: auto; }
+            #gameCanvas { width: 75vh; height: 75vh; }
+            #ui-layer { padding: 10px; }
+            #progress-container { top: 60px; width: 80%; }
+        }
+
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
+        .loader { border: 6px solid #f3f3f3; border-top: 6px solid var(--clin-success); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -90,7 +141,8 @@
 
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <h1>🚀 LABERINTO</h1>
+            <h1>🚀 Laberinto</h1>
+            <p style="font-weight: 700; color: #64748b; font-size: 1.5rem;">Planificación Espacial v2</p>
             <p class="instrucciones">¡Llega a la meta! 🏁<br><br>Puedes usar las flechas o dibujar el camino directamente tocando el cohete.</p>
             <button class="clin-btn" onclick="mostrarConfig()">CONTINUAR</button>
             <button class="clin-btn clin-btn-alt" onclick="window.location.href='menu-relaciones.html'">VOLVER AL MENÚ</button>
@@ -116,9 +168,9 @@
 
     <div id="ui-layer" style="display:none">
         <button class="hud-btn-salir" onclick="location.reload()">SALIR</button>
-        <div style="display:flex; gap:10px;">
-            <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; border:1px solid var(--clin-accent);"><span id="txt-nivel" style="font-weight:900; color:#00f2fe;">NV 1</span></div>
-            <div style="background:rgba(0,0,0,0.5); padding:10px; border-radius:10px; border:1px solid var(--clin-accent);"><span id="txt-vidas" style="letter-spacing:2px;">❤️❤️❤️</span></div>
+        <div class="stat-group">
+            <div class="stat-box"><span id="txt-nivel" style="font-weight:900; color:#00f2fe; font-size:1.1rem;">NV 1</span></div>
+            <div class="stat-box"><span id="txt-vidas" style="letter-spacing:2px;">❤️❤️❤️</span></div>
         </div>
     </div>
     
@@ -132,6 +184,7 @@
         <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
     </div>
 
+    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><h3>Sincronizando...</h3></div></div>
     <div id="scr-final" class="overlay" style="display:none">
         <div class="card-clinica">
             <h1 id="txt-final-titulo">¡LOGRADO!</h1>
@@ -142,20 +195,22 @@
 
     <script>
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+        const starCanvas = document.getElementById('starfield'); const starCtx = starCanvas.getContext('2d');
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        
+        // Audios Terapéuticos (Mixkit direct links)
         const AUDIO = {
             move: new Audio('https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3'),
             hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
             win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
         };
+        AUDIO.move.volume = 0.1; AUDIO.hurt.volume = 0.5; AUDIO.win.volume = 0.7;
 
-        const GAME = { 
-            active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [], 
-            player: {x:1, y:1}, goal: {x:0, y:0}, seg: 0, fallos: 0,
-            isDrawing: false, isExecuting: false, plannedPath: [],
-            maxTime: 30, currentTime: 30, dim: 0, cellSize: 0
-        };
+        // ESTADO GLOBAL CORE (Terapéutico)
+        const GAME = { active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [], player: {x:1, y:1}, goal: {x:0, y:0}, seg: 0, fallos: 0, isDrawing: false, isExecuting: false, plannedPath: [], maxTime: 30, currentTime: 30, dim: 0, cellSize: 0 };
 
         function mostrarConfig() { document.getElementById('scr-intro').style.display = 'none'; document.getElementById('scr-config').style.display = 'flex'; }
+        
         function setModo(m) { 
             GAME.modo = m; 
             document.getElementById('mode-crono').classList.toggle('active', m==='crono'); 
@@ -164,16 +219,18 @@
         }
 
         function iniciarJuego() {
+            try { AUDIO.win.play().then(()=>{ AUDIO.win.pause(); }); } catch(e){} // Permiso audio
             GAME.maxTime = parseInt(document.getElementById('input-tiempo').value);
             GAME.currentTime = GAME.maxTime;
             document.getElementById('scr-config').style.display = 'none';
             document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('controls').style.display = 'grid';
+            document.getElementById('controls').style.display = 'flex'; // Usar Flex por defecto responsivo
             if(GAME.modo === 'contrareloj') document.getElementById('progress-container').style.display = 'block';
+            
             GAME.active = true;
             loopReloj();
             generarNivel();
-            initCapturaInput();
+            initMecanicaDibujo();
             initEstrellas();
         }
 
@@ -193,6 +250,7 @@
             GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 23) GAME.dim = 23;
             GAME.cellSize = size / GAME.dim;
             
+            // Algoritmo de Prim para laberinto real
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
             const walls = [];
             function excavar(x, y) {
@@ -207,7 +265,8 @@
                 if(GAME.grid[nx][ny]) { GAME.grid[px][py] = false; excavar(nx, ny); }
             }
             GAME.player = {x:1, y:1}; GAME.goal = {x: GAME.dim-2, y: GAME.dim-2};
-            GAME.plannedPath = []; dibujar();
+            GAME.plannedPath = [];
+            dibujar();
         }
 
         function remover(dx, dy) { if(GAME.active && !GAME.isExecuting) moverLogic(dx, dy); }
@@ -235,19 +294,33 @@
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) {
-                        ctx.fillStyle = "#1e293b"; ctx.beginPath();
-                        ctx.roundRect(x*GAME.cellSize, y*GAME.cellSize, GAME.cellSize-2, GAME.cellSize-2, 5); ctx.fill();
+                        ctx.fillStyle = "#1e293b";
+                        ctx.beginPath();
+                        ctx.roundRect(x*GAME.cellSize, y*GAME.cellSize, GAME.cellSize-2, GAME.cellSize-2, 5);
+                        ctx.fill();
                     }
                 }
             }
 
+            // --- CORRECCIÓN: DIBUJAR TRAZADO CON BRILLO NEÓN ---
             if (GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.3;
+                ctx.strokeStyle = "#00f2fe"; // Color neón
+                ctx.lineWidth = GAME.cellSize * 0.3; // Grosor clínica
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
-                ctx.shadowBlur = 10; ctx.shadowColor = "#00f2fe"; ctx.beginPath();
+                
+                // Efecto resplandor
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = "#00f2fe";
+                
+                ctx.beginPath();
+                // Empezar en el cohete
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
+                // Dibujar el camino
                 GAME.plannedPath.forEach(p => ctx.lineTo(p.gx*GAME.cellSize + GAME.cellSize/2, p.gy*GAME.cellSize + GAME.cellSize/2));
-                ctx.stroke(); ctx.shadowBlur = 0;
+                ctx.stroke();
+                
+                // Resetear shadow Blur para no afectar el resto
+                ctx.shadowBlur = 0;
             }
 
             ctx.font = `${GAME.cellSize*0.7}px Arial`;
@@ -260,7 +333,8 @@
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
         }
 
-        function initCapturaInput() {
+        // --- UNIFICACIÓN TÁCTIL (MOVIMIENTO O TRAZADO) ---
+        function initMecanicaDibujo() {
             const getCoords = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -271,15 +345,22 @@
             const start = (e) => {
                 if (!GAME.active || GAME.isExecuting) return;
                 const c = getCoords(e);
-                if (c.gx === GAME.player.x && c.gy === GAME.player.y) { GAME.isDrawing = true; GAME.plannedPath = []; }
+                // Si toca cerca del cohete, empezar dibujo. Sino, mover cohete.
+                if (Math.abs(c.gx - GAME.player.x) < 1.5 && Math.abs(c.gy - GAME.player.y) < 1.5) { 
+                    GAME.isDrawing = true; GAME.plannedPath = []; 
+                } else {
+                    // Opcional: mover cohete si toca cerca pero no en el centro
+                }
             };
 
             const move = (e) => {
                 if (!GAME.isDrawing) return;
                 const c = getCoords(e);
                 if (c.gx >= 0 && c.gx < GAME.dim && c.gy >= 0 && c.gy < GAME.dim) {
-                    if (GAME.grid[c.gx][c.gy]) { GAME.isDrawing = false; GAME.plannedPath = []; GAME.fallos++; AUDIO.hurt.play(); GAME.player={x:1,y:1}; actualizarHUD(); dibujar(); }
-                    else {
+                    if (GAME.grid[c.gx][c.gy]) {
+                        // Toco pared en el trazado (feedback clínico image_13.png)
+                        GAME.isDrawing = false; GAME.plannedPath = []; GAME.fallos++; AUDIO.hurt.play(); GAME.player={x:1,y:1}; actualizarHUD(); dibujar();
+                    } else {
                         const last = GAME.plannedPath[GAME.plannedPath.length-1];
                         if (!last || (last.gx !== c.gx || last.gy !== c.gy)) GAME.plannedPath.push(c);
                     }
@@ -298,7 +379,7 @@
             for (let step of GAME.plannedPath) {
                 GAME.player.x = step.gx; GAME.player.y = step.gy;
                 AUDIO.move.play(); dibujar();
-                await new Promise(r => setTimeout(r, 60));
+                await new Promise(r => setTimeout(r, 60)); // Velocidad despegue
                 if (GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { ganarNivel(); break; }
             }
             GAME.isExecuting = false; GAME.plannedPath = []; dibujar();
@@ -306,17 +387,48 @@
 
         function finalizar(motivo) {
             GAME.active = false;
-            document.getElementById('scr-final').style.display = 'flex';
-            document.getElementById('txt-final-titulo').innerText = motivo;
-            document.getElementById('metrics-summary').innerHTML = `Nivel: ${GAME.nivel}<br>Choques: ${GAME.fallos}`;
+            // Guardado automático Perceptum
+            const n = localStorage.getItem('pacienteActual') || "Anonimo";
+            const h = new Date().toISOString().split('T')[0];
+            const data = new FormData();
+            data.append("entry.369874016", n);
+            data.append("entry.1353470174", `Laberinto v2 (${GAME.modo})`);
+            data.append("entry.721051298", GAME.nivel);
+            data.append("entry.873272199", GAME.nivel - 1);
+            data.append("entry.1030094511", GAME.fallos);
+            data.append("entry.845098414", h);
+            
+            document.getElementById('scr-sync').style.display = 'flex';
+            fetch(FORM_URL, { method: "POST", mode: "no-cors", body: data });
+            
+            setTimeout(() => {
+                document.getElementById('scr-sync').style.display = 'none';
+                document.getElementById('scr-final').style.display = 'flex';
+                document.getElementById('txt-final-titulo').innerText = motivo;
+                document.getElementById('metrics-summary').innerHTML = `Nivel: ${GAME.nivel}<br>Choques: ${GAME.fallos}`;
+            }, 1800);
         }
 
         function initEstrellas() {
-            const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
-            sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(150).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
-            function anim() { sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.2; if(s.y>sc.height) s.y=0; }); requestAnimationFrame(anim); } anim();
+            starCanvas.width = window.innerWidth; starCanvas.height = window.innerHeight;
+            const stars = Array(150).fill().map(() => ({x:Math.random()*starCanvas.width, y:Math.random()*starCanvas.height, r:Math.random()*1.5}));
+            function anim() { 
+                if(!starCtx) return;
+                starCtx.clearRect(0,0,starCanvas.width, starCanvas.height); 
+                starCtx.fillStyle="white"; 
+                stars.forEach(s => { starCtx.beginPath(); starCtx.arc(s.x, s.y, s.r, 0, Math.PI*2); starCtx.fill(); s.y+=0.2; if(s.y>starCanvas.height) s.y=0; }); 
+                requestAnimationFrame(anim); 
+            } anim();
         }
+
+        window.onkeydown = (e) => {
+            if(e.key === "ArrowUp") moverLogic(0,-1);
+            if(e.key === "ArrowDown") moverLogic(0,1);
+            if(e.key === "ArrowLeft") moverLogic(-1,0);
+            if(e.key === "ArrowRight") moverLogic(1,0);
+        };
+        // Redibujar si cambia la pantalla
+        window.addEventListener('resize', () => { if(GAME.active) generarNivel(); });
     </script>
 </body>
 </html>
