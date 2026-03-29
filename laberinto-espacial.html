@@ -40,7 +40,7 @@
         }
 
         .card-clinica {
-            background: #ffffff; color: #1e293b; padding: 35px;
+            background: #ffffff; color: #1e293b; padding: 40px;
             border-radius: 30px; text-align: center; max-width: 420px; width: 100%;
             border: 5px solid var(--clin-accent); box-shadow: 0 15px 40px rgba(0,0,0,0.4);
         }
@@ -61,7 +61,7 @@
         .clin-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #ad1457; }
         .clin-btn-alt { background: #64748b; box-shadow: 0 10px 0 #475569; font-size: 1.1rem; }
 
-        /* CONFIGURACIÓN Y MODO (Arreglado para celular image_12.png) */
+        /* CONFIGURACIÓN Y MODO (Ajustado para image_12.png) */
         .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
         .modo-row { display: flex; gap: 10px; width: 100%; }
         
@@ -81,9 +81,16 @@
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 30px; background: var(--clin-accent); border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
         /* ========================================================================
-           3. ESCENARIO DE JUEGO Y HUD (ADAPTABLE)
+           3. ESCENARIO DE JUEGO Y HUD (SIEMPRE CENTRADO)
            ======================================================================== */
-        #gameCanvas { display: block; margin: auto; z-index: 10; position: relative; border-radius: 20px; background: #161d2b; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        /* Contenedor principal que centra TODO en pantalla */
+        #game-view {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; z-index: 10;
+        }
+
+        #gameCanvas { display: block; z-index: 10; position: relative; border-radius: 20px; background: #161d2b; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         
         /* HUD Dinámico */
         #ui-layer { position: absolute; top: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; align-items: center; z-index: 100; pointer-events: none; }
@@ -166,22 +173,24 @@
         </div>
     </div>
 
-    <div id="ui-layer" style="display:none">
-        <button class="hud-btn-salir" onclick="location.reload()">SALIR</button>
-        <div class="stat-group">
-            <div class="stat-box"><span id="txt-nivel" style="font-weight:900; color:#00f2fe; font-size:1.1rem;">NV 1</span></div>
-            <div class="stat-box"><span id="txt-vidas" style="letter-spacing:2px;">❤️❤️❤️</span></div>
+    <div id="game-view" style="display:none">
+        <div id="ui-layer">
+            <button class="hud-btn-salir" onclick="location.reload()">SALIR</button>
+            <div class="stat-group">
+                <div class="stat-box"><span id="txt-nivel" style="font-weight:900; color:#00f2fe; font-size:1.1rem;">Nivel 1</span></div>
+                <div class="stat-box"><span id="txt-vidas" style="letter-spacing:2px;">❤️❤️❤️</span></div>
+            </div>
         </div>
-    </div>
-    
-    <div id="progress-container"><div id="progress-bar"></div></div>
-    <canvas id="gameCanvas"></canvas>
+        
+        <div id="progress-container"><div id="progress-bar"></div></div>
+        <canvas id="gameCanvas"></canvas>
 
-    <div id="controls" style="display:none">
-        <button style="grid-column:2; grid-row:1" class="btn-dir" onmousedown="remover(0,-1)" ontouchstart="remover(0,-1)">↑</button>
-        <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
-        <button style="grid-column:3; grid-row:2" class="btn-dir" onmousedown="remover(1,0)" ontouchstart="remover(1,0)">→</button>
-        <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
+        <div id="controls">
+            <button style="grid-column:2; grid-row:1" class="btn-dir" onmousedown="remover(0,-1)" ontouchstart="remover(0,-1)">↑</button>
+            <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
+            <button style="grid-column:3; grid-row:2" class="btn-dir" onmousedown="remover(1,0)" ontouchstart="remover(1,0)">→</button>
+            <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
+        </div>
     </div>
 
     <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><h3>Sincronizando...</h3></div></div>
@@ -223,8 +232,7 @@
             GAME.maxTime = parseInt(document.getElementById('input-tiempo').value);
             GAME.currentTime = GAME.maxTime;
             document.getElementById('scr-config').style.display = 'none';
-            document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('controls').style.display = 'flex'; // Usar Flex por defecto responsivo
+            document.getElementById('game-view').style.display = 'flex';
             if(GAME.modo === 'contrareloj') document.getElementById('progress-container').style.display = 'block';
             
             GAME.active = true;
@@ -303,6 +311,7 @@
             }
 
             // --- CORRECCIÓN: DIBUJAR TRAZADO CON BRILLO NEÓN ---
+            // Y CORRECCIÓN: Solo dibujar la línea neón que dibujaste.
             if (GAME.plannedPath.length > 0) {
                 ctx.strokeStyle = "#00f2fe"; // Color neón
                 ctx.lineWidth = GAME.cellSize * 0.3; // Grosor clínica
@@ -329,7 +338,7 @@
         }
 
         function actualizarHUD() {
-            document.getElementById('txt-nivel').innerText = "NV " + GAME.nivel;
+            document.getElementById('txt-nivel').innerText = "Nivel " + GAME.nivel;
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
         }
 
