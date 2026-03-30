@@ -6,16 +6,11 @@
     <title>Laberinto Espacial Pro - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* ========================================================================
-           1. ARQUITECTURA DE DISEÑO Y VARIABLES
-           ======================================================================== */
         :root {
             --clin-bg: #0b101b;
             --clin-card: #1c2331;
             --clin-accent: #e91e63;
             --clin-text: #ffffff;
-            --clin-error: #ef4444;
-            --clin-success: #22c55e;
             --path-glow: #00f2fe;
             --wall: #1e293b;
         }
@@ -28,7 +23,9 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* --- MENÚS Y OVERLAYS --- */
+        #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
+
+        /* --- INTERFAZ DE MENÚS (RESTAURADA) --- */
         .overlay {
             position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
             display: flex; align-items: center; justify-content: center;
@@ -36,34 +33,33 @@
         }
 
         .card-clinica {
-            background: #ffffff; color: #1e293b; padding: 40px;
-            border-radius: 30px; text-align: center; max-width: 480px; width: 100%;
-            border: 6px solid var(--clin-accent); box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            background: #ffffff; color: #1e293b; padding: 35px;
+            border-radius: 30px; text-align: center; max-width: 460px; width: 100%;
+            border: 6px solid var(--clin-accent); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        h1 { font-size: 3rem; color: var(--clin-accent); margin: 0; font-weight: 900; text-transform: uppercase; }
-        h2 { font-size: 2rem; color: var(--clin-accent); margin-bottom: 20px; font-weight: 900; }
-
+        h1 { font-size: 2.8rem; color: var(--clin-accent); margin: 0; font-weight: 900; }
+        
         .clin-btn {
             background: var(--clin-accent); color: white; border: none;
-            padding: 22px; border-radius: 60px; font-weight: 900;
+            padding: 20px; border-radius: 50px; font-weight: 900;
             cursor: pointer; text-transform: uppercase; margin-top: 15px;
-            box-shadow: 0 10px 0 #ad1457; transition: 0.1s; width: 100%;
-            font-size: 1.5rem;
+            box-shadow: 0 8px 0 #ad1457; transition: 0.1s; width: 100%;
+            font-size: 1.4rem;
         }
-        .clin-btn:active { transform: translateY(5px); box-shadow: 0 5px 0 #ad1457; }
+        .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
 
-        /* Ajuste de Botones de Modo (Sin cortes) */
-        .config-box { background: #f1f5f9; border-radius: 20px; padding: 25px; margin: 20px 0; }
-        .modo-row { display: flex; gap: 12px; width: 100%; }
+        /* Arreglo para botones de modo */
+        .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 15px 0; }
+        .modo-row { display: flex; gap: 10px; width: 100%; justify-content: center; }
         .modo-btn {
-            flex: 1; background: white; border: 4px solid #cbd5e1; color: #64748b;
-            padding: 15px 5px; border-radius: 15px; cursor: pointer; font-weight: 900;
-            font-size: 0.9rem; text-transform: uppercase; transition: 0.2s;
+            flex: 1; background: white; border: 3px solid #cbd5e1; color: #64748b;
+            padding: 15px 5px; border-radius: 12px; cursor: pointer; font-weight: 900;
+            font-size: 0.8rem; text-transform: uppercase; min-width: 120px;
         }
         .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
 
-        /* --- ESCENARIO DE JUEGO (CENTRADO TOTAL) --- */
+        /* --- CONTENEDOR DE JUEGO (CENTRADO) --- */
         #game-view {
             width: 100%; height: 100%; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
@@ -71,46 +67,34 @@
         }
 
         #gameCanvas {
-            background: #161d2b; border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            max-width: 95vw; max-height: 70vh;
+            background: #161d2b; border-radius: 15px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
+            max-width: 95vw; max-height: 65vh;
         }
 
-        /* HUD SUPERIOR */
+        /* HUD Y CONTROLES */
         #ui-layer {
-            position: absolute; top: 0; width: 100%; padding: 25px;
+            position: absolute; top: 20px; width: 100%; padding: 0 25px;
             display: flex; justify-content: space-between; align-items: center;
             pointer-events: none;
         }
-        .hud-btn-salir {
-            background: var(--clin-error); color: white; border: none;
-            padding: 12px 25px; border-radius: 12px; font-weight: 900;
-            cursor: pointer; pointer-events: auto;
-        }
-        .stat-box { background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 12px; border: 1px solid var(--clin-accent); }
-
-        /* JOYSTICK EN CRUZ */
+        .hud-item { background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--clin-accent); pointer-events: auto; }
+        
         #controls {
-            position: absolute; bottom: 30px; right: 30px;
-            display: grid; grid-template-columns: repeat(3, 80px);
-            grid-template-rows: repeat(3, 80px); gap: 15px;
+            position: absolute; bottom: 25px; right: 25px;
+            display: grid; grid-template-columns: repeat(3, 75px);
+            grid-template-rows: repeat(3, 75px); gap: 12px;
         }
         .btn-dir {
-            background: var(--clin-card); border: 4px solid var(--clin-accent);
-            color: var(--clin-accent); border-radius: 20px; font-size: 2.2rem;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 6px 0 #000;
+            background: var(--clin-card); border: 3px solid var(--clin-accent);
+            color: var(--clin-accent); border-radius: 18px; font-size: 2rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
-        .btn-dir:active { transform: translateY(4px); box-shadow: 0 2px 0 #000; }
 
-        #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
-        .loader { border: 6px solid #f3f3f3; border-top: 6px solid var(--clin-success); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: auto; }
+        #scr-sync { background: rgba(11,16,27,0.9); z-index: 3000; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--path-glow); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @media (max-width: 600px) {
-            #controls { grid-template-columns: repeat(3, 65px); grid-template-rows: repeat(3, 65px); bottom: 15px; right: 15px; }
-            h1 { font-size: 2.2rem; }
-        }
     </style>
 </head>
 <body>
@@ -119,10 +103,10 @@
 
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <h1>🚀 Laberinto</h1>
-            <p style="font-weight: 700; color: #64748b; font-size: 1.2rem; margin-top:10px;">Centro de Salud Perceptum</p>
-            <p style="margin: 20px 0; color: #475569;">Desliza tu dedo por los pasillos o usa las flechas para guiar al cohete a la meta.</p>
-            <button class="clin-btn" onclick="mostrarConfig()">CONTINUAR</button>
+            <h1>🚀 LABERINTO</h1>
+            <p style="font-weight: 700; color: #64748b; margin-top:10px;">Centro de Salud Perceptum</p>
+            <p style="margin: 20px 0;">Ayuda al cohete a cruzar el laberinto dibujando el camino con tu dedo.</p>
+            <button class="clin-btn" onclick="cambiarPantalla('scr-intro', 'scr-config')">CONTINUAR</button>
         </div>
     </div>
 
@@ -145,10 +129,10 @@
 
     <div id="game-view" style="display:none">
         <div id="ui-layer">
-            <button class="hud-btn-salir" onclick="location.reload()">SALIR</button>
+            <button class="hud-item" onclick="location.reload()" style="background:var(--clin-accent); color:white; border:none; cursor:pointer; font-weight:900;">SALIR</button>
             <div style="display:flex; gap:10px;">
-                <div class="stat-box"><span id="txt-nivel" style="color:var(--path-glow); font-weight:900;">Nivel 1</span></div>
-                <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
+                <div class="hud-item"><span id="txt-nivel" style="color:var(--path-glow); font-weight:900;">NV 1</span></div>
+                <div class="hud-item"><span id="txt-vidas">❤️❤️❤️</span></div>
             </div>
         </div>
 
@@ -156,21 +140,13 @@
 
         <div id="controls">
             <button style="grid-column:2; grid-row:1" class="btn-dir" onmousedown="remover(0,-1)" ontouchstart="remover(0,-1)">↑</button>
-            <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
+            <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="-remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
             <button style="grid-column:3; grid-row:2" class="btn-dir" onmousedown="remover(1,0)" ontouchstart="remover(1,0)">→</button>
             <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
         </div>
     </div>
 
-    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><h3 style="margin-top:20px;">Sincronizando con Perceptum...</h3></div></div>
-    
-    <div id="scr-final" class="overlay" style="display:none">
-        <div class="card-clinica">
-            <h1 id="txt-final-titulo">¡LOGRADO!</h1>
-            <div id="metrics" style="font-size: 1.5rem; margin: 30px 0; font-weight:700;"></div>
-            <button class="clin-btn" onclick="location.reload()">REINTENTAR</button>
-        </div>
-    </div>
+    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><p>Sincronizando datos...</p></div></div>
 
     <script>
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
@@ -186,10 +162,10 @@
             active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [],
             player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
             isDrawing: false, plannedPath: [], isExecuting: false,
-            currentTime: 30, maxTime: 30, fallos: 0, startTime: 0
+            currentTime: 30, maxTime: 30, fallos: 0
         };
 
-        function mostrarConfig() { document.getElementById('scr-intro').style.display='none'; document.getElementById('scr-config').style.display='flex'; }
+        function cambiarPantalla(id1, id2) { document.getElementById(id1).style.display='none'; document.getElementById(id2).style.display='flex'; }
         
         function setModo(m) {
             GAME.modo = m;
@@ -200,15 +176,11 @@
 
         function iniciarJuego() {
             GAME.maxTime = parseInt(document.getElementById('input-tiempo').value);
-            GAME.currentTime = GAME.maxTime;
-            GAME.startTime = Date.now();
-            document.getElementById('scr-config').style.display='none';
-            document.getElementById('game-view').style.display='flex';
+            cambiarPantalla('scr-config', 'game-view');
             GAME.active = true;
             generarNivel();
             initEvents();
             initEstrellas();
-            if(GAME.modo === 'contrareloj') loopReloj();
         }
 
         function generarNivel() {
@@ -217,7 +189,6 @@
             GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 21) GAME.dim = 21;
             GAME.cellSize = size / GAME.dim;
             
-            // Laberinto Prim
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
             const stack = [[1,1]]; GAME.grid[1][1] = false;
             while(stack.length > 0) {
@@ -241,45 +212,43 @@
             if(nx < 0 || ny < 0 || nx >= GAME.dim || ny >= GAME.dim || GAME.grid[nx][ny]) {
                 GAME.vidas--; GAME.fallos++; AUDIO.hurt.play();
                 GAME.player = {x:1, y:1};
-                if(GAME.vidas <= 0) finalizar("INTENTA DE NUEVO");
+                if(GAME.vidas <= 0) finalizarJuego();
             } else {
-                GAME.player.x = nx; GAME.player.y = ny;
-                AUDIO.move.play();
-                if(nx === GAME.goal.x && ny === GAME.goal.y) { 
-                    GAME.nivel++; AUDIO.win.play(); 
-                    if(GAME.nivel > 10) finalizar("¡CAMPIÓN ESPACIAL!"); else generarNivel(); 
-                }
+                GAME.player.x = nx; GAME.player.y = ny; AUDIO.move.play();
+                if(nx === GAME.goal.x && ny === GAME.goal.y) { GAME.nivel++; AUDIO.win.play(); generarNivel(); }
             }
             actualizarHUD(); dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Muros
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) {
                         ctx.fillStyle = "#1e293b"; ctx.beginPath();
-                        ctx.roundRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2, 5); ctx.fill();
+                        ctx.roundRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2, 4); ctx.fill();
                     }
                 }
             }
-            // Trazo Neón (Solo lo dibujado)
+
+            // CAMINO ILUMINADO (RESTAURADO)
             if(GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
+                ctx.strokeStyle = varProp('--path-glow'); ctx.lineWidth = GAME.cellSize * 0.45;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
-                ctx.shadowBlur = 15; ctx.shadowColor = "#00f2fe";
+                ctx.shadowBlur = 20; ctx.shadowColor = varProp('--path-glow');
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
                 GAME.plannedPath.forEach(p => ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2));
                 ctx.stroke();
                 ctx.shadowBlur = 0;
             }
-            // Iconos
+
             ctx.font = `${GAME.cellSize*0.8}px Arial`;
             ctx.fillText("🏁", GAME.goal.x*GAME.cellSize + 2, (GAME.goal.y+0.85)*GAME.cellSize);
             ctx.fillText("🚀", GAME.player.x*GAME.cellSize + 2, (GAME.player.y+0.85)*GAME.cellSize);
         }
+
+        function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
         function initEvents() {
             const getPos = (e) => {
@@ -288,33 +257,33 @@
                 const cy = e.touches ? e.touches[0].clientY : e.clientY;
                 return { x: Math.floor((cx - rect.left)/GAME.cellSize), y: Math.floor((cy - rect.top)/GAME.cellSize) };
             };
-            canvas.addEventListener('touchstart', (e) => {
+            canvas.onmousedown = canvas.ontouchstart = (e) => {
                 const p = getPos(e);
                 if(p.x === GAME.player.x && p.y === GAME.player.y && !GAME.isExecuting) { GAME.isDrawing = true; GAME.plannedPath = []; }
-            });
-            window.addEventListener('touchmove', (e) => {
+            };
+            window.onmousemove = window.ontouchmove = (e) => {
                 if(!GAME.isDrawing) return;
                 const p = getPos(e);
                 if(p.x >= 0 && p.x < GAME.dim && p.y >= 0 && p.y < GAME.dim) {
-                    if(GAME.grid[p.x][p.y]) { GAME.isDrawing = false; GAME.plannedPath = []; moverLogic(0,0); } 
+                    if(GAME.grid[p.x][p.y]) { GAME.isDrawing = false; GAME.plannedPath = []; moverLogic(0,0); }
                     else {
                         const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
                         const dist = Math.abs(p.x - last.x) + Math.abs(p.y - last.y);
-                        if(dist === 1) { // Solo permite adyacentes (No diagonales)
+                        if(dist === 1) { // BLOQUEO DIAGONAL
                             if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) GAME.plannedPath.push(p);
                         }
                     }
                 }
                 dibujar();
-            });
-            window.addEventListener('touchend', () => { if(GAME.isDrawing) { GAME.isDrawing = false; ejecutarVuelo(); } });
+            };
+            window.onmouseup = window.ontouchend = () => { if(GAME.isDrawing) { GAME.isDrawing = false; ejecutarVuelo(); } };
         }
 
         async function ejecutarVuelo() {
             GAME.isExecuting = true;
             for(let step of GAME.plannedPath) {
                 GAME.player = step; AUDIO.move.play(); dibujar();
-                await new Promise(r => setTimeout(r, 70));
+                await new Promise(r => setTimeout(r, 60));
                 if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { 
                     GAME.nivel++; AUDIO.win.play(); generarNivel(); break; 
                 }
@@ -322,45 +291,27 @@
             GAME.plannedPath = []; GAME.isExecuting = false; dibujar();
         }
 
-        function loopReloj() {
-            if(!GAME.active) return;
-            GAME.currentTime -= 1;
-            if(GAME.currentTime <= 0) finalizar("TIEMPO AGOTADO");
-            else setTimeout(loopReloj, 1000);
-        }
-
-        function finalizar(motivo) {
+        function finalizarJuego() {
             GAME.active = false;
             document.getElementById('scr-sync').style.display='flex';
-            
-            const n = localStorage.getItem('pacienteActual') || "Anonimo";
             const data = new FormData();
-            data.append("entry.369874016", n);
-            data.append("entry.1353470174", "Laberinto V2");
+            data.append("entry.369874016", localStorage.getItem('pacienteActual') || "Anonimo");
             data.append("entry.721051298", GAME.nivel);
-            data.append("entry.1030094511", GAME.fallos);
-            
-            fetch(FORM_URL, { method: "POST", mode: "no-cors", body: data })
-            .then(() => {
-                document.getElementById('scr-sync').style.display='none';
-                document.getElementById('scr-final').style.display='flex';
-                document.getElementById('txt-final-titulo').innerText = motivo;
-                document.getElementById('metrics').innerHTML = `Nivel: ${GAME.nivel}<br>Choques: ${GAME.fallos}`;
-            });
+            fetch(FORM_URL, { method: "POST", mode: "no-cors", body: data }).then(() => location.reload());
         }
 
         function actualizarHUD() {
-            document.getElementById('txt-nivel').innerText = "Nivel " + GAME.nivel;
+            document.getElementById('txt-nivel').innerText = "NV " + GAME.nivel;
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
         }
 
         function initEstrellas() {
             const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
             sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(120).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
+            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
             function anim() { 
                 sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.2; if(s.y>sc.height) s.y=0; }); 
+                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.3; if(s.y>sc.height) s.y=0; }); 
                 requestAnimationFrame(anim); 
             } anim();
         }
