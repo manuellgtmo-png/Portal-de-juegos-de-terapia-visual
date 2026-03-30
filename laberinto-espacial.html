@@ -25,7 +25,7 @@
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
 
-        /* --- INTERFAZ DE MENÚS (RESTAURADA) --- */
+        /* --- INTERFAZ DE MENÚS --- */
         .overlay {
             position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
             display: flex; align-items: center; justify-content: center;
@@ -49,17 +49,17 @@
         }
         .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
 
-        /* Arreglo para botones de modo */
+        /* Arreglo para botones de modo: Texto completo */
         .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 15px 0; }
         .modo-row { display: flex; gap: 10px; width: 100%; justify-content: center; }
         .modo-btn {
             flex: 1; background: white; border: 3px solid #cbd5e1; color: #64748b;
             padding: 15px 5px; border-radius: 12px; cursor: pointer; font-weight: 900;
-            font-size: 0.8rem; text-transform: uppercase; min-width: 120px;
+            font-size: 0.85rem; text-transform: uppercase;
         }
         .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
 
-        /* --- CONTENEDOR DE JUEGO (CENTRADO) --- */
+        /* --- CONTENEDOR DE JUEGO (CENTRADO TOTAL) --- */
         #game-view {
             width: 100%; height: 100%; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
@@ -72,7 +72,7 @@
             max-width: 95vw; max-height: 65vh;
         }
 
-        /* HUD Y CONTROLES */
+        /* HUD */
         #ui-layer {
             position: absolute; top: 20px; width: 100%; padding: 0 25px;
             display: flex; justify-content: space-between; align-items: center;
@@ -80,6 +80,7 @@
         }
         .hud-item { background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--clin-accent); pointer-events: auto; }
         
+        /* JOYSTICK */
         #controls {
             position: absolute; bottom: 25px; right: 25px;
             display: grid; grid-template-columns: repeat(3, 75px);
@@ -89,12 +90,13 @@
             background: var(--clin-card); border: 3px solid var(--clin-accent);
             color: var(--clin-accent); border-radius: 18px; font-size: 2rem;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 5px 0 #000;
         }
+        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
 
         #scr-sync { background: rgba(11,16,27,0.9); z-index: 3000; }
         .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--path-glow); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
     </style>
 </head>
 <body>
@@ -105,7 +107,7 @@
         <div class="card-clinica">
             <h1>🚀 LABERINTO</h1>
             <p style="font-weight: 700; color: #64748b; margin-top:10px;">Centro de Salud Perceptum</p>
-            <p style="margin: 20px 0;">Ayuda al cohete a cruzar el laberinto dibujando el camino con tu dedo.</p>
+            <p style="margin: 20px 0;">Entrena tu visión y precisión guiando al cohete hasta la meta.</p>
             <button class="clin-btn" onclick="cambiarPantalla('scr-intro', 'scr-config')">CONTINUAR</button>
         </div>
     </div>
@@ -129,7 +131,7 @@
 
     <div id="game-view" style="display:none">
         <div id="ui-layer">
-            <button class="hud-item" onclick="location.reload()" style="background:var(--clin-accent); color:white; border:none; cursor:pointer; font-weight:900;">SALIR</button>
+            <button class="hud-item" onclick="location.reload()" style="background:var(--clin-accent); color:white; border:none; cursor:pointer; font-weight:900;">MENU PRINCIPAL</button>
             <div style="display:flex; gap:10px;">
                 <div class="hud-item"><span id="txt-nivel" style="color:var(--path-glow); font-weight:900;">NV 1</span></div>
                 <div class="hud-item"><span id="txt-vidas">❤️❤️❤️</span></div>
@@ -140,13 +142,13 @@
 
         <div id="controls">
             <button style="grid-column:2; grid-row:1" class="btn-dir" onmousedown="remover(0,-1)" ontouchstart="remover(0,-1)">↑</button>
-            <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="-remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
+            <button style="grid-column:1; grid-row:2" class="btn-dir" onmousedown="remover(-1,0)" ontouchstart="remover(-1,0)">←</button>
             <button style="grid-column:3; grid-row:2" class="btn-dir" onmousedown="remover(1,0)" ontouchstart="remover(1,0)">→</button>
             <button style="grid-column:2; grid-row:3" class="btn-dir" onmousedown="remover(0,1)" ontouchstart="remover(0,1)">↓</button>
         </div>
     </div>
 
-    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><p>Sincronizando datos...</p></div></div>
+    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><p>Guardando resultados...</p></div></div>
 
     <script>
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
@@ -231,11 +233,11 @@
                 }
             }
 
-            // CAMINO ILUMINADO (RESTAURADO)
+            // RASTRO ILUMINADO (RESTABLECIDO)
             if(GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = varProp('--path-glow'); ctx.lineWidth = GAME.cellSize * 0.45;
+                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.45;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
-                ctx.shadowBlur = 20; ctx.shadowColor = varProp('--path-glow');
+                ctx.shadowBlur = 20; ctx.shadowColor = "#00f2fe";
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
                 GAME.plannedPath.forEach(p => ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2));
@@ -247,8 +249,6 @@
             ctx.fillText("🏁", GAME.goal.x*GAME.cellSize + 2, (GAME.goal.y+0.85)*GAME.cellSize);
             ctx.fillText("🚀", GAME.player.x*GAME.cellSize + 2, (GAME.player.y+0.85)*GAME.cellSize);
         }
-
-        function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
         function initEvents() {
             const getPos = (e) => {
@@ -265,11 +265,13 @@
                 if(!GAME.isDrawing) return;
                 const p = getPos(e);
                 if(p.x >= 0 && p.x < GAME.dim && p.y >= 0 && p.y < GAME.dim) {
-                    if(GAME.grid[p.x][p.y]) { GAME.isDrawing = false; GAME.plannedPath = []; moverLogic(0,0); }
-                    else {
+                    if(GAME.grid[p.x][p.y]) { 
+                        GAME.isDrawing = false; GAME.plannedPath = []; moverLogic(0,0); 
+                    } else {
                         const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
                         const dist = Math.abs(p.x - last.x) + Math.abs(p.y - last.y);
-                        if(dist === 1) { // BLOQUEO DIAGONAL
+                        // BLOQUEO DIAGONAL: Solo distancia de 1 casilla
+                        if(dist === 1) {
                             if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) GAME.plannedPath.push(p);
                         }
                     }
@@ -295,7 +297,7 @@
             GAME.active = false;
             document.getElementById('scr-sync').style.display='flex';
             const data = new FormData();
-            data.append("entry.369874016", localStorage.getItem('pacienteActual') || "Anonimo");
+            data.append("entry.369874016", "Paciente_Perceptum");
             data.append("entry.721051298", GAME.nivel);
             fetch(FORM_URL, { method: "POST", mode: "no-cors", body: data }).then(() => location.reload());
         }
@@ -308,7 +310,7 @@
         function initEstrellas() {
             const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
             sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
+            const stars = Array(120).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
             function anim() { 
                 sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
                 stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.3; if(s.y>sc.height) s.y=0; }); 
