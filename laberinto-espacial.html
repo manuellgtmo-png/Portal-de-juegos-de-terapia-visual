@@ -21,11 +21,11 @@
             margin: 0; background-color: var(--clin-bg); color: var(--clin-text);
             font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: background-color 0.2s;
+            transition: background-color 0.15s ease;
         }
 
-        /* Efecto de pantalla roja al perder vida */
-        body.hit-flash { background-color: #7f1d1d !important; }
+        /* Efecto Visual de Impacto */
+        body.hit-flash { background-color: #ff0000 !important; }
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
 
@@ -37,7 +37,7 @@
 
         .card-clinica {
             background: #ffffff; color: #1e293b; padding: 35px;
-            border-radius: 30px; text-align: center; max-width: 460px; width: 100%;
+            border-radius: 30px; text-align: center; max-width: 480px; width: 100%;
             border: 6px solid var(--clin-accent); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
@@ -53,11 +53,11 @@
         .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
 
         .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 15px 0; }
-        .modo-row { display: flex; gap: 10px; width: 100%; justify-content: center; }
+        .modo-row { display: flex; gap: 10px; width: 100%; }
         .modo-btn {
             flex: 1; background: white; border: 3px solid #cbd5e1; color: #64748b;
             padding: 15px 5px; border-radius: 12px; cursor: pointer; font-weight: 900;
-            font-size: 0.85rem; text-transform: uppercase;
+            font-size: 0.85rem; text-transform: uppercase; min-width: 140px;
         }
         .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
 
@@ -78,7 +78,8 @@
             display: flex; justify-content: space-between; align-items: center;
             pointer-events: none;
         }
-        .hud-item { background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--clin-accent); pointer-events: auto; }
+        .hud-btn { background: var(--clin-accent); color:white; padding: 12px 20px; border-radius: 12px; border:none; font-weight:900; cursor:pointer; pointer-events: auto; }
+        .stat-box { background: rgba(0,0,0,0.6); padding: 10px 18px; border-radius: 12px; border: 1px solid var(--clin-accent); }
         
         #controls {
             position: absolute; bottom: 25px; right: 25px;
@@ -91,9 +92,10 @@
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             box-shadow: 0 5px 0 #000;
         }
-        .btn-dir:active { transform: translateY(3px); box-shadow: 0 2px 0 #000; }
 
         #scr-sync { background: rgba(11,16,27,0.9); z-index: 3000; }
+        .loader { border: 5px solid #f3f3f3; border-top: 5px solid var(--path-glow); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -124,10 +126,10 @@
 
     <div id="game-view" style="display:none">
         <div id="ui-layer">
-            <button class="hud-item" onclick="location.reload()" style="background:var(--clin-accent); color:white; border:none; cursor:pointer; font-weight:900;">MENU PRINCIPAL</button>
+            <button class="hud-btn" onclick="location.reload()">MENÚ PRINCIPAL</button>
             <div style="display:flex; gap:10px;">
-                <div class="hud-item"><span id="txt-nivel" style="color:var(--path-glow); font-weight:900;">NV 1</span></div>
-                <div class="hud-item"><span id="txt-vidas">❤️❤️❤️</span></div>
+                <div class="stat-box"><span id="txt-nivel" style="color:var(--path-glow); font-weight:900;">NV 1</span></div>
+                <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
             </div>
         </div>
 
@@ -141,25 +143,25 @@
         </div>
     </div>
 
-    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><p>Guardando resultados...</p></div></div>
+    <div id="scr-sync" class="overlay" style="display:none"><div class="card-clinica"><div class="loader"></div><p>Sincronizando con Perceptum...</p></div></div>
 
     <script>
         const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
+        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
         
         const AUDIO = {
             move: new Audio('https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3'),
-            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
+            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'), // Sonido de choque
             win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
         };
 
         let GAME = {
             active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [],
             player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
-            isDrawing: false, plannedPath: [], isExecuting: false
+            isDrawing: false, plannedPath: [], isExecuting: false, fallos: 0
         };
 
         function cambiarPantalla(id1, id2) { document.getElementById(id1).style.display='none'; document.getElementById(id2).style.display='flex'; }
-        
         function setModo(m) {
             GAME.modo = m;
             document.getElementById('mode-crono').classList.toggle('active', m==='crono');
@@ -174,8 +176,14 @@
             initEstrellas();
         }
 
+        function triggerError() {
+            document.body.classList.add('hit-flash');
+            AUDIO.hurt.play();
+            setTimeout(() => document.body.classList.remove('hit-flash'), 150);
+        }
+
         function generarNivel() {
-            const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.6);
+            const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.65);
             canvas.width = size; canvas.height = size;
             GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 19) GAME.dim = 19;
             GAME.cellSize = size / GAME.dim;
@@ -196,29 +204,26 @@
             GAME.plannedPath = []; dibujar();
         }
 
-        function triggerFlash() {
-            document.body.classList.add('hit-flash');
-            AUDIO.hurt.play();
-            setTimeout(() => document.body.classList.remove('hit-flash'), 200);
-        }
-
         function remover(dx, dy) { if(GAME.active && !GAME.isExecuting) moverLogic(dx, dy); }
 
         function moverLogic(dx, dy) {
             let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
             if(nx < 0 || ny < 0 || nx >= GAME.dim || ny >= GAME.dim || GAME.grid[nx][ny]) {
-                GAME.vidas--; triggerFlash();
+                GAME.vidas--; GAME.fallos++; triggerError();
                 GAME.player = {x:1, y:1};
                 if(GAME.vidas <= 0) location.reload();
             } else {
                 GAME.player.x = nx; GAME.player.y = ny; AUDIO.move.play();
-                if(nx === GAME.goal.x && ny === GAME.goal.y) { GAME.nivel++; AUDIO.win.play(); generarNivel(); }
+                if(nx === GAME.goal.x && ny === GAME.goal.y) { 
+                    GAME.nivel++; AUDIO.win.play(); generarNivel(); 
+                }
             }
             actualizarHUD(); dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
+            // Muros
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) {
@@ -227,16 +232,18 @@
                     }
                 }
             }
-
+            // Rastro Neón (Solo si hay camino planeado)
             if(GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
+                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.45;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
+                ctx.shadowBlur = 15; ctx.shadowColor = "#00f2fe";
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
                 GAME.plannedPath.forEach(p => ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2));
                 ctx.stroke();
+                ctx.shadowBlur = 0;
             }
-
+            // Iconos
             ctx.font = `${GAME.cellSize*0.8}px Arial`;
             ctx.fillText("🏁", GAME.goal.x*GAME.cellSize + 2, (GAME.goal.y+0.85)*GAME.cellSize);
             ctx.fillText("🚀", GAME.player.x*GAME.cellSize + 2, (GAME.player.y+0.85)*GAME.cellSize);
@@ -245,40 +252,47 @@
         function initEvents() {
             const getPos = (e) => {
                 const rect = canvas.getBoundingClientRect();
-                const cx = e.touches ? e.touches[0].clientX : e.clientX;
-                const cy = e.touches ? e.touches[0].clientY : e.clientY;
+                const cx = (e.touches ? e.touches[0].clientX : e.clientX);
+                const cy = (e.touches ? e.touches[0].clientY : e.clientY);
                 return { x: Math.floor((cx - rect.left)/GAME.cellSize), y: Math.floor((cy - rect.top)/GAME.cellSize) };
             };
+
             canvas.onmousedown = canvas.ontouchstart = (e) => {
                 const p = getPos(e);
-                if(p.x === GAME.player.x && p.y === GAME.player.y && !GAME.isExecuting) { 
-                    GAME.isDrawing = true; 
-                    GAME.plannedPath = []; 
+                if(p.x === GAME.player.x && p.y === GAME.player.y && !GAME.isExecuting) {
+                    GAME.isDrawing = true; GAME.plannedPath = [];
                 }
             };
+
             window.onmousemove = window.ontouchmove = (e) => {
                 if(!GAME.isDrawing) return;
                 const p = getPos(e);
                 if(p.x >= 0 && p.x < GAME.dim && p.y >= 0 && p.y < GAME.dim) {
                     const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
-                    const dist = Math.abs(p.x - last.x) + Math.abs(p.y - last.y);
+                    const dx = Math.abs(p.x - last.x);
+                    const dy = Math.abs(p.y - last.y);
                     
                     if(GAME.grid[p.x][p.y]) { 
-                        GAME.isDrawing = false; GAME.plannedPath = []; triggerFlash(); GAME.player = {x:1,y:1};
-                    } else if(dist === 1) { // SOLO MOVIMIENTOS CARDINALES (Evita diagonales)
-                        if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) GAME.plannedPath.push(p);
+                        GAME.isDrawing = false; GAME.plannedPath = []; triggerError(); GAME.player = {x:1,y:1};
+                    } else if((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) { // BLOQUEO DIAGONAL ESTRICTO
+                        if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) {
+                            GAME.plannedPath.push(p);
+                        }
                     }
                 }
                 dibujar();
             };
-            window.onmouseup = window.ontouchend = () => { if(GAME.isDrawing) { GAME.isDrawing = false; ejecutarVuelo(); } };
+
+            window.onmouseup = window.ontouchend = () => {
+                if(GAME.isDrawing) { GAME.isDrawing = false; ejecutarVuelo(); }
+            };
         }
 
         async function ejecutarVuelo() {
             GAME.isExecuting = true;
             for(let step of GAME.plannedPath) {
                 GAME.player = step; AUDIO.move.play(); dibujar();
-                await new Promise(r => setTimeout(r, 80));
+                await new Promise(r => setTimeout(r, 60));
                 if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { 
                     GAME.nivel++; AUDIO.win.play(); generarNivel(); break; 
                 }
@@ -297,7 +311,7 @@
             const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
             function anim() { 
                 sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.3; if(s.y>sc.height) s.y=0; }); 
+                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.2; if(s.y>sc.height) s.y=0; }); 
                 requestAnimationFrame(anim); 
             } anim();
         }
