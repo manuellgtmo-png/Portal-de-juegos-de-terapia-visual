@@ -37,10 +37,10 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: center;
-            transition: background-color 0.15s ease;
+            transition: background-color 0.1s ease; /* Ajustado para flash rápido */
         }
 
-        /* EFECTO FLASH ROJO DE IMPACTO */
+        /* EFECTO FLASH ROJO DE IMPACTO - INTEGRADO */
         body.hit-flash { 
             background-color: #ff0000 !important; 
         }
@@ -327,6 +327,7 @@
             stats.innerText = `Nivel: ${GAME.nivel}`;
         }
 
+        // --- FUNCIÓN FLASH ROJO INYECTADA ---
         function triggerError() {
             document.body.classList.add('hit-flash');
             setTimeout(() => document.body.classList.remove('hit-flash'), 250);
@@ -403,7 +404,7 @@
                 }
             } else {
                 GAME.vidas--;
-                triggerError();
+                triggerError(); // FLASH ACTIVADO
                 GAME.player = {x:1, y:1};
                 actualizarHUD();
             }
@@ -480,7 +481,7 @@
                     } else {
                         GAME.isDrawing = false;
                         GAME.vidas--;
-                        triggerError();
+                        triggerError(); // FLASH ACTIVADO AL DIBUJAR SOBRE PARED
                         GAME.player = {x:1, y:1};
                         GAME.plannedPath = [];
                         actualizarHUD();
