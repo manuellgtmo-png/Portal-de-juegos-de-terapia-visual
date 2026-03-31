@@ -17,12 +17,13 @@
 
         body {
             margin: 0; background-color: var(--clin-bg); color: #fff;
-            font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-family: 'Montserrat', sans-serif; height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
             transition: background-color 0.15s ease;
         }
 
-        /* EFECTO DE IMPACTO */
+        /* EFECTO DE IMPACTO ROJO */
         body.hit-flash { background-color: #ff0000 !important; }
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
@@ -34,57 +35,60 @@
         }
 
         .card-clinica {
-            background: var(--clin-card); color: #1e293b; padding: 35px;
-            border-radius: 30px; text-align: center; max-width: 500px; width: 100%;
+            background: var(--clin-card); color: #1e293b; padding: 30px;
+            border-radius: 30px; text-align: center; max-width: 450px; width: 100%;
             border: 6px solid var(--clin-accent); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        h1 { font-size: 2.8rem; color: var(--clin-accent); margin: 0; font-weight: 900; }
+        h1 { font-size: 2.2rem; color: var(--clin-accent); margin: 0; font-weight: 900; }
         
         .clin-btn {
             background: var(--clin-accent); color: white; border: none;
-            padding: 22px; border-radius: 50px; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; margin-top: 15px;
-            box-shadow: 0 8px 0 #ad1457; transition: 0.1s; width: 100%;
-            font-size: 1.5rem; display: block; text-decoration: none;
+            padding: 18px; border-radius: 50px; font-weight: 900;
+            cursor: pointer; text-transform: uppercase; margin-top: 12px;
+            box-shadow: 0 6px 0 #ad1457; transition: 0.1s; width: 100%;
+            font-size: 1.2rem; display: block; text-decoration: none;
         }
-        .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
-        .btn-secundario { background: #64748b; box-shadow: 0 8px 0 #475569; }
+        .clin-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #ad1457; }
+        .btn-secundario { background: #64748b; box-shadow: 0 6px 0 #475569; }
 
-        .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 15px 0; color: #1e293b; }
-        .modo-row { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
-        .modo-btn {
-            flex: 1; background: white; border: 3px solid #cbd5e1; color: #64748b;
-            padding: 15px; border-radius: 12px; cursor: pointer; font-weight: 900;
-            text-transform: uppercase;
+        #game-view { 
+            width: 100%; height: 100%; position: relative; z-index: 10; 
+            display: none; flex-direction: column; align-items: center; justify-content: center; 
         }
-        .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
 
-        #game-view { width: 100%; height: 100%; position: relative; z-index: 10; display: none; flex-direction: column; align-items: center; justify-content: center; }
-
-        #gameCanvas { background: #161d2b; border-radius: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.6); border: 2px solid #334155; }
+        #gameCanvas { 
+            background: #161d2b; border-radius: 15px; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 2px solid #334155;
+            max-width: 95vw; max-height: 70vh;
+        }
 
         #ui-layer {
-            position: absolute; top: 20px; width: 100%; padding: 0 25px;
+            position: absolute; top: 15px; width: 100%; padding: 0 15px;
             display: flex; justify-content: space-between; align-items: center; pointer-events: none;
         }
         .hud-top-btn { 
-            background: var(--clin-accent); color:white; padding: 12px 20px; 
-            border-radius: 12px; border:none; font-weight:900; cursor:pointer; 
-            pointer-events: auto; font-size: 1rem;
+            background: var(--clin-accent); color:white; padding: 10px 15px; 
+            border-radius: 10px; border:none; font-weight:900; cursor:pointer; 
+            pointer-events: auto; font-size: 0.9rem;
         }
-        .stat-box { background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 12px; border: 2px solid var(--clin-accent); color: white; font-weight: 900; }
+        .stat-box { background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--clin-accent); color: white; font-weight: 900; font-size: 0.9rem; }
         
         #controls {
-            position: absolute; bottom: 30px; right: 30px;
-            display: grid; grid-template-columns: repeat(3, 75px);
-            grid-template-rows: repeat(3, 75px); gap: 12px;
+            margin-top: 15px;
+            display: grid; grid-template-columns: repeat(3, 65px);
+            grid-template-rows: repeat(3, 65px); gap: 10px;
         }
         .btn-dir {
             background: #1c2331; border: 3px solid var(--clin-accent);
-            color: var(--clin-accent); border-radius: 15px; font-size: 2rem;
+            color: var(--clin-accent); border-radius: 12px; font-size: 1.5rem;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 5px 0 #000;
+            box-shadow: 0 4px 0 #000;
+        }
+
+        @media (max-height: 600px) {
+            #controls { transform: scale(0.8); margin-top: 5px; }
+            h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
@@ -94,15 +98,15 @@
 
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <div style="font-size: 4rem; margin-bottom: 10px;">🚀</div>
+            <div style="font-size: 3rem; margin-bottom: 5px;">🚀</div>
             <h1>LABERINTO</h1>
-            <p style="font-weight: 700; color: #64748b; margin-top: 5px;">Centro de Salud Perceptum</p>
-            <div style="background: #fdf2f8; padding: 15px; border-radius: 15px; margin: 20px 0; border: 2px dashed var(--clin-accent);">
-                <p style="margin: 0; color: #1e293b; font-weight: 800;">IMPORTANTE:</p>
-                <p style="margin: 5px 0 0 0; color: var(--clin-accent); font-weight: 900; font-size: 1.2rem;">Realizar a 40 cm de distancia.</p>
+            <p style="font-weight: 700; color: #64748b; margin-top: 2px;">Centro de Salud Perceptum</p>
+            <div style="background: #fdf2f8; padding: 12px; border-radius: 15px; margin: 15px 0; border: 2px dashed var(--clin-accent);">
+                <p style="margin: 0; color: #1e293b; font-weight: 800; font-size: 0.9rem;">IMPORTANTE:</p>
+                <p style="margin: 3px 0 0 0; color: var(--clin-accent); font-weight: 900; font-size: 1.1rem;">Realizar a 40 cm de distancia.</p>
             </div>
             <button class="clin-btn" onclick="mostrarConfig()">CONTINUAR</button>
-            <button class="clin-btn btn-secundario" onclick="window.location.href='index.html'">VOLVER AL MENÚ PRINCIPAL</button>
+            <button class="clin-btn btn-secundario" onclick="location.reload()">VOLVER AL MENÚ PRINCIPAL</button>
         </div>
     </div>
 
@@ -115,8 +119,8 @@
                     <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">Contrareloj</button>
                 </div>
                 <div id="timer-setup" style="display:none">
-                    <p style="font-weight:700">Tiempo: <span id="val-tiempo" style="color:var(--clin-accent)">60</span>s</p>
-                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value" style="width:100%; accent-color:var(--clin-accent)">
+                    <p style="font-weight:700; color:#1e293b">Tiempo: <span id="val-tiempo" style="color:var(--clin-accent)">60</span>s</p>
+                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value">
                 </div>
             </div>
             <button class="clin-btn" onclick="iniciarJuego()">¡DESPEGAR!</button>
@@ -126,7 +130,7 @@
     <div id="game-view">
         <div id="ui-layer">
             <button class="hud-top-btn" onclick="location.reload()">SALIR</button>
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:8px;">
                 <div id="timer-box" class="stat-box" style="display:none">⏱️ <span id="txt-timer">0</span></div>
                 <div class="stat-box"><span id="txt-nivel" style="color:var(--path-glow)">NV 1</span></div>
                 <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
@@ -147,12 +151,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        const AUDIO = {
-            move: new Audio('https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3'),
-            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
-            win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
-        };
-
         let GAME = {
             active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [],
             player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
@@ -174,8 +172,11 @@
 
         function triggerError() {
             document.body.classList.add('hit-flash');
-            AUDIO.hurt.play();
             setTimeout(() => document.body.classList.remove('hit-flash'), 200);
+            if(GAME.vidas <= 0) {
+                GAME.active = false;
+                setTimeout(() => { alert("Juego Terminado - Sin Vidas"); location.reload(); }, 300);
+            }
         }
 
         function iniciarJuego() {
@@ -187,6 +188,7 @@
                 document.getElementById('timer-box').style.display = 'block';
                 iniciarTimer();
             }
+            window.addEventListener('resize', generarNivel);
             generarNivel();
             initInputSystem();
             initEstrellas();
@@ -195,18 +197,25 @@
         function iniciarTimer() {
             clearInterval(GAME.timerInterval);
             GAME.timerInterval = setInterval(() => {
+                if(!GAME.active) return;
                 GAME.tiempo--;
                 document.getElementById('txt-timer').innerText = GAME.tiempo;
-                if(GAME.tiempo <= 0) { alert("¡Tiempo agotado!"); location.reload(); }
+                if(GAME.tiempo <= 0) { GAME.active = false; alert("¡Tiempo agotado!"); location.reload(); }
             }, 1000);
         }
 
         function generarNivel() {
-            const size = Math.min(window.innerWidth * 0.92, window.innerHeight * 0.60);
+            if(!GAME.active) return;
+            // RESPONSIVIDAD: Ajuste dinámico según pantalla
+            const availableHeight = window.innerHeight * 0.55;
+            const availableWidth = window.innerWidth * 0.92;
+            const size = Math.min(availableWidth, availableHeight);
+            
             canvas.width = size; canvas.height = size;
             GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 15) GAME.dim = 15;
             GAME.cellSize = size / GAME.dim;
             
+            // Generación de laberinto (Algoritmo DFS)
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
             const stack = [[1,1]]; GAME.grid[1][1] = false;
             while(stack.length > 0) {
@@ -229,36 +238,33 @@
             let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
             if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
                 GAME.player.x = nx; GAME.player.y = ny;
-                AUDIO.move.play();
                 if(nx === GAME.goal.x && ny === GAME.goal.y) { 
-                    GAME.nivel++; AUDIO.win.play(); generarNivel(); actualizarHUD(); 
+                    GAME.nivel++; generarNivel(); actualizarHUD(); 
                 }
             } else {
-                GAME.vidas--; triggerError();
+                GAME.vidas--; 
+                triggerError();
                 GAME.player = {x:1, y:1};
-                if(GAME.vidas <= 0) { alert("¡Sin vidas!"); location.reload(); }
             }
             actualizarHUD(); dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Paredes (Bloques)
+            // Paredes
             ctx.fillStyle = "#1e293b";
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
                 }
             }
-            // Rastro Neón - Lógica Recta (90 grados)
+            // Rastro Neón - 90 Grados Estricto
             if(GAME.plannedPath.length > 0) {
                 ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
-                for(let p of GAME.plannedPath) {
-                    ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2);
-                }
+                for(let p of GAME.plannedPath) ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2);
                 ctx.stroke();
             }
             // Meta y Cohete
@@ -284,7 +290,7 @@
             };
 
             canvas.onpointerdown = (e) => {
-                if(GAME.isExecuting) return;
+                if(!GAME.active || GAME.isExecuting) return;
                 const p = getPos(e);
                 if(p.x === GAME.player.x && p.y === GAME.player.y) {
                     GAME.isDrawing = true; GAME.plannedPath = [];
@@ -292,11 +298,10 @@
             };
 
             window.onpointermove = (e) => {
-                if(!GAME.isDrawing) return;
+                if(!GAME.isDrawing || !GAME.active) return;
                 const p = getPos(e);
                 const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
                 
-                // Movimiento ortogonal estricto
                 if((Math.abs(p.x - last.x) === 1 && p.y === last.y) || (Math.abs(p.y - last.y) === 1 && p.x === last.x)) {
                     if(!GAME.grid[p.x][p.y]) {
                         if(!GAME.plannedPath.some(s => s.x === p.x && s.y === p.y)) {
@@ -312,9 +317,7 @@
             };
 
             window.onpointerup = () => {
-                if(GAME.isDrawing && GAME.plannedPath.length > 0) {
-                    ejecutarVuelo();
-                }
+                if(GAME.isDrawing && GAME.plannedPath.length > 0 && GAME.active) ejecutarVuelo();
                 GAME.isDrawing = false;
             };
         }
@@ -324,17 +327,15 @@
             let pathCopy = [...GAME.plannedPath];
             GAME.plannedPath = []; 
             for(let step of pathCopy) {
+                if(!GAME.active) break;
                 GAME.player = step; 
-                AUDIO.move.play(); 
                 dibujar();
-                await new Promise(r => setTimeout(r, 80));
+                await new Promise(r => setTimeout(r, 70));
                 if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { 
-                    GAME.nivel++; AUDIO.win.play(); generarNivel(); actualizarHUD();
-                    break; 
+                    GAME.nivel++; generarNivel(); actualizarHUD(); break; 
                 }
             }
-            GAME.isExecuting = false; 
-            dibujar();
+            GAME.isExecuting = false; dibujar();
         }
 
         function actualizarHUD() {
@@ -345,13 +346,15 @@
         function initEstrellas() {
             const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
             sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5, v:0.2+Math.random()}));
+            const stars = Array(80).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.2, v:0.2+Math.random()*0.5}));
             function anim() { 
-                sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                stars.forEach(s => { 
-                    sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); 
-                    s.y += s.v; if(s.y > sc.height) s.y = 0;
-                }); 
+                if(document.getElementById('scr-intro').style.display !== 'none' || GAME.active) {
+                    sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
+                    stars.forEach(s => { 
+                        sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); 
+                        s.y += s.v; if(s.y > sc.height) s.y = 0;
+                    });
+                }
                 requestAnimationFrame(anim); 
             } anim();
         }
