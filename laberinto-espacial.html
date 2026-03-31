@@ -20,10 +20,7 @@
             margin: 0; background-color: var(--clin-bg); color: var(--clin-text);
             font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: background-color 0.15s ease;
         }
-
-        body.hit-flash { background-color: #ff0000 !important; }
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
 
@@ -49,6 +46,7 @@
             font-size: 1.5rem;
         }
         .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
+        .btn-secundario { background: #64748b; box-shadow: 0 8px 0 #475569; }
 
         .config-box { background: #f1f5f9; border-radius: 20px; padding: 20px; margin: 15px 0; }
         .modo-row { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
@@ -62,8 +60,6 @@
         input[type=range] { width: 100%; margin: 15px 0; accent-color: var(--clin-accent); }
 
         #game-view { width: 100%; height: 100%; position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; }
-
-        #gameCanvas { background: #161d2b; border-radius: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
 
         #ui-layer {
             position: absolute; top: 20px; width: 100%; padding: 0 25px;
@@ -97,8 +93,12 @@
         <div class="card-clinica">
             <h1>🚀 LABERINTO</h1>
             <p style="font-weight: 700; color: #64748b;">Centro de Salud Perceptum</p>
-            <p style="margin: 25px 0; line-height: 1.5;">Desliza tu dedo por los pasillos o usa las flechas para guiar al cohete a la meta.</p>
+            <p style="margin: 25px 0; line-height: 1.5; font-size: 1.1rem;">
+                Entrena tu visión y precisión guiando al cohete hasta la meta. 
+                Puedes usar las <b>flechas en pantalla</b>, el <b>teclado</b> o <b>deslizar tu dedo</b> marcando el camino neón.
+            </p>
             <button class="clin-btn" onclick="cambiarPantalla('scr-intro', 'scr-config')">CONTINUAR</button>
+            <button class="clin-btn btn-secundario" onclick="location.reload()">VOLVER AL MENÚ PRINCIPAL</button>
         </div>
     </div>
 
@@ -111,7 +111,7 @@
                     <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">Contrareloj</button>
                 </div>
                 <div id="timer-setup" style="display:none">
-                    <p>Tiempo: <span id="val-tiempo">60</span>s</p>
+                    <p>Elegir Tiempo: <span id="val-tiempo">60</span>s</p>
                     <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value">
                 </div>
             </div>
@@ -140,13 +140,9 @@
     </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas'); const ctx = canvas.getContext('2d');
-        const AUDIO = {
-            move: new Audio('https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3'),
-            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
-            win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
-        };
-
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
         let GAME = {
             active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [],
             player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
@@ -154,7 +150,10 @@
             tiempo: 0, timerInterval: null
         };
 
-        function cambiarPantalla(id1, id2) { document.getElementById(id1).style.display='none'; document.getElementById(id2).style.display='flex'; }
+        function cambiarPantalla(id1, id2) { 
+            document.getElementById(id1).style.display='none'; 
+            document.getElementById(id2).style.display='flex'; 
+        }
         
         function setModo(m) {
             GAME.modo = m;
@@ -173,7 +172,6 @@
             }
             generarNivel();
             initEvents();
-            initEstrellas();
         }
 
         function iniciarTimer() {
@@ -185,16 +183,10 @@
             }, 1000);
         }
 
-        function triggerError() {
-            document.body.classList.add('hit-flash');
-            AUDIO.hurt.play();
-            setTimeout(() => document.body.classList.remove('hit-flash'), 150);
-        }
-
         function generarNivel() {
-            const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.65);
+            const size = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.7);
             canvas.width = size; canvas.height = size;
-            GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 19) GAME.dim = 19;
+            GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 15) GAME.dim = 15;
             GAME.cellSize = size / GAME.dim;
             
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
@@ -210,99 +202,112 @@
                 } else stack.pop();
             }
             GAME.player = {x:1, y:1}; GAME.goal = {x: GAME.dim-2, y: GAME.dim-2};
-            GAME.plannedPath = []; dibujar();
+            dibujar();
         }
 
         function remover(dx, dy) { if(GAME.active && !GAME.isExecuting) moverLogic(dx, dy); }
 
         function moverLogic(dx, dy) {
             let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
-            if(nx < 0 || ny < 0 || nx >= GAME.dim || ny >= GAME.dim || GAME.grid[nx][ny]) {
-                GAME.vidas--; triggerError();
-                GAME.player = {x:1, y:1};
-                if(GAME.vidas <= 0) location.reload();
+            if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
+                GAME.player.x = nx; GAME.player.y = ny;
+                if(nx === GAME.goal.x && ny === GAME.goal.y) { GAME.nivel++; generarNivel(); }
             } else {
-                GAME.player.x = nx; GAME.player.y = ny; AUDIO.move.play();
-                if(nx === GAME.goal.x && ny === GAME.goal.y) { GAME.nivel++; AUDIO.win.play(); generarNivel(); }
+                GAME.vidas--; actualizarHUD();
+                if(GAME.vidas <= 0) location.reload();
             }
-            actualizarHUD(); dibujar();
+            dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
+            // Paredes
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) {
-                        ctx.fillStyle = "#1e293b"; ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
+                        ctx.fillStyle = "#1e293b";
+                        ctx.fillRect(x*GAME.cellSize, y*GAME.cellSize, GAME.cellSize, GAME.cellSize);
                     }
                 }
             }
+            // Línea Neón (SIN DIAGONALES)
             if(GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
+                ctx.strokeStyle = var(--path-glow); ctx.lineWidth = GAME.cellSize * 0.4;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
                 GAME.plannedPath.forEach(p => ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2));
                 ctx.stroke();
             }
-            ctx.font = `${GAME.cellSize*0.8}px Arial`;
-            ctx.fillText("🏁", GAME.goal.x*GAME.cellSize + 2, (GAME.goal.y+0.85)*GAME.cellSize);
-            ctx.fillText("🚀", GAME.player.x*GAME.cellSize + 2, (GAME.player.y+0.85)*GAME.cellSize);
+            // Iconos
+            ctx.font = `${GAME.cellSize*0.7}px Arial`;
+            ctx.fillText("🏁", GAME.goal.x*GAME.cellSize + 5, (GAME.goal.y+0.8)*GAME.cellSize);
+            ctx.fillText("🚀", GAME.player.x*GAME.cellSize + 5, (GAME.player.y+0.8)*GAME.cellSize);
         }
 
         function initEvents() {
+            // Teclado
+            window.onkeydown = (e) => {
+                if(e.key === "ArrowUp") remover(0,-1);
+                if(e.key === "ArrowDown") remover(0,1);
+                if(e.key === "ArrowLeft") remover(-1,0);
+                if(e.key === "ArrowRight") remover(1,0);
+            };
+
+            // Touch / Mouse
             const getPos = (e) => {
                 const rect = canvas.getBoundingClientRect();
                 const cx = e.touches ? e.touches[0].clientX : e.clientX;
                 const cy = e.touches ? e.touches[0].clientY : e.clientY;
                 return { x: Math.floor((cx - rect.left)/GAME.cellSize), y: Math.floor((cy - rect.top)/GAME.cellSize) };
             };
+
             canvas.onmousedown = canvas.ontouchstart = (e) => {
                 const p = getPos(e);
-                if(p.x === GAME.player.x && p.y === GAME.player.y && !GAME.isExecuting) { GAME.isDrawing = true; GAME.plannedPath = []; }
+                if(p.x === GAME.player.x && p.y === GAME.player.y) { GAME.isDrawing = true; GAME.plannedPath = []; }
             };
+
             window.onmousemove = window.ontouchmove = (e) => {
                 if(!GAME.isDrawing) return;
                 const p = getPos(e);
-                if(p.x >= 0 && p.x < GAME.dim && p.y >= 0 && p.y < GAME.dim) {
-                    const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
-                    const dx = Math.abs(p.x - last.x); const dy = Math.abs(p.y - last.y);
-                    
-                    if(GAME.grid[p.x][p.y]) { 
-                        GAME.isDrawing = false; GAME.plannedPath = []; triggerError(); GAME.vidas--; GAME.player = {x:1,y:1}; actualizarHUD();
-                    } else if((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
-                        if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) GAME.plannedPath.push(p);
+                const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
+                // VALIDACIÓN: Solo permitir pasos adyacentes (evita diagonales)
+                const dx = Math.abs(p.x - last.x); const dy = Math.abs(p.y - last.y);
+                if((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+                    if(!GAME.grid[p.x][p.y]) {
+                        if(!GAME.plannedPath.find(pos => pos.x === p.x && pos.y === p.y)) {
+                            GAME.plannedPath.push(p);
+                        }
+                    } else {
+                        GAME.isDrawing = false; GAME.plannedPath = []; GAME.vidas--; 
+                        actualizarHUD(); if(GAME.vidas <= 0) location.reload();
                     }
                 }
                 dibujar();
             };
-            window.onmouseup = window.ontouchend = () => { if(GAME.isDrawing) { GAME.isDrawing = false; ejecutarVuelo(); } };
+
+            window.onmouseup = window.ontouchend = () => {
+                if(GAME.isDrawing && GAME.plannedPath.length > 0) {
+                    GAME.isDrawing = false; ejecutarCamino();
+                }
+            };
         }
 
-        async function ejecutarVuelo() {
+        async function ejecutarCamino() {
             GAME.isExecuting = true;
             for(let step of GAME.plannedPath) {
-                GAME.player = step; AUDIO.move.play(); dibujar();
-                await new Promise(r => setTimeout(r, 60));
-                if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { GAME.nivel++; AUDIO.win.play(); generarNivel(); break; }
+                GAME.player = step;
+                dibujar();
+                await new Promise(r => setTimeout(r, 50));
+                if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) {
+                    GAME.nivel++; generarNivel(); break;
+                }
             }
             GAME.plannedPath = []; GAME.isExecuting = false; dibujar();
         }
 
         function actualizarHUD() {
-            document.getElementById('txt-nivel').innerText = "NV " + GAME.nivel;
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
-        }
-
-        function initEstrellas() {
-            const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
-            sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
-            function anim() { 
-                sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.3; if(s.y>sc.height) s.y=0; }); 
-                requestAnimationFrame(anim); 
-            } anim();
         }
     </script>
 </body>
