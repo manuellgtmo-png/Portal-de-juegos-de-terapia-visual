@@ -3,92 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Laberinto Espacial Pro - Perceptum</title>
+    <title>Laberinto Espacial Pro - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --clin-bg: #0b101b;
             --clin-card: #ffffff;
             --clin-accent: #e91e63;
+            --clin-cobalto: #0047ab;
+            --clin-turquesa: #40e0d0;
             --path-glow: #00f2fe;
+            --shadow-btn: #ad1457;
         }
 
-        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; user-select: none; }
+        /* RESET Y BASE */
+        * { 
+            box-sizing: border-box; 
+            touch-action: none; 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none; 
+        }
 
         body {
-            margin: 0; background-color: var(--clin-bg); color: #fff;
-            font-family: 'Montserrat', sans-serif; height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center;
+            margin: 0; 
+            background-color: var(--clin-bg); 
+            color: #fff;
+            font-family: 'Montserrat', sans-serif; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
             transition: background-color 0.15s ease;
         }
 
-        /* EFECTO DE IMPACTO ROJO */
-        body.hit-flash { background-color: #ff0000 !important; }
+        /* EFECTO FLASH ROJO AL CHOCAR */
+        body.hit-flash { 
+            background-color: #ff0000 !important; 
+        }
 
-        #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
+        #starfield { 
+            position: fixed; 
+            inset: 0; 
+            z-index: 0; 
+            background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); 
+        }
 
+        /* INTERFAZ DE USUARIO (OVERLAYS) */
         .overlay {
-            position: fixed; inset: 0; background: rgba(11, 16, 27, 0.98);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 2000; padding: 20px; backdrop-filter: blur(15px);
+            position: fixed; 
+            inset: 0; 
+            background: rgba(11, 16, 27, 0.98);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            z-index: 2000; 
+            padding: 20px; 
+            backdrop-filter: blur(15px);
         }
 
         .card-clinica {
-            background: var(--clin-card); color: #1e293b; padding: 30px;
-            border-radius: 30px; text-align: center; max-width: 450px; width: 100%;
-            border: 6px solid var(--clin-accent); box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background: var(--clin-card); 
+            color: #1e293b; 
+            padding: 40px 35px;
+            border-radius: 40px; 
+            text-align: center; 
+            max-width: 500px; 
+            width: 100%;
+            border: 8px solid var(--clin-accent); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            animation: fadeIn 0.5s ease-out;
         }
 
-        h1 { font-size: 2.2rem; color: var(--clin-accent); margin: 0; font-weight: 900; }
-        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { 
+            font-size: 3rem; 
+            color: var(--clin-accent); 
+            margin: 0; 
+            font-weight: 900; 
+            letter-spacing: -1px;
+        }
+
+        .sub-titulo {
+            font-weight: 700; 
+            color: #64748b; 
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
         .clin-btn {
-            background: var(--clin-accent); color: white; border: none;
-            padding: 18px; border-radius: 50px; font-weight: 900;
-            cursor: pointer; text-transform: uppercase; margin-top: 12px;
-            box-shadow: 0 6px 0 #ad1457; transition: 0.1s; width: 100%;
-            font-size: 1.2rem; display: block; text-decoration: none;
+            background: var(--clin-accent); 
+            color: white; 
+            border: none;
+            padding: 24px; 
+            border-radius: 60px; 
+            font-weight: 900;
+            cursor: pointer; 
+            text-transform: uppercase; 
+            margin-top: 20px;
+            box-shadow: 0 10px 0 var(--shadow-btn); 
+            transition: all 0.1s; 
+            width: 100%;
+            font-size: 1.6rem; 
+            display: block; 
+            text-decoration: none;
         }
-        .clin-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #ad1457; }
-        .btn-secundario { background: #64748b; box-shadow: 0 6px 0 #475569; }
 
+        .clin-btn:active { 
+            transform: translateY(6px); 
+            box-shadow: 0 4px 0 var(--shadow-btn); 
+        }
+
+        .btn-secundario { 
+            background: #64748b; 
+            box-shadow: 0 10px 0 #475569; 
+            font-size: 1.1rem;
+            padding: 18px;
+        }
+
+        /* CONFIGURACIÓN */
+        .config-box { 
+            background: #f1f5f9; 
+            border-radius: 25px; 
+            padding: 25px; 
+            margin: 25px 0; 
+            color: #1e293b; 
+        }
+
+        .modo-row { 
+            display: flex; 
+            gap: 15px; 
+            width: 100%; 
+            margin-bottom: 20px; 
+        }
+
+        .modo-btn {
+            flex: 1; 
+            background: white; 
+            border: 4px solid #cbd5e1; 
+            color: #64748b;
+            padding: 18px; 
+            border-radius: 15px; 
+            cursor: pointer; 
+            font-weight: 900;
+            text-transform: uppercase;
+            transition: 0.2s;
+        }
+
+        .modo-btn.active { 
+            border-color: var(--clin-accent); 
+            color: var(--clin-accent); 
+            background: #fdf2f8; 
+        }
+
+        /* VISTA DE JUEGO */
         #game-view { 
-            width: 100%; height: 100%; position: relative; z-index: 10; 
-            display: none; flex-direction: column; align-items: center; justify-content: center; 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            z-index: 10; 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
         }
 
         #gameCanvas { 
-            background: #161d2b; border-radius: 15px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 2px solid #334155;
-            max-width: 95vw; max-height: 70vh;
+            background: #161d2b; 
+            border-radius: 20px; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.8); 
+            border: 3px solid #334155; 
+            cursor: crosshair;
         }
 
+        /* HUD SUPERIOR */
         #ui-layer {
-            position: absolute; top: 15px; width: 100%; padding: 0 15px;
-            display: flex; justify-content: space-between; align-items: center; pointer-events: none;
-        }
-        .hud-top-btn { 
-            background: var(--clin-accent); color:white; padding: 10px 15px; 
-            border-radius: 10px; border:none; font-weight:900; cursor:pointer; 
-            pointer-events: auto; font-size: 0.9rem;
-        }
-        .stat-box { background: rgba(0,0,0,0.8); padding: 8px 12px; border-radius: 10px; border: 2px solid var(--clin-accent); color: white; font-weight: 900; font-size: 0.9rem; }
-        
-        #controls {
-            margin-top: 15px;
-            display: grid; grid-template-columns: repeat(3, 65px);
-            grid-template-rows: repeat(3, 65px); gap: 10px;
-        }
-        .btn-dir {
-            background: #1c2331; border: 3px solid var(--clin-accent);
-            color: var(--clin-accent); border-radius: 12px; font-size: 1.5rem;
-            display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 4px 0 #000;
+            position: absolute; 
+            top: 25px; 
+            width: 100%; 
+            padding: 0 30px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            pointer-events: none;
         }
 
-        @media (max-height: 600px) {
-            #controls { transform: scale(0.8); margin-top: 5px; }
-            h1 { font-size: 1.8rem; }
+        .hud-top-btn { 
+            background: var(--clin-accent); 
+            color:white; 
+            padding: 15px 25px; 
+            border-radius: 15px; 
+            border:none; 
+            font-weight:900; 
+            cursor:pointer; 
+            pointer-events: auto; 
+            font-size: 1.1rem;
+            box-shadow: 0 5px 0 var(--shadow-btn);
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            pointer-events: none;
+        }
+
+        .stat-box { 
+            background: rgba(0,0,0,0.85); 
+            padding: 12px 20px; 
+            border-radius: 15px; 
+            border: 3px solid var(--clin-accent); 
+            color: white; 
+            font-weight: 900;
+            font-size: 1.2rem;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        /* CONTROLES MÓVILES */
+        #controls {
+            position: absolute; 
+            bottom: 40px; 
+            right: 40px;
+            display: grid; 
+            grid-template-columns: repeat(3, 85px);
+            grid-template-rows: repeat(3, 85px); 
+            gap: 15px;
+        }
+
+        .btn-dir {
+            background: #1c2331; 
+            border: 4px solid var(--clin-accent);
+            color: var(--clin-accent); 
+            border-radius: 20px; 
+            font-size: 2.5rem;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer;
+            box-shadow: 0 6px 0 #000;
+            transition: 0.1s;
+        }
+
+        .btn-dir:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #000;
+        }
+
+        /* RESPONSIVIDAD DINÁMICA */
+        @media (max-width: 768px) {
+            #controls { right: 50%; transform: translateX(50%); bottom: 20px; }
+            #gameCanvas { margin-bottom: 220px; }
+            h1 { font-size: 2.2rem; }
+            .card-clinica { padding: 25px; }
         }
     </style>
 </head>
@@ -98,29 +271,31 @@
 
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <div style="font-size: 3rem; margin-bottom: 5px;">🚀</div>
+            <div style="font-size: 5rem; margin-bottom: 10px;">🚀</div>
             <h1>LABERINTO</h1>
-            <p style="font-weight: 700; color: #64748b; margin-top: 2px;">Centro de Salud Perceptum</p>
-            <div style="background: #fdf2f8; padding: 12px; border-radius: 15px; margin: 15px 0; border: 2px dashed var(--clin-accent);">
-                <p style="margin: 0; color: #1e293b; font-weight: 800; font-size: 0.9rem;">IMPORTANTE:</p>
-                <p style="margin: 3px 0 0 0; color: var(--clin-accent); font-weight: 900; font-size: 1.1rem;">Realizar a 40 cm de distancia.</p>
+            <p class="sub-titulo">Centro de Salud Perceptum</p>
+            
+            <div style="background: #fdf2f8; padding: 20px; border-radius: 20px; margin: 25px 0; border: 3px dashed var(--clin-accent);">
+                <p style="margin: 0; color: #1e293b; font-weight: 800; font-size: 1rem;">INDICACIÓN MÉDICA:</p>
+                <p style="margin: 8px 0 0 0; color: var(--clin-accent); font-weight: 900; font-size: 1.4rem;">Realizar a 40 cm de distancia.</p>
             </div>
-            <button class="clin-btn" onclick="mostrarConfig()">CONTINUAR</button>
-            <button class="clin-btn btn-secundario" onclick="location.reload()">VOLVER AL MENÚ PRINCIPAL</button>
+
+            <button class="clin-btn" onclick="mostrarConfig()">COMENZAR TERCAPIA</button>
+            <button class="clin-btn btn-secundario" onclick="location.reload()">SALIR AL INICIO</button>
         </div>
     </div>
 
     <div id="scr-config" class="overlay" style="display:none">
         <div class="card-clinica">
-            <h2 style="margin-top:0">MODO DE JUEGO</h2>
+            <h2 style="margin-top:0; font-weight:900; color:var(--clin-accent)">MODO DE ENTRENAMIENTO</h2>
             <div class="config-box">
                 <div class="modo-row">
-                    <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">Cronometrado</button>
-                    <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">Contrareloj</button>
+                    <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">Libre</button>
+                    <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">Reto Tiempo</button>
                 </div>
                 <div id="timer-setup" style="display:none">
-                    <p style="font-weight:700; color:#1e293b">Tiempo: <span id="val-tiempo" style="color:var(--clin-accent)">60</span>s</p>
-                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value">
+                    <p style="font-weight:900; font-size: 1.2rem;">Tiempo: <span id="val-tiempo" style="color:var(--clin-accent)">60</span> segundos</p>
+                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value" style="width:100%; accent-color:var(--clin-accent); cursor:pointer">
                 </div>
             </div>
             <button class="clin-btn" onclick="iniciarJuego()">¡DESPEGAR!</button>
@@ -130,9 +305,9 @@
     <div id="game-view">
         <div id="ui-layer">
             <button class="hud-top-btn" onclick="location.reload()">SALIR</button>
-            <div style="display:flex; gap:8px;">
+            <div class="stats-container">
                 <div id="timer-box" class="stat-box" style="display:none">⏱️ <span id="txt-timer">0</span></div>
-                <div class="stat-box"><span id="txt-nivel" style="color:var(--path-glow)">NV 1</span></div>
+                <div class="stat-box"><span id="txt-nivel" style="color:var(--clin-turquesa)">NV 1</span></div>
                 <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
             </div>
         </div>
@@ -151,13 +326,32 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        let GAME = {
-            active: false, modo: 'crono', nivel: 1, vidas: 3, grid: [],
-            player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
-            isDrawing: false, plannedPath: [], isExecuting: false,
-            tiempo: 0, timerInterval: null
+        // SISTEMA DE AUDIO (Pre-carga)
+        const AUDIO = {
+            move: new Audio('https://assets.mixkit.co/active_storage/sfx/2578/2578-preview.mp3'),
+            hurt: new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'),
+            win: new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3')
         };
 
+        // ESTADO GLOBAL DEL JUEGO
+        let GAME = {
+            active: false,
+            modo: 'crono',
+            nivel: 1,
+            vidas: 3,
+            grid: [],
+            player: {x:1, y:1},
+            goal: {x:0, y:0},
+            dim: 0,
+            cellSize: 0,
+            isDrawing: false,
+            plannedPath: [],
+            isExecuting: false,
+            tiempo: 0,
+            timerInterval: null
+        };
+
+        // GESTIÓN DE PANTALLAS
         function mostrarConfig() {
             document.getElementById('scr-intro').style.display = 'none';
             document.getElementById('scr-config').style.display = 'flex';
@@ -170,25 +364,34 @@
             document.getElementById('timer-setup').style.display = (m === 'contrareloj') ? 'block' : 'none';
         }
 
+        // LÓGICA DE ERROR Y MUERTE
         function triggerError() {
             document.body.classList.add('hit-flash');
-            setTimeout(() => document.body.classList.remove('hit-flash'), 200);
+            AUDIO.hurt.play();
+            setTimeout(() => document.body.classList.remove('hit-flash'), 250);
+            
             if(GAME.vidas <= 0) {
-                GAME.active = false;
-                setTimeout(() => { alert("Juego Terminado - Sin Vidas"); location.reload(); }, 300);
+                GAME.active = false; // DETIENE TODO EL JUEGO
+                clearInterval(GAME.timerInterval);
+                setTimeout(() => {
+                    alert("TERAPIA FINALIZADA\nHas perdido todas las vidas. Inténtalo de nuevo manteniendo la concentración.");
+                    location.reload();
+                }, 300);
             }
         }
 
+        // INICIO Y GENERACIÓN
         function iniciarJuego() {
             document.getElementById('scr-config').style.display = 'none';
             document.getElementById('game-view').style.display = 'flex';
             GAME.active = true;
+            
             if(GAME.modo === 'contrareloj') {
                 GAME.tiempo = parseInt(document.getElementById('range-tiempo').value);
                 document.getElementById('timer-box').style.display = 'block';
                 iniciarTimer();
             }
-            window.addEventListener('resize', generarNivel);
+            
             generarNivel();
             initInputSystem();
             initEstrellas();
@@ -200,80 +403,120 @@
                 if(!GAME.active) return;
                 GAME.tiempo--;
                 document.getElementById('txt-timer').innerText = GAME.tiempo;
-                if(GAME.tiempo <= 0) { GAME.active = false; alert("¡Tiempo agotado!"); location.reload(); }
+                if(GAME.tiempo <= 0) {
+                    GAME.active = false;
+                    alert("¡TIEMPO AGOTADO!\nBuen esfuerzo, intentémoslo de nuevo.");
+                    location.reload();
+                }
             }, 1000);
         }
 
         function generarNivel() {
-            if(!GAME.active) return;
-            // RESPONSIVIDAD: Ajuste dinámico según pantalla
-            const availableHeight = window.innerHeight * 0.55;
-            const availableWidth = window.innerWidth * 0.92;
-            const size = Math.min(availableWidth, availableHeight);
+            const hLimit = window.innerHeight * 0.58;
+            const wLimit = window.innerWidth * 0.92;
+            const size = Math.min(wLimit, hLimit);
             
-            canvas.width = size; canvas.height = size;
-            GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 15) GAME.dim = 15;
+            canvas.width = size;
+            canvas.height = size;
+            
+            GAME.dim = 7 + (GAME.nivel * 2);
+            if(GAME.dim > 15) GAME.dim = 15;
             GAME.cellSize = size / GAME.dim;
             
-            // Generación de laberinto (Algoritmo DFS)
+            // Laberinto DFS
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
-            const stack = [[1,1]]; GAME.grid[1][1] = false;
+            const stack = [[1,1]];
+            GAME.grid[1][1] = false;
+            
             while(stack.length > 0) {
                 let [x, y] = stack[stack.length-1];
-                let neighbors = [[x+2,y,x+1,y],[x-2,y,x-1,y],[x,y+2,x,y+1],[x,y-2,x,y-1]].filter(n => 
-                    n[0]>0 && n[0]<GAME.dim-1 && n[1]>0 && n[1]<GAME.dim-1 && GAME.grid[n[0]][n[1]]
-                );
+                let neighbors = [
+                    [x+2,y,x+1,y],[x-2,y,x-1,y],[x,y+2,x,y+1],[x,y-2,x,y-1]
+                ].filter(n => n[0]>0 && n[0]<GAME.dim-1 && n[1]>0 && n[1]<GAME.dim-1 && GAME.grid[n[0]][n[1]]);
+                
                 if(neighbors.length > 0) {
                     let [nx, ny, px, py] = neighbors[Math.floor(Math.random()*neighbors.length)];
-                    GAME.grid[nx][ny] = false; GAME.grid[px][py] = false; stack.push([nx, ny]);
+                    GAME.grid[nx][ny] = false;
+                    GAME.grid[px][py] = false;
+                    stack.push([nx, ny]);
                 } else stack.pop();
             }
-            GAME.player = {x:1, y:1}; GAME.goal = {x: GAME.dim-2, y: GAME.dim-2};
+            
+            GAME.player = {x:1, y:1};
+            GAME.goal = {x: GAME.dim-2, y: GAME.dim-2};
             dibujar();
         }
 
-        function remover(dx, dy) { if(GAME.active && !GAME.isExecuting) moverLogic(dx, dy); }
+        // MOVIMIENTO MANUAL (Botones/Teclas)
+        function remover(dx, dy) {
+            if(GAME.active && !GAME.isExecuting) moverLogic(dx, dy);
+        }
 
         function moverLogic(dx, dy) {
-            let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
+            let nx = GAME.player.x + dx;
+            let ny = GAME.player.y + dy;
+            
             if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
-                GAME.player.x = nx; GAME.player.y = ny;
-                if(nx === GAME.goal.x && ny === GAME.goal.y) { 
-                    GAME.nivel++; generarNivel(); actualizarHUD(); 
+                GAME.player.x = nx;
+                GAME.player.y = ny;
+                AUDIO.move.play();
+                if(nx === GAME.goal.x && ny === GAME.goal.y) {
+                    GAME.nivel++;
+                    AUDIO.win.play();
+                    generarNivel();
                 }
             } else {
-                GAME.vidas--; 
+                GAME.vidas--;
                 triggerError();
                 GAME.player = {x:1, y:1};
             }
-            actualizarHUD(); dibujar();
+            actualizarHUD();
+            dibujar();
         }
 
+        // RENDERIZADO
         function dibujar() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Paredes
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Dibujar Laberinto
             ctx.fillStyle = "#1e293b";
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
-                    if(GAME.grid[x][y]) ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
+                    if(GAME.grid[x][y]) {
+                        ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
+                    }
                 }
             }
-            // Rastro Neón - 90 Grados Estricto
+            
+            // Rastro Neón (Solo si se está dibujando el camino)
             if(GAME.plannedPath.length > 0) {
-                ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
-                ctx.lineCap = "round"; ctx.lineJoin = "round";
+                ctx.strokeStyle = varProp('--path-glow');
+                ctx.lineWidth = GAME.cellSize * 0.4;
+                ctx.lineCap = "round";
+                ctx.lineJoin = "round";
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = varProp('--path-glow');
+                
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
-                for(let p of GAME.plannedPath) ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2);
+                for(let p of GAME.plannedPath) {
+                    ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2);
+                }
                 ctx.stroke();
+                ctx.shadowBlur = 0;
             }
-            // Meta y Cohete
-            ctx.font = `${GAME.cellSize*0.75}px Arial`;
-            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            
+            // Meta y Jugador
+            ctx.font = `${GAME.cellSize*0.8}px Arial`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
             ctx.fillText("🏁", (GAME.goal.x+0.5)*GAME.cellSize, (GAME.goal.y+0.5)*GAME.cellSize);
             ctx.fillText("🚀", (GAME.player.x+0.5)*GAME.cellSize, (GAME.player.y+0.5)*GAME.cellSize);
         }
 
+        function varProp(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+        // SISTEMA DE ENTRADA (Touch / Mouse / Teclado)
         function initInputSystem() {
             window.onkeydown = (e) => {
                 if(e.key === "ArrowUp") remover(0,-1);
@@ -286,14 +529,18 @@
                 const rect = canvas.getBoundingClientRect();
                 const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                 const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                return { x: Math.floor((clientX - rect.left)/GAME.cellSize), y: Math.floor((clientY - rect.top)/GAME.cellSize) };
+                return {
+                    x: Math.floor((clientX - rect.left) / GAME.cellSize),
+                    y: Math.floor((clientY - rect.top) / GAME.cellSize)
+                };
             };
 
             canvas.onpointerdown = (e) => {
                 if(!GAME.active || GAME.isExecuting) return;
                 const p = getPos(e);
                 if(p.x === GAME.player.x && p.y === GAME.player.y) {
-                    GAME.isDrawing = true; GAME.plannedPath = [];
+                    GAME.isDrawing = true;
+                    GAME.plannedPath = [];
                 }
             };
 
@@ -302,6 +549,7 @@
                 const p = getPos(e);
                 const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
                 
+                // Movimiento ortogonal estricto (90 grados)
                 if((Math.abs(p.x - last.x) === 1 && p.y === last.y) || (Math.abs(p.y - last.y) === 1 && p.x === last.x)) {
                     if(!GAME.grid[p.x][p.y]) {
                         if(!GAME.plannedPath.some(s => s.x === p.x && s.y === p.y)) {
@@ -309,33 +557,47 @@
                             dibujar();
                         }
                     } else {
-                        GAME.isDrawing = false; GAME.plannedPath = []; 
-                        GAME.vidas--; triggerError(); GAME.player = {x:1, y:1}; 
-                        actualizarHUD(); dibujar();
+                        // CHOQUE CON PARED EN MODO TOUCH
+                        GAME.isDrawing = false;
+                        GAME.plannedPath = [];
+                        GAME.vidas--;
+                        triggerError();
+                        GAME.player = {x:1, y:1};
+                        actualizarHUD();
+                        dibujar();
                     }
                 }
             };
 
             window.onpointerup = () => {
-                if(GAME.isDrawing && GAME.plannedPath.length > 0 && GAME.active) ejecutarVuelo();
+                if(GAME.isDrawing && GAME.plannedPath.length > 0 && GAME.active) {
+                    ejecutarVuelo();
+                }
                 GAME.isDrawing = false;
             };
         }
 
         async function ejecutarVuelo() {
             GAME.isExecuting = true;
-            let pathCopy = [...GAME.plannedPath];
-            GAME.plannedPath = []; 
-            for(let step of pathCopy) {
+            let pCopy = [...GAME.plannedPath];
+            GAME.plannedPath = [];
+            
+            for(let step of pCopy) {
                 if(!GAME.active) break;
-                GAME.player = step; 
+                GAME.player = step;
+                AUDIO.move.play();
                 dibujar();
                 await new Promise(r => setTimeout(r, 70));
-                if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { 
-                    GAME.nivel++; generarNivel(); actualizarHUD(); break; 
+                if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) {
+                    GAME.nivel++;
+                    AUDIO.win.play();
+                    generarNivel();
+                    actualizarHUD();
+                    break;
                 }
             }
-            GAME.isExecuting = false; dibujar();
+            GAME.isExecuting = false;
+            dibujar();
         }
 
         function actualizarHUD() {
@@ -343,20 +605,33 @@
             document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas*2);
         }
 
+        // FONDO ESPACIAL ANIMADO
         function initEstrellas() {
-            const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
-            sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(80).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.2, v:0.2+Math.random()*0.5}));
-            function anim() { 
-                if(document.getElementById('scr-intro').style.display !== 'none' || GAME.active) {
-                    sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                    stars.forEach(s => { 
-                        sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); 
-                        s.y += s.v; if(s.y > sc.height) s.y = 0;
-                    });
-                }
-                requestAnimationFrame(anim); 
-            } anim();
+            const sc = document.getElementById('starfield');
+            const sctx = sc.getContext('2d');
+            sc.width = window.innerWidth;
+            sc.height = window.innerHeight;
+            
+            const stars = Array(100).fill().map(() => ({
+                x: Math.random() * sc.width,
+                y: Math.random() * sc.height,
+                r: Math.random() * 1.5,
+                v: 0.3 + Math.random() * 0.8
+            }));
+
+            function anim() {
+                sctx.clearRect(0,0,sc.width, sc.height);
+                sctx.fillStyle = "rgba(255,255,255,0.8)";
+                stars.forEach(s => {
+                    sctx.beginPath();
+                    sctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+                    sctx.fill();
+                    s.y += s.v;
+                    if(s.y > sc.height) s.y = 0;
+                });
+                requestAnimationFrame(anim);
+            }
+            anim();
         }
     </script>
 </body>
