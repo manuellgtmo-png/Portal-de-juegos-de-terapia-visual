@@ -19,9 +19,10 @@
             margin: 0; background-color: var(--clin-bg); color: #fff;
             font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: background-color 0.1s;
+            transition: background-color 0.15s ease;
         }
 
+        /* EFECTO DE IMPACTO */
         body.hit-flash { background-color: #ff0000 !important; }
 
         #starfield { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 50%, #1c2331 0%, #0b101b 100%); }
@@ -45,7 +46,7 @@
             padding: 22px; border-radius: 50px; font-weight: 900;
             cursor: pointer; text-transform: uppercase; margin-top: 15px;
             box-shadow: 0 8px 0 #ad1457; transition: 0.1s; width: 100%;
-            font-size: 1.5rem; display: block;
+            font-size: 1.5rem; display: block; text-decoration: none;
         }
         .clin-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #ad1457; }
         .btn-secundario { background: #64748b; box-shadow: 0 8px 0 #475569; }
@@ -59,33 +60,31 @@
         }
         .modo-btn.active { border-color: var(--clin-accent); color: var(--clin-accent); background: #fdf2f8; }
 
-        input[type=range] { width: 100%; margin: 15px 0; accent-color: var(--clin-accent); cursor: pointer; }
-
         #game-view { width: 100%; height: 100%; position: relative; z-index: 10; display: none; flex-direction: column; align-items: center; justify-content: center; }
 
-        #gameCanvas { background: #161d2b; border-radius: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
+        #gameCanvas { background: #161d2b; border-radius: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.6); border: 2px solid #334155; }
 
         #ui-layer {
             position: absolute; top: 20px; width: 100%; padding: 0 25px;
             display: flex; justify-content: space-between; align-items: center; pointer-events: none;
         }
         .hud-top-btn { 
-            background: var(--clin-accent); color:white; padding: 15px 25px; 
+            background: var(--clin-accent); color:white; padding: 12px 20px; 
             border-radius: 12px; border:none; font-weight:900; cursor:pointer; 
-            pointer-events: auto; font-size: 1.1rem;
+            pointer-events: auto; font-size: 1rem;
         }
-        .stat-box { background: rgba(0,0,0,0.8); padding: 12px 20px; border-radius: 12px; border: 2px solid var(--clin-accent); color: white; font-weight: 900; }
+        .stat-box { background: rgba(0,0,0,0.8); padding: 10px 15px; border-radius: 12px; border: 2px solid var(--clin-accent); color: white; font-weight: 900; }
         
         #controls {
             position: absolute; bottom: 30px; right: 30px;
-            display: grid; grid-template-columns: repeat(3, 80px);
-            grid-template-rows: repeat(3, 80px); gap: 15px;
+            display: grid; grid-template-columns: repeat(3, 75px);
+            grid-template-rows: repeat(3, 75px); gap: 12px;
         }
         .btn-dir {
             background: #1c2331; border: 3px solid var(--clin-accent);
-            color: var(--clin-accent); border-radius: 20px; font-size: 2.2rem;
+            color: var(--clin-accent); border-radius: 15px; font-size: 2rem;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 6px 0 #000;
+            box-shadow: 0 5px 0 #000;
         }
     </style>
 </head>
@@ -95,28 +94,29 @@
 
     <div id="scr-intro" class="overlay">
         <div class="card-clinica">
-            <h1>🚀 LABERINTO</h1>
-            <p style="font-weight: 700; color: #64748b;">Centro de Salud Perceptum</p>
-            <p style="margin: 25px 0; line-height: 1.5; font-size: 1.1rem;">
-                Entrena tu visión y precisión guiando al cohete hasta la meta.<br>
-                <b>Tarea: Realizar a 40 cm de distancia.</b>
-            </p>
+            <div style="font-size: 4rem; margin-bottom: 10px;">🚀</div>
+            <h1>LABERINTO</h1>
+            <p style="font-weight: 700; color: #64748b; margin-top: 5px;">Centro de Salud Perceptum</p>
+            <div style="background: #fdf2f8; padding: 15px; border-radius: 15px; margin: 20px 0; border: 2px dashed var(--clin-accent);">
+                <p style="margin: 0; color: #1e293b; font-weight: 800;">IMPORTANTE:</p>
+                <p style="margin: 5px 0 0 0; color: var(--clin-accent); font-weight: 900; font-size: 1.2rem;">Realizar a 40 cm de distancia.</p>
+            </div>
             <button class="clin-btn" onclick="mostrarConfig()">CONTINUAR</button>
-            <button class="clin-btn btn-secundario" onclick="location.reload()">VOLVER AL MENÚ PRINCIPAL</button>
+            <button class="clin-btn btn-secundario" onclick="window.location.href='index.html'">VOLVER AL MENÚ PRINCIPAL</button>
         </div>
     </div>
 
     <div id="scr-config" class="overlay" style="display:none">
         <div class="card-clinica">
-            <h2>MODO DE JUEGO</h2>
+            <h2 style="margin-top:0">MODO DE JUEGO</h2>
             <div class="config-box">
                 <div class="modo-row">
                     <button id="mode-crono" class="modo-btn active" onclick="setModo('crono')">Cronometrado</button>
                     <button id="mode-reloj" class="modo-btn" onclick="setModo('contrareloj')">Contrareloj</button>
                 </div>
                 <div id="timer-setup" style="display:none">
-                    <p>Tiempo: <span id="val-tiempo">60</span>s</p>
-                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value">
+                    <p style="font-weight:700">Tiempo: <span id="val-tiempo" style="color:var(--clin-accent)">60</span>s</p>
+                    <input type="range" id="range-tiempo" min="10" max="120" value="60" oninput="document.getElementById('val-tiempo').innerText=this.value" style="width:100%; accent-color:var(--clin-accent)">
                 </div>
             </div>
             <button class="clin-btn" onclick="iniciarJuego()">¡DESPEGAR!</button>
@@ -125,8 +125,8 @@
 
     <div id="game-view">
         <div id="ui-layer">
-            <button class="hud-top-btn" onclick="location.reload()">MENÚ PRINCIPAL</button>
-            <div style="display:flex; gap:12px;">
+            <button class="hud-top-btn" onclick="location.reload()">SALIR</button>
+            <div style="display:flex; gap:10px;">
                 <div id="timer-box" class="stat-box" style="display:none">⏱️ <span id="txt-timer">0</span></div>
                 <div class="stat-box"><span id="txt-nivel" style="color:var(--path-glow)">NV 1</span></div>
                 <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
@@ -172,6 +172,12 @@
             document.getElementById('timer-setup').style.display = (m === 'contrareloj') ? 'block' : 'none';
         }
 
+        function triggerError() {
+            document.body.classList.add('hit-flash');
+            AUDIO.hurt.play();
+            setTimeout(() => document.body.classList.remove('hit-flash'), 200);
+        }
+
         function iniciarJuego() {
             document.getElementById('scr-config').style.display = 'none';
             document.getElementById('game-view').style.display = 'flex';
@@ -195,14 +201,8 @@
             }, 1000);
         }
 
-        function triggerError() {
-            document.body.classList.add('hit-flash');
-            AUDIO.hurt.play();
-            setTimeout(() => document.body.classList.remove('hit-flash'), 150);
-        }
-
         function generarNivel() {
-            const size = Math.min(window.innerWidth * 0.95, window.innerHeight * 0.65);
+            const size = Math.min(window.innerWidth * 0.92, window.innerHeight * 0.60);
             canvas.width = size; canvas.height = size;
             GAME.dim = 7 + (GAME.nivel * 2); if(GAME.dim > 15) GAME.dim = 15;
             GAME.cellSize = size / GAME.dim;
@@ -230,37 +230,42 @@
             if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
                 GAME.player.x = nx; GAME.player.y = ny;
                 AUDIO.move.play();
-                if(nx === GAME.goal.x && ny === GAME.goal.y) { GAME.nivel++; AUDIO.win.play(); generarNivel(); }
+                if(nx === GAME.goal.x && ny === GAME.goal.y) { 
+                    GAME.nivel++; AUDIO.win.play(); generarNivel(); actualizarHUD(); 
+                }
             } else {
                 GAME.vidas--; triggerError();
                 GAME.player = {x:1, y:1};
-                if(GAME.vidas <= 0) location.reload();
+                if(GAME.vidas <= 0) { alert("¡Sin vidas!"); location.reload(); }
             }
             actualizarHUD(); dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            // Paredes
+            // Paredes (Bloques)
             ctx.fillStyle = "#1e293b";
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
                 }
             }
-            // Rastro Neón (SIN DIAGONALES)
+            // Rastro Neón - Lógica Recta (90 grados)
             if(GAME.plannedPath.length > 0) {
                 ctx.strokeStyle = "#00f2fe"; ctx.lineWidth = GAME.cellSize * 0.4;
                 ctx.lineCap = "round"; ctx.lineJoin = "round";
                 ctx.beginPath();
                 ctx.moveTo(GAME.player.x*GAME.cellSize + GAME.cellSize/2, GAME.player.y*GAME.cellSize + GAME.cellSize/2);
-                GAME.plannedPath.forEach(p => ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2));
+                for(let p of GAME.plannedPath) {
+                    ctx.lineTo(p.x*GAME.cellSize + GAME.cellSize/2, p.y*GAME.cellSize + GAME.cellSize/2);
+                }
                 ctx.stroke();
             }
-            // Cohete y Meta
-            ctx.font = `${GAME.cellSize*0.8}px Arial`;
-            ctx.fillText("🏁", GAME.goal.x*GAME.cellSize, (GAME.goal.y+0.85)*GAME.cellSize);
-            ctx.fillText("🚀", GAME.player.x*GAME.cellSize, (GAME.player.y+0.85)*GAME.cellSize);
+            // Meta y Cohete
+            ctx.font = `${GAME.cellSize*0.75}px Arial`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("🏁", (GAME.goal.x+0.5)*GAME.cellSize, (GAME.goal.y+0.5)*GAME.cellSize);
+            ctx.fillText("🚀", (GAME.player.x+0.5)*GAME.cellSize, (GAME.player.y+0.5)*GAME.cellSize);
         }
 
         function initInputSystem() {
@@ -279,6 +284,7 @@
             };
 
             canvas.onpointerdown = (e) => {
+                if(GAME.isExecuting) return;
                 const p = getPos(e);
                 if(p.x === GAME.player.x && p.y === GAME.player.y) {
                     GAME.isDrawing = true; GAME.plannedPath = [];
@@ -290,21 +296,24 @@
                 const p = getPos(e);
                 const last = GAME.plannedPath[GAME.plannedPath.length-1] || GAME.player;
                 
-                // VALIDACIÓN ESTRICTA: Solo permite pasos a 1 casilla de distancia (Ortogonal)
+                // Movimiento ortogonal estricto
                 if((Math.abs(p.x - last.x) === 1 && p.y === last.y) || (Math.abs(p.y - last.y) === 1 && p.x === last.x)) {
                     if(!GAME.grid[p.x][p.y]) {
-                        if(!GAME.plannedPath.some(s => s.x === p.x && s.y === p.y)) GAME.plannedPath.push(p);
+                        if(!GAME.plannedPath.some(s => s.x === p.x && s.y === p.y)) {
+                            GAME.plannedPath.push(p);
+                            dibujar();
+                        }
                     } else {
-                        GAME.isDrawing = false; GAME.plannedPath = []; GAME.vidas--; triggerError();
-                        GAME.player = {x:1, y:1}; actualizarHUD();
+                        GAME.isDrawing = false; GAME.plannedPath = []; 
+                        GAME.vidas--; triggerError(); GAME.player = {x:1, y:1}; 
+                        actualizarHUD(); dibujar();
                     }
                 }
-                dibujar();
             };
 
             window.onpointerup = () => {
                 if(GAME.isDrawing && GAME.plannedPath.length > 0) {
-                    GAME.isDrawing = false; ejecutarVuelo();
+                    ejecutarVuelo();
                 }
                 GAME.isDrawing = false;
             };
@@ -312,14 +321,20 @@
 
         async function ejecutarVuelo() {
             GAME.isExecuting = true;
-            for(let step of GAME.plannedPath) {
-                GAME.player = step; AUDIO.move.play(); dibujar();
-                await new Promise(r => setTimeout(r, 60));
+            let pathCopy = [...GAME.plannedPath];
+            GAME.plannedPath = []; 
+            for(let step of pathCopy) {
+                GAME.player = step; 
+                AUDIO.move.play(); 
+                dibujar();
+                await new Promise(r => setTimeout(r, 80));
                 if(GAME.player.x === GAME.goal.x && GAME.player.y === GAME.goal.y) { 
-                    GAME.nivel++; AUDIO.win.play(); generarNivel(); break; 
+                    GAME.nivel++; AUDIO.win.play(); generarNivel(); actualizarHUD();
+                    break; 
                 }
             }
-            GAME.plannedPath = []; GAME.isExecuting = false; dibujar();
+            GAME.isExecuting = false; 
+            dibujar();
         }
 
         function actualizarHUD() {
@@ -330,10 +345,13 @@
         function initEstrellas() {
             const sc = document.getElementById('starfield'); const sctx = sc.getContext('2d');
             sc.width = window.innerWidth; sc.height = window.innerHeight;
-            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5}));
+            const stars = Array(100).fill().map(() => ({x:Math.random()*sc.width, y:Math.random()*sc.height, r:Math.random()*1.5, v:0.2+Math.random()}));
             function anim() { 
                 sctx.clearRect(0,0,sc.width, sc.height); sctx.fillStyle="white"; 
-                stars.forEach(s => { sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); s.y+=0.3; if(s.y>sc.height) s.y=0; }); 
+                stars.forEach(s => { 
+                    sctx.beginPath(); sctx.arc(s.x, s.y, s.r, 0, Math.PI*2); sctx.fill(); 
+                    s.y += s.v; if(s.y > sc.height) s.y = 0;
+                }); 
                 requestAnimationFrame(anim); 
             } anim();
         }
