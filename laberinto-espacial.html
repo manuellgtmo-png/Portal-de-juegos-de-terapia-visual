@@ -158,20 +158,20 @@
         }
 
         #ui-layer {
-            position: absolute; top: 30px; width: 100%; padding: 0 40px;
+            position: absolute; top: 15px; width: 100%; padding: 0 15px;
             display: flex; justify-content: space-between; align-items: center; pointer-events: none;
         }
 
         .hud-top-btn { 
-            background: var(--clin-accent); color:white; padding: 15px 25px; 
-            border-radius: 18px; border:none; font-weight:900; cursor:pointer; 
-            pointer-events: auto; font-size: 1.1rem; box-shadow: 0 6px 0 var(--shadow-btn);
+            background: var(--clin-accent); color:white; padding: 10px 15px; 
+            border-radius: 12px; border:none; font-weight:900; cursor:pointer; 
+            pointer-events: auto; font-size: 0.8rem; box-shadow: 0 4px 0 var(--shadow-btn);
         }
 
         .stat-box { 
-            background: rgba(0,0,0,0.85); padding: 12px 22px; border-radius: 18px; 
-            border: 3px solid var(--clin-accent); color: white; font-weight: 900;
-            font-size: 1.3rem; min-width: 110px; text-align: center;
+            background: rgba(0,0,0,0.85); padding: 8px 12px; border-radius: 12px; 
+            border: 2px solid var(--clin-accent); color: white; font-weight: 900;
+            font-size: 0.9rem; min-width: 70px; text-align: center;
         }
 
         #gameCanvas { 
@@ -199,6 +199,7 @@
             #controls { grid-template-columns: repeat(3, 75px); grid-template-rows: repeat(3, 75px); }
             h1 { font-size: 2.2rem; }
             .card-clinica { padding: 25px 20px; }
+            #ui-layer { top: 10px; }
         }
     </style>
 </head>
@@ -254,7 +255,7 @@
     <div id="game-view">
         <div id="ui-layer">
             <button class="hud-top-btn" onclick="location.reload()">SALIR</button>
-            <div style="display:flex; gap:15px; pointer-events: none;">
+            <div style="display:flex; gap:8px; pointer-events: none;">
                 <div id="timer-box" class="stat-box" style="display:none">⏱️ <span id="txt-timer">0</span></div>
                 <div class="stat-box"><span id="txt-nivel" style="color:var(--clin-turquesa)">NV 1</span></div>
                 <div class="stat-box"><span id="txt-vidas">❤️❤️❤️</span></div>
@@ -278,7 +279,7 @@
             active: false, modo: 'libre', nivel: 1, vidas: 3, grid: [],
             player: {x:1, y:1}, goal: {x:0, y:0}, dim: 0, cellSize: 0,
             isDrawing: false, plannedPath: [], isExecuting: false,
-            tiempo: 0, timerInterval: null
+            tiempo: 0, tiempoInicial: 60, timerInterval: null
         };
 
         // --- SONIDO DE PARED ---
@@ -320,7 +321,8 @@
             GAME.active = true;
             
             if(GAME.modo === 'reto') {
-                GAME.tiempo = parseInt(document.getElementById('range-tiempo').value);
+                GAME.tiempoInicial = parseInt(document.getElementById('range-tiempo').value);
+                GAME.tiempo = GAME.tiempoInicial;
                 document.getElementById('timer-box').style.display = 'block';
                 document.getElementById('txt-timer').innerText = GAME.tiempo;
                 GAME.timerInterval = setInterval(() => {
@@ -336,17 +338,15 @@
         }
 
         function generarNivel() {
-            // Adaptación de tamaño
-            const padding = 100;
             const hLimit = window.innerHeight * 0.50; 
             const wLimit = window.innerWidth * 0.90;
             const size = Math.min(wLimit, hLimit);
             canvas.width = size; canvas.height = size;
             
-            GAME.dim = Math.min(7 + (GAME.nivel * 2), 15);
+            // Dificultad escalable corregida
+            GAME.dim = Math.min(7 + Math.floor(GAME.nivel / 1.5) * 2, 21);
             GAME.cellSize = size / GAME.dim;
             
-            // Generación de laberinto (Tu algoritmo original)
             GAME.grid = Array(GAME.dim).fill().map(() => Array(GAME.dim).fill(true));
             const stack = [[1,1]];
             GAME.grid[1][1] = false;
@@ -370,6 +370,7 @@
             playWallSound();
             document.body.classList.add('hit-flash');
             setTimeout(() => document.body.classList.remove('hit-flash'), 250);
+            actualizarHUD(); // Refresco inmediato de vidas
             if(GAME.vidas <= 0) triggerFinal(false, "Misión fallida.");
         }
 
@@ -379,27 +380,27 @@
             if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
                 GAME.player = {x:nx, y:ny};
                 if(nx === GAME.goal.x && ny === GAME.goal.y) { 
-                    GAME.nivel++; generarNivel(); actualizarHUD(); 
+                    GAME.nivel++; 
+                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial; // REINICIO TIEMPO
+                    generarNivel(); 
+                    actualizarHUD(); 
                 }
             } else {
                 GAME.vidas--;
                 triggerError();
                 GAME.player = {x:1, y:1};
-                actualizarHUD();
             }
             dibujar();
         }
 
         function dibujar() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Paredes
             ctx.fillStyle = "#1e293b";
             for(let x=0; x<GAME.dim; x++) {
                 for(let y=0; y<GAME.dim; y++) {
                     if(GAME.grid[x][y]) ctx.fillRect(x*GAME.cellSize+1, y*GAME.cellSize+1, GAME.cellSize-2, GAME.cellSize-2);
                 }
             }
-            // Rastro Neón
             if(GAME.plannedPath.length > 0) {
                 ctx.strokeStyle = "#00f2fe";
                 ctx.lineWidth = GAME.cellSize * 0.4;
@@ -408,7 +409,6 @@
                 for(let p of GAME.plannedPath) ctx.lineTo((p.x + 0.5) * GAME.cellSize, (p.y + 0.5) * GAME.cellSize);
                 ctx.stroke();
             }
-            // Iconos
             ctx.font = `${GAME.cellSize * 0.7}px Arial`;
             ctx.textAlign = "center"; ctx.textBaseline = "middle";
             ctx.fillText("🏁", (GAME.goal.x + 0.5) * GAME.cellSize, (GAME.goal.y + 0.5) * GAME.cellSize);
@@ -435,8 +435,9 @@
                     if(!GAME.grid[p.x][p.y]) { 
                         if(!GAME.plannedPath.some(s => s.x===p.x && s.y===p.y)) { GAME.plannedPath.push(p); dibujar(); }
                     } else {
-                        GAME.isDrawing = false; GAME.vidas--; triggerError(); 
-                        GAME.player = {x:1, y:1}; GAME.plannedPath = []; actualizarHUD(); dibujar();
+                        GAME.isDrawing = false; GAME.vidas--; 
+                        GAME.player = {x:1, y:1}; GAME.plannedPath = []; 
+                        triggerError(); dibujar();
                     }
                 }
             };
@@ -455,7 +456,11 @@
                 GAME.player = step; dibujar();
                 await new Promise(r => setTimeout(r, 60));
                 if(step.x === GAME.goal.x && step.y === GAME.goal.y) { 
-                    GAME.nivel++; generarNivel(); actualizarHUD(); break; 
+                    GAME.nivel++; 
+                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial; // REINICIO TIEMPO
+                    generarNivel(); 
+                    actualizarHUD(); 
+                    break; 
                 }
             }
             GAME.isExecuting = false; dibujar();
@@ -463,7 +468,11 @@
 
         function actualizarHUD() {
             document.getElementById('txt-nivel').innerText = "NV " + GAME.nivel;
-            document.getElementById('txt-vidas').innerText = "❤️❤️❤️".substring(0, GAME.vidas * 2);
+            let corazones = "";
+            for(let i=0; i<3; i++) {
+                corazones += (i < GAME.vidas) ? "❤️" : "🖤";
+            }
+            document.getElementById('txt-vidas').innerText = corazones;
         }
 
         function triggerFinal(exito, razon) {
