@@ -274,6 +274,8 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let audioCtx = null;
+        let engineOsc = null;
+        let engineGain = null;
 
         let GAME = {
             active: false, modo: 'libre', nivel: 1, vidas: 3, grid: [],
@@ -282,8 +284,56 @@
             tiempo: 0, tiempoInicial: 60, timerInterval: null
         };
 
+        // --- SONIDO DE MOTOR (MOVIMIENTO) ---
+        function playEngineSound() {
+            if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if(engineOsc) return;
+
+            engineOsc = audioCtx.createOscillator();
+            engineGain = audioCtx.createGain();
+            const lfo = audioCtx.createOscillator();
+            const lfoGain = audioCtx.createGain();
+
+            engineOsc.type = 'sawtooth';
+            engineOsc.frequency.setValueAtTime(80, audioCtx.currentTime);
+            
+            // Filtro para que no sea tan chillón
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 400;
+
+            engineGain.gain.setValueAtTime(0, audioCtx.currentTime);
+            engineGain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.1);
+
+            lfo.frequency.value = 10;
+            lfoGain.gain.value = 5;
+            lfo.connect(lfoGain);
+            lfoGain.connect(engineOsc.frequency);
+
+            engineOsc.connect(filter);
+            filter.connect(engineGain);
+            engineGain.connect(audioCtx.destination);
+
+            lfo.start();
+            engineOsc.start();
+        }
+
+        function stopEngineSound() {
+            if(engineGain) {
+                engineGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+                setTimeout(() => {
+                    if(engineOsc) {
+                        engineOsc.stop();
+                        engineOsc = null;
+                        engineGain = null;
+                    }
+                }, 150);
+            }
+        }
+
         // --- SONIDO DE PARED ---
         function playWallSound() {
+            stopEngineSound(); // Apaga el motor si choca
             if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -343,7 +393,6 @@
             const size = Math.min(wLimit, hLimit);
             canvas.width = size; canvas.height = size;
             
-            // Dificultad escalable corregida
             GAME.dim = Math.min(7 + Math.floor(GAME.nivel / 1.5) * 2, 21);
             GAME.cellSize = size / GAME.dim;
             
@@ -370,7 +419,7 @@
             playWallSound();
             document.body.classList.add('hit-flash');
             setTimeout(() => document.body.classList.remove('hit-flash'), 250);
-            actualizarHUD(); // Refresco inmediato de vidas
+            actualizarHUD();
             if(GAME.vidas <= 0) triggerFinal(false, "Misión fallida.");
         }
 
@@ -378,10 +427,12 @@
             if(!GAME.active || GAME.isExecuting) return;
             let nx = GAME.player.x + dx, ny = GAME.player.y + dy;
             if(nx >= 0 && ny >= 0 && nx < GAME.dim && ny < GAME.dim && !GAME.grid[nx][ny]) {
+                playEngineSound(); // Breve sonido de motor al mover
+                setTimeout(stopEngineSound, 100);
                 GAME.player = {x:nx, y:ny};
                 if(nx === GAME.goal.x && ny === GAME.goal.y) { 
                     GAME.nivel++; 
-                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial; // REINICIO TIEMPO
+                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial;
                     generarNivel(); 
                     actualizarHUD(); 
                 }
@@ -449,6 +500,7 @@
 
         async function ejecutarVuelo() {
             GAME.isExecuting = true;
+            playEngineSound(); // Inicia el motor al despegar
             let path = [...GAME.plannedPath];
             GAME.plannedPath = [];
             for(let step of path) {
@@ -457,12 +509,13 @@
                 await new Promise(r => setTimeout(r, 60));
                 if(step.x === GAME.goal.x && step.y === GAME.goal.y) { 
                     GAME.nivel++; 
-                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial; // REINICIO TIEMPO
+                    if(GAME.modo === 'reto') GAME.tiempo = GAME.tiempoInicial;
                     generarNivel(); 
                     actualizarHUD(); 
                     break; 
                 }
             }
+            stopEngineSound(); // Apaga el motor al llegar
             GAME.isExecuting = false; dibujar();
         }
 
@@ -477,6 +530,7 @@
 
         function triggerFinal(exito, razon) {
             GAME.active = false;
+            stopEngineSound();
             clearInterval(GAME.timerInterval);
             document.getElementById('game-view').style.display = 'none';
             document.getElementById('scr-final').style.display = 'flex';
