@@ -16,8 +16,8 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            padding-bottom: 50px;
-            overflow-x: hidden; /* Evita scroll lateral molesto en móvil */
+            padding-bottom: 30px;
+            overflow-x: hidden;
         }
 
         /* HEADER ADAPTABLE */
@@ -28,7 +28,7 @@
         }
         .header h1 { 
             margin: 0; 
-            font-size: clamp(1.8rem, 5vw, 2.8rem); /* Tamaño fluido según pantalla */
+            font-size: clamp(1.6rem, 5vw, 2.8rem); 
             text-transform: uppercase; 
             letter-spacing: 2px; 
             font-weight: 900;
@@ -38,14 +38,13 @@
             font-weight: bold; 
             margin-top: 10px; 
             color: #38bdf8; 
-            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            font-size: clamp(0.85rem, 2.5vw, 1.1rem);
         }
 
         /* GRID INTELIGENTE */
         .menu-grid { 
             display: grid; 
-            /* En móvil 1 columna, en tablet/PC se ajusta solo */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 20px; 
             padding: 15px; 
             max-width: 1200px; 
@@ -56,8 +55,8 @@
         /* TARJETAS TOUCH-FRIENDLY */
         .game-card { 
             background: white; 
-            border-radius: 30px; 
-            padding: 25px; 
+            border-radius: 25px; 
+            padding: 20px; 
             text-align: center; 
             color: #1e293b; 
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
@@ -66,30 +65,29 @@
             flex-direction: column;
             justify-content: space-between;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            border-bottom: 8px solid #cbd5e1;
+            border-bottom: 6px solid #cbd5e1;
             position: relative;
-            min-height: 280px; /* Altura mínima consistente */
+            min-height: 240px; /* Altura ajustada */
         }
 
-        /* EFECTOS SOLO PARA DISPOSITIVOS CON MOUSE */
         @media (hover: hover) {
             .game-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         }
         
         .game-card:active { transform: scale(0.96); }
 
-        .icon { font-size: 3rem; margin-bottom: 10px; display: block; }
-        .game-card h2 { margin: 0; font-size: 1.25rem; color: #0f172a; font-weight: 900; line-height: 1.2; }
-        .game-card p { font-size: 0.9rem; color: #64748b; margin: 12px 0; line-height: 1.5; flex-grow: 1; }
+        .icon { font-size: 2.8rem; margin-bottom: 8px; display: block; }
+        .game-card h2 { margin: 0; font-size: 1.15rem; color: #0f172a; font-weight: 900; line-height: 1.2; }
+        .game-card p { font-size: 0.85rem; color: #64748b; margin: 10px 0; line-height: 1.4; flex-grow: 1; }
         
         .btn-play { 
             background: #6366f1; 
             color: white; 
-            padding: 14px; 
-            border-radius: 18px; 
+            padding: 12px; 
+            border-radius: 15px; 
             font-weight: 900; 
             text-transform: uppercase; 
-            font-size: 0.75rem; 
+            font-size: 0.7rem; 
             letter-spacing: 1px;
             margin-top: 10px;
         }
@@ -97,41 +95,55 @@
         /* COLORES TEMÁTICOS */
         .card-snellen { border-bottom-color: #22c55e; }
         .card-snellen .btn-play { background: #22c55e; }
-        
         .card-intruso { border-bottom-color: #f59e0b; }
         .card-intruso .btn-play { background: #f59e0b; }
-        
         .card-flash { border-bottom-color: #ec4899; }
         .card-flash .btn-play { background: #ec4899; }
-
         .card-contraste { border-bottom-color: #06b6d4; }
         .card-contraste .btn-play { background: #06b6d4; }
-
         .card-vernier { border-bottom-color: #8b5cf6; }
         .card-vernier .btn-play { background: #8b5cf6; }
 
-        /* BOTÓN VOLVER RESPONSIVO */
+        /* BOTÓN VOLVER */
         .back-btn { 
-            margin: 30px 0; 
+            margin: 20px 0; 
             color: white; 
             text-decoration: none; 
             font-weight: bold; 
             opacity: 0.7; 
             transition: 0.3s; 
             border: 2px solid rgba(255,255,255,0.3); 
-            padding: 12px 30px; 
+            padding: 10px 25px; 
             border-radius: 50px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-align: center;
         }
         .back-btn:hover { opacity: 1; background: white; color: #0f172a; border-color: white; }
 
-        /* AJUSTES ESPECÍFICOS PARA MÓVILES PEQUEÑOS */
-        @media (max-width: 400px) {
-            .menu-grid { grid-template-columns: 1fr; }
-            .header { padding: 20px 10px; }
-            .game-card { padding: 20px; min-height: auto; }
-            .icon { font-size: 2.5rem; }
+        /* --- LA CIRUGÍA: AJUSTES ESPECÍFICOS PARA MÓVILES --- */
+        @media (max-width: 600px) {
+            .header { padding: 20px 15px; }
+            .header h1 { font-size: 1.5rem; }
+            
+            .menu-grid { 
+                grid-template-columns: 1fr; /* Una sola columna obligatoria */
+                gap: 15px;
+                padding: 10px;
+            }
+            
+            .game-card { 
+                min-height: auto; /* Quitamos altura fija para que no sobre espacio */
+                padding: 18px; 
+                border-radius: 20px; 
+            }
+            
+            .icon { font-size: 2.2rem; }
+            .game-card h2 { font-size: 1.1rem; }
+            .game-card p { font-size: 0.8rem; margin: 8px 0; }
+            
+            .btn-play { padding: 10px; font-size: 0.65rem; }
+            
+            .back-btn { width: 80%; padding: 12px; }
         }
     </style>
 </head>
