@@ -129,7 +129,7 @@
             cursor: pointer;
             transition: transform 0.2s cubic-bezier(0.17, 0.88, 0.32, 1.28), opacity 0.3s ease;
             /* Previene saltos visuales en móviles */
-            will-change: left, top;
+            will-change: transform;
         }
 
         .p-node.hit {
@@ -418,8 +418,8 @@
                 const posX = node.centerX + Math.cos(node.angle) * node.radiusX - (node.dom.offsetWidth / 2);
                 const posY = node.centerY + Math.sin(node.angle) * node.radiusY - (node.dom.offsetHeight / 2);
                 
-                node.dom.style.left = posX + 'px';
-                node.dom.style.top = posY + 'px';
+                // CIRUGÍA: Uso de transform para suavidad total manteniendo tu lógica de posX/posY
+                node.dom.style.transform = `translate(${posX}px, ${posY}px)`;
             });
             requestAnimationFrame(physicsLoop);
         }
