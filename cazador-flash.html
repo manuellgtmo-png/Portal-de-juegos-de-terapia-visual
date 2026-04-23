@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cazador Flash Pro v25.0 - Full Protocol</title>
+    <title>Cazador Flash Pro v25.1 - Perceptum Protocol</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -26,52 +26,72 @@
 
         #bg-canvas { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5; }
 
+        /* HEADER RESPONSIVO */
         #header { 
-            height: 80px; padding: 0 30px; 
+            height: 10vh; min-height: 60px; padding: 0 5vw; 
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(28, 35, 49, 0.8); z-index: 100; backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .stat-box { 
-            background: rgba(0,0,0,0.3); padding: 12px 20px; border-radius: 20px; 
-            font-weight: 900; font-size: 0.9rem; color: var(--clin-accent);
+            background: rgba(0,0,0,0.3); padding: 1vh 2vw; border-radius: 15px; 
+            font-weight: 900; font-size: clamp(0.7rem, 2vh, 1.1rem); color: var(--clin-accent);
             border: 1px solid rgba(168, 85, 247, 0.2);
         }
 
         #stage { flex: 1; position: relative; z-index: 5; overflow: hidden; width: 100%; }
-        #fix-dot { position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); display: none; z-index: 10; box-shadow: 0 0 25px #fff; }
+        #fix-dot { position: absolute; top: 50%; left: 50%; width: 2.5vh; height: 2.5vh; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); display: none; z-index: 10; box-shadow: 0 0 25px #fff; }
 
+        /* ANUNCIADOR DE OBJETIVO ADAPTATIVO */
         #target-announcer {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--clin-card); padding: 40px; border-radius: 45px;
+            background: var(--clin-card); padding: 4vh; border-radius: 30px;
             box-shadow: 0 25px 70px rgba(0,0,0,0.7); text-align: center; 
-            z-index: 200; display: none; width: 300px;
+            z-index: 200; display: none; width: 70vw; max-width: 400px;
             border: 3px solid var(--clin-accent);
         }
 
         .flash-item { position: absolute; cursor: pointer; transform: translate(-50%, -50%); z-index: 20; }
-        .flash-item svg { width: 100%; height: 100%; drop-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .flash-item svg { width: 100%; height: 100%; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
 
+        /* MODALES Y TEXTOS ESCALABLES */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(20px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .modal { background: var(--clin-card); padding: 50px; border-radius: 50px; text-align: center; width: 90%; max-width: 550px; border: 1px solid rgba(255,255,255,0.05); }
+        .modal { 
+            background: var(--clin-card); padding: 5vh 5vw; border-radius: 40px; 
+            text-align: center; width: 85%; max-width: 550px; 
+            border: 1px solid rgba(255,255,255,0.05); 
+            max-height: 90vh; overflow-y: auto;
+        }
         
-        .titulo-vpro { font-size: 3rem; font-weight: 900; color: var(--clin-accent); margin-bottom: 5px; }
-        .subtitulo-vpro { letter-spacing: 5px; font-size: 0.8rem; font-weight: 700; color: var(--clin-text-dim); margin-bottom: 30px; }
+        .titulo-vpro { font-size: clamp(1.8rem, 6vh, 3.5rem); font-weight: 900; color: var(--clin-accent); margin-bottom: 5px; line-height: 1; }
+        .subtitulo-vpro { letter-spacing: 3px; font-size: clamp(0.6rem, 1.5vh, 0.9rem); font-weight: 700; color: var(--clin-text-dim); margin-bottom: 4vh; }
 
-        .instr-box { background: rgba(0,0,0,0.2); padding: 25px; border-radius: 28px; text-align: left; font-size: 0.9rem; margin-bottom: 25px; border-left: 6px solid var(--clin-accent); color: var(--clin-text-dim); line-height: 1.6; }
+        .instr-box { 
+            background: rgba(0,0,0,0.2); padding: 2.5vh; border-radius: 20px; 
+            text-align: left; font-size: clamp(0.75rem, 1.8vh, 1rem); 
+            margin-bottom: 3vh; border-left: 6px solid var(--clin-accent); 
+            color: var(--clin-text-dim); line-height: 1.5; 
+        }
 
-        .btn-toggle { background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); padding: 20px; border-radius: 22px; font-weight: 900; cursor: pointer; flex: 1; color: white; font-size: 0.8rem; }
+        .btn-toggle { 
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); 
+            padding: 2vh; border-radius: 18px; font-weight: 900; cursor: pointer; 
+            flex: 1; color: white; font-size: clamp(0.65rem, 1.5vh, 0.9rem); 
+        }
         .btn-toggle.active { border-color: var(--clin-accent); color: var(--clin-accent); background: rgba(168, 85, 247, 0.1); box-shadow: 0 0 20px var(--clin-accent-glow); }
         
-        .go-btn { background: var(--clin-success); color: #062d16; padding: 25px; border-radius: 25px; width: 100%; border: none; font-weight: 900; font-size: 1.3rem; margin-top: 15px; box-shadow: 0 10px 0 #15803d; cursor: pointer; text-transform: uppercase; }
-        .go-btn:active { transform: translateY(4px); box-shadow: 0 6px 0 #15803d; }
+        .go-btn { 
+            background: var(--clin-success); color: #062d16; padding: 2.5vh; 
+            border-radius: 20px; width: 100%; border: none; font-weight: 900; 
+            font-size: clamp(1rem, 2.5vh, 1.5rem); margin-top: 2vh; 
+            box-shadow: 0 8px 0 #15803d; cursor: pointer; text-transform: uppercase; 
+        }
+        .go-btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #15803d; }
         
-        .selector-container { background: rgba(0,0,0,0.2); border-radius: 30px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        .selector-container.disabled { opacity: 0.15; pointer-events: none; filter: grayscale(1); }
+        .selector-container { background: rgba(0,0,0,0.2); border-radius: 25px; padding: 3vh; margin-bottom: 3vh; border: 1px solid rgba(255,255,255,0.05); }
+        input[type=range] { width: 100%; margin: 2vh 0; accent-color: var(--clin-accent); }
 
-        input[type=range] { width: 100%; margin: 20px 0; accent-color: var(--clin-accent); cursor: pointer; }
-
-        #btn-next { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 30px 60px; background: var(--clin-success); color: white; border: none; border-radius: 35px; font-weight: 900; font-size: 1.4rem; display: none; z-index: 300; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4); }
+        #btn-next { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 3vh 6vw; background: var(--clin-success); color: white; border: none; border-radius: 30px; font-weight: 900; font-size: clamp(1.2rem, 3vh, 2rem); display: none; z-index: 300; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4); }
         #err-flash { position:fixed; inset:0; background:var(--clin-error); opacity:0.4; display:none; z-index:9999; pointer-events:none; }
     </style>
 </head>
@@ -82,16 +102,16 @@
 
     <div id="header" style="display:none;">
         <div class="stat-box">NIVEL: <span id="v-lvl">1</span></div>
-        <div id="v-lives" style="font-size:1.6rem; letter-spacing: 4px;">❤️❤️❤️</div>
+        <div id="v-lives" style="font-size: clamp(1.2rem, 4vh, 2rem); letter-spacing: 4px;">❤️❤️❤️</div>
         <div class="stat-box">⏱️ <span id="v-timer">0:00</span></div>
     </div>
 
     <div id="stage">
         <div id="fix-dot"></div>
         <div id="target-announcer">
-            <p style="font-weight:900; color:var(--clin-accent); font-size:0.8rem; margin:0; letter-spacing:2px;">ESTÍMULO OBJETIVO🎯</p>
-            <div id="target-preview" style="margin:25px 0; display:flex; justify-content:center;"></div>
-            <p id="target-label" style="font-weight:900; font-size:1.2rem; text-transform:uppercase; color:white; margin:0;"></p>
+            <p style="font-weight:900; color:var(--clin-accent); font-size:clamp(0.6rem, 1.5vh, 0.8rem); margin:0; letter-spacing:2px;">ESTÍMULO OBJETIVO🎯</p>
+            <div id="target-preview" style="margin:2vh 0; display:flex; justify-content:center;"></div>
+            <p id="target-label" style="font-weight:900; font-size:clamp(0.9rem, 2vh, 1.3rem); text-transform:uppercase; color:white; margin:0;"></p>
         </div>
         <button id="btn-next" onclick="prepareNextLvl()">¡NIVEL SUPERADO! 🚀</button>
     </div>
@@ -99,31 +119,30 @@
     <div id="modal-1" class="overlay">
         <div class="modal">
             <h1 class="titulo-vpro">FLASH HUNTER</h1>
-            <p class="subtitulo-vpro">ESTIMULACIÓN PERIFÉRICA v25.0</p>
+            <p class="subtitulo-vpro">ESTIMULACIÓN PERIFÉRICA v25.1</p>
             <div class="instr-box" style="text-align: center; border: none; font-weight: 700;">
-                Protocolo clínico de discriminación visual rápida. <br> Niveles infinitos por desempeño.
+                Protocolo clínico de discriminación visual rápida para alto rendimiento.
             </div>
-            <button class="go-btn" onclick="initAudio(); showModal(2)">INGRESAR</button>
+            <button class="go-btn" onclick="initAudio(); showModal(2)">INGRESAR AL TEST</button>
         </div>
     </div>
 
     <div id="modal-2" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--clin-accent); margin-bottom:15px; font-size: 1.8rem;">PROTOCOLOS</h2>
+            <h2 style="color:var(--clin-accent); margin-bottom:2vh; font-size: clamp(1.4rem, 4vh, 2rem); font-weight: 900;">PROTOCOLOS</h2>
             
-            <div style="display:flex; gap:15px; margin-bottom:25px;">
+            <div style="display:flex; gap:10px; margin-bottom:3vh;">
                 <button id="mode-reloj" class="btn-toggle active" onclick="setGameMode('reloj')">CONTRA RELOJ ⏱️</button>
                 <button id="mode-cron" class="btn-toggle" onclick="setGameMode('cron')">MODO LIBRE ♾️</button>
             </div>
 
             <div id="instr-box" class="instr-box">
-                <b>Modo Contra Reloj:</b> Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡Vida extra en el nivel 7! ❤️
+                <b>Modo Contra Reloj:</b> Pierdes vida si fallas o el estímulo desaparece. ¡Vida extra nivel 7! ❤️
             </div>
 
             <div id="selector-tiempo-container" class="selector-container">
-                <span style="font-weight:800; color:var(--clin-text-dim); font-size:0.8rem; letter-spacing:2px;">VELOCIDAD DEL FLASH: <span id="dur-val" style="color:var(--clin-accent)">5</span>s</span>
-                <input type="range" id="flash-slider" min="5" max="30" step="1" value="5" oninput="document.getElementById('dur-val').innerText = this.value">
-                <p style="font-size: 0.65rem; color: var(--clin-text-dim); margin-top: 8px;">(Tiempo de permanencia de los estímulos en pantalla)</p>
+                <span style="font-weight:800; color:var(--clin-text-dim); font-size:clamp(0.7rem, 1.5vh, 0.9rem); letter-spacing:1px;">VELOCIDAD FLASH: <span id="dur-val" style="color:var(--clin-accent)">5</span>s</span>
+                <input type="range" id="flash-slider" min="3" max="20" step="1" value="5" oninput="document.getElementById('dur-val').innerText = this.value">
             </div>
 
             <button class="go-btn" onclick="startGame()">INICIAR EVALUACIÓN</button>
@@ -132,14 +151,15 @@
 
     <div id="res-modal" class="overlay" style="display:none;">
         <div class="modal">
-            <h2 style="color:var(--clin-accent); font-size: 1.8rem;">SESIÓN FINALIZADA</h2>
-            <div id="res-data" style="margin:25px 0; text-align:left; background:rgba(0,0,0,0.3); padding:30px; border-radius:30px; font-weight:800; font-size:0.9rem; line-height:2.2; color:white;"></div>
-            <p id="sync-status" style="font-size:0.9rem; font-weight:900; color:var(--clin-accent)">Sincronizando con base de datos...</p>
-            <button class="go-btn" onclick="location.reload()">REPETIR</button>
+            <h2 style="color:var(--clin-accent); font-size: clamp(1.5rem, 4vh, 2.2rem); font-weight: 900;">SESIÓN FINALIZADA</h2>
+            <div id="res-data" style="margin:3vh 0; text-align:left; background:rgba(0,0,0,0.3); padding:3vh; border-radius:25px; font-weight:700; font-size:clamp(0.75rem, 1.8vh, 1rem); line-height:2; color:white;"></div>
+            <p id="sync-status" style="font-size:0.85rem; font-weight:900; color:var(--clin-accent); margin-bottom: 2vh;">Sincronizando con Perceptum Cloud...</p>
+            <button class="go-btn" onclick="location.reload()">REPETIR SESIÓN</button>
         </div>
     </div>
 
     <script>
+        // LÓGICA DE MOTOR Y RECOPILACIÓN DE DATOS (Mantiene tu estructura original)
         const urlParams = new URLSearchParams(window.location.search);
         const pacienteId = urlParams.get('id') || 'SIN_ID';
         const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
@@ -155,26 +175,23 @@
             { id: 4, name: "Anillo Doble", html: '<circle cx="50" cy="50" r="35" fill="none" stroke="white" stroke-width="10"/><circle cx="50" cy="50" r="19" fill="none" stroke="white" stroke-width="6"/>' }
         ];
 
-        // MOTOR DE PARTÍCULAS COMPLETO
+        // Partículas de fondo
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
         function initParticles() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             particles = [];
-            for(let i=0; i<85; i++) {
+            for(let i=0; i<60; i++) {
                 particles.push({ 
-                    x: Math.random()*canvas.width, 
-                    y: Math.random()*canvas.height, 
-                    vx: (Math.random()-0.5)*7, 
-                    vy: (Math.random()-0.5)*7, 
-                    size: Math.random()*3+1, 
-                    color: `rgba(168, 85, 247, ${Math.random()*0.4})` 
+                    x: Math.random()*canvas.width, y: Math.random()*canvas.height, 
+                    vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3, 
+                    size: Math.random()*2+1, color: `rgba(168, 85, 247, ${Math.random()*0.3})` 
                 });
             }
         }
         function animate() {
-            ctx.fillStyle = 'rgba(11, 16, 27, 0.3)';
+            ctx.fillStyle = 'rgba(11, 16, 27, 0.2)';
             ctx.fillRect(0,0,canvas.width,canvas.height);
             particles.forEach(p => {
                 p.x+=p.vx; p.y+=p.vy;
@@ -183,22 +200,15 @@
                 ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
                 ctx.fillStyle=p.color; ctx.fill();
             });
-            if(active || document.querySelector('.overlay[style*="flex"]')) requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
         }
 
         function setGameMode(m) { 
             gameMode = m; 
-            const box = document.getElementById('instr-box');
-            const selector = document.getElementById('selector-tiempo-container');
             document.getElementById('mode-reloj').className = m === 'reloj' ? 'btn-toggle active' : 'btn-toggle';
             document.getElementById('mode-cron').className = m === 'cron' ? 'btn-toggle active' : 'btn-toggle';
-            if(m === 'reloj') {
-                box.innerHTML = "<b>Modo Contra Reloj:</b> ⏱️ Tienes 3 vidas. Si fallas o no tocas la figura a tiempo, pierdes una vida. ¡Vida extra en el nivel 7!";
-                selector.classList.remove('disabled');
-            } else {
-                box.innerHTML = "<b>Modo Libre:</b> ♾️ Vidas infinitas y los estímulos no desaparecen. Practica tu discriminación visual sin presión.";
-                selector.classList.add('disabled');
-            }
+            const box = document.getElementById('instr-box');
+            box.innerHTML = m === 'reloj' ? "<b>Modo Contra Reloj:</b> Pierdes vida si fallas o el estímulo desaparece. ¡Vida extra nivel 7! ❤️" : "<b>Modo Libre:</b> Vidas infinitas y los estímulos no desaparecen. Practica sin presión. ♾️";
         }
 
         function showModal(n) { 
@@ -207,32 +217,14 @@
         }
 
         function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-        
-        function playSound(f, d, type='sine') { 
-            if(!audioCtx) return; 
-            const o = audioCtx.createOscillator(); 
-            const g = audioCtx.createGain(); 
-            o.type = type; 
-            o.frequency.setValueAtTime(f, audioCtx.currentTime); 
-            g.gain.setValueAtTime(0.05, audioCtx.currentTime); 
-            o.connect(g); g.connect(audioCtx.destination); 
-            o.start(); o.stop(audioCtx.currentTime + d); 
-        }
+        function playSound(f, d, type='sine') { if(!audioCtx) return; const o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = type; o.frequency.setValueAtTime(f, audioCtx.currentTime); g.gain.setValueAtTime(0.05, audioCtx.currentTime); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d); }
 
         function startGame() {
             flashSpeed = parseInt(document.getElementById('flash-slider').value) * 1000;
             initParticles(); animate(); showModal(0);
             document.getElementById('header').style.display = 'flex';
             active = true;
-            
-            // Cronómetro de sesión
-            setInterval(() => {
-                if(active) {
-                    secondsElapsed++;
-                    document.getElementById('v-timer').innerText = formatTime(secondsElapsed);
-                }
-            }, 1000);
-
+            setInterval(() => { if(active) { secondsElapsed++; document.getElementById('v-timer').innerText = formatTime(secondsElapsed); }}, 1000);
             prepareNewLevel();
         }
 
@@ -242,29 +234,18 @@
             if(!active) return; isBlocked = true;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
             currentTarget = items[Math.floor(Math.random()*items.length)];
-            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="100" style="background:rgba(0,0,0,0.5); border-radius:20px; padding:10px; border: 2px solid var(--clin-accent);">${currentTarget.html}</svg>`;
+            document.getElementById('target-preview').innerHTML = `<svg viewBox="0 0 100 100" width="80" style="background:rgba(0,0,0,0.5); border-radius:15px; padding:10px; border: 2px solid var(--clin-accent);">${currentTarget.html}</svg>`;
             document.getElementById('target-label').innerText = currentTarget.name;
             document.getElementById('target-announcer').style.display = 'block';
-            setTimeout(() => { 
-                document.getElementById('target-announcer').style.display = 'none'; 
-                isBlocked = false; 
-                nextFlash(); 
-            }, 2500);
+            setTimeout(() => { document.getElementById('target-announcer').style.display = 'none'; isBlocked = false; nextFlash(); }, 2200);
         }
 
         function nextFlash() {
             if(!active || isBlocked) return;
             document.querySelectorAll('.flash-item').forEach(i => i.remove());
-            if(lvlHits >= 5) { 
-                isBlocked = true; 
-                document.getElementById('btn-next').style.display = 'block'; 
-                return; 
-            }
+            if(lvlHits >= 5) { isBlocked = true; document.getElementById('btn-next').style.display = 'block'; return; }
             document.getElementById('fix-dot').style.display = 'block';
-            setTimeout(() => { 
-                document.getElementById('fix-dot').style.display = 'none'; 
-                spawnItems(); 
-            }, 800);
+            setTimeout(() => { document.getElementById('fix-dot').style.display = 'none'; spawnItems(); }, 700);
         }
 
         function spawnItems() {
@@ -276,17 +257,18 @@
 
             for(let i=0; i<num; i++) {
                 const el = document.createElement('div'); el.className = 'flash-item';
-                const size = 75; el.style.width = el.style.height = size + 'px';
+                // El tamaño ahora es un poco más pequeño para ser más desafiante (65px)
+                const size = 65; el.style.width = el.style.height = size + 'px';
                 let x, y, tooClose, att = 0;
                 
                 do {
                     tooClose = false; 
-                    x = Math.random()*(rect.width-120)+60; 
-                    y = Math.random()*(rect.height-120)+60;
-                    for(let p of placed) { if(Math.hypot(x-p.x, y-p.y) < 100) tooClose = true; }
-                    if(Math.hypot(x-rect.width/2, y-rect.height/2) < 90) tooClose = true;
+                    x = Math.random()*(rect.width-100)+50; 
+                    y = Math.random()*(rect.height-100)+50;
+                    for(let p of placed) { if(Math.hypot(x-p.x, y-p.y) < 90) tooClose = true; }
+                    if(Math.hypot(x-rect.width/2, y-rect.height/2) < 80) tooClose = true;
                     att++;
-                } while(tooClose && att < 300);
+                } while(tooClose && att < 200);
 
                 placed.push({x, y}); el.style.left = x + 'px'; el.style.top = y + 'px';
                 const isTarget = (i === targetPos);
@@ -294,75 +276,50 @@
                 el.innerHTML = `<svg viewBox="0 0 100 100">${content}</svg>`;
                 
                 el.onclick = (e) => { 
-                    e.stopPropagation(); 
-                    if(isBlocked) return; 
-                    clearTimeout(window.fT); 
-                    if(isTarget) { 
-                        hits++; lvlHits++; playSound(800, 0.1); 
-                        isBlocked = true; 
-                        setTimeout(() => { isBlocked = false; nextFlash(); }, 300); 
-                    } else fail(); 
+                    e.stopPropagation(); if(isBlocked) return; clearTimeout(window.fT); 
+                    if(isTarget) { hits++; lvlHits++; playSound(800, 0.1); isBlocked = true; setTimeout(() => { isBlocked = false; nextFlash(); }, 250); } 
+                    else fail(); 
                 };
                 stage.appendChild(el);
             }
 
-            if(gameMode === 'reloj') {
-                window.fT = setTimeout(() => { if(!isBlocked && active) fail(); }, flashSpeed);
-            }
+            if(gameMode === 'reloj') { window.fT = setTimeout(() => { if(!isBlocked && active) fail(); }, flashSpeed); }
         }
 
         function fail() {
             if(isBlocked || !active) return; 
             isBlocked = true; fails++; 
             if(gameMode === 'reloj') lives--;
-            playSound(110, 0.4, 'sawtooth'); 
+            playSound(120, 0.3, 'sawtooth'); 
             document.getElementById('err-flash').style.display = 'block';
             document.getElementById('v-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-            
-            setTimeout(() => { 
-                document.getElementById('err-flash').style.display = 'none'; 
-                if(lives <= 0 && gameMode === 'reloj') finishGame(); 
-                else { isBlocked = false; nextFlash(); } 
-            }, 600);
+            setTimeout(() => { document.getElementById('err-flash').style.display = 'none'; if(lives <= 0 && gameMode === 'reloj') finishGame(); else { isBlocked = false; nextFlash(); } }, 500);
         }
 
-        function handleGlobalClick(e) { 
-            if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; 
-            fail(); 
-        }
+        function handleGlobalClick(e) { if(!active || isBlocked || e.target.closest('.modal') || e.target.closest('.flash-item')) return; fail(); }
 
         function prepareNextLvl() { 
-            lvl++; lvlHits = 0; 
-            document.getElementById('btn-next').style.display = 'none'; 
+            lvl++; lvlHits = 0; document.getElementById('btn-next').style.display = 'none'; 
             if(lvl % 7 === 0) lives = Math.min(5, lives+1); 
-            document.getElementById('v-lvl').innerText = lvl; 
-            document.getElementById('v-lives').innerText = "❤️".repeat(lives); 
+            document.getElementById('v-lvl').innerText = lvl; document.getElementById('v-lives').innerText = "❤️".repeat(lives); 
             prepareNewLevel(); 
         }
 
         function finishGame() {
             active = false; isBlocked = true;
             document.getElementById('res-data').innerHTML = `
-                ID PACIENTE: ${pacienteId}<br>
-                NIVEL ALCANZADO: ${lvl}<br>
-                ACIERTOS TOTALES: ${hits}<br>
-                ERRORES TOTALES: ${fails}<br>
-                VELOCIDAD SELECCIONADA: ${flashSpeed/1000}s<br>
+                PACIENTE ID: ${pacienteId}<br>
+                NIVEL: ${lvl} | ACIERTOS: ${hits}<br>
+                FALLOS: ${fails} | VELOCIDAD: ${flashSpeed/1000}s<br>
                 TIEMPO TOTAL: ${formatTime(secondsElapsed)}`;
-            
             document.getElementById('res-modal').style.display = 'flex';
-
             const fd = new URLSearchParams();
-            fd.append('entry.369874016', pacienteId); 
-            fd.append('entry.1353470174', 'Flash Hunter v25.0 Full'); 
-            fd.append('entry.721051298', lvl); 
-            fd.append('entry.873272199', hits); 
-            fd.append('entry.1030094511', fails); 
-            fd.append('entry.1303309812', formatTime(secondsElapsed)); 
+            fd.append('entry.369874016', pacienteId); fd.append('entry.1353470174', 'Flash Hunter v25.1'); 
+            fd.append('entry.721051298', lvl); fd.append('entry.873272199', hits); 
+            fd.append('entry.1030094511', fails); fd.append('entry.1303309812', formatTime(secondsElapsed)); 
             fd.append('entry.845098414', new Date().toISOString().split('T')[0]);
-            
             fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: fd })
-                .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS SINCRONIZADOS CORRECTAMENTE"; });
+                .then(() => { document.getElementById('sync-status').innerText = "✓ DATOS GUARDADOS EN PERCEPTUM CLOUD"; });
         }
     </script>
 </body>
