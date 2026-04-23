@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Pro v25.2 - Centro Perceptum</title>
+    <title>Vernier Pro v25.3 - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,6 +30,7 @@
             position: fixed;
         }
 
+        /* --- OVERLAYS --- */
         .overlay {
             position: fixed;
             inset: 0;
@@ -45,16 +46,17 @@
         .panel {
             background: var(--card);
             width: 100%;
-            max-width: 400px;
-            padding: 30px 25px;
+            max-width: 380px;
+            padding: 30px;
             border-radius: 35px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .titulo-vpro { font-size: 2.2rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .titulo-vpro { font-size: 2rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
         .subtitulo { font-size: 0.7rem; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 25px; text-transform: uppercase; }
 
+        /* --- ÁREA DE EXAMEN --- */
         .viewport-examen {
             flex: 1;
             position: relative;
@@ -62,11 +64,10 @@
             background: radial-gradient(circle at center, #161e2e 0%, #0b101b 100%);
         }
 
-        /* --- SEPARACIÓN DE LÍNEAS PARA EVITAR TOQUES --- */
         .linea {
             position: absolute;
             width: 12px;
-            height: 130px;
+            height: 120px;
             border-radius: 20px;
             transform-origin: center center;
             will-change: transform, left;
@@ -75,11 +76,12 @@
         #pac-line { 
             background: var(--accent); 
             left: 50%; 
-            top: 65%; /* Mayor separación vertical */
+            top: 62%; 
             box-shadow: 0 0 30px var(--accent); 
             z-index: 10;
         }
 
+        /* --- HUD --- */
         .hud-top {
             position: absolute;
             top: env(safe-area-inset-top, 15px);
@@ -92,40 +94,42 @@
 
         .hud-item {
             background: rgba(28, 35, 49, 0.9);
-            padding: 10px 18px;
+            padding: 10px 15px;
             border-radius: 15px;
             font-weight: 900;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
         .timer-container {
             position: absolute;
             top: 75px; left: 50%;
             transform: translateX(-50%);
-            width: 60%; height: 6px;
+            width: 50%; height: 5px;
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
-            display: none; /* Se activa solo en modo tiempo */
+            display: none;
         }
         #timer-bar { width: 100%; height: 100%; background: var(--error); }
 
+        /* --- CONTROLES CORREGIDOS --- */
         .controles-footer {
             background: var(--card);
-            padding: 15px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            padding: 15px 20px;
+            /* Margen inferior extra para que el botón no toque el borde del celular */
+            padding-bottom: calc(30px + env(safe-area-inset-bottom)); 
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
             border-top: 1px solid rgba(255,255,255,0.1);
         }
 
         .btn-ctrl {
-            aspect-ratio: 1.2;
+            aspect-ratio: 1.4; /* Botones un poco más chatos para ganar espacio vertical */
             background: #2d3748;
             border: none;
-            border-radius: 18px;
+            border-radius: 15px;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -133,23 +137,26 @@
 
         .btn-confirm {
             grid-column: span 4;
-            padding: 18px; /* Tamaño reducido para que no ocupe tanto */
+            padding: 18px; 
             background: var(--success);
             color: #052e16;
             border: none;
             border-radius: 20px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-transform: uppercase;
+            margin-top: 5px;
+            box-shadow: 0 4px 0 #15803d;
         }
+        .btn-confirm:active { transform: translateY(2px); box-shadow: none; }
 
+        /* --- MENÚS --- */
         .tarjeta-modo {
             background: #0b101b;
             padding: 15px;
             border-radius: 20px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             border: 2px solid transparent;
-            cursor: pointer;
         }
         .tarjeta-modo.active { border-color: var(--accent); background: rgba(168, 85, 247, 0.1); }
         
@@ -161,24 +168,24 @@
     <div id="inicio-ui" class="overlay">
         <div class="panel">
             <h1 class="titulo-vpro">VERNIER PRO</h1>
-            <p class="subtitulo">SISTEMA DE PRECISIÓN VISUAL</p>
+            <p class="subtitulo">PRECISION TEST</p>
             
             <div id="m-libre" class="tarjeta-modo active" onclick="setModo('libre')">
-                <div style="font-weight:900;">ENTRENAMIENTO LIBRE</div>
-                <div style="font-size:0.7rem; color:var(--text-dim);">Sin presión de tiempo</div>
+                <div style="font-weight:900; font-size: 1rem;">ENTRENAMIENTO LIBRE</div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Sin límite de tiempo</div>
             </div>
 
             <div id="m-tiempo" class="tarjeta-modo" onclick="setModo('tiempo')">
-                <div style="font-weight:900;">CONTRARRELOJ</div>
-                <div style="font-size:0.7rem; color:var(--text-dim);">Evaluación bajo estrés</div>
+                <div style="font-weight:900; font-size: 1rem;">CONTRARRELOJ</div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Evaluación bajo presión</div>
             </div>
 
             <div id="config-t" style="display:none">
-                <div style="font-size:0.8rem; font-weight:800">TIEMPO: <span id="t-val">10</span>s</div>
+                <div style="font-size:0.8rem; font-weight:800">SEGUNDOS: <span id="t-val">10</span></div>
                 <input type="range" min="5" max="30" value="10" oninput="document.getElementById('t-val').innerText=this.value">
             </div>
 
-            <button class="btn-confirm" style="width:100%" onclick="start()">INICIAR</button>
+            <button class="btn-confirm" style="width:100%" onclick="start()">INICIAR EXAMEN</button>
         </div>
     </div>
 
@@ -242,7 +249,7 @@
             document.getElementById('m-libre').classList.toggle('active', m==='libre');
             document.getElementById('m-tiempo').classList.toggle('active', m==='tiempo');
             document.getElementById('config-t').style.display = m === 'tiempo' ? 'block' : 'none';
-            AUDIO.play(600, 0.1, 0.05);
+            AUDIO.play(500, 0.1, 0.05);
         }
 
         function start() {
@@ -256,7 +263,8 @@
             state.active = true;
             state.tCurr = state.tBase;
             
-            state.ref.x = 35 + Math.random() * 30;
+            // Lógica de posición
+            state.ref.x = 30 + Math.random() * 40;
             state.ref.a = state.lvl >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0;
             if(state.lvl >= 6) state.ref.a = Math.random() * 160 - 80;
 
@@ -286,7 +294,7 @@
             document.getElementById('pac-line').style.left = state.pac.x + "%";
             document.getElementById('pac-line').style.transform = `translate(-50%, -50%) rotate(${state.pac.a}deg)`;
             document.getElementById('h-lvl').innerText = state.lvl;
-            document.getElementById('h-vidas').innerText = "❤️".repeat(state.vidas);
+            document.getElementById('h-vidas').innerText = "❤️".repeat(Math.max(0, state.vidas));
         }
 
         function check() {
@@ -306,6 +314,7 @@
             document.getElementById('feedback-ui').style.display = 'flex';
             document.getElementById('f-score').innerText = score + "%";
             document.getElementById('f-data').innerHTML = `ERROR X: ${errX.toFixed(2)}% | ERROR ANG: ${errA.toFixed(1)}°`;
+            
             if(score >= 90 && state.vidas > 0) state.lvl++;
         }
 
@@ -316,7 +325,7 @@
             form.target = "target_silencioso";
             const data = {
                 "entry.369874016": localStorage.getItem('pacienteActual') || "ANONIMO",
-                "entry.1353470174": "VERNIER_V25.2",
+                "entry.1353470174": "VERNIER_V25.3",
                 "entry.721051298": p,
                 "entry.873272199": x.toFixed(2),
                 "entry.1030094511": a.toFixed(1),
