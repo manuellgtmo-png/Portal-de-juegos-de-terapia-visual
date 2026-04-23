@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Pro v25.1 - Centro Perceptum</title>
+    <title>Vernier Pro v25.2 - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -30,7 +30,6 @@
             position: fixed;
         }
 
-        /* --- INTERFAZ DE CAPAS --- */
         .overlay {
             position: fixed;
             inset: 0;
@@ -46,128 +45,115 @@
         .panel {
             background: var(--card);
             width: 100%;
-            max-width: 420px;
-            padding: 40px 30px;
-            border-radius: 40px;
+            max-width: 400px;
+            padding: 30px 25px;
+            border-radius: 35px;
             text-align: center;
             border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
 
-        .titulo-vpro { font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
-        .subtitulo { font-size: 0.75rem; letter-spacing: 4px; color: var(--text-dim); margin-bottom: 35px; text-transform: uppercase; }
+        .titulo-vpro { font-size: 2.2rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .subtitulo { font-size: 0.7rem; letter-spacing: 3px; color: var(--text-dim); margin-bottom: 25px; text-transform: uppercase; }
 
-        /* --- ÁREA DE EXAMEN --- */
         .viewport-examen {
             flex: 1;
             position: relative;
             width: 100%;
             background: radial-gradient(circle at center, #161e2e 0%, #0b101b 100%);
-            overflow: hidden;
         }
 
+        /* --- SEPARACIÓN DE LÍNEAS PARA EVITAR TOQUES --- */
         .linea {
             position: absolute;
-            width: 14px;
-            height: 140px;
+            width: 12px;
+            height: 130px;
             border-radius: 20px;
             transform-origin: center center;
             will-change: transform, left;
         }
-
-        #ref-line { background: #334155; left: 50%; top: 35%; opacity: 0.5; z-index: 5; }
+        #ref-line { background: #334155; left: 50%; top: 30%; opacity: 0.5; z-index: 5; }
         #pac-line { 
             background: var(--accent); 
             left: 50%; 
-            top: 60%; 
-            box-shadow: 0 0 40px var(--accent); 
+            top: 65%; /* Mayor separación vertical */
+            box-shadow: 0 0 30px var(--accent); 
             z-index: 10;
         }
 
-        /* --- HUD --- */
         .hud-top {
             position: absolute;
-            top: env(safe-area-inset-top, 20px);
+            top: env(safe-area-inset-top, 15px);
             left: 0; width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 25px;
-            pointer-events: none;
+            padding: 0 20px;
             z-index: 100;
         }
 
         .hud-item {
             background: rgba(28, 35, 49, 0.9);
-            padding: 12px 20px;
-            border-radius: 20px;
+            padding: 10px 18px;
+            border-radius: 15px;
             font-weight: 900;
-            font-size: 1rem;
-            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
         }
 
         .timer-container {
             position: absolute;
-            top: 85px; left: 50%;
+            top: 75px; left: 50%;
             transform: translateX(-50%);
-            width: 50%; height: 6px;
+            width: 60%; height: 6px;
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
-            overflow: hidden;
+            display: none; /* Se activa solo en modo tiempo */
         }
-        #timer-bar { width: 100%; height: 100%; background: var(--error); transition: width 0.1s linear; }
+        #timer-bar { width: 100%; height: 100%; background: var(--error); }
 
-        /* --- CONTROLES INFERIORES --- */
         .controles-footer {
             background: var(--card);
-            padding: 20px;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            padding: 15px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 12px;
             border-top: 1px solid rgba(255,255,255,0.1);
-            z-index: 1000;
         }
 
         .btn-ctrl {
-            aspect-ratio: 1;
+            aspect-ratio: 1.2;
             background: #2d3748;
             border: none;
-            border-radius: 22px;
+            border-radius: 18px;
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 0 #1a202c;
         }
-        .btn-ctrl:active { transform: translateY(2px); box-shadow: none; }
 
         .btn-confirm {
             grid-column: span 4;
-            padding: 22px;
+            padding: 18px; /* Tamaño reducido para que no ocupe tanto */
             background: var(--success);
             color: #052e16;
             border: none;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: 900;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             text-transform: uppercase;
-            box-shadow: 0 6px 0 #15803d;
         }
-        .btn-confirm:active { transform: translateY(3px); box-shadow: none; }
 
-        /* --- MENÚS --- */
         .tarjeta-modo {
             background: #0b101b;
-            padding: 25px;
-            border-radius: 25px;
-            margin-bottom: 20px;
-            border: 3px solid transparent;
-            transition: 0.3s;
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 2px solid transparent;
+            cursor: pointer;
         }
-        .tarjeta-modo.active { border-color: var(--accent); background: rgba(168, 85, 247, 0.15); }
+        .tarjeta-modo.active { border-color: var(--accent); background: rgba(168, 85, 247, 0.1); }
         
-        input[type=range] { width: 100%; margin: 25px 0; accent-color: var(--accent); }
+        input[type=range] { width: 100%; margin: 15px 0; accent-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -177,37 +163,40 @@
             <h1 class="titulo-vpro">VERNIER PRO</h1>
             <p class="subtitulo">SISTEMA DE PRECISIÓN VISUAL</p>
             
-            <div id="m-tiempo" class="tarjeta-modo active" onclick="setModo('tiempo')">
-                <div style="font-weight:900; font-size: 1.2rem;">CONTRARRELOJ</div>
-                <div style="font-size:0.8rem; color:var(--text-dim); margin-top:5px">Evaluación clínica bajo estrés temporal</div>
+            <div id="m-libre" class="tarjeta-modo active" onclick="setModo('libre')">
+                <div style="font-weight:900;">ENTRENAMIENTO LIBRE</div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Sin presión de tiempo</div>
             </div>
 
-            <div id="config-t">
-                <div style="font-size:0.9rem; font-weight:800">DURACIÓN: <span id="t-val">10</span>s</div>
+            <div id="m-tiempo" class="tarjeta-modo" onclick="setModo('tiempo')">
+                <div style="font-weight:900;">CONTRARRELOJ</div>
+                <div style="font-size:0.7rem; color:var(--text-dim);">Evaluación bajo estrés</div>
+            </div>
+
+            <div id="config-t" style="display:none">
+                <div style="font-size:0.8rem; font-weight:800">TIEMPO: <span id="t-val">10</span>s</div>
                 <input type="range" min="5" max="30" value="10" oninput="document.getElementById('t-val').innerText=this.value">
             </div>
 
-            <button class="btn-confirm" style="grid-column:auto; width:100%" onclick="start()">INICIAR PROTOCOLO</button>
+            <button class="btn-confirm" style="width:100%" onclick="start()">INICIAR</button>
         </div>
     </div>
 
     <div id="feedback-ui" class="overlay" style="display:none">
         <div class="panel">
-            <h2 id="f-title" style="font-weight: 900;">RESULTADO</h2>
-            <div id="f-score" style="font-size:5rem; font-weight:900; color:var(--accent); margin: 15px 0;">0%</div>
-            <div id="f-data" style="font-size:0.9rem; line-height:2; margin-bottom:30px; background:rgba(0,0,0,0.3); padding:20px; border-radius:20px; text-align: left;"></div>
-            <button id="f-btn" class="btn-confirm" style="grid-column:auto; width:100%" onclick="next()">CONTINUAR</button>
+            <h2 id="f-title" style="font-weight:900;">RESULTADO</h2>
+            <div id="f-score" style="font-size:4rem; font-weight:900; color:var(--accent); margin:10px 0;">0%</div>
+            <div id="f-data" style="font-size:0.8rem; margin-bottom:20px; background:rgba(0,0,0,0.2); padding:15px; border-radius:15px; text-align:left;"></div>
+            <button id="f-btn" class="btn-confirm" style="width:100%" onclick="next()">CONTINUAR</button>
         </div>
     </div>
 
     <div class="viewport-examen" id="game-zone">
         <div class="hud-top">
-            <div class="hud-item">NIVEL <span id="h-lvl">1</span></div>
+            <div class="hud-item">LVL <span id="h-lvl">1</span></div>
             <div class="hud-item" id="h-vidas">❤️❤️❤️</div>
         </div>
-        
         <div class="timer-container" id="t-cont"><div id="timer-bar"></div></div>
-
         <div id="ref-line" class="linea"></div>
         <div id="pac-line" class="linea"></div>
     </div>
@@ -224,7 +213,7 @@
 
     <script>
         const state = {
-            active: false, lvl: 1, vidas: 3, modo: 'tiempo',
+            active: false, lvl: 1, vidas: 3, modo: 'libre',
             tBase: 10, tCurr: 10,
             ref: {x:50, a:0}, pac: {x:70, a:0},
             timer: null, nudge: null,
@@ -234,12 +223,12 @@
         const AUDIO = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-            play(f, d, v, type='sine') {
+            play(f, d, v) {
                 try {
                     this.init();
                     const o = this.ctx.createOscillator();
                     const g = this.ctx.createGain();
-                    o.type = type; o.frequency.value = f;
+                    o.frequency.value = f;
                     g.gain.setValueAtTime(v, this.ctx.currentTime);
                     g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
                     o.connect(g); g.connect(this.ctx.destination);
@@ -250,12 +239,13 @@
 
         function setModo(m) {
             state.modo = m;
-            AUDIO.play(600, 0.1, 0.1);
+            document.getElementById('m-libre').classList.toggle('active', m==='libre');
             document.getElementById('m-tiempo').classList.toggle('active', m==='tiempo');
+            document.getElementById('config-t').style.display = m === 'tiempo' ? 'block' : 'none';
+            AUDIO.play(600, 0.1, 0.05);
         }
 
         function start() {
-            AUDIO.play(800, 0.2, 0.1);
             state.tBase = parseInt(document.querySelector('input[type=range]').value);
             state.vidas = 3; state.lvl = 1;
             document.getElementById('inicio-ui').style.display = 'none';
@@ -266,17 +256,18 @@
             state.active = true;
             state.tCurr = state.tBase;
             
-            // Lógica de dificultad progresiva
             state.ref.x = 35 + Math.random() * 30;
             state.ref.a = state.lvl >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0;
             if(state.lvl >= 6) state.ref.a = Math.random() * 160 - 80;
 
-            state.pac.x = state.ref.x + (Math.random() > 0.5 ? 20 : -20);
+            state.pac.x = state.ref.x + (Math.random() > 0.5 ? 15 : -15);
             state.pac.a = 0;
             
             draw();
 
+            const tCont = document.getElementById('t-cont');
             if(state.modo === 'tiempo') {
+                tCont.style.display = 'block';
                 document.getElementById('timer-bar').style.width = "100%";
                 clearInterval(state.timer);
                 state.timer = setInterval(() => {
@@ -284,6 +275,8 @@
                     document.getElementById('timer-bar').style.width = (state.tCurr/state.tBase)*100 + "%";
                     if(state.tCurr <= 0) check();
                 }, 100);
+            } else {
+                tCont.style.display = 'none';
             }
         }
 
@@ -293,7 +286,7 @@
             document.getElementById('pac-line').style.left = state.pac.x + "%";
             document.getElementById('pac-line').style.transform = `translate(-50%, -50%) rotate(${state.pac.a}deg)`;
             document.getElementById('h-lvl').innerText = state.lvl;
-            document.getElementById('h-vidas').innerText = state.vidas > 0 ? "❤️".repeat(state.vidas) : "💀";
+            document.getElementById('h-vidas').innerText = "❤️".repeat(state.vidas);
         }
 
         function check() {
@@ -306,18 +299,13 @@
             if (errA > 90) errA = 180 - errA;
 
             const score = Math.max(0, Math.round(100 - (errX * 12 + errA * 3)));
-            
-            if(score >= 90) { AUDIO.play(880, 0.4, 0.2); } 
-            else { AUDIO.play(150, 0.5, 0.2, 'sawtooth'); state.vidas--; }
+            if(score < 90) state.vidas--;
 
             enviarDatosHaciaSheets(score, errX, errA);
 
             document.getElementById('feedback-ui').style.display = 'flex';
             document.getElementById('f-score').innerText = score + "%";
-            document.getElementById('f-title').innerText = state.vidas <= 0 ? "PROTOCOLO FIN" : "ANÁLISIS";
-            document.getElementById('f-data').innerHTML = `ERROR LATERAL: ${errX.toFixed(2)}%<br>ERROR ANGULAR: ${errA.toFixed(1)}°<br>ESTADO: ${state.vidas > 0 ? 'ESTABLE' : 'AGOTADO'}`;
-            document.getElementById('f-btn').innerText = state.vidas <= 0 ? "REINTENTAR" : "SIGUIENTE NIVEL";
-            
+            document.getElementById('f-data').innerHTML = `ERROR X: ${errX.toFixed(2)}% | ERROR ANG: ${errA.toFixed(1)}°`;
             if(score >= 90 && state.vidas > 0) state.lvl++;
         }
 
@@ -326,17 +314,15 @@
             form.method = "POST";
             form.action = state.formUrl;
             form.target = "target_silencioso";
-
             const data = {
                 "entry.369874016": localStorage.getItem('pacienteActual') || "ANONIMO",
-                "entry.1353470174": "VERNIER_MOBILE_V25.1",
+                "entry.1353470174": "VERNIER_V25.2",
                 "entry.721051298": p,
                 "entry.873272199": x.toFixed(2),
                 "entry.1030094511": a.toFixed(1),
                 "entry.1303309812": state.lvl,
-                "entry.845098414": new Date().toISOString().split('T')[0]
+                "entry.845098414": new Date().toLocaleDateString()
             };
-
             for (let k in data) {
                 const i = document.createElement("input");
                 i.type = "hidden"; i.name = k; i.value = data[k];
@@ -348,7 +334,6 @@
         }
 
         function next() {
-            AUDIO.play(600, 0.1, 0.1);
             document.getElementById('feedback-ui').style.display = 'none';
             if(state.vidas <= 0) location.reload();
             else newRound();
@@ -356,24 +341,19 @@
 
         function nudge(p, v) {
             if(!state.active) return;
-            state.pac[p] += v;
-            draw();
+            state.pac[p] += v; draw();
             state.nudge = setInterval(() => { state.pac[p] += v; draw(); }, 50);
         }
-
         function stopNudge() { clearInterval(state.nudge); }
 
-        // Drag táctil en pantalla
         let isDragging = false;
-        const gz = document.getElementById('game-zone');
-        gz.addEventListener('touchstart', (e) => { if(state.active) isDragging = true; }, {passive: true});
-        gz.addEventListener('touchmove', (e) => {
+        document.getElementById('game-zone').addEventListener('touchstart', () => { if(state.active) isDragging = true; });
+        document.getElementById('game-zone').addEventListener('touchmove', (e) => {
             if(!isDragging || !state.active) return;
             state.pac.x = (e.touches[0].clientX / window.innerWidth) * 100;
             draw();
-        }, {passive: true});
-        gz.addEventListener('touchend', () => isDragging = false);
-
+        });
+        document.getElementById('game-zone').addEventListener('touchend', () => isDragging = false);
     </script>
 </body>
 </html>
