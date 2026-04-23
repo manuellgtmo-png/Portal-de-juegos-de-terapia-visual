@@ -10,12 +10,9 @@
             --bg-color: #0f172a;
             --text-color: #f8fafc;
             --accent-color: #38bdf8;
-            /* Colores específicos para las 3 cartas */
             --c-verde: #22c55e;
             --c-naranja: #f59e0b;
             --c-rosa: #ec4899;
-            
-            /* Gradientes sutiles para el fondo de cada carta al pasar el mouse */
             --g-verde: linear-gradient(135deg, #dcfce7 0%, #ffffff 100%);
             --g-naranja: linear-gradient(135deg, #ffedd5 0%, #ffffff 100%);
             --g-rosa: linear-gradient(135deg, #fce7f3 0%, #ffffff 100%);
@@ -26,30 +23,47 @@
             font-family: 'Montserrat', sans-serif; 
             background-color: var(--bg-color); 
             color: var(--text-color); 
-            padding: 60px 20px;
+            padding: 5vh 5vw;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            box-sizing: border-box;
         }
 
-        .header { text-align: center; margin-bottom: 60px; }
-        .header h1 { font-size: 3rem; font-weight: 900; text-transform: uppercase; margin: 0; }
-        .header p { color: var(--accent-color); font-weight: 700; margin-top: 10px; text-transform: uppercase; }
+        /* HEADER UNIFICADO */
+        .header { text-align: center; margin-bottom: 6vh; width: 100%; }
+        .header h1 { 
+            font-size: clamp(1.8rem, 5vw, 3.2rem); 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            margin: 0; 
+            line-height: 1.1;
+        }
+        .header p { 
+            color: var(--accent-color); 
+            font-weight: 700; 
+            margin-top: 15px; 
+            text-transform: uppercase; 
+            font-size: clamp(0.7rem, 2vw, 0.95rem); 
+            letter-spacing: 1px;
+        }
 
+        /* GRID DINÁMICA */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 35px; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: clamp(25px, 4vw, 35px); 
             max-width: 1100px; 
             width: 100%;
-            margin-bottom: 80px;
+            margin-bottom: 6vh;
         }
 
+        /* TARJETAS DE JUEGO */
         .card-game {
             background: white;
-            border-radius: 40px;
-            padding: 45px 35px;
+            border-radius: clamp(25px, 5vw, 40px);
+            padding: clamp(35px, 6vh, 50px) 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -59,59 +73,87 @@
             transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             border: 4px solid transparent;
+            position: relative;
         }
 
-        /* Efecto de Hover usando las variables de cada carta */
         .card-game:hover { 
-            transform: translateY(-15px); 
+            transform: translateY(-12px); 
             border-color: var(--color-item);
             background: var(--grad-item);
         }
 
         .svg-icon {
-            width: 90px;
-            height: 90px;
+            width: clamp(70px, 12vh, 90px);
+            height: clamp(70px, 12vh, 90px);
             margin-bottom: 25px;
             fill: none;
-            stroke: var(--color-item); /* El icono toma el color de la carta */
+            stroke: var(--color-item);
             stroke-width: 1.5;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
-        .name { font-size: 1.7rem; font-weight: 900; margin-bottom: 15px; color: #0f172a; }
-        .desc { font-size: 1rem; opacity: 0.8; line-height: 1.6; margin-bottom: 30px; flex-grow: 1; font-weight: 600; }
+        .name { 
+            font-size: clamp(1.3rem, 3vw, 1.7rem); 
+            font-weight: 900; 
+            margin-bottom: 15px; 
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .desc { 
+            font-size: clamp(0.85rem, 1.8vw, 1rem); 
+            opacity: 0.8; 
+            line-height: 1.6; 
+            margin-bottom: 30px; 
+            flex-grow: 1; 
+            font-weight: 600; 
+        }
 
         .btn-play {
             padding: 15px 25px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            border-radius: 18px;
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
             font-weight: 900;
             color: white;
             text-transform: uppercase;
             width: 100%;
-            background: var(--color-item); /* El botón toma el color de la carta */
+            background: var(--color-item);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
 
-        /* ASIGNACIÓN DE COLORES INDIVIDUALES */
+        /* COLORES */
         .item-verde { --color-item: var(--c-verde); --grad-item: var(--g-verde); }
         .item-naranja { --color-item: var(--c-naranja); --grad-item: var(--g-naranja); }
         .item-rosa { --color-item: var(--c-rosa); --grad-item: var(--g-rosa); }
 
+        /* BOTÓN VOLVER UNIFICADO */
         .back-btn {
-            padding: 18px 50px;
+            padding: clamp(15px, 2vh, 20px) clamp(30px, 4vw, 50px);
             background: rgba(255,255,255,0.05);
             border: 2px solid rgba(255,255,255,0.2);
             color: white;
             border-radius: 60px;
             text-decoration: none;
             font-weight: 900;
+            font-size: clamp(0.75rem, 2vw, 0.9rem);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             transition: 0.3s;
             text-transform: uppercase;
         }
 
-        .back-btn:hover { background: white; color: #0f172a; }
+        .back-btn:hover { 
+            background: white; 
+            color: #0f172a; 
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.4);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 30px 15px; }
+            .grid { gap: 20px; }
+            .card-game { padding: 35px 25px; }
+        }
     </style>
 </head>
 <body>
@@ -122,24 +164,23 @@
     </header>
 
     <div class="grid">
-
         <a href="espejo-maestro.html" class="card-game item-naranja">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 14"/></svg>
             <div class="name">Espejo Maestro</div>
-            <div class="desc">Identifica la orientación correcta de figuras reflejadas.</div>
+            <div class="desc">Identifica la orientación correcta de figuras reflejadas en tiempo récord.</div>
             <div class="btn-play">Jugar Ahora</div>
         </a>
 
         <a href="laberinto-espacial.html" class="card-game item-rosa">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zM9 9h6v6H9V9zM21 12h-3M3 12h3M12 3v3M12 18v3"/></svg>
             <div class="name">Laberinto Espacial</div>
-            <div class="desc">Planifica rutas mediante comandos direccionales.</div>
+            <div class="desc">Planifica rutas críticas mediante comandos direccionales precisos.</div>
             <div class="btn-play">Jugar Ahora</div>
         </a>
     </div>
 
     <a href="integracion-visual.html" class="back-btn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
         VOLVER A INTEGRACIÓN VISUAL
     </a>
 
