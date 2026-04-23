@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Antisacádicos Elite - Versión Final E</title>
+    <title>Antisacádicos Elite - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --panel: #1e293b; --purple: #a855f7; --green: #10b981; --red: #ef4444; --white: #f8fafc; }
@@ -11,54 +11,62 @@
         body, html { width: 100%; height: 100%; background: var(--bg); color: var(--white); font-family: 'Montserrat', sans-serif; overflow: hidden; }
         
         /* AJUSTE DE CENTRADO Y RESPONSIVIDAD */
-        .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 20px; }
+        .overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.98); display: flex; align-items: center; justify-content: center; z-index: 5000; padding: 15px; }
         
         .card { 
             background: var(--panel); 
-            padding: clamp(25px, 5vw, 45px); 
-            border-radius: 40px; 
-            border: 5px solid var(--purple); 
+            padding: clamp(20px, 5vw, 45px); 
+            border-radius: 30px; 
+            border: 4px solid var(--purple); 
             text-align: center; 
-            max-width: 750px; 
+            max-width: 700px; 
             width: 100%; 
-            box-shadow: 0 0 60px rgba(168, 85, 247, 0.4);
-            /* Asegura que quepa en pantallas bajas */
-            max-height: 90vh;
+            box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+            max-height: 95vh;
             overflow-y: auto;
         }
 
-        h1 { font-family: 'Orbitron'; font-size: clamp(1.8rem, 6vw, 3rem); color: var(--purple); margin-bottom: 25px; letter-spacing: 3px; }
+        h1 { font-family: 'Orbitron'; font-size: clamp(1.4rem, 6vw, 2.8rem); color: var(--purple); margin-bottom: 20px; letter-spacing: 2px; }
         
         .instr { 
             text-align: left; background: rgba(0,0,0,0.3); 
-            padding: clamp(15px, 4vw, 30px); border-radius: 20px; 
-            margin-bottom: 30px; font-size: clamp(0.9rem, 3vw, 1.3rem); 
-            line-height: 1.8; border-left: 8px solid var(--purple); 
+            padding: clamp(12px, 4vw, 25px); border-radius: 15px; 
+            margin-bottom: 25px; font-size: clamp(0.85rem, 3vw, 1.2rem); 
+            line-height: 1.6; border-left: 6px solid var(--purple); 
         }
 
-        .config-row { margin-bottom: 25px; text-align: left; }
-        .config-row label { display: block; font-weight: 900; color: var(--purple); margin-bottom: 10px; font-size: 1.2rem; }
-        input[type="range"] { width: 100%; height: 12px; accent-color: var(--purple); cursor: pointer; }
+        .config-row { margin-bottom: 20px; text-align: left; }
+        .config-row label { display: block; font-weight: 900; color: var(--purple); margin-bottom: 8px; font-size: 1.1rem; }
+        input[type="range"] { width: 100%; height: 10px; accent-color: var(--purple); cursor: pointer; }
 
-        .btn { background: var(--green); color: #000; border: none; padding: 22px; font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 900; border-radius: 20px; cursor: pointer; width: 100%; box-shadow: 0 8px 0 #065f46; transition: 0.1s; }
-        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #065f46; }
+        .btn { background: var(--green); color: #000; border: none; padding: 18px; font-size: clamp(1.1rem, 4vw, 1.6rem); font-weight: 900; border-radius: 18px; cursor: pointer; width: 100%; box-shadow: 0 6px 0 #065f46; transition: 0.1s; }
+        .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #065f46; }
 
         /* HUD ADAPTABLE */
-        #hud { position: absolute; top: 0; width: 100%; padding: 15px clamp(10px, 5vw, 50px); display: none; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(2,6,23,0.9), transparent); }
-        .stat { font-family: 'Orbitron'; font-size: clamp(0.9rem, 3vw, 1.6rem); font-weight: 700; }
+        #hud { position: absolute; top: 0; width: 100%; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 1000; background: linear-gradient(to bottom, rgba(2,6,23,0.9), transparent); }
+        .stat { font-family: 'Orbitron'; font-size: clamp(0.8rem, 3.5vw, 1.4rem); font-weight: 700; }
 
         #stage { position: relative; width: 100vw; height: 100vh; display: none; }
-        .cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(3rem, 15vw, 6rem); color: var(--purple); opacity: 0.2; }
+        .cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(2.5rem, 12vw, 5rem); color: var(--purple); opacity: 0.2; }
         
-        .dot { position: absolute; width: 55px; height: 55px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 40px #fff; z-index: 10; }
-        .stim { position: absolute; font-family: 'Orbitron'; font-size: clamp(5rem, 25vw, 10rem); font-weight: 900; color: var(--purple); transform: translate(-50%, -50%); text-shadow: 0 0 50px var(--purple); cursor: pointer; z-index: 100; }
+        .dot { position: absolute; width: 45px; height: 45px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 30px #fff; z-index: 10; }
+        .stim { position: absolute; font-family: 'Orbitron'; font-size: clamp(4rem, 22vw, 9rem); font-weight: 900; color: var(--purple); transform: translate(-50%, -50%); text-shadow: 0 0 40px var(--purple); cursor: pointer; z-index: 100; padding: 20px; }
         
         .flash-red { animation: f-red 0.3s ease; }
         @keyframes f-red { 50% { background: var(--red); } }
         
-        .summary-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 1.2rem; }
-        .summary-table td { padding: 12px; border-bottom: 1px solid rgba(168, 85, 247, 0.2); text-align: left; }
+        .summary-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 1rem; }
+        .summary-table td { padding: 10px; border-bottom: 1px solid rgba(168, 85, 247, 0.2); text-align: left; }
         .summary-val { font-weight: 900; color: var(--green); text-align: right; font-family: 'Orbitron'; }
+
+        /* --- AJUSTES ESPECÍFICOS PARA MÓVIL --- */
+        @media (max-width: 600px) {
+            .dot { width: 35px; height: 35px; } /* Punto de fijación más pequeño */
+            .stim { padding: 40px; } /* Área de toque más grande para el paciente */
+            .instr p { margin-bottom: 8px; }
+            .card { border-width: 3px; }
+            #hud { padding-top: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -67,7 +75,7 @@
         <div class="card">
             <h1>ANTISACÁDICOS</h1>
             <div class="instr">
-                <p>📍 Distancia de trabajo: <b>40 cm</b></p>
+                <p>📍 Distancia: <b>40 cm</b></p>
                 <p>👁️ Punto blanco: <b>¡IGNÓRALO!</b> Mira al lado opuesto.</p>
                 <p>👄 <b>DILO:</b> Vocales y Números Pares.</p>
                 <p>👆 <b>TÓCALO:</b> Letras y Números Impares.</p>
@@ -81,15 +89,15 @@
             <h1>AJUSTES</h1>
             <div class="instr">
                 <div class="config-row">
-                    <label>Series por Nivel: <span id="v-ser">3</span></label>
+                    <label>Series: <span id="v-ser">3</span></label>
                     <input type="range" id="i-ser" min="1" max="10" value="3" oninput="document.getElementById('v-ser').innerText=this.value">
                 </div>
                 <div class="config-row">
-                    <label>Tiempo por Serie: <span id="v-time">30</span>s</label>
+                    <label>Tiempo: <span id="v-time">30</span>s</label>
                     <input type="range" id="i-time" min="10" max="60" value="30" oninput="document.getElementById('v-time').innerText=this.value">
                 </div>
                 <div class="config-row">
-                    <label>Tiempo de Descanso: <span id="v-rest">5</span>s</label>
+                    <label>Descanso: <span id="v-rest">5</span>s</label>
                     <input type="range" id="i-rest" min="3" max="15" value="5" oninput="document.getElementById('v-rest').innerText=this.value">
                 </div>
             </div>
@@ -108,8 +116,8 @@
     <div id="scr-rest" class="overlay" style="display:none">
         <div class="card" style="border-color: var(--green)">
             <h1 id="rest-title">¡SERIE LOGRADA!</h1>
-            <p style="font-size: 2.2rem; margin: 20px 0;">Aciertos: <span id="rest-hits">0</span></p>
-            <p id="rest-timer-msg" style="color: var(--purple); font-weight: 900; font-size: 1.5rem;"></p>
+            <p style="font-size: 1.8rem; margin: 15px 0;">Aciertos: <span id="rest-hits">0</span></p>
+            <p id="rest-timer-msg" style="color: var(--purple); font-weight: 900; font-size: 1.2rem;"></p>
             <button id="btn-next" class="btn" style="display:none" onclick="flowControl()">CONTINUAR</button>
         </div>
     </div>
@@ -118,11 +126,11 @@
         <div class="card" style="border-color: var(--red)">
             <h1>FIN DEL JUEGO</h1>
             <table class="summary-table">
-                <tr><td>Nivel Máximo Alcanzado:</td><td class="summary-val" id="f-lvl">1</td></tr>
-                <tr><td>Series Completadas:</td><td class="summary-val" id="f-ser">0</td></tr>
+                <tr><td>Nivel Máximo:</td><td class="summary-val" id="f-lvl">1</td></tr>
+                <tr><td>Series Completas:</td><td class="summary-val" id="f-ser">0</td></tr>
                 <tr><td>Aciertos Totales:</td><td class="summary-val" id="f-hits">0</td></tr>
             </table>
-            <button class="btn" style="background: var(--purple); color: white;" onclick="location.reload()">VOLVER A EMPEZAR</button>
+            <button class="btn" style="background: var(--purple); color: white;" onclick="location.reload()">REINTENTAR</button>
         </div>
     </div>
 
@@ -170,8 +178,9 @@
             s.innerHTML = '<div class="cross">+</div>'; 
 
             const isLeft = Math.random() > 0.5;
-            const dotPos = isLeft ? "22%" : "78%";
-            const stimPos = isLeft ? "78%" : "22%";
+            // Ajustamos márgenes para que en móvil no queden tan pegados al borde
+            const dotPos = isLeft ? "25%" : "75%";
+            const stimPos = isLeft ? "75%" : "25%";
 
             const d = document.createElement('div');
             d.className = 'dot'; d.style.left = dotPos; d.style.top = "50%";
@@ -205,7 +214,7 @@
             const result = event.results[event.results.length - 1][0].transcript.toUpperCase();
             
             if (currentMode === "TOUCH") {
-                processMiss();
+                // Si habla cuando debía tocar, no hacemos nada o penalizamos (opcional)
                 return;
             }
 
@@ -248,6 +257,7 @@
 
         function startTimer() {
             let t = cfg_duration;
+            if(masterClock) clearInterval(masterClock);
             masterClock = setInterval(() => {
                 t--; document.getElementById('h-time').innerText = t + "s";
                 if (t <= 0) { clearInterval(masterClock); pauseSerie(); }
