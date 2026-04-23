@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Túnel Snellen Pro - Perceptum</title>
+    <title>Túnel Snellen Pro - Perceptum Medical System v4.7</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* ================================================================
+           SISTEMA DE DISEÑO PERCEPTUM - ARQUITECTURA SNELLEN
+           ================================================================
+        */
         :root {
             --bg: #0b101b;
             --accent: #bc13fe;
@@ -16,13 +21,19 @@
             
             /* Unidades dinámicas para adaptabilidad total */
             --header-h: 10vh;
-            --controls-h: 22vh;
+            --controls-h: 24vh;
             --stage-h: calc(100vh - var(--header-h) - var(--controls-h));
         }
 
-        body, html {
+        * {
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
             margin: 0;
             padding: 0;
+        }
+
+        body, html {
             width: 100%;
             height: 100%;
             background: var(--bg);
@@ -34,7 +45,10 @@
             touch-action: none;
         }
 
-        /* HEADER ADAPTATIVO */
+        /* ----------------------------------------------------------------
+           CABECERA DE MÉTRICAS (HEADER)
+           ----------------------------------------------------------------
+        */
         #header {
             height: var(--header-h);
             display: flex;
@@ -72,7 +86,10 @@
             letter-spacing: 0.5vw;
         }
 
-        /* ESCENARIO DE JUEGO DINÁMICO */
+        /* ----------------------------------------------------------------
+           ESCENARIO DE ESTIMULACIÓN VISUAL (STAGE)
+           ----------------------------------------------------------------
+        */
         #stage {
             position: relative;
             width: 100%;
@@ -95,7 +112,10 @@
             will-change: transform, opacity;
         }
 
-        /* CONTROLES TÁCTILES PROPORCIONALES */
+        /* ----------------------------------------------------------------
+           CONTROLES TÁCTILES Y ZONA DE SEGURIDAD
+           ----------------------------------------------------------------
+        */
         #controls-container {
             height: var(--controls-h);
             background: #161b2a;
@@ -104,7 +124,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-bottom: env(safe-area-inset-bottom);
+            /* Respetar área de gestos en móviles */
+            padding-bottom: calc(1.5vh + env(safe-area-inset-bottom));
         }
 
         #controls-grid {
@@ -113,6 +134,7 @@
             gap: 2vw;
             width: 92%;
             max-width: 600px;
+            margin-bottom: 2vh; /* Margen para evitar el tope inferior */
         }
 
         .control-btn {
@@ -137,7 +159,10 @@
             background: var(--accent);
         }
 
-        /* OVERLAYS Y MODALES */
+        /* ----------------------------------------------------------------
+           CAPAS DE INTERFAZ (OVERLAYS & MODALS)
+           ----------------------------------------------------------------
+        */
         .overlay {
             position: fixed;
             inset: 0;
@@ -271,15 +296,21 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN GOOGLE
-        const FORM_ID = "1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg";
-        const ENTRY_PACIENTE = "entry.369874016";
-        const ENTRY_JUEGO = "entry.1353470174";
-        const ENTRY_NIVEL = "entry.721051298";
-        const ENTRY_ACIERTOS = "entry.873272199";
-        const ENTRY_FALLOS = "entry.1030094511";
-        const ENTRY_EXTRA = "entry.1303309812";
-        const ENTRY_FECHA = "entry.845098414";
+        /* ================================================================
+           MOTOR LÓGICO SNELLEN - ARQUITECTURA CLOUD INTEGRADA
+           ================================================================
+        */
+
+        const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
+        const ENTRY_IDS = {
+            paciente: "entry.369874016",
+            juego: "entry.1353470174",
+            nivel: "entry.721051298",
+            aciertos: "entry.873272199",
+            fallos: "entry.1030094511",
+            extra: "entry.1303309812",
+            fecha: "entry.845098414"
+        };
 
         let lvl = 1;
         let hits = 0;
@@ -327,24 +358,25 @@
             const orientations = [0, 90, 180, 270];
             currentRot = orientations[Math.floor(Math.random() * orientations.length)];
             
-            // Tamaño relativo al alto del stage
             const stageH = stage.clientHeight;
-            const baseSize = Math.max(stageH * 0.05, (stageH * 0.25) - (lvl * 5));
+            const minSize = stageH * 0.08;
+            const maxSize = stageH * 0.28;
+            const currentSize = Math.max(minSize, maxSize - (lvl * 3));
             
-            e.style.fontSize = baseSize + 'px';
+            e.style.fontSize = currentSize + 'px';
             e.innerHTML = 'E';
             e.style.transform = `rotate(${currentRot}deg)`;
             stage.appendChild(e);
 
-            const duration = Math.max(600, 4500 - (lvl * 400));
+            const duration = Math.max(800, 4000 - (lvl * 300));
             
             const animation = e.animate([
-                { transform: `rotate(${currentRot}deg) scale(0.1)`, opacity: 0 },
+                { transform: `rotate(${currentRot}deg) scale(0.2)`, opacity: 0 },
                 { opacity: 1, offset: 0.15 },
-                { transform: `rotate(${currentRot}deg) scale(8)`, opacity: 0 }
+                { transform: `rotate(${currentRot}deg) scale(6)`, opacity: 0 }
             ], {
                 duration: duration,
-                easing: 'ease-in'
+                easing: 'ease-out'
             });
 
             animation.onfinish = () => {
@@ -372,7 +404,7 @@
         function handleFail() {
             lives--;
             document.body.classList.add('flash-red');
-            setTimeout(() => document.body.classList.remove('flash-red'), 200);
+            setTimeout(() => document.body.classList.remove('flash-red'), 150);
             updateLivesUI();
             if(lives <= 0) endGame();
             else spawn();
@@ -391,8 +423,6 @@
                 lives++;
                 title.innerText = "¡BONUS DE VIDA!";
                 title.style.color = "var(--success)";
-                document.body.classList.add('flash-green');
-                setTimeout(() => document.body.classList.remove('flash-green'), 600);
             } else {
                 title.innerText = "¡NIVEL SUPERADO!";
                 title.style.color = "var(--neon)";
@@ -418,30 +448,30 @@
             document.getElementById('res-hits').innerText = totalHits;
             document.getElementById('res-fails').innerText = totalFails;
             document.getElementById('res-modal').style.display = 'flex';
-            registrarEnSheets();
+            sendDataToGoogle();
         }
 
-        function registrarEnSheets() {
-            const fecha = new Date().toISOString().split('T')[0];
-            const url = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse?` +
-                        `${ENTRY_PACIENTE}=PACIENTE_SNELLEN&` +
-                        `${ENTRY_JUEGO}=Tunel_Snellen_v4.6&` +
-                        `${ENTRY_NIVEL}=${lvl}&` +
-                        `${ENTRY_ACIERTOS}=${totalHits}&` +
-                        `${ENTRY_FALLOS}=${totalFails}&` +
-                        `${ENTRY_EXTRA}=N/A&` +
-                        `${ENTRY_FECHA}=${fecha}&` +
-                        `submit=Submit`;
+        function sendDataToGoogle() {
+            const formData = new FormData();
+            formData.append(ENTRY_IDS.paciente, "PACIENTE_SNELLEN");
+            formData.append(ENTRY_IDS.juego, "Tunel_Snellen_v4.7_Final");
+            formData.append(ENTRY_IDS.nivel, lvl);
+            formData.append(ENTRY_IDS.aciertos, totalHits);
+            formData.append(ENTRY_IDS.fallos, totalFails);
+            formData.append(ENTRY_IDS.extra, "N/A");
+            formData.append(ENTRY_IDS.fecha, new Date().toISOString().split('T')[0]);
 
-            fetch(url, { mode: 'no-cors' })
-                .then(() => {
-                    document.getElementById('status-msg').innerText = "✅ Datos sincronizados.";
-                    document.getElementById('status-msg').style.color = "var(--success)";
-                })
-                .catch(() => {
-                    document.getElementById('status-msg').innerText = "⚠️ Error de conexión.";
-                    document.getElementById('status-msg').style.color = "var(--error)";
-                });
+            fetch(GOOGLE_FORM_ACTION, {
+                method: "POST",
+                mode: "no-cors",
+                body: formData
+            }).then(() => {
+                document.getElementById('status-msg').innerText = "✅ DATOS SINCRONIZADOS";
+                document.getElementById('status-msg').style.color = "var(--success)";
+            }).catch(() => {
+                document.getElementById('status-msg').innerText = "⚠️ ERROR DE RED";
+                document.getElementById('status-msg').style.color = "var(--error)";
+            });
         }
     </script>
 </body>
