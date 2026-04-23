@@ -3,502 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Vernier Precision Pro v25.0 - Clinical Full Suite</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <title>Vernier Pro v25.1 - Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ========================================================================
-           1. ARQUITECTURA DE DISEÑO Y VARIABLES DE SISTEMA
-           ======================================================================== */
         :root {
-            --clin-bg: #0b101b;
-            --clin-card: #1c2331;
-            --clin-accent: #a855f7;
-            --clin-accent-glow: rgba(168, 85, 247, 0.6);
-            --clin-success: #22c55e;
-            --clin-error: #f43f5e;
-            --clin-text: #ffffff;
-            --clin-text-dim: #94a3b8;
-            --fuente-primaria: 'Montserrat', sans-serif;
-            --curva-animacion: cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-hd: 0 50px 100px rgba(0,0,0,0.8);
-            --border-clin: 2px solid rgba(255,255,255,0.03);
+            --bg: #0b101b;
+            --card: #1c2331;
+            --accent: #a855f7;
+            --success: #22c55e;
+            --error: #f43f5e;
+            --text: #ffffff;
+            --text-dim: #94a3b8;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            touch-action: none; /* Crucial para evitar scroll en tablets */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; touch-action: none; }
 
         body {
-            background-color: var(--clin-bg);
-            color: var(--clin-text);
-            font-family: var(--fuente-primaria);
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
             height: 100vh;
             width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: fixed;
-            background-image: 
-                radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.05) 0%, transparent 40%);
         }
 
-        /* ========================================================================
-           2. CAPAS DE INTERFAZ
-           ======================================================================== */
-        .capa-interfaz-total {
+        /* --- INTERFAZ DE CAPAS --- */
+        .overlay {
             position: fixed;
             inset: 0;
             background: rgba(11, 16, 27, 0.98);
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            padding: 40px;
+            padding: 20px;
             backdrop-filter: blur(15px);
-            transition: opacity 0.5s var(--curva-animacion);
         }
 
-        .panel-clinico-central {
-            background: var(--clin-card);
+        .panel {
+            background: var(--card);
             width: 100%;
-            max-width: 680px;
-            padding: 65px;
-            border-radius: 60px;
+            max-width: 420px;
+            padding: 40px 30px;
+            border-radius: 40px;
             text-align: center;
-            box-shadow: var(--shadow-hd);
-            border: var(--border-clin);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        .titulo-vpro { font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .subtitulo { font-size: 0.75rem; letter-spacing: 4px; color: var(--text-dim); margin-bottom: 35px; text-transform: uppercase; }
+
+        /* --- ÁREA DE EXAMEN --- */
+        .viewport-examen {
+            flex: 1;
             position: relative;
-        }
-
-        .titulo-vpro {
-            font-size: 5rem;
-            font-weight: 900;
-            color: var(--clin-accent);
-            line-height: 0.8;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .subtitulo-vpro {
-            letter-spacing: 6px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--clin-text-dim);
-            margin-bottom: 50px;
-            text-transform: uppercase;
-        }
-
-        .grid-modos-evaluacion {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin: 45px 0;
-        }
-
-        .tarjeta-modo {
-            background: rgba(0,0,0,0.25);
-            padding: 40px 20px;
-            border-radius: 35px;
-            border: 3px solid transparent;
-            cursor: pointer;
-            transition: all 0.3s var(--curva-animacion);
-        }
-
-        .tarjeta-modo.esta-activa {
-            border-color: var(--clin-accent);
-            background: rgba(168, 85, 247, 0.1);
-            box-shadow: 0 0 40px var(--clin-accent-glow);
-        }
-
-        .tarjeta-modo h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
-        .tarjeta-modo p { font-size: 0.85rem; color: var(--clin-text-dim); line-height: 1.4; }
-
-        .contenedor-configuracion-tiempo {
-            background: rgba(0,0,0,0.3);
-            border-radius: 35px;
-            padding: 30px;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255,255,255,0.05);
-            display: none;
-        }
-
-        .label-tiempo-clinico {
-            display: block;
-            font-weight: 800;
-            color: var(--clin-text-dim);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            letter-spacing: 2px;
-        }
-
-        .slider-personalizado {
-            -webkit-appearance: none;
             width: 100%;
-            height: 14px;
-            border-radius: 10px;
-            background: #2d3748;
-            outline: none;
-            margin: 20px 0;
-        }
-
-        .slider-personalizado::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--clin-accent);
-            cursor: pointer;
-            box-shadow: 0 0 20px var(--clin-accent-glow);
-            border: 4px solid var(--clin-card);
-        }
-
-        /* ========================================================================
-           3. HUD DINÁMICO
-           ======================================================================== */
-        #envoltura-cronometro-hud {
-            position: absolute;
-            top: 55px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 450px;
-            height: 20px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 45px;
-            border: 4px solid var(--clin-card);
-            overflow: hidden;
-            display: none;
-            z-index: 1000;
-        }
-
-        #relleno-progreso-tiempo {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, var(--clin-error), #ff8fa3);
-            box-shadow: 0 0 20px var(--clin-error);
-            transition: width 0.1s linear;
-        }
-
-        .widget-estado-hud {
-            position: absolute;
-            top: 35px;
-            background: var(--clin-card);
-            padding: 25px 40px;
-            border-radius: 35px;
-            z-index: 1000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .hud-pos-izq { left: 45px; }
-        .hud-pos-der { right: 45px; }
-        .valor-estado-hud { font-size: 2.4rem; font-weight: 900; }
-
-        /* ========================================================================
-           4. ESCENARIO DE EVALUACIÓN
-           ======================================================================== */
-        #contenedor-maestro-vernier {
-            position: absolute;
-            inset: 0;
-            display: none;
+            background: radial-gradient(circle at center, #161e2e 0%, #0b101b 100%);
             overflow: hidden;
         }
 
-        .elemento-vernier-base {
+        .linea {
             position: absolute;
-            width: 18px; 
-            height: 160px; 
-            border-radius: 50px;
+            width: 14px;
+            height: 140px;
+            border-radius: 20px;
             transform-origin: center center;
-            will-change: transform, left, top;
+            will-change: transform, left;
         }
 
-        #linea-referencia-estatica {
-            background-color: #334155;
-            opacity: 0.5;
-            z-index: 10;
-            left: 50%;
-            top: 35%; 
-        }
-
-        #linea-paciente-interactiva {
-            background-color: var(--clin-accent);
-            box-shadow: 0 0 60px var(--clin-accent-glow);
-            z-index: 100;
-            left: 70%;
+        #ref-line { background: #334155; left: 50%; top: 35%; opacity: 0.5; z-index: 5; }
+        #pac-line { 
+            background: var(--accent); 
+            left: 50%; 
             top: 60%; 
+            box-shadow: 0 0 40px var(--accent); 
+            z-index: 10;
         }
 
-        .zona-sensor-rotacion {
+        /* --- HUD --- */
+        .hud-top {
             position: absolute;
-            width: 100%;
-            height: 40%;
-            left: 0;
-            z-index: 150;
-        }
-        .sensor-top { top: 0; }
-        .sensor-bottom { bottom: 0; }
-
-        /* ========================================================================
-           5. CONTROLES Y BOTONES
-           ======================================================================== */
-        #cluster-controles-precision {
-            position: absolute;
-            right: 45px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: env(safe-area-inset-top, 20px);
+            left: 0; width: 100%;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
+            justify-content: space-between;
+            padding: 0 25px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .hud-item {
+            background: rgba(28, 35, 49, 0.9);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .timer-container {
+            position: absolute;
+            top: 85px; left: 50%;
+            transform: translateX(-50%);
+            width: 50%; height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #timer-bar { width: 100%; height: 100%; background: var(--error); transition: width 0.1s linear; }
+
+        /* --- CONTROLES INFERIORES --- */
+        .controles-footer {
+            background: var(--card);
+            padding: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
             z-index: 1000;
         }
 
-        .boton-nudge-clinico {
-            width: 85px;
-            height: 85px;
-            background: var(--clin-card);
-            border: 3px solid var(--clin-accent);
-            border-radius: 25px;
+        .btn-ctrl {
+            aspect-ratio: 1;
+            background: #2d3748;
+            border: none;
+            border-radius: 22px;
             color: white;
-            font-size: 2.2rem;
-            cursor: pointer;
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
+            box-shadow: 0 4px 0 #1a202c;
         }
+        .btn-ctrl:active { transform: translateY(2px); box-shadow: none; }
 
-        .boton-confirmacion-maestra {
-            position: absolute;
-            bottom: 40px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 55%;
-            max-width: 420px;
-            padding: 28px;
-            background: var(--clin-success);
-            color: #062d16;
-            border-radius: 45px;
-            font-size: 1.6rem;
-            font-weight: 900;
-            text-transform: uppercase;
+        .btn-confirm {
+            grid-column: span 4;
+            padding: 22px;
+            background: var(--success);
+            color: #052e16;
             border: none;
-            cursor: pointer;
-            box-shadow: 0 12px 0 #15803d;
-            z-index: 1000;
+            border-radius: 25px;
+            font-weight: 900;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            box-shadow: 0 6px 0 #15803d;
         }
+        .btn-confirm:active { transform: translateY(3px); box-shadow: none; }
 
+        /* --- MENÚS --- */
+        .tarjeta-modo {
+            background: #0b101b;
+            padding: 25px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            border: 3px solid transparent;
+            transition: 0.3s;
+        }
+        .tarjeta-modo.active { border-color: var(--accent); background: rgba(168, 85, 247, 0.15); }
+        
+        input[type=range] { width: 100%; margin: 25px 0; accent-color: var(--accent); }
     </style>
 </head>
 <body>
 
-    <div id="pantalla-inicio-ui" class="capa-interfaz-total">
-        <div class="panel-clinico-central">
-            <h1 class="titulo-vpro">VERNIE PRO</h1>
-            <p class="subtitulo-vpro">SISTEMA DE PRECISIÓN VISUAL v25.0</p>
+    <div id="inicio-ui" class="overlay">
+        <div class="panel">
+            <h1 class="titulo-vpro">VERNIER PRO</h1>
+            <p class="subtitulo">SISTEMA DE PRECISIÓN VISUAL</p>
             
-            <div class="grid-modos-evaluacion">
-                <div id="modo-clinico-libre" class="tarjeta-modo" onclick="gestionarModo('libre')">
-                    <h2>MODO LIBRE</h2>
-                    <p>Calibración técnica sin presión de tiempo.</p>
-                </div>
-                <div id="modo-clinico-tiempo" class="tarjeta-modo esta-activa" onclick="gestionarModo('tiempo')">
-                    <h2>CONTRARELOJ</h2>
-                    <p>Evaluación bajo estrés temporal clínico.</p>
-                </div>
+            <div id="m-tiempo" class="tarjeta-modo active" onclick="setModo('tiempo')">
+                <div style="font-weight:900; font-size: 1.2rem;">CONTRARRELOJ</div>
+                <div style="font-size:0.8rem; color:var(--text-dim); margin-top:5px">Evaluación clínica bajo estrés temporal</div>
             </div>
 
-            <div id="config-tiempo-ui" class="contenedor-configuracion-tiempo" style="display:block;">
-                <span class="label-tiempo-clinico">DURACIÓN DEL PROTOCOLO: <span id="val-tiempo-display">10</span>s</span>
-                <input type="range" min="5" max="30" value="10" class="slider-personalizado" id="slider-tiempo-base" oninput="document.getElementById('val-tiempo-display').innerText = this.value">
+            <div id="config-t">
+                <div style="font-size:0.9rem; font-weight:800">DURACIÓN: <span id="t-val">10</span>s</div>
+                <input type="range" min="5" max="30" value="10" oninput="document.getElementById('t-val').innerText=this.value">
             </div>
 
-            <button class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; transform:none; left:0;" onclick="iniciarProtocolo()">INICIAR PROTOCOLO</button>
+            <button class="btn-confirm" style="grid-column:auto; width:100%" onclick="start()">INICIAR PROTOCOLO</button>
         </div>
     </div>
 
-    <div id="pantalla-feedback-ui" class="capa-interfaz-total" style="display:none;">
-        <div class="panel-clinico-central">
-            <h2 id="feedback-titulo" style="font-size: 2.5rem; font-weight: 900;">ANÁLISIS COMPLETADO</h2>
-            <div id="score-clinico-display" style="font-size: 8.5rem; font-weight: 900; margin: 30px 0; color: var(--clin-accent);">0%</div>
-            <div id="detalles-tecnicos-display" style="text-align:left; background:rgba(0,0,0,0.4); padding:40px; border-radius:35px; margin-bottom:40px; font-size:1.3rem; line-height:2;"></div>
-            <button id="btn-feedback-accion" class="boton-confirmacion-maestra" style="position:relative; bottom:0; width:100%; left:0; transform:none;" onclick="avanzarProtocolo()">CONTINUAR</button>
+    <div id="feedback-ui" class="overlay" style="display:none">
+        <div class="panel">
+            <h2 id="f-title" style="font-weight: 900;">RESULTADO</h2>
+            <div id="f-score" style="font-size:5rem; font-weight:900; color:var(--accent); margin: 15px 0;">0%</div>
+            <div id="f-data" style="font-size:0.9rem; line-height:2; margin-bottom:30px; background:rgba(0,0,0,0.3); padding:20px; border-radius:20px; text-align: left;"></div>
+            <button id="f-btn" class="btn-confirm" style="grid-column:auto; width:100%" onclick="next()">CONTINUAR</button>
         </div>
     </div>
 
-    <div id="envoltura-cronometro-hud"><div id="relleno-progreso-tiempo"></div></div>
-    
-    <div id="capa-hud" style="display:none;">
-        <div class="widget-estado-hud hud-pos-izq"><span id="hud-txt-nivel" class="valor-estado-hud">1</span></div>
-        <div class="widget-estado-hud hud-pos-der"><span id="hud-txt-vidas" class="valor-estado-hud">❤️❤️❤️</span></div>
-        
-        <div id="cluster-controles-precision">
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('a', -1.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('a', -1.5)" ontouchend="stopNudge()">↻</button>
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('a', 1.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('a', 1.5)" ontouchend="stopNudge()">↺</button>
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', -0.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', -0.5)" ontouchend="stopNudge()">←</button>
-            <button class="boton-nudge-clinico" onmousedown="nudgeManual('x', 0.5)" onmouseup="stopNudge()" ontouchstart="nudgeManual('x', 0.5)" ontouchend="stopNudge()">→</button>
+    <div class="viewport-examen" id="game-zone">
+        <div class="hud-top">
+            <div class="hud-item">NIVEL <span id="h-lvl">1</span></div>
+            <div class="hud-item" id="h-vidas">❤️❤️❤️</div>
         </div>
         
-        <button class="boton-confirmacion-maestra" onclick="evaluarPrecision()">CONFIRMAR ALINEACIÓN</button>
+        <div class="timer-container" id="t-cont"><div id="timer-bar"></div></div>
+
+        <div id="ref-line" class="linea"></div>
+        <div id="pac-line" class="linea"></div>
     </div>
 
-    <div id="contenedor-maestro-vernier">
-        <div id="linea-referencia-estatica" class="elemento-vernier-base"></div>
-        <div id="linea-paciente-interactiva" class="elemento-vernier-base">
-            <div class="zona-sensor-rotacion sensor-top" data-action="rotar"></div>
-            <div class="zona-sensor-rotacion sensor-bottom" data-action="rotar"></div>
-        </div>
+    <div class="controles-footer">
+        <button class="btn-ctrl" ontouchstart="nudge('a', -1.5)" ontouchend="stopNudge()">↻</button>
+        <button class="btn-ctrl" ontouchstart="nudge('a', 1.5)" ontouchend="stopNudge()">↺</button>
+        <button class="btn-ctrl" ontouchstart="nudge('x', -0.5)" ontouchend="stopNudge()">←</button>
+        <button class="btn-ctrl" ontouchstart="nudge('x', 0.5)" ontouchend="stopNudge()">→</button>
+        <button class="btn-confirm" onclick="check()">CONFIRMAR ALINEACIÓN</button>
     </div>
 
-    <iframe name="target_silencioso" id="target_silencioso" style="display:none;"></iframe>
+    <iframe name="target_silencioso" style="display:none;"></iframe>
 
     <script>
-        const CORE = {
-            active: false, 
-            modo: 'tiempo', 
-            nivel: 1, 
-            vidas: 3, 
-            tBase: 10, 
-            tCurr: 10,
-            ref: { x: 50, a: 0 },
-            pac: { x: 70, a: 0 },
-            timerRef: null, 
-            nudgeRef: null,
+        const state = {
+            active: false, lvl: 1, vidas: 3, modo: 'tiempo',
+            tBase: 10, tCurr: 10,
+            ref: {x:50, a:0}, pac: {x:70, a:0},
+            timer: null, nudge: null,
             formUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse"
         };
 
         const AUDIO = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-            play(f, t, d, v) {
+            play(f, d, v, type='sine') {
                 try {
                     this.init();
                     const o = this.ctx.createOscillator();
                     const g = this.ctx.createGain();
-                    o.type = t; o.frequency.value = f;
+                    o.type = type; o.frequency.value = f;
                     g.gain.setValueAtTime(v, this.ctx.currentTime);
                     g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
                     o.connect(g); g.connect(this.ctx.destination);
                     o.start(); o.stop(this.ctx.currentTime + d);
-                } catch(e) {}
-            },
-            clic() { this.play(600, 'sine', 0.1, 0.1); },
-            win() { this.play(880, 'sine', 0.4, 0.2); },
-            fail() { this.play(150, 'sawtooth', 0.5, 0.2); }
+                } catch(e){}
+            }
         };
 
-        function gestionarModo(m) {
-            AUDIO.clic();
-            CORE.modo = m;
-            document.getElementById('modo-clinico-libre').classList.toggle('esta-activa', m === 'libre');
-            document.getElementById('modo-clinico-tiempo').classList.toggle('esta-activa', m === 'tiempo');
-            document.getElementById('config-tiempo-ui').style.display = (m === 'tiempo') ? 'block' : 'none';
+        function setModo(m) {
+            state.modo = m;
+            AUDIO.play(600, 0.1, 0.1);
+            document.getElementById('m-tiempo').classList.toggle('active', m==='tiempo');
         }
 
-        function iniciarProtocolo() {
-            AUDIO.clic();
-            CORE.tBase = parseInt(document.getElementById('slider-tiempo-base').value);
-            CORE.vidas = 3;
-            CORE.nivel = 1;
-            document.getElementById('pantalla-inicio-ui').style.display = 'none';
-            document.getElementById('contenedor-maestro-vernier').style.display = 'block';
-            document.getElementById('capa-hud').style.display = 'block';
-            actualizarHUD();
-            resetRound();
+        function start() {
+            AUDIO.play(800, 0.2, 0.1);
+            state.tBase = parseInt(document.querySelector('input[type=range]').value);
+            state.vidas = 3; state.lvl = 1;
+            document.getElementById('inicio-ui').style.display = 'none';
+            newRound();
         }
 
-        function resetRound() {
-            CORE.active = true;
-            CORE.tCurr = CORE.tBase;
-            CORE.ref.x = 30 + Math.random() * 40;
-            CORE.ref.a = CORE.nivel >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0;
-            if(CORE.nivel >= 6) CORE.ref.a = (Math.random()*160 - 80);
+        function newRound() {
+            state.active = true;
+            state.tCurr = state.tBase;
             
-            CORE.pac.x = CORE.ref.x + (Math.random() > 0.5 ? 25 : -25);
-            CORE.pac.a = 0;
-            render();
+            // Lógica de dificultad progresiva
+            state.ref.x = 35 + Math.random() * 30;
+            state.ref.a = state.lvl >= 3 ? (Math.random() > 0.5 ? 90 : 0) : 0;
+            if(state.lvl >= 6) state.ref.a = Math.random() * 160 - 80;
 
-            if (CORE.modo === 'tiempo') {
-                document.getElementById('envoltura-cronometro-hud').style.display = 'block';
-                clearInterval(CORE.timerRef);
-                CORE.timerRef = setInterval(() => {
-                    CORE.tCurr -= 0.1;
-                    const pct = (CORE.tCurr / CORE.tBase) * 100;
-                    document.getElementById('relleno-progreso-tiempo').style.width = pct + "%";
-                    if (CORE.tCurr <= 0) evaluarPrecision();
+            state.pac.x = state.ref.x + (Math.random() > 0.5 ? 20 : -20);
+            state.pac.a = 0;
+            
+            draw();
+
+            if(state.modo === 'tiempo') {
+                document.getElementById('timer-bar').style.width = "100%";
+                clearInterval(state.timer);
+                state.timer = setInterval(() => {
+                    state.tCurr -= 0.1;
+                    document.getElementById('timer-bar').style.width = (state.tCurr/state.tBase)*100 + "%";
+                    if(state.tCurr <= 0) check();
                 }, 100);
             }
         }
 
-        function render() {
-            const r = document.getElementById('linea-referencia-estatica');
-            const p = document.getElementById('linea-paciente-interactiva');
-            r.style.left = CORE.ref.x + "%";
-            r.style.transform = `translate(-50%, -50%) rotate(${CORE.ref.a}deg)`;
-            p.style.left = CORE.pac.x + "%";
-            p.style.transform = `translate(-50%, -50%) rotate(${CORE.pac.a}deg)`;
+        function draw() {
+            document.getElementById('ref-line').style.left = state.ref.x + "%";
+            document.getElementById('ref-line').style.transform = `translate(-50%, -50%) rotate(${state.ref.a}deg)`;
+            document.getElementById('pac-line').style.left = state.pac.x + "%";
+            document.getElementById('pac-line').style.transform = `translate(-50%, -50%) rotate(${state.pac.a}deg)`;
+            document.getElementById('h-lvl').innerText = state.lvl;
+            document.getElementById('h-vidas').innerText = state.vidas > 0 ? "❤️".repeat(state.vidas) : "💀";
         }
 
-        function evaluarPrecision() {
-            if (!CORE.active) return;
-            CORE.active = false;
-            clearInterval(CORE.timerRef);
+        function check() {
+            if(!state.active) return;
+            state.active = false;
+            clearInterval(state.timer);
 
-            const errX = Math.abs(CORE.ref.x - CORE.pac.x);
-            let errA = Math.abs((CORE.ref.a % 180) - (CORE.pac.a % 180));
+            const errX = Math.abs(state.ref.x - state.pac.x);
+            let errA = Math.abs((state.ref.a % 180) - (state.pac.a % 180));
             if (errA > 90) errA = 180 - errA;
 
             const score = Math.max(0, Math.round(100 - (errX * 12 + errA * 3)));
             
-            if (score >= 90) { AUDIO.win(); } else { AUDIO.fail(); CORE.vidas--; }
+            if(score >= 90) { AUDIO.play(880, 0.4, 0.2); } 
+            else { AUDIO.play(150, 0.5, 0.2, 'sawtooth'); state.vidas--; }
 
-            actualizarHUD();
             enviarDatosHaciaSheets(score, errX, errA);
 
-            document.getElementById('pantalla-feedback-ui').style.display = 'flex';
-            document.getElementById('score-clinico-display').innerText = score + "%";
-            document.getElementById('feedback-titulo').innerText = CORE.vidas <= 0 ? "PROTOCOLO FALLIDO" : "ANÁLISIS COMPLETADO";
-            document.getElementById('btn-feedback-accion').innerText = CORE.vidas <= 0 ? "REINTENTAR" : "CONTINUAR";
+            document.getElementById('feedback-ui').style.display = 'flex';
+            document.getElementById('f-score').innerText = score + "%";
+            document.getElementById('f-title').innerText = state.vidas <= 0 ? "PROTOCOLO FIN" : "ANÁLISIS";
+            document.getElementById('f-data').innerHTML = `ERROR LATERAL: ${errX.toFixed(2)}%<br>ERROR ANGULAR: ${errA.toFixed(1)}°<br>ESTADO: ${state.vidas > 0 ? 'ESTABLE' : 'AGOTADO'}`;
+            document.getElementById('f-btn').innerText = state.vidas <= 0 ? "REINTENTAR" : "SIGUIENTE NIVEL";
             
-            document.getElementById('detalles-tecnicos-display').innerHTML = `
-                ERROR LATERAL: ${errX.toFixed(2)}%<br>
-                ERROR ANGULAR: ${errA.toFixed(1)}°<br>
-                ESTADO CLÍNICO: ${CORE.vidas > 0 ? "ESTABLE" : "AGOTADO"}
-            `;
-        }
-
-        function actualizarHUD() {
-            document.getElementById('hud-txt-nivel').innerText = CORE.nivel;
-            document.getElementById('hud-txt-vidas').innerText = CORE.vidas > 0 ? "❤️".repeat(CORE.vidas) : "💀";
+            if(score >= 90 && state.vidas > 0) state.lvl++;
         }
 
         function enviarDatosHaciaSheets(p, x, a) {
-            const hoy = new Date().toISOString().split('T')[0];
             const form = document.createElement("form");
             form.method = "POST";
-            form.action = CORE.formUrl;
+            form.action = state.formUrl;
             form.target = "target_silencioso";
 
             const data = {
                 "entry.369874016": localStorage.getItem('pacienteActual') || "ANONIMO",
-                "entry.1353470174": "VERNIER_PRO_V25",
+                "entry.1353470174": "VERNIER_MOBILE_V25.1",
                 "entry.721051298": p,
                 "entry.873272199": x.toFixed(2),
                 "entry.1030094511": a.toFixed(1),
-                "entry.1303309812": CORE.nivel,
-                "entry.845098414": hoy
+                "entry.1303309812": state.lvl,
+                "entry.845098414": new Date().toISOString().split('T')[0]
             };
 
             for (let k in data) {
@@ -511,69 +347,33 @@
             document.body.removeChild(form);
         }
 
-        function avanzarProtocolo() {
-            AUDIO.clic();
-            document.getElementById('pantalla-feedback-ui').style.display = 'none';
-            if (CORE.vidas <= 0) {
-                location.reload();
-            } else {
-                const s = parseInt(document.getElementById('score-clinico-display').innerText);
-                if (s >= 90) CORE.nivel++;
-                resetRound();
-            }
+        function next() {
+            AUDIO.play(600, 0.1, 0.1);
+            document.getElementById('feedback-ui').style.display = 'none';
+            if(state.vidas <= 0) location.reload();
+            else newRound();
         }
 
-        /* INTEGRACIÓN TÁCTIL UNIFICADA (RESPETANDO DRAGMODE ORIGINAL) */
-        let isDown = false, dragMode = null;
-        
-        const startInteraction = (x, y, target) => {
-            if (!CORE.active) return;
-            if (target.dataset.action === 'rotar') dragMode = 'rotar';
-            else if (target.id === 'linea-paciente-interactiva' || target.closest('#linea-paciente-interactiva')) dragMode = 'mover';
-            if (dragMode) isDown = true;
-        };
-
-        const moveInteraction = (x, movementX) => {
-            if (!isDown) return;
-            if (dragMode === 'mover') {
-                CORE.pac.x = (x / window.innerWidth) * 100;
-            } else if (dragMode === 'rotar') {
-                CORE.pac.a += (movementX || 0) * 0.8;
-            }
-            render();
-        };
-
-        // Eventos Mouse
-        window.onmousedown = (e) => startInteraction(e.clientX, e.clientY, e.target);
-        window.onmousemove = (e) => moveInteraction(e.clientX, e.movementX);
-        window.onmouseup = () => { isDown = false; dragMode = null; };
-
-        // Eventos Touch (Adaptación sin pérdida de lógica)
-        let lastTouchX = 0;
-        window.ontouchstart = (e) => {
-            const touch = e.touches[0];
-            lastTouchX = touch.clientX;
-            startInteraction(touch.clientX, touch.clientY, e.target);
-        };
-        window.ontouchmove = (e) => {
-            const touch = e.touches[0];
-            const movementX = touch.clientX - lastTouchX;
-            lastTouchX = touch.clientX;
-            moveInteraction(touch.clientX, movementX);
-        };
-        window.ontouchend = () => { isDown = false; dragMode = null; };
-
-        function nudgeManual(prop, val) {
-            if (!CORE.active) return;
-            CORE.pac[prop === 'x' ? 'x' : 'a'] += val;
-            render();
-            CORE.nudgeRef = setInterval(() => {
-                CORE.pac[prop === 'x' ? 'x' : 'a'] += val;
-                render();
-            }, 50);
+        function nudge(p, v) {
+            if(!state.active) return;
+            state.pac[p] += v;
+            draw();
+            state.nudge = setInterval(() => { state.pac[p] += v; draw(); }, 50);
         }
 
-        function stopNudge() { clearInterval(CORE.nudgeRef); }
+        function stopNudge() { clearInterval(state.nudge); }
+
+        // Drag táctil en pantalla
+        let isDragging = false;
+        const gz = document.getElementById('game-zone');
+        gz.addEventListener('touchstart', (e) => { if(state.active) isDragging = true; }, {passive: true});
+        gz.addEventListener('touchmove', (e) => {
+            if(!isDragging || !state.active) return;
+            state.pac.x = (e.touches[0].clientX / window.innerWidth) * 100;
+            draw();
+        }, {passive: true});
+        gz.addEventListener('touchend', () => isDragging = false);
+
     </script>
 </body>
 </html>
