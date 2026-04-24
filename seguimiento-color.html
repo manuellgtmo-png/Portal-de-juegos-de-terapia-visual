@@ -3,239 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Seguimiento Mágico - Perceptum Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Seguimiento Mágico v2.8</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #818cf8; --success: #34d399; --bg: #0f172a; --cat: #fbbf24; }
+        :root { --bg: #0f172a; --primary: #818cf8; --success: #34d399; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
         
-        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 200; backdrop-filter: blur(8px); }
-        .card { background: white; color: #1e293b; padding: 30px; border-radius: 30px; max-width: 450px; width: 100%; text-align: center; border: 4px solid var(--primary); }
+        .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: flex; align-items: center; justify-content: center; z-index: 200; }
+        .card { background: white; color: #1e293b; padding: 2rem; border-radius: 2rem; text-align: center; width: 85%; max-width: 400px; }
         
-        .habilidades-box { background: #f1f5f9; border: 2px dashed var(--primary); color: #4338ca; padding: 15px; border-radius: 15px; font-size: 0.85rem; margin: 15px 0; }
+        button { background: var(--success); color: white; border: none; padding: 1.2rem; border-radius: 1rem; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 6px 0 #059669; text-transform: uppercase; }
+        button:active { transform: translateY(3px); box-shadow: 0 3px 0 #059669; }
+
+        #ui { position: absolute; top: 0; width: 100%; padding: 1rem; display: flex; justify-content: space-between; z-index: 100; box-sizing: border-box; pointer-events: none; }
+        .stat { background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 1rem; text-align: center; }
         
-        button { background: var(--success); color: white; border: none; padding: 18px; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: 900; text-transform: uppercase; box-shadow: 0 8px 0 #059669; width: 100%; transition: 0.1s; }
-        button:active { transform: translateY(4px); box-shadow: 0 4px 0 #059669; }
-
-        #ui-layer { position: absolute; top: 0; width: 100%; padding: 15px; display: flex; justify-content: space-between; z-index: 100; box-sizing: border-box; }
-        .stat-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); padding: 10px 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
-        .label { font-size: 0.6rem; text-transform: uppercase; display: block; opacity: 0.7; font-weight: 700; }
-        .value { font-weight: 900; font-size: 1.1rem; }
-
-        #goal-bar-container { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3); }
-        #goal-bar-fill { width: 0%; height: 100%; background: var(--cat); transition: width 0.3s; }
-
-        canvas { display: block; cursor: crosshair; }
+        #goal-bar { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid white; }
+        #fill { width: 0%; height: 100%; background: var(--success); transition: width 0.2s; }
+        
+        canvas { display: block; }
     </style>
 </head>
 <body>
 
-    <div id="intro-screen" class="overlay">
+    <div id="intro" class="overlay">
         <div class="card">
-            <h1 style="margin:0; font-size: 1.8rem;">✨ Seguimiento Mágico</h1>
-            <div class="habilidades-box">
-                <strong>MODO RELAJADO:</strong><br>
-                Sigue al círculo para escuchar el ronroneo.
-            </div>
-            <p style="color: #64748b; font-size: 0.9rem;">Ideal para motilidad y estabilidad de fijación a 40 cm.</p>
-            <button onclick="iniciarJuego()">¡EMPEZAR!</button>
+            <h1 style="margin-top:0">Seguimiento Mágico</h1>
+            <p style="font-size: 0.9rem; color: #64748b">Sigue el círculo con el dedo.<br>Distancia sugerida: <b>40 cm</b>.</p>
+            <button onclick="start()">¡COMENZAR!</button>
         </div>
     </div>
 
-    <div id="result-screen" class="overlay" style="display:none">
-        <div class="card">
-            <h2 id="result-title">¡Miauravilloso! 🐾</h2>
-            <div id="metrics-summary" style="text-align: left; margin-bottom: 20px; font-size: 0.9rem; color: #475569;"></div>
-            <button id="next-btn" onclick="proximoNivel()">Siguiente Nivel</button>
-            <button onclick="location.reload()" style="background:#94a3b8; box-shadow:0 8px 0 #64748b; margin-top:10px;">Finalizar</button>
-        </div>
+    <div id="ui" style="display:none">
+        <div class="stat"><small>NIVEL</small><br><b id="lv">1</b></div>
+        <div class="stat"><small>VIDAS</small><br><b id="vd">❤️❤️❤️</b></div>
     </div>
 
-    <div id="ui-layer" style="display:none">
-        <div class="stat-box"><span class="label">Nivel</span><span id="txt-nivel" class="value">1</span></div>
-        <div class="stat-box"><span class="label">Vidas</span><span id="txt-vidas" class="value">❤️❤️❤️</span></div>
-    </div>
-
-    <div id="goal-bar-container" style="display:none"><div id="goal-bar-fill"></div></div>
-    <canvas id="gameCanvas"></canvas>
+    <div id="goal-bar" style="display:none"><div id="fill"></div></div>
+    <canvas id="canvas"></canvas>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
+        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Sonidos
-        const audioWin = new Audio('https://assets.mixkit.co/active_storage/sfx/134/134-preview.mp3'); // Pajaritos
-        
-        // Generador de ronroneo (Audio Sintético para evitar fallos de carga)
-        const AudioEngine = {
-            ctx: new (window.AudioContext || window.webkitAudioContext)(),
-            osc: null,
-            gain: null,
-            startPurr() {
-                if(this.osc) return;
-                this.osc = this.ctx.createOscillator();
-                this.gain = this.ctx.createGain();
-                this.lfo = this.ctx.createOscillator();
-                this.lfoGain = this.ctx.createGain();
+        // Sonidos reales y suaves
+        const sndContact = new Audio('https://assets.mixkit.co/active_storage/sfx/134/134-preview.mp3'); // Pajaritos
+        sndContact.loop = true;
+        const sndWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); // Triángulo/Éxito
 
-                this.osc.type = 'sawtooth';
-                this.osc.frequency.value = 60; // Frecuencia baja tipo ronroneo
-                this.lfo.frequency.value = 2; // Pulso del ronroneo
-                this.lfoGain.gain.value = 30;
+        let level = 1, lives = 3, targetSecs = 10, contactSecs = 0;
+        let x, y, dx, dy, radius, active = false, isTouching = false;
+        let frameCount = 0;
+        const colors = ['#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
 
-                this.gain.gain.value = 0.05;
-                
-                this.lfo.connect(this.lfoGain);
-                this.lfoGain.connect(this.osc.frequency);
-                this.osc.connect(this.gain);
-                this.gain.connect(this.ctx.destination);
-                
-                this.osc.start();
-                this.lfo.start();
-            },
-            stopPurr() {
-                if(this.osc) {
-                    this.osc.stop();
-                    this.osc = null;
-                }
-            }
-        };
-
-        const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
-        const ENTRIES = { paciente: "entry.369874016", juego: "entry.1353470174", nivel: "entry.721051298", aciertos: "entry.873272199", fallos: "entry.1030094511", tiempo: "entry.1303309812", fecha: "entry.845098414" };
-
-        let nivelActual = 1, vidas = 3, segundosTotales = 0, segundosContacto = 0, fallosTotales = 0;
-        let juegoActivo = false, enContacto = false, frameCount = 0;
-        let x, y, dx, dy, radio, animId, tiempoMeta;
-        const colores = ['#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
-
-        function ajustarDificultad() {
+        function initLevel() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            radio = Math.max(35, 90 - (nivelActual * 5));
-            let vel = 1.5 + (nivelActual * 0.4);
-            dx = vel; dy = vel;
-            tiempoMeta = 10 + (nivelActual * 3);
-            if(!x) { x = canvas.width / 2; y = canvas.height / 2; }
+            radius = Math.max(35, 85 - (level * 5));
+            let speed = 1.6 + (level * 0.4);
+            dx = speed; dy = speed;
+            targetSecs = 8 + (level * 2);
+            contactSecs = 0;
+            if(!x) { x = canvas.width/2; y = canvas.height/2; }
+            document.getElementById('lv').innerText = level;
+            document.getElementById('vd').innerText = "❤️".repeat(lives);
         }
 
-        function iniciarJuego() {
-            document.getElementById('intro-screen').style.display = 'none';
-            document.getElementById('result-screen').style.display = 'none';
-            document.getElementById('ui-layer').style.display = 'flex';
-            document.getElementById('goal-bar-container').style.display = 'block';
-            ajustarDificultad();
-            segundosContacto = 0;
-            juegoActivo = true;
-            actualizarUI();
+        function start() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('ui').style.display = 'flex';
+            document.getElementById('goal-bar').style.display = 'block';
+            initLevel();
+            active = true;
             render();
         }
 
-        function actualizarUI() {
-            document.getElementById('txt-nivel').innerText = nivelActual;
-            document.getElementById('txt-vidas').innerText = "❤️".repeat(Math.max(0, vidas));
-            document.getElementById('goal-bar-fill').style.width = (segundosContacto / tiempoMeta * 100) + "%";
-        }
-
-        const handleInput = (ex, ey) => {
-            if(!juegoActivo) return;
+        // Lógica de Entrada (Mouse y Touch corregida)
+        function handlePos(ex, ey, state) {
+            if(!active) return;
+            isTouching = state;
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
-            let previo = enContacto;
-            enContacto = dist < (radio + 10); // Margen de error pequeño
-            
-            if (enContacto) {
-                AudioEngine.startPurr();
+            let inContact = isTouching && dist < (radius + 15);
+
+            if(inContact) {
+                if(sndContact.paused) sndContact.play().catch(()=>{});
             } else {
-                AudioEngine.stopPurr();
+                sndContact.pause();
+                sndContact.currentTime = 0;
             }
-        };
-
-        canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY));
-        canvas.addEventListener('touchstart', (e) => handleInput(e.touches[0].clientX, e.touches[0].clientY));
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleInput(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
-
-        function finalizarJuego(exito) {
-            juegoActivo = false;
-            AudioEngine.stopPurr();
-            cancelAnimationFrame(animId);
-            if(exito) {
-                audioWin.play();
-                mostrarResultados("¡NIVEL COMPLETADO!", true);
-            } else {
-                mostrarResultados("SESIÓN FINALIZADA", false);
-                enviarDatos();
-            }
+            return inContact;
         }
 
-        function mostrarResultados(titulo, exito) {
-            document.getElementById('result-title').innerText = titulo;
-            document.getElementById('metrics-summary').innerHTML = `
-                • Nivel alcanzado: ${nivelActual}<br>
-                • Tiempo en contacto: ${segundosContacto}s<br>
-                • Pérdidas de foco: ${fallosTotales}
-            `;
-            document.getElementById('next-btn').style.display = exito ? "block" : "none";
-            document.getElementById('result-screen').style.display = 'flex';
-        }
+        // Eventos para evitar el "pegado"
+        window.addEventListener('mousedown', e => handlePos(e.clientX, e.clientY, true));
+        window.addEventListener('mouseup', () => handlePos(0,0, false));
+        window.addEventListener('mousemove', e => { if(isTouching) handlePos(e.clientX, e.clientY, true); });
 
-        function enviarDatos() {
-            const data = new FormData();
-            data.append(ENTRIES.paciente, localStorage.getItem('paciente') || "Paciente_Seguimiento");
-            data.append(ENTRIES.juego, "Seguimiento Mágico 🐾");
-            data.append(ENTRIES.nivel, nivelActual);
-            data.append(ENTRIES.aciertos, segundosContacto);
-            data.append(ENTRIES.fallos, fallosTotales);
-            data.append(ENTRIES.fecha, new Date().toLocaleDateString());
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', body: data });
-        }
-
-        function proximoNivel() { nivelActual++; iniciarJuego(); }
+        canvas.addEventListener('touchstart', e => handlePos(e.touches[0].clientX, e.touches[0].clientY, true));
+        canvas.addEventListener('touchmove', e => { 
+            e.preventDefault(); 
+            handlePos(e.touches[0].clientX, e.touches[0].clientY, true); 
+        }, {passive: false});
+        canvas.addEventListener('touchend', () => handlePos(0,0, false));
+        canvas.addEventListener('touchcancel', () => handlePos(0,0, false));
 
         function render() {
-            if(!juegoActivo) return;
+            if(!active) return;
             ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            if (!enContacto) {
+            // Verificar contacto real en este frame
+            let dist = 999;
+            // Si no hay toque, aumentar contador de pérdida de vida
+            if(!isTouching) {
                 frameCount++;
-                if(frameCount > 120) { // 2 segundos fuera para perder vida
-                    vidas--; fallosTotales++; frameCount = 0;
-                    actualizarUI();
-                    if(vidas <= 0) return finalizarJuego(false);
+                if(frameCount > 120) { // 2 segundos fuera
+                    lives--;
+                    frameCount = 0;
+                    document.getElementById('vd').innerText = "❤️".repeat(Math.max(0, lives));
+                    if(lives <= 0) location.reload();
                 }
-            } else { frameCount = 0; }
+            } else {
+                frameCount = 0;
+            }
 
-            // Dibujo
+            // Dibujar círculo
             ctx.beginPath();
-            ctx.arc(x, y, radio, 0, Math.PI * 2);
-            ctx.fillStyle = colores[(nivelActual - 1) % colores.length];
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = colors[(level-1) % colors.length];
             ctx.fill();
-            if(enContacto) {
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = "white";
+            
+            // Glow solo si hay contacto físico real
+            if(isTouching && sndContact.paused === false) {
                 ctx.strokeStyle = "white";
                 ctx.lineWidth = 4;
                 ctx.stroke();
             }
             ctx.closePath();
-            ctx.shadowBlur = 0;
 
+            // Movimiento
             x += dx; y += dy;
-            if(x + radio > canvas.width || x - radio < 0) dx = -dx;
-            if(y + radio > canvas.height || y - radio < 0) dy = -dy;
+            if(x + radius > canvas.width || x - radius < 0) dx *= -1;
+            if(y + radius > canvas.height || y - radius < 0) dy *= -1;
 
-            animId = requestAnimationFrame(render);
+            requestAnimationFrame(render);
         }
 
+        // Timer de progreso
         setInterval(() => {
-            if(juegoActivo && enContacto) {
-                segundosContacto++;
-                actualizarUI();
-                if(segundosContacto >= tiempoMeta) finalizarJuego(true);
+            if(active && !sndContact.paused) {
+                contactSecs++;
+                document.getElementById('fill').style.width = (contactSecs / targetSecs * 100) + "%";
+                if(contactSecs >= targetSecs) {
+                    active = false;
+                    sndContact.pause();
+                    sndWin.play();
+                    setTimeout(() => { level++; initLevel(); active = true; render(); }, 1500);
+                }
             }
         }, 1000);
 
-        window.addEventListener('resize', ajustarDificultad);
     </script>
 </body>
 </html>
