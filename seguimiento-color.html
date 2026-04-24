@@ -3,38 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Seguimiento Mágico v2.9</title>
+    <title>Seguimiento Mágico v3.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0f172a; --primary: #818cf8; --danger: #ef4444; --success: #22c55e; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Montserrat', sans-serif; overflow: hidden; touch-action: none; }
         
         .overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); display: flex; align-items: center; justify-content: center; z-index: 200; }
-        .card { background: white; color: #1e293b; padding: 2rem; border-radius: 2rem; text-align: center; width: 85%; max-width: 400px; }
+        .card { background: white; color: #1e293b; padding: 2rem; border-radius: 2rem; text-align: center; width: 85%; max-width: 400px; border: 5px solid var(--primary); }
         
-        button { background: var(--success); color: white; border: none; padding: 1.2rem; border-radius: 1rem; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 6px 0 #16a34a; text-transform: uppercase; }
+        button { background: var(--success); color: white; border: none; padding: 1.2rem; border-radius: 1rem; font-weight: 900; width: 100%; cursor: pointer; box-shadow: 0 6px 0 #16a34a; text-transform: uppercase; font-size: 1.2rem; }
         
         #ui { position: absolute; top: 0; width: 100%; padding: 1rem; display: flex; justify-content: space-between; z-index: 100; box-sizing: border-box; pointer-events: none; }
-        .stat { background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 1rem; text-align: center; backdrop-filter: blur(5px); }
+        .stat { background: rgba(255,255,255,0.15); padding: 0.5rem 1rem; border-radius: 1rem; text-align: center; backdrop-filter: blur(5px); min-width: 80px; }
         
-        #goal-bar { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 60%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid white; }
-        #fill { width: 0%; height: 100%; background: var(--success); transition: width 0.2s; }
+        #goal-bar { position: absolute; bottom: 25px; left: 50%; transform: translateX(-50%); width: 65%; height: 12px; background: rgba(255,255,255,0.1); border-radius: 20px; border: 2px solid white; overflow: hidden; }
+        #fill { width: 0%; height: 100%; background: var(--success); transition: width 0.3s linear; }
         
         canvas { display: block; }
-        
-        /* Efecto visual de error */
-        #error-flash { position: fixed; inset: 0; background: rgba(239, 68, 68, 0.3); display: none; pointer-events: none; z-index: 150; }
+        #flash { position: fixed; inset: 0; background: rgba(239, 68, 68, 0.4); display: none; pointer-events: none; z-index: 150; }
     </style>
 </head>
 <body>
 
-    <div id="error-flash"></div>
+    <div id="flash"></div>
 
     <div id="intro" class="overlay">
         <div class="card">
-            <h1 style="margin-top:0; color: var(--primary)">Seguimiento Mágico</h1>
-            <p style="font-size: 0.9rem; color: #64748b">Toca solo el círculo.<br>Si tocas fuera o lo pierdes, pierdes vida.</p>
-            <button onclick="start()">¡COMENZAR!</button>
+            <h1 style="margin-top:0; color: var(--primary); font-size: 1.8rem;">✨ Seguimiento Mágico</h1>
+            <p style="color: #64748b; line-height: 1.4;">Mantén el dedo sobre el círculo.<br>¡Cuidado con tocar fuera!</p>
+            <button onclick="start()">¡JUGAR!</button>
         </div>
     </div>
 
@@ -50,23 +48,23 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         
-        // Sonidos más sensibles y agradables
-        const sndPop = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'); // Burbuja/Pop
-        const sndError = new Audio('https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3'); // Click seco
-        const sndWin = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); // Campana armónica
+        // SONIDOS DE BURBUJAS Y ÉXITO
+        const sndBubble = new Audio('https://assets.mixkit.co/active_storage/sfx/707/707-preview.mp3'); // Burbuja constante
+        const sndError = new Audio('https://assets.mixkit.co/active_storage/sfx/441/441-preview.mp3'); // Pop seco
+        const sndWin = new Audio('https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'); // Campana
 
         let level = 1, lives = 3, targetSecs = 10, contactSecs = 0;
         let x, y, dx, dy, radius, active = false, isTouching = false;
-        let frameCount = 0;
+        let frameCount = 0, canLoseLife = true;
         const colors = ['#818cf8', '#34d399', '#fbbf24', '#f87171', '#a78bfa'];
 
         function initLevel() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             radius = Math.max(35, 80 - (level * 4));
-            let speed = 1.8 + (level * 0.4);
+            let speed = 1.7 + (level * 0.3);
             dx = speed; dy = speed;
-            targetSecs = 8 + (level * 2);
+            targetSecs = 6 + (level * 2);
             contactSecs = 0;
             if(!x) { x = canvas.width/2; y = canvas.height/2; }
             document.getElementById('lv').innerText = level;
@@ -84,53 +82,67 @@
         }
 
         function penalizar() {
+            if(!canLoseLife) return; // Evita perder vidas en ráfaga
+            
+            canLoseLife = false;
             lives--;
             document.getElementById('vd').innerText = "❤️".repeat(Math.max(0, lives));
-            const flash = document.getElementById('error-flash');
+            
+            // Efecto Visual
+            const flash = document.getElementById('flash');
             flash.style.display = 'block';
-            setTimeout(() => flash.style.display = 'none', 150);
-            sndError.play().catch(()=>{});
-            if(lives <= 0) location.reload();
+            sndError.play();
+            
+            setTimeout(() => { 
+                flash.style.display = 'none'; 
+                canLoseLife = true; // Recupera la capacidad de perder vida tras 1 segundo
+            }, 1000);
+
+            if(lives <= 0) setTimeout(() => location.reload(), 500);
         }
 
-        function handleInput(ex, ey, isDown) {
-            if(!active) return;
-            isTouching = isDown;
-            if(!isDown) return;
-
+        function checkContact(ex, ey) {
             let dist = Math.sqrt((ex - x)**2 + (ey - y)**2);
-            // Si toca pero está FUERA del círculo (con un margen pequeño)
-            if(dist > (radius + 10)) {
-                penalizar();
+            let hitting = dist < (radius + 15);
+            
+            if(hitting) {
+                if(sndBubble.paused) {
+                    sndBubble.currentTime = 0;
+                    sndBubble.play().catch(()=>{});
+                }
             } else {
-                if(sndPop.paused || sndPop.ended) sndPop.play().catch(()=>{});
+                sndBubble.pause();
+                if(isTouching) penalizar(); // Si está tocando pero fuera del círculo
             }
+            return hitting;
         }
 
-        // Mouse
-        window.addEventListener('mousedown', e => handleInput(e.clientX, e.clientY, true));
-        window.addEventListener('mouseup', () => isTouching = false);
-        window.addEventListener('mousemove', e => { if(isTouching) handleInput(e.clientX, e.clientY, true); });
-
-        // Touch
+        // Eventos corregidos
         canvas.addEventListener('touchstart', e => {
             e.preventDefault();
-            handleInput(e.touches[0].clientX, e.touches[0].clientY, true);
+            isTouching = true;
+            checkContact(e.touches[0].clientX, e.touches[0].clientY);
         }, {passive: false});
+
         canvas.addEventListener('touchmove', e => {
             e.preventDefault();
-            handleInput(e.touches[0].clientX, e.touches[0].clientY, true);
+            checkContact(e.touches[0].clientX, e.touches[0].clientY);
         }, {passive: false});
-        canvas.addEventListener('touchend', () => isTouching = false);
+
+        canvas.addEventListener('touchend', () => {
+            isTouching = false;
+            sndBubble.pause();
+        });
 
         function render() {
             if(!active) return;
-            ctx.fillStyle = 'rgba(15, 23, 42, 0.2)';
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.25)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            // Penalización por no tocar la pantalla (pérdida de rastro)
             if(!isTouching) {
                 frameCount++;
-                if(frameCount > 90) { // 1.5 segundos sin tocar nada = Pierde vida
+                if(frameCount > 110) { // ~2 segundos de gracia
                     penalizar();
                     frameCount = 0;
                 }
@@ -138,19 +150,19 @@
                 frameCount = 0;
             }
 
+            // Dibujar Círculo con Glow
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.fillStyle = colors[(level-1) % colors.length];
-            ctx.fill();
-            
-            // Efecto si el dedo está sobre el círculo
-            if(isTouching) {
-                ctx.strokeStyle = "white";
-                ctx.lineWidth = 3;
-                ctx.stroke();
+            if(isTouching && !sndBubble.paused) {
+                ctx.shadowBlur = 25;
+                ctx.shadowColor = "white";
             }
+            ctx.fill();
             ctx.closePath();
+            ctx.shadowBlur = 0;
 
+            // Movimiento
             x += dx; y += dy;
             if(x + radius > canvas.width || x - radius < 0) dx *= -1;
             if(y + radius > canvas.height || y - radius < 0) dy *= -1;
@@ -158,17 +170,22 @@
             requestAnimationFrame(render);
         }
 
+        // Timer de contacto
         setInterval(() => {
-            if(active && isTouching) {
-                // Solo suma segundos si está tocando el área del círculo
-                let canvasRect = canvas.getBoundingClientRect(); // Para mayor precisión
-                // Lógica de contacto simplificada para el timer
+            if(active && isTouching && !sndBubble.paused) {
                 contactSecs++;
-                document.getElementById('fill').style.width = (contactSecs / targetSecs * 100) + "%";
+                let porc = (contactSecs / targetSecs * 100);
+                document.getElementById('fill').style.width = porc + "%";
                 if(contactSecs >= targetSecs) {
                     active = false;
+                    sndBubble.pause();
                     sndWin.play();
-                    setTimeout(() => { level++; initLevel(); active = true; render(); }, 1200);
+                    setTimeout(() => { 
+                        level++; 
+                        initLevel(); 
+                        active = true; 
+                        render(); 
+                    }, 1500);
                 }
             }
         }, 1000);
