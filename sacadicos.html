@@ -2,172 +2,188 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sacádicos Voice Pro - Clinical Suite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Sacádicos Voice Pro v2.1 - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #020617; --acc: #a855f7; --txt: #f8fafc; --success: #10b981; --danger: #ef4444; }
-        * { box-sizing: border-box; touch-action: manipulation; }
-        body { margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--txt); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        * { box-sizing: border-box; touch-action: none; user-select: none; }
         
-        .screen { background: rgba(15, 23, 42, 0.95); padding: 3rem; border-radius: 3rem; border: 4px solid var(--acc); text-align: center; width: 90%; max-width: 800px; z-index: 100; display: none; box-shadow: 0 0 60px rgba(168, 85, 247, 0.3); backdrop-filter: blur(10px); }
-        .active { display: block; animation: zoomIn 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes zoomIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        body { 
+            margin: 0; font-family: 'Montserrat', sans-serif; background: var(--bg); color: var(--txt); 
+            height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; 
+        }
         
-        h1 { font-size: 2.8rem; color: var(--acc); margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: -1px; }
-        p { font-size: 1.4rem; margin-bottom: 2rem; line-height: 1.4; color: #cbd5e1; }
+        /* --- UI COMPACTA PARA CELULAR --- */
+        .screen { 
+            background: rgba(15, 23, 42, 0.95); padding: 1.5rem; border-radius: 2rem; 
+            border: 1px solid rgba(168, 85, 247, 0.3); text-align: center; width: 85%; max-width: 400px; 
+            z-index: 100; display: none; backdrop-filter: blur(10px);
+        }
+        .active { display: block; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        h1 { font-size: 1.6rem; color: var(--acc); margin-bottom: 0.8rem; font-weight: 900; }
+        p { font-size: 0.9rem; margin-bottom: 1.2rem; color: #94a3b8; line-height: 1.4; }
         
-        .config-box { background: rgba(0,0,0,0.4); padding: 2rem; border-radius: 2rem; margin-bottom: 1.5rem; border: 1px solid rgba(255,255,255,0.05); }
-        .config-group { margin-bottom: 1.8rem; text-align: left; }
-        .config-group label { display: block; font-size: 1.1rem; margin-bottom: 0.8rem; color: var(--success); font-weight: 900; text-transform: uppercase; }
+        .config-box { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 1.2rem; margin-bottom: 1rem; }
+        .config-group { margin-bottom: 1rem; text-align: left; }
+        .config-group label { display: block; font-size: 0.8rem; margin-bottom: 0.3rem; color: var(--success); font-weight: 700; }
         
-        input[type="range"] { width: 100%; height: 12px; accent-color: var(--acc); cursor: pointer; border-radius: 10px; }
+        input[type="range"] { width: 100%; accent-color: var(--acc); }
         
-        .hud { position: absolute; top: 0; width: 100%; display: flex; justify-content: space-around; padding: 1.5rem; font-weight: 900; font-size: 1.6rem; z-index: 50; background: linear-gradient(to bottom, rgba(2,6,23,0.8), transparent); pointer-events: none; }
+        .hud { 
+            position: absolute; top: 0; width: 100%; display: flex; justify-content: space-between; 
+            padding: 1rem 1.5rem; font-weight: 900; font-size: 1rem; z-index: 50; 
+            background: linear-gradient(to bottom, rgba(2,6,23,0.9), transparent);
+        }
         
-        #game-area { display: none; width: 100vw; height: 100vh; position: relative; background: #020617; }
-        .stimulus { position: absolute; font-size: var(--sz); color: var(--acc); transform: translate(-50%, -50%); filter: drop-shadow(0 0 25px var(--acc)); font-weight: 900; transition: all 0.1s ease-out; }
+        #game-area { display: none; width: 100vw; height: 100vh; position: relative; }
         
-        .btn { background: var(--success); color: #062d16; border: none; padding: 1.5rem; border-radius: 1.5rem; font-weight: 900; font-size: 1.6rem; cursor: pointer; width: 100%; margin-top: 1rem; box-shadow: 0 8px 0 #059669; text-transform: uppercase; transition: 0.1s; }
-        .btn:active { transform: translateY(4px); box-shadow: 0 4px 0 #059669; }
-        
-        .summary-item { font-size: 1.8rem; margin: 0.8rem 0; padding: 1.2rem; background: rgba(255,255,255,0.03); border-radius: 1.2rem; border-left: 10px solid var(--acc); text-align: left; }
-        #rest-timer { font-size: 10rem; font-weight: 900; color: var(--acc); margin: 20px 0; text-shadow: 0 0 30px var(--acc); }
+        .stimulus { 
+            position: absolute; font-size: var(--sz); color: var(--txt); 
+            transform: translate(-50%, -50%); font-weight: 900;
+            text-shadow: 0 0 15px var(--acc);
+            will-change: transform;
+        }
+
+        .btn { 
+            background: var(--success); color: #062d16; border: none; padding: 1rem; 
+            border-radius: 1rem; font-weight: 900; font-size: 1rem; cursor: pointer; width: 100%;
+            box-shadow: 0 4px 0 #059669; transition: 0.1s; text-transform: uppercase;
+        }
+        .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #059669; }
+
+        #voice-indicator {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            padding: 8px 15px; background: rgba(168, 85, 247, 0.15); border-radius: 20px;
+            font-size: 0.7rem; color: var(--acc); border: 1px solid rgba(168, 85, 247, 0.3);
+        }
     </style>
 </head>
 <body>
 
     <div class="hud" id="hud" style="display:none">
-        <div style="color:var(--success)">SERIE: <span id="h-ses">1/3</span></div>
-        <div style="color:var(--acc)">NIVEL: <span id="h-lvl">1</span></div>
+        <div style="color:var(--success)">S: <span id="h-ses">1</span></div>
+        <div style="color:var(--acc)">LVL <span id="h-lvl">1</span></div>
         <div id="h-time-box">⏱️ <span id="h-time">30</span>s</div>
-        <div style="color:var(--danger)"><span id="h-lives">❤️❤️❤️</span></div>
+        <div id="h-lives">❤️❤️❤️</div>
     </div>
 
     <div id="s-intro" class="screen active">
         <h1>SACÁDICOS VOICE</h1>
-        <p>Entrenamiento de saltos oculares con control de voz.<br><br>Coloque la tablet a <b>40 cm</b> de distancia.</p>
+        <p>Entrenamiento de saltos oculares.<br>Mantenga <b>40 cm</b> de distancia.</p>
         <button class="btn" onclick="nextStep('s-intro', 's-config')">CONFIGURAR</button>
     </div>
 
     <div id="s-config" class="screen">
-        <h1>PROTOCOLO</h1>
+        <h1>AJUSTES</h1>
         <div class="config-box">
             <div class="config-group">
-                <label>Tiempo de trabajo: <b id="v-work">30s</b></label>
+                <label>TRABAJO: <b id="v-work">30s</b></label>
                 <input type="range" id="i-work" min="15" max="60" step="5" value="30" oninput="document.getElementById('v-work').innerText = this.value + 's'">
             </div>
             <div class="config-group">
-                <label>Descanso: <b id="v-rest">10s</b></label>
-                <input type="range" id="i-rest" min="5" max="30" step="5" value="10" oninput="document.getElementById('v-rest').innerText = this.value + 's'">
-            </div>
-            <div class="config-group">
-                <label>Series por nivel: <b id="v-cycles">3</b></label>
-                <input type="range" id="i-cycles" min="1" max="5" value="3" oninput="document.getElementById('v-cycles').innerText = this.value">
+                <label>DESCANSO: <b id="v-rest">10s</b></label>
+                <input type="range" id="i-rest" min="5" max="20" step="5" value="10" oninput="document.getElementById('v-rest').innerText = this.value + 's'">
             </div>
         </div>
-        <button class="btn" onclick="initVoice()">EMPEZAR SESIÓN</button>
+        <button class="btn" onclick="initVoice()">INICIAR SESIÓN</button>
     </div>
 
     <div id="s-rest" class="screen">
         <h1 style="color:var(--success)">DESCANSO</h1>
-        <p>Serie <span id="rest-current">1</span> completada.<br>Relaje la vista.</p>
-        <div id="rest-timer">10</div>
+        <p>Relaje la vista.</p>
+        <div id="rest-timer" style="font-size: 4rem; font-weight: 900; color:var(--acc)">10</div>
     </div>
-
-    <div id="s-levelup" class="screen">
-        <h1 style="color:var(--acc)">¡NIVEL SUBIDO!</h1>
-        <p>Has superado el bloque de series.<br>La velocidad aumentará y el tamaño disminuirá.</p>
-        <button class="btn" onclick="startNewLevel()">SIGUIENTE NIVEL</button>
-    </div>
-
-    <div id="game-area"></div>
 
     <div id="s-end" class="screen">
-        <h1 id="end-title">FIN DE SESIÓN</h1>
-        <div id="summary"></div>
+        <h1>FIN DE SESIÓN</h1>
+        <p>Datos enviados correctamente.</p>
+        <div id="summary" style="text-align:left; font-size:0.8rem; background:rgba(0,0,0,0.3); padding:1rem; border-radius:1rem; margin-bottom:1rem;"></div>
         <button class="btn" onclick="location.reload()">NUEVO PACIENTE</button>
     </div>
 
+    <div id="game-area"></div>
+    <div id="voice-indicator" style="display:none">🎙️ Escuchando...</div>
+
+    <iframe name="target_silencioso" style="display:none;"></iframe>
+
     <script>
         let level = 1, lives = 3, currentVal = "", currentSerie = 1;
-        let workTime, restTime, seriesPerLevel;
-        let recognition, timerInt, restInt, failTimer;
+        let workTime, restTime, recognition;
         let stats = { hits: 0, errors: 0 };
-        const stimuli = "123456789ABCDEFHKMNPRTUVWXY";
+        const stimuli = "123456789HKMNPRTUVXY"; 
+        const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeLlcvlhrTSHDhvxctLghiM3caGsgBL2wdaT7nBxrz6UARwYg/formResponse";
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playTone(freq, type, dur) {
-            try {
-                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                osc.type = type; osc.frequency.value = freq;
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.start(); osc.stop(audioCtx.currentTime + dur);
-            } catch(e) {}
-        }
+        const AUDIO = {
+            ctx: new (window.AudioContext || window.webkitAudioContext)(),
+            play(f, type, d) {
+                try {
+                    const o = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    o.type = type; o.frequency.value = f;
+                    g.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + d);
+                    o.connect(g); g.connect(this.ctx.destination);
+                    o.start(); o.stop(this.ctx.currentTime + d);
+                } catch(e){}
+            }
+        };
 
-        function nextStep(hide, show) {
-            document.getElementById(hide).style.display = 'none';
-            const s = document.getElementById(show);
-            s.style.display = 'block';
-            s.classList.add('active');
+        function nextStep(h, s) {
+            document.getElementById(h).style.display = 'none';
+            document.getElementById(s).style.display = 'block';
+            document.getElementById(s).classList.add('active');
         }
 
         function initVoice() {
-            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Por favor, use Google Chrome para el control de voz.");
-            
+            const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!Speech) return alert("Usa Google Chrome.");
+
             workTime = parseInt(document.getElementById('i-work').value);
             restTime = parseInt(document.getElementById('i-rest').value);
-            seriesPerLevel = parseInt(document.getElementById('i-cycles').value);
 
-            recognition = new SpeechRecognition();
+            recognition = new Speech();
             recognition.lang = 'es-ES';
             recognition.continuous = true;
             recognition.interimResults = true;
 
             recognition.onresult = (e) => {
-                let transcript = '';
-                for (let i = e.resultIndex; i < e.results.length; ++i) {
-                    transcript += e.results[i][0].transcript.toUpperCase();
-                }
-                checkMatch(transcript);
+                const result = e.results[e.results.length - 1][0].transcript.toUpperCase().trim();
+                const cleanResult = result.split(" ").pop();
+                checkMatch(cleanResult);
             };
 
-            // Reinicio automático si el motor de voz se detiene
             recognition.onend = () => { if(lives > 0 && document.getElementById('game-area').style.display !== 'none') recognition.start(); };
             
             recognition.start();
             document.getElementById('s-config').style.display = 'none';
+            document.getElementById('voice-indicator').style.display = 'block';
             startSerie();
         }
 
         function startSerie() {
-            clearInterval(restInt);
             document.getElementById('s-rest').style.display = 'none';
             document.getElementById('game-area').style.display = 'block';
             document.getElementById('hud').style.display = 'flex';
-            updateHUD();
             
             let timeLeft = workTime;
-            document.getElementById('h-time').innerText = timeLeft;
-            
-            timerInt = setInterval(() => {
+            updateHUD(timeLeft);
+
+            const timer = setInterval(() => {
                 timeLeft--;
-                document.getElementById('h-time').innerText = timeLeft;
+                updateHUD(timeLeft);
                 if(timeLeft <= 0) {
-                    clearInterval(timerInt);
-                    clearTimeout(failTimer);
-                    if(currentSerie >= seriesPerLevel) showLevelUp();
-                    else showRest();
+                    clearInterval(timer);
+                    if(currentSerie >= 3) { endGame(); } 
+                    else { showRest(); }
                 }
             }, 1000);
             spawn();
         }
 
         function spawn() {
-            clearTimeout(failTimer);
             const area = document.getElementById('game-area');
             area.innerHTML = '';
             currentVal = stimuli[Math.floor(Math.random() * stimuli.length)];
@@ -177,119 +193,91 @@
             stim.id = "active-stim";
             stim.innerText = currentVal;
             
-            // LÓGICA SACÁDICA: Saltos amplios evitando el centro
-            const xPos = Math.random() > 0.5 ? (Math.random() * 20 + 5) : (Math.random() * 20 + 75);
-            const yPos = Math.random() > 0.5 ? (Math.random() * 25 + 10) : (Math.random() * 25 + 65);
+            // Posiciones seguras para celular (10% a 80%)
+            const x = Math.random() > 0.5 ? (Math.random() * 20 + 10) : (Math.random() * 20 + 65);
+            const y = Math.random() > 0.5 ? (Math.random() * 25 + 15) : (Math.random() * 25 + 55);
             
-            stim.style.left = `${xPos}%`;
-            stim.style.top = `${yPos}%`;
-            
-            // Dificultad: tamaño reduce por nivel (mínimo 70px)
-            const size = Math.max(70, 200 - (level * 15));
-            stim.style.setProperty('--sz', `${size}px`);
+            stim.style.left = `${x}%`;
+            stim.style.top = `${y}%`;
+            stim.style.setProperty('--sz', `${Math.max(50, 140 - (level * 8))}px`);
             
             area.appendChild(stim);
-            
-            // Tiempo de exposición: se reduce 400ms por nivel
-            const timeLimit = Math.max(800, 4500 - (level * 400));
-            failTimer = setTimeout(() => handleFailure(), timeLimit);
         }
 
-        function checkMatch(text) {
-            const dict = { 
-                "UNO":"1","DOS":"2","TRES":"3","CUATRO":"4","CINCO":"5","SEIS":"6","SIETE":"7","OCHO":"8","NUEVE":"9",
-                "EQUIS":"X","EKIS":"X","CE":"C","SE":"C","SI":"C","U":"U","VE":"V","BE":"B","DE":"D" 
-            };
-            
-            let match = text.endsWith(currentVal) || text.includes(" " + currentVal);
-            for(let k in dict) {
-                if(text.endsWith(k) && dict[k] === currentVal) match = true;
+        function checkMatch(input) {
+            const normalizer = { "UNO":"1","DOS":"2","TRES":"3","CUATRO":"4","CINCO":"5","SEIS":"6","SIETE":"7","OCHO":"8","NUEVE":"9", "EQUIS":"X", "YE":"Y", "I":"Y" };
+            const finalInput = normalizer[input] || input;
+
+            if(finalInput.includes(currentVal)) {
+                AUDIO.play(1000, 'sine', 0.08);
+                stats.hits++;
+                spawn();
             }
-            
-            if(match) handleSuccess();
         }
 
-        function handleSuccess() {
-            if(!document.getElementById('active-stim')) return;
-            clearTimeout(failTimer);
-            document.getElementById('active-stim').remove();
-            playTone(1000, 'sine', 0.06);
-            stats.hits++;
-            spawn();
-        }
-
-        function handleFailure() {
-            if(document.getElementById('game-area').style.display === 'none') return;
-            clearTimeout(failTimer);
-            playTone(200, 'square', 0.15);
-            lives--;
-            stats.errors++;
-            updateHUD();
-            
-            if(lives <= 0) endGame("AGOTAMIENTO");
-            else {
-                document.getElementById('game-area').style.boxShadow = "inset 0 0 100px rgba(239, 68, 68, 0.4)";
-                setTimeout(() => {
-                    document.getElementById('game-area').style.boxShadow = "none";
-                    spawn();
-                }, 250);
-            }
+        function updateHUD(t) {
+            document.getElementById('h-time').innerText = t;
+            document.getElementById('h-lvl').innerText = level;
+            document.getElementById('h-ses').innerText = currentSerie;
+            document.getElementById('h-lives').innerText = "❤️".repeat(lives);
         }
 
         function showRest() {
-            clearTimeout(failTimer);
             document.getElementById('game-area').style.display = 'none';
-            document.getElementById('rest-current').innerText = currentSerie;
-            nextStep('hud', 's-rest');
+            document.getElementById('hud').style.display = 'none';
+            document.getElementById('s-rest').style.display = 'block';
+            document.getElementById('s-rest').classList.add('active');
             
             let c = restTime;
             document.getElementById('rest-timer').innerText = c;
-            restInt = setInterval(() => {
+            const rTimer = setInterval(() => {
                 c--;
                 document.getElementById('rest-timer').innerText = c;
                 if(c <= 0) {
+                    clearInterval(rTimer);
                     currentSerie++;
                     startSerie();
                 }
             }, 1000);
         }
 
-        function showLevelUp() {
-            clearTimeout(failTimer);
+        function endGame() {
             document.getElementById('game-area').style.display = 'none';
             document.getElementById('hud').style.display = 'none';
-            nextStep('s-rest', 's-levelup');
-        }
+            document.getElementById('voice-indicator').style.display = 'none';
+            nextStep('s-rest', 's-end');
 
-        function startNewLevel() {
-            level++;
-            currentSerie = 1;
-            document.getElementById('s-levelup').style.display = 'none';
-            startSerie();
-        }
-
-        function updateHUD() {
-            document.getElementById('h-ses').innerText = `${currentSerie}/${seriesPerLevel}`;
-            document.getElementById('h-lvl').innerText = level;
-            document.getElementById('h-lives').innerText = lives > 0 ? "❤️".repeat(lives) : "💀";
-        }
-
-        function endGame(reason) {
-            clearInterval(timerInt); clearInterval(restInt); clearTimeout(failTimer);
-            try { recognition.stop(); } catch(e) {}
-            document.getElementById('game-area').style.display = 'none';
-            document.getElementById('hud').style.display = 'none';
-            
-            const endScreen = document.getElementById('s-end');
-            endScreen.style.display = 'block';
-            endScreen.classList.add('active');
+            const score = Math.round((stats.hits / (stats.hits + stats.errors || 1)) * 100);
             
             document.getElementById('summary').innerHTML = `
-                <div class="summary-item">🎯 TOTAL ACIERTOS: ${stats.hits}</div>
-                <div class="summary-item">❌ ERRORES: ${stats.errors}</div>
-                <div class="summary-item">🚀 NIVEL ALCANZADO: ${level}</div>
-                <div class="summary-item" style="border-color:var(--success)">📍 DISTANCIA: 40 cm</div>
+                ACIERTOS: ${stats.hits}<br>
+                NIVEL: ${level}<br>
+                DISTANCIA: 40 cm
             `;
+
+            enviarDatos(score);
+        }
+
+        function enviarDatos(p) {
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = formUrl;
+            form.target = "target_silencioso";
+            const data = {
+                "entry.369874016": localStorage.getItem('pacienteActual') || "ANONIMO",
+                "entry.1353470174": "SACADICOS_VOICE_V2.1",
+                "entry.721051298": p,
+                "entry.1303309812": level,
+                "entry.845098414": new Date().toLocaleDateString()
+            };
+            for (let k in data) {
+                const i = document.createElement("input");
+                i.type = "hidden"; i.name = k; i.value = data[k];
+                form.appendChild(i);
+            }
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
         }
     </script>
 </body>
