@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Maestro - Perceptum</title>
+    <title>Espejo Maestro PRO - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -22,18 +22,23 @@
 
         /* HEADER */
         .header { 
-            height: 80px; background: #1e293b; 
+            height: 90px; background: #1e293b; 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 0 25px; border-bottom: 5px solid var(--blue); z-index: 100;
         }
 
-        .stats-group { display: flex; gap: 20px; }
+        .stats-group { display: flex; gap: 30px; }
         .stat { text-align: center; }
-        .stat b { display: block; color: var(--blue); font-size: 0.7rem; text-transform: uppercase; }
-        .stat span { font-size: 1.4rem; font-weight: 900; }
+        .stat b { display: block; color: var(--blue); font-size: 0.8rem; text-transform: uppercase; }
+        .stat span { font-size: 1.8rem; font-weight: 900; }
 
-        #txt-vidas { display: flex; gap: 3px; font-size: 1.2rem; }
+        #txt-vidas { display: flex; gap: 5px; font-size: 1.5rem; }
+        .corazon { transition: 0.3s; }
         .corazon.perdido { filter: grayscale(1); opacity: 0.2; }
+
+        /* BARRA DE TIEMPO */
+        .timer-container { width: 100%; height: 10px; background: #334155; position: relative; }
+        #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 0.1s linear; }
 
         /* ZONA DE JUEGO */
         #game-container {
@@ -45,62 +50,65 @@
             padding: 20px;
         }
 
-        .maestro-box {
+        .secuencia-box {
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.05);
+            padding: 25px;
+            border-radius: 30px;
+            border: 2px dashed #334155;
+        }
+
+        .item-maestro {
             background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            border: 4px solid var(--yellow);
-            box-shadow: 0 0 20px rgba(250, 204, 21, 0.2);
-            text-align: center;
+            width: 80px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 20px; border: 4px solid var(--yellow);
+            font-size: 50px; font-weight: 900;
+            transition: 0.3s;
         }
-
-        .maestro-label { font-size: 0.8rem; color: var(--yellow); margin-bottom: 10px; font-weight: 900; }
-
-        .figura {
-            font-size: 80px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
+        .item-maestro.completado { border-color: var(--success); opacity: 0.5; transform: scale(0.9); }
+        .item-maestro.actual { box-shadow: 0 0 20px var(--yellow); transform: scale(1.1); }
 
         .opciones-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            width: 100%;
-            max-width: 400px;
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 20px; width: 100%; max-width: 400px;
         }
 
         .btn-opcion {
-            background: var(--card);
-            border: 3px solid #334155;
-            border-radius: 20px;
-            padding: 30px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
+            background: var(--card); border: 3px solid #334155;
+            border-radius: 25px; padding: 35px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; font-size: 60px;
         }
-
-        .btn-opcion:active { transform: scale(0.95); }
-        .btn-opcion.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
-        .btn-opcion.wrong { border-color: var(--pink); background: rgba(255, 46, 99, 0.1); }
+        .btn-opcion:active { transform: scale(0.9); }
 
         /* OVERLAYS */
         .overlay { 
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.95); 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.98); 
             z-index: 2000; display: flex; align-items: center; justify-content: center; 
         }
         
         .card { 
-            background: #1e293b; border-radius: 30px; padding: 40px; 
-            width: 85%; max-width: 400px; text-align: center; border: 3px solid var(--blue);
+            background: linear-gradient(145deg, #1e293b, #0f172a); 
+            border-radius: 35px; padding: 40px; width: 90%; max-width: 420px; 
+            text-align: center; border: 3px solid var(--blue);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .btn-principal { 
-            background: var(--success); color: white; padding: 20px; 
-            border-radius: 15px; font-weight: 900; border: none; 
-            cursor: pointer; width: 100%; font-size: 1.2rem; margin-top: 20px;
+            background: var(--success); color: white; padding: 22px; 
+            border-radius: 20px; font-weight: 900; border: none; 
+            cursor: pointer; width: 100%; font-size: 1.3rem; 
+            text-transform: uppercase; box-shadow: 0 6px 0 #065f46; 
+            transition: 0.1s; margin-top: 20px;
+        }
+        .btn-principal:active { transform: translateY(4px); box-shadow: none; }
+
+        .habilidades { 
+            background: rgba(56, 189, 248, 0.1); padding: 20px; 
+            border-radius: 20px; margin: 20px 0; border: 1px dashed var(--blue);
+            text-align: left; font-size: 0.9rem; color: #cbd5e1;
         }
     </style>
 </head>
@@ -108,9 +116,24 @@
 
 <div id="screen-start" class="overlay">
     <div class="card">
-        <h1 style="color:var(--blue)">ESPEJO MAESTRO</h1>
-        <p>Encuentra el <b>reflejo exacto</b> de la figura superior.</p>
-        <button class="btn-principal" onclick="iniciarJuego()">¡COMENZAR!</button>
+        <span style="font-size: 5rem;">🪞</span>
+        <h1 style="color:var(--blue); margin:10px 0;">ESPEJO MAESTRO</h1>
+        <div class="habilidades">
+            <b>DESAFÍO COGNITIVO:</b><br>
+            • Identifica el reflejo horizontal.<br>
+            • Completa la secuencia antes que el tiempo agote.<br>
+            • Precisión espacial extrema.
+        </div>
+        <button class="btn-principal" onclick="iniciarJuego()">¡INICIAR ENTRENAMIENTO!</button>
+    </div>
+</div>
+
+<div id="screen-end" class="overlay" style="display:none">
+    <div class="card">
+        <h1 style="color:var(--success)">SESIÓN COMPLETADA</h1>
+        <div class="habilidades" id="resumen-final" style="text-align:center; font-size: 1.2rem;"></div>
+        <button class="btn-principal" onclick="location.reload()">JUGAR DE NUEVO</button>
+        <a href="https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/" style="color:#64748b; text-decoration:none; display:block; margin-top:20px; font-weight:700;">🏠 VOLVER AL PORTAL</a>
     </div>
 </div>
 
@@ -119,24 +142,22 @@
         <div class="stat"><b>Nivel</b><span id="txt-nivel">1</span></div>
         <div class="stat"><b>Vidas</b><div id="txt-vidas"></div></div>
     </div>
-    <div class="stat"><b>Tiempo</b><span id="txt-cron">00:00</span></div>
+    <div class="stat"><b>Aciertos</b><span id="txt-aciertos">0</span></div>
 </div>
 
+<div class="timer-container"><div id="timer-bar"></div></div>
+
 <div id="game-container">
-    <div class="maestro-box">
-        <div class="maestro-label">FIGURA MAESTRA</div>
-        <div id="maestro-figura" class="figura">L</div>
-    </div>
-
-    <div style="font-weight: 900; color: var(--blue);">¿CUÁL ES SU REFLEJO?</div>
-
-    <div class="opciones-grid" id="opciones">
-        </div>
+    <div style="font-weight: 900; color: var(--yellow); letter-spacing: 2px;">SECUENCIA MAESTRA</div>
+    <div class="secuencia-box" id="secuencia-container"></div>
+    <div style="font-weight: 900; color: var(--blue);">TOCA EL REFLEJO CORRECTO</div>
+    <div class="opciones-grid" id="opciones"></div>
 </div>
 
 <script>
     let nivel = 1, aciertos = 0, fallos = 0, vidas = 3, segs = 0;
-    let crono, gameActive = false, canClick = true;
+    let timerVal = 100, timerInterval, gameActive = false;
+    let secuenciaActual = [], indiceProgreso = 0;
     
     const figurasBase = ["L", "F", "E", "P", "R", "K", "7", "4"];
     const rotaciones = [0, 90, 180, 270];
@@ -156,84 +177,124 @@
         document.getElementById('screen-start').style.display = 'none';
         gameActive = true;
         actualizarCorazones();
-        crono = setInterval(() => { segs++; document.getElementById('txt-cron').innerText = new Date(segs * 1000).toISOString().substr(14, 5); }, 1000);
         generarNivel();
+        iniciarTimer();
+    }
+
+    function iniciarTimer() {
+        clearInterval(timerInterval);
+        timerVal = 100;
+        const speed = Math.max(0.1, 0.5 - (nivel * 0.02)); // Se vuelve más rápido cada nivel
+        timerInterval = setInterval(() => {
+            if(!gameActive) return;
+            timerVal -= 0.3;
+            document.getElementById('timer-bar').style.width = timerVal + "%";
+            if(timerVal <= 0) {
+                registrarError();
+                timerVal = 100;
+            }
+        }, 50);
     }
 
     function generarNivel() {
-        canClick = true;
+        indiceProgreso = 0;
+        secuenciaActual = [];
+        const container = document.getElementById('secuencia-container');
+        container.innerHTML = "";
+        
+        // La longitud de la secuencia aumenta con el nivel (Max 5)
+        let largoSecuencia = Math.min(5, 1 + Math.floor(nivel / 2));
+        
+        for(let i=0; i<largoSecuencia; i++) {
+            let f = figurasBase[Math.floor(Math.random() * figurasBase.length)];
+            let r = rotaciones[Math.floor(Math.random() * rotaciones.length)];
+            secuenciaActual.push({ fig: f, rot: r });
+            
+            let div = document.createElement('div');
+            div.className = 'item-maestro';
+            div.id = 'maestro-' + i;
+            div.innerHTML = `<span style="transform: rotate(${r}deg)">${f}</span>`;
+            container.appendChild(div);
+        }
+        actualizarFocoSecuencia();
+        generarOpciones();
+    }
+
+    function actualizarFocoSecuencia() {
+        secuenciaActual.forEach((_, i) => {
+            const el = document.getElementById('maestro-' + i);
+            el.className = 'item-maestro';
+            if(i < indiceProgreso) el.classList.add('completado');
+            if(i === indiceProgreso) el.classList.add('actual');
+        });
+    }
+
+    function generarOpciones() {
         const grid = document.getElementById('opciones');
         grid.innerHTML = "";
-        
-        // 1. Seleccionar figura y rotación aleatoria para el Maestro
-        const fig = figurasBase[Math.floor(Math.random() * figurasBase.length)];
-        const rot = rotaciones[Math.floor(Math.random() * rotaciones.length)];
-        
-        const mEl = document.getElementById('maestro-figura');
-        mEl.innerText = fig;
-        mEl.style.transform = `rotate(${rot}deg)`;
+        const actual = secuenciaActual[indiceProgreso];
 
-        // 2. Crear opciones
         let opciones = [];
-        
-        // La correcta (Reflejada horizontalmente)
-        opciones.push({ fig: fig, rot: rot, mirror: true, correct: true });
+        // La correcta (Reflejada)
+        opciones.push({ fig: actual.fig, rot: actual.rot, mirror: true, correct: true });
 
-        // Las incorrectas (Rotaciones normales o la misma sin reflejar)
+        // Distractores
         while(opciones.length < 4) {
-            let rRandom = rotaciones[Math.floor(Math.random() * rotaciones.length)];
-            let mRandom = Math.random() > 0.5;
-            
-            // Evitar duplicar la correcta
-            if (!(rRandom === rot && mRandom === true)) {
-                opciones.push({ fig: fig, rot: rRandom, mirror: mRandom, correct: false });
+            let rR = rotaciones[Math.floor(Math.random() * rotaciones.length)];
+            let mR = Math.random() > 0.5;
+            if (!(rR === actual.rot && mR === true)) {
+                opciones.push({ fig: actual.fig, rot: rR, mirror: mR, correct: false });
             }
         }
-
-        // Mezclar opciones
         opciones.sort(() => Math.random() - 0.5);
 
         opciones.forEach(opt => {
             const btn = document.createElement('div');
             btn.className = 'btn-opcion';
-            btn.innerHTML = `<div class="figura" style="transform: rotate(${opt.rot}deg) scaleX(${opt.mirror ? -1 : 1})">${opt.fig}</div>`;
-            
-            btn.onclick = () => validar(opt.correct, btn);
+            btn.innerHTML = `<span style="transform: rotate(${opt.rot}deg) scaleX(${opt.mirror ? -1 : 1})">${opt.fig}</span>`;
+            btn.onclick = () => validar(opt.correct);
             grid.appendChild(btn);
         });
     }
 
-    function validar(esCorrecto, el) {
-        if (!canClick) return;
-        canClick = false;
-
-        if (esCorrecto) {
-            el.classList.add('correct');
+    function validar(esCorrecto) {
+        if(!gameActive) return;
+        if(esCorrecto) {
             aciertos++;
-            setTimeout(() => {
+            document.getElementById('txt-aciertos').innerText = aciertos;
+            indiceProgreso++;
+            timerVal = Math.min(100, timerVal + 20); // Bonus de tiempo por acierto
+            
+            if(indiceProgreso >= secuenciaActual.length) {
                 nivel++;
                 document.getElementById('txt-nivel').innerText = nivel;
                 generarNivel();
-            }, 800);
+            } else {
+                actualizarFocoSecuencia();
+                generarOpciones();
+            }
         } else {
-            el.classList.add('wrong');
-            vidas--;
-            fallos++;
-            actualizarCorazones();
-            document.body.classList.add('error-flash');
-            setTimeout(() => {
-                document.body.classList.remove('error-flash');
-                if (vidas <= 0) finalizar();
-                else canClick = true;
-            }, 500);
+            registrarError();
         }
     }
 
-    function finalizar() {
+    function registrarError() {
+        vidas--;
+        actualizarCorazones();
+        document.body.classList.add('error-flash');
+        setTimeout(() => document.body.classList.remove('error-flash'), 200);
+        if(vidas <= 0) finalizarJuego();
+    }
+
+    function finalizarJuego() {
         gameActive = false;
-        clearInterval(crono);
-        alert(`Juego Terminado. Nivel: ${nivel} | Aciertos: ${aciertos}`);
-        location.reload();
+        clearInterval(timerInterval);
+        document.getElementById('screen-end').style.display = 'flex';
+        document.getElementById('resumen-final').innerHTML = `
+            <b>Nivel Alcanzado:</b> ${nivel}<br>
+            <b>Aciertos Totales:</b> ${aciertos}
+        `;
+        // Aquí podrías llamar a tu función enviarExcel()
     }
 </script>
 </body>
