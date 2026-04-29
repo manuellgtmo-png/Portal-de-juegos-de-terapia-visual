@@ -27,6 +27,13 @@
             padding: 0 25px; border-bottom: 5px solid var(--blue); z-index: 100;
         }
 
+        .btn-salir-juego {
+            background: rgba(255, 255, 255, 0.1);
+            color: white; border: 2px solid rgba(255,255,255,0.2); 
+            padding: 10px 15px; border-radius: 12px; font-weight: 900; 
+            font-size: 0.7rem; cursor: pointer;
+        }
+
         .stats-group { display: flex; gap: 30px; }
         .stat { text-align: center; }
         .stat b { display: block; color: var(--blue); font-size: 0.8rem; text-transform: uppercase; }
@@ -37,35 +44,25 @@
         .corazon.perdido { filter: grayscale(1); opacity: 0.2; }
 
         /* BARRA DE TIEMPO */
-        .timer-container { width: 100%; height: 10px; background: #334155; position: relative; }
+        .timer-container { width: 100%; height: 10px; background: #334155; position: relative; display: none; }
         #timer-bar { width: 100%; height: 100%; background: var(--yellow); transition: width 0.1s linear; }
 
         /* ZONA DE JUEGO */
         #game-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-evenly;
-            padding: 20px;
+            flex-grow: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: space-evenly; padding: 20px;
         }
 
         .secuencia-box {
-            display: flex;
-            gap: 15px;
-            background: rgba(255,255,255,0.05);
-            padding: 25px;
-            border-radius: 30px;
-            border: 2px dashed #334155;
+            display: flex; gap: 15px; background: rgba(255,255,255,0.05);
+            padding: 25px; border-radius: 30px; border: 2px dashed #334155;
         }
 
         .item-maestro {
-            background: var(--card);
-            width: 80px; height: 80px;
+            background: var(--card); width: 80px; height: 80px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 20px; border: 4px solid var(--yellow);
-            font-size: 50px; font-weight: 900;
-            transition: 0.3s;
+            font-size: 50px; font-weight: 900; transition: 0.3s;
         }
         .item-maestro.completado { border-color: var(--success); opacity: 0.5; transform: scale(0.9); }
         .item-maestro.actual { box-shadow: 0 0 20px var(--yellow); transform: scale(1.1); }
@@ -97,18 +94,19 @@
         }
 
         .btn-principal { 
-            background: var(--success); color: white; padding: 22px; 
-            border-radius: 20px; font-weight: 900; border: none; 
-            cursor: pointer; width: 100%; font-size: 1.3rem; 
+            background: var(--success); color: white; padding: 20px; 
+            border-radius: 15px; font-weight: 900; border: none; 
+            cursor: pointer; width: 100%; font-size: 1.1rem; 
             text-transform: uppercase; box-shadow: 0 6px 0 #065f46; 
-            transition: 0.1s; margin-top: 20px;
+            transition: 0.1s; margin-top: 15px;
         }
-        .btn-principal:active { transform: translateY(4px); box-shadow: none; }
+
+        .btn-modo { background: var(--blue); box-shadow: 0 6px 0 #0369a1; }
 
         .habilidades { 
-            background: rgba(56, 189, 248, 0.1); padding: 20px; 
-            border-radius: 20px; margin: 20px 0; border: 1px dashed var(--blue);
-            text-align: left; font-size: 0.9rem; color: #cbd5e1;
+            background: rgba(56, 189, 248, 0.1); padding: 15px; 
+            border-radius: 20px; margin: 15px 0; border: 1px dashed var(--blue);
+            text-align: left; font-size: 0.85rem; color: #cbd5e1;
         }
     </style>
 </head>
@@ -116,36 +114,38 @@
 
 <div id="screen-start" class="overlay">
     <div class="card">
-        <span style="font-size: 5rem;">🪞</span>
+        <span style="font-size: 4rem;">🪞</span>
         <h1 style="color:var(--blue); margin:10px 0;">ESPEJO MAESTRO</h1>
         <div class="habilidades">
-            <b>DESAFÍO COGNITIVO:</b><br>
-            • Identifica el reflejo horizontal.<br>
-            • Completa la secuencia antes que el tiempo agote.<br>
-            • Precisión espacial extrema.
+            <b>MODOS DE ENTRENAMIENTO:</b><br>
+            • <b>Libre:</b> Sin presión, ideal para aprendizaje.<br>
+            • <b>Contrarreloj:</b> Velocidad de procesamiento.
         </div>
-        <button class="btn-principal" onclick="iniciarJuego()">¡INICIAR ENTRENAMIENTO!</button>
+        <button class="btn-principal" onclick="prepararJuego('libre')">MODO LIBRE 🧘</button>
+        <button class="btn-principal btn-modo" onclick="prepararJuego('reloj')">CONTRARRELOJ ⚡</button>
+        <a href="https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/" style="color:#64748b; display:block; margin-top:20px; font-size:0.8rem; font-weight:700;">SALIR AL PORTAL</a>
     </div>
 </div>
 
 <div id="screen-end" class="overlay" style="display:none">
     <div class="card">
         <h1 style="color:var(--success)">SESIÓN COMPLETADA</h1>
-        <div class="habilidades" id="resumen-final" style="text-align:center; font-size: 1.2rem;"></div>
-        <button class="btn-principal" onclick="location.reload()">JUGAR DE NUEVO</button>
+        <div class="habilidades" id="resumen-final" style="text-align:center; font-size: 1.1rem;"></div>
+        <button class="btn-principal" onclick="location.reload()">REINTENTAR</button>
         <a href="https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/" style="color:#64748b; text-decoration:none; display:block; margin-top:20px; font-weight:700;">🏠 VOLVER AL PORTAL</a>
     </div>
 </div>
 
 <div class="header">
+    <button onclick="location.href='https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/'" class="btn-salir-juego">⬅ SALIR</button>
     <div class="stats-group">
         <div class="stat"><b>Nivel</b><span id="txt-nivel">1</span></div>
         <div class="stat"><b>Vidas</b><div id="txt-vidas"></div></div>
     </div>
-    <div class="stat"><b>Aciertos</b><span id="txt-aciertos">0</span></div>
+    <div class="stat"><b>Tiempo</b><span id="txt-cron">00:00</span></div>
 </div>
 
-<div class="timer-container"><div id="timer-bar"></div></div>
+<div class="timer-container" id="timer-ui"><div id="timer-bar"></div></div>
 
 <div id="game-container">
     <div style="font-weight: 900; color: var(--yellow); letter-spacing: 2px;">SECUENCIA MAESTRA</div>
@@ -155,55 +155,66 @@
 </div>
 
 <script>
+    let audioCtx;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function sonar(f, d, t='sine') {
+        if (!audioCtx) return;
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.type = t; o.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + d);
+    }
+
     let nivel = 1, aciertos = 0, fallos = 0, vidas = 3, segs = 0;
-    let timerVal = 100, timerInterval, gameActive = false;
+    let timerVal = 100, timerInterval, gameActive = false, modo = 'libre';
     let secuenciaActual = [], indiceProgreso = 0;
     
     const figurasBase = ["L", "F", "E", "P", "R", "K", "7", "4"];
     const rotaciones = [0, 90, 180, 270];
 
-    function actualizarCorazones() {
-        const div = document.getElementById('txt-vidas');
-        div.innerHTML = "";
-        for(let i=0; i<3; i++) {
-            const s = document.createElement('span');
-            s.className = i < vidas ? "corazon" : "corazon perdido";
-            s.innerText = i < vidas ? "❤️" : "🖤";
-            div.appendChild(s);
-        }
+    function prepararJuego(m) {
+        initAudio();
+        modo = m;
+        document.getElementById('screen-start').style.display = 'none';
+        if(modo === 'reloj') document.getElementById('timer-ui').style.display = 'block';
+        iniciarJuego();
     }
 
     function iniciarJuego() {
-        document.getElementById('screen-start').style.display = 'none';
         gameActive = true;
         actualizarCorazones();
         generarNivel();
-        iniciarTimer();
+        
+        setInterval(() => {
+            if(!gameActive) return;
+            segs++;
+            document.getElementById('txt-cron').innerText = new Date(segs * 1000).toISOString().substr(14, 5);
+        }, 1000);
+
+        if(modo === 'reloj') iniciarTimer();
     }
 
     function iniciarTimer() {
         clearInterval(timerInterval);
         timerVal = 100;
-        const speed = Math.max(0.1, 0.5 - (nivel * 0.02)); // Se vuelve más rápido cada nivel
         timerInterval = setInterval(() => {
             if(!gameActive) return;
-            timerVal -= 0.3;
+            timerVal -= (0.2 + (nivel * 0.05));
             document.getElementById('timer-bar').style.width = timerVal + "%";
-            if(timerVal <= 0) {
-                registrarError();
-                timerVal = 100;
-            }
+            if(timerVal <= 0) { registrarError(); timerVal = 100; }
         }, 50);
     }
 
     function generarNivel() {
         indiceProgreso = 0;
-        secuenciaActual = [];
         const container = document.getElementById('secuencia-container');
         container.innerHTML = "";
         
-        // La longitud de la secuencia aumenta con el nivel (Max 5)
-        let largoSecuencia = Math.min(5, 1 + Math.floor(nivel / 2));
+        // DIFICULTAD PROGRESIVA: 
+        // Nivel 1-2: 1 figura. Nivel 3-4: 2 figuras. Nivel 5-6: 3 figuras... Máx 5.
+        let largoSecuencia = Math.min(5, 1 + Math.floor((nivel - 1) / 2));
+        secuenciaActual = [];
         
         for(let i=0; i<largoSecuencia; i++) {
             let f = figurasBase[Math.floor(Math.random() * figurasBase.length)];
@@ -223,6 +234,7 @@
     function actualizarFocoSecuencia() {
         secuenciaActual.forEach((_, i) => {
             const el = document.getElementById('maestro-' + i);
+            if(!el) return;
             el.className = 'item-maestro';
             if(i < indiceProgreso) el.classList.add('completado');
             if(i === indiceProgreso) el.classList.add('actual');
@@ -234,11 +246,7 @@
         grid.innerHTML = "";
         const actual = secuenciaActual[indiceProgreso];
 
-        let opciones = [];
-        // La correcta (Reflejada)
-        opciones.push({ fig: actual.fig, rot: actual.rot, mirror: true, correct: true });
-
-        // Distractores
+        let opciones = [{ fig: actual.fig, rot: actual.rot, mirror: true, correct: true }];
         while(opciones.length < 4) {
             let rR = rotaciones[Math.floor(Math.random() * rotaciones.length)];
             let mR = Math.random() > 0.5;
@@ -246,9 +254,7 @@
                 opciones.push({ fig: actual.fig, rot: rR, mirror: mR, correct: false });
             }
         }
-        opciones.sort(() => Math.random() - 0.5);
-
-        opciones.forEach(opt => {
+        opciones.sort(() => Math.random() - 0.5).forEach(opt => {
             const btn = document.createElement('div');
             btn.className = 'btn-opcion';
             btn.innerHTML = `<span style="transform: rotate(${opt.rot}deg) scaleX(${opt.mirror ? -1 : 1})">${opt.fig}</span>`;
@@ -260,10 +266,10 @@
     function validar(esCorrecto) {
         if(!gameActive) return;
         if(esCorrecto) {
+            sonar(800, 0.1);
             aciertos++;
-            document.getElementById('txt-aciertos').innerText = aciertos;
             indiceProgreso++;
-            timerVal = Math.min(100, timerVal + 20); // Bonus de tiempo por acierto
+            if(modo === 'reloj') timerVal = Math.min(100, timerVal + 15);
             
             if(indiceProgreso >= secuenciaActual.length) {
                 nivel++;
@@ -279,6 +285,7 @@
     }
 
     function registrarError() {
+        sonar(150, 0.3, 'sawtooth');
         vidas--;
         actualizarCorazones();
         document.body.classList.add('error-flash');
@@ -286,15 +293,22 @@
         if(vidas <= 0) finalizarJuego();
     }
 
+    function actualizarCorazones() {
+        const div = document.getElementById('txt-vidas');
+        div.innerHTML = "";
+        for(let i=0; i<3; i++) {
+            const s = document.createElement('span');
+            s.className = i < vidas ? "corazon" : "corazon perdido";
+            s.innerText = i < vidas ? "❤️" : "🖤";
+            div.appendChild(s);
+        }
+    }
+
     function finalizarJuego() {
         gameActive = false;
         clearInterval(timerInterval);
         document.getElementById('screen-end').style.display = 'flex';
-        document.getElementById('resumen-final').innerHTML = `
-            <b>Nivel Alcanzado:</b> ${nivel}<br>
-            <b>Aciertos Totales:</b> ${aciertos}
-        `;
-        // Aquí podrías llamar a tu función enviarExcel()
+        document.getElementById('resumen-final').innerHTML = `Modo: ${modo.toUpperCase()}<br>Nivel: ${nivel} | Aciertos: ${aciertos}`;
     }
 </script>
 </body>
