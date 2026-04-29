@@ -27,7 +27,7 @@
             padding: 0 25px; border-bottom: 5px solid var(--blue); z-index: 100;
         }
 
-        .btn-salir-juego {
+        .btn-regresar {
             background: rgba(255, 255, 255, 0.1);
             color: white; border: 2px solid rgba(255,255,255,0.2); 
             padding: 10px 15px; border-radius: 12px; font-weight: 900; 
@@ -88,20 +88,27 @@
         
         .card { 
             background: linear-gradient(145deg, #1e293b, #0f172a); 
-            border-radius: 35px; padding: 40px; width: 90%; max-width: 420px; 
+            border-radius: 35px; padding: 35px; width: 90%; max-width: 420px; 
             text-align: center; border: 3px solid var(--blue);
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .btn-principal { 
-            background: var(--success); color: white; padding: 20px; 
+            background: var(--success); color: white; padding: 18px; 
             border-radius: 15px; font-weight: 900; border: none; 
-            cursor: pointer; width: 100%; font-size: 1.1rem; 
+            cursor: pointer; width: 100%; font-size: 1rem; 
             text-transform: uppercase; box-shadow: 0 6px 0 #065f46; 
-            transition: 0.1s; margin-top: 15px;
+            transition: 0.1s; margin-top: 12px;
         }
 
         .btn-modo { background: var(--blue); box-shadow: 0 6px 0 #0369a1; }
+
+        /* SELECTOR DE TIEMPO */
+        .config-box {
+            background: rgba(255, 255, 255, 0.05); padding: 15px;
+            border-radius: 20px; margin: 15px 0; display: none;
+        }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--yellow); }
 
         .habilidades { 
             background: rgba(56, 189, 248, 0.1); padding: 15px; 
@@ -114,16 +121,29 @@
 
 <div id="screen-start" class="overlay">
     <div class="card">
-        <span style="font-size: 4rem;">🪞</span>
-        <h1 style="color:var(--blue); margin:10px 0;">ESPEJO MAESTRO</h1>
-        <div class="habilidades">
-            <b>MODOS DE ENTRENAMIENTO:</b><br>
-            • <b>Libre:</b> Sin presión, ideal para aprendizaje.<br>
-            • <b>Contrarreloj:</b> Velocidad de procesamiento.
+        <span style="font-size: 3.5rem;">🪞</span>
+        <h1 style="color:var(--blue); margin:10px 0; font-size: 1.8rem;">ESPEJO MAESTRO</h1>
+        
+        <div id="menu-principal">
+            <div class="habilidades">
+                <b>SELECCIONA UN MODO:</b><br>
+                • 🧘 <b>Libre:</b> Sin límite de tiempo.<br>
+                • ⚡ <b>Contrarreloj:</b> Velocidad pura.
+            </div>
+            <button class="btn-principal" onclick="seleccionarModo('libre')">MODO LIBRE</button>
+            <button class="btn-principal btn-modo" onclick="mostrarConfigReloj()">CONTRARRELOJ</button>
+            <a href="https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/" style="color:#64748b; display:block; margin-top:15px; font-size:0.8rem; font-weight:700;">SALIR AL PORTAL</a>
         </div>
-        <button class="btn-principal" onclick="prepararJuego('libre')">MODO LIBRE 🧘</button>
-        <button class="btn-principal btn-modo" onclick="prepararJuego('reloj')">CONTRARRELOJ ⚡</button>
-        <a href="https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/" style="color:#64748b; display:block; margin-top:20px; font-size:0.8rem; font-weight:700;">SALIR AL PORTAL</a>
+
+        <div id="config-reloj" style="display:none">
+            <div class="habilidades" style="text-align:center">
+                <b style="color:var(--yellow)">TIEMPO TOTAL POR NIVEL</b><br>
+                <span id="label-tiempo" style="font-size:2rem; font-weight:900;">30s</span>
+            </div>
+            <input type="range" id="input-tiempo" min="5" max="60" value="30" oninput="document.getElementById('label-tiempo').innerText = this.value + 's'">
+            <button class="btn-principal btn-modo" onclick="seleccionarModo('reloj')">¡EMPEZAR DESAFÍO!</button>
+            <button class="btn-principal" style="background:#475569; box-shadow:0 6px 0 #1e293b;" onclick="regresarAlMenu()">VOLVER</button>
+        </div>
     </div>
 </div>
 
@@ -137,7 +157,7 @@
 </div>
 
 <div class="header">
-    <button onclick="location.href='https://manuellgtmo-png.github.io/Portal-de-juegos-de-terapia-visual/'" class="btn-salir-juego">⬅ SALIR</button>
+    <button onclick="location.reload()" class="btn-regresar">⬅ SALIR</button>
     <div class="stats-group">
         <div class="stat"><b>Nivel</b><span id="txt-nivel">1</span></div>
         <div class="stat"><b>Vidas</b><div id="txt-vidas"></div></div>
@@ -148,9 +168,9 @@
 <div class="timer-container" id="timer-ui"><div id="timer-bar"></div></div>
 
 <div id="game-container">
-    <div style="font-weight: 900; color: var(--yellow); letter-spacing: 2px;">SECUENCIA MAESTRA</div>
+    <div style="font-weight: 900; color: var(--yellow); letter-spacing: 2px; font-size: 0.8rem;">SECUENCIA MAESTRA</div>
     <div class="secuencia-box" id="secuencia-container"></div>
-    <div style="font-weight: 900; color: var(--blue);">TOCA EL REFLEJO CORRECTO</div>
+    <div style="font-weight: 900; color: var(--blue); font-size: 0.8rem;">TOCA EL REFLEJO CORRECTO</div>
     <div class="opciones-grid" id="opciones"></div>
 </div>
 
@@ -166,16 +186,28 @@
         o.start(); o.stop(audioCtx.currentTime + d);
     }
 
-    let nivel = 1, aciertos = 0, fallos = 0, vidas = 3, segs = 0;
-    let timerVal = 100, timerInterval, gameActive = false, modo = 'libre';
+    let nivel = 1, aciertos = 0, vidas = 3, segs = 0;
+    let timerVal = 100, timerInterval, cronInterval, gameActive = false, modo = 'libre';
+    let tiempoConfigurado = 30; // Segundos seleccionados por el usuario
     let secuenciaActual = [], indiceProgreso = 0;
     
     const figurasBase = ["L", "F", "E", "P", "R", "K", "7", "4"];
     const rotaciones = [0, 90, 180, 270];
 
-    function prepararJuego(m) {
+    function mostrarConfigReloj() {
+        document.getElementById('menu-principal').style.display = 'none';
+        document.getElementById('config-reloj').style.display = 'block';
+    }
+
+    function regresarAlMenu() {
+        document.getElementById('menu-principal').style.display = 'block';
+        document.getElementById('config-reloj').style.display = 'none';
+    }
+
+    function seleccionarModo(m) {
         initAudio();
         modo = m;
+        tiempoConfigurado = parseInt(document.getElementById('input-tiempo').value);
         document.getElementById('screen-start').style.display = 'none';
         if(modo === 'reloj') document.getElementById('timer-ui').style.display = 'block';
         iniciarJuego();
@@ -186,7 +218,7 @@
         actualizarCorazones();
         generarNivel();
         
-        setInterval(() => {
+        cronInterval = setInterval(() => {
             if(!gameActive) return;
             segs++;
             document.getElementById('txt-cron').innerText = new Date(segs * 1000).toISOString().substr(14, 5);
@@ -198,11 +230,20 @@
     function iniciarTimer() {
         clearInterval(timerInterval);
         timerVal = 100;
+        // La velocidad de reducción depende del tiempo configurado y el nivel
+        // Cada 50ms se resta una porción del total
+        let reduccionBase = (100 / (tiempoConfigurado * 20)); 
+        
         timerInterval = setInterval(() => {
             if(!gameActive) return;
-            timerVal -= (0.2 + (nivel * 0.05));
+            // Se vuelve ligeramente más rápido con cada nivel (5% extra de velocidad por nivel)
+            timerVal -= reduccionBase * (1 + (nivel * 0.05));
             document.getElementById('timer-bar').style.width = timerVal + "%";
-            if(timerVal <= 0) { registrarError(); timerVal = 100; }
+            
+            if(timerVal <= 0) { 
+                registrarError(); 
+                timerVal = 100; // Reinicia la barra tras el error
+            }
         }, 50);
     }
 
@@ -211,8 +252,7 @@
         const container = document.getElementById('secuencia-container');
         container.innerHTML = "";
         
-        // DIFICULTAD PROGRESIVA: 
-        // Nivel 1-2: 1 figura. Nivel 3-4: 2 figuras. Nivel 5-6: 3 figuras... Máx 5.
+        // DIFICULTAD PROGRESIVA
         let largoSecuencia = Math.min(5, 1 + Math.floor((nivel - 1) / 2));
         secuenciaActual = [];
         
@@ -269,7 +309,7 @@
             sonar(800, 0.1);
             aciertos++;
             indiceProgreso++;
-            if(modo === 'reloj') timerVal = Math.min(100, timerVal + 15);
+            if(modo === 'reloj') timerVal = Math.min(100, timerVal + 15); // Pequeño bono de tiempo
             
             if(indiceProgreso >= secuenciaActual.length) {
                 nivel++;
@@ -307,6 +347,7 @@
     function finalizarJuego() {
         gameActive = false;
         clearInterval(timerInterval);
+        clearInterval(cronInterval);
         document.getElementById('screen-end').style.display = 'flex';
         document.getElementById('resumen-final').innerHTML = `Modo: ${modo.toUpperCase()}<br>Nivel: ${nivel} | Aciertos: ${aciertos}`;
     }
