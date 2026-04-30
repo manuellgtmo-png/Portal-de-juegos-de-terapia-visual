@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binocular y Antisupresión - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #f8fafc;
+            --text-dark: #1e293b;
+            --accent: #10b981;
+            --header-gradient: linear-gradient(90deg, #38bdf8, #818cf8);
+        }
+
+        body {
+            margin: 0; font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg); color: white;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center; padding: 60px 20px;
+        }
+
+        header h1 {
+            font-size: 2.5rem; font-weight: 900; margin: 0;
+            text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        header p {
+            color: #38bdf8; font-weight: 700; font-size: 0.9rem;
+            margin-top: 10px; text-transform: uppercase;
+        }
+
+        .container-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; width: 90%; max-width: 1200px; padding-bottom: 50px;
+        }
+
+        .card-juego {
+            background: var(--card-bg); border-radius: 35px;
+            padding: 40px 30px; text-align: left;
+            display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card-juego:hover { transform: translateY(-5px); }
+
+        .icon-box { font-size: 3rem; margin-bottom: 20px; }
+
+        .card-juego h2 {
+            color: var(--text-dark); font-size: 1.5rem; margin: 0;
+            font-weight: 900; line-height: 1.2;
+        }
+
+        .card-juego p {
+            color: #64748b; font-size: 0.9rem; margin: 15px 0 25px 0;
+            line-height: 1.5; font-weight: 500;
+        }
+
+        .btn-activar {
+            background: transparent; border: 2px solid var(--accent);
+            color: var(--accent); padding: 12px; border-radius: 15px;
+            font-weight: 900; font-size: 0.75rem; cursor: pointer;
+            text-align: center; text-decoration: none;
+            transition: 0.2s; text-transform: uppercase;
+        }
+
+        .btn-activar:hover { background: var(--accent); color: white; }
+
+        .prox { opacity: 0.6; filter: grayscale(1); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>BINOCULAR Y ANTISUPRESIÓN</h1>
+        <p>Habilidades de Integración y Fusión Visual</p>
+    </header>
+
+    <div class="container-grid">
+        <!-- Juego 1: Integración Dinámica -->
+        <div class="card-juego">
+            <div>
+                <div class="icon-box">🎯</div>
+                <h2>Integración Dinámica</h2>
+                <p>Uso de filtros anaglifos para eliminar la supresión y mejorar la fusión binocular.</p>
+            </div>
+            <a href="integracion-dinamica.html" class="btn-activar">¡SISTEMA ACTIVO!</a>
+        </div>
+
+        <!-- Juego 2: Espejo Binocular (El nuevo) -->
+        <div class="card-juego">
+            <div>
+                <div class="icon-box">🪞</div>
+                <h2>Espejo Binocular</h2>
+                <p>Entrenamiento de antisupresión mediante emparejamiento de figuras en filtro dual.</p>
+            </div>
+            <a href="espejo-binocular.html" class="btn-activar">¡SISTEMA ACTIVO!</a>
+        </div>
+
+        <!-- Próximamente -->
+        <div class="card-juego prox">
+            <div>
+                <div class="icon-box">🔄</div>
+                <h2>Ciclo Fusión</h2>
+                <p>Estímulos alternantes para el control de la dominancia ocular y estabilidad binocular.</p>
+            </div>
+            <button class="btn-activar" disabled>PRÓXIMAMENTE</button>
+        </div>
+    </div>
+
+</body>
+</html>
