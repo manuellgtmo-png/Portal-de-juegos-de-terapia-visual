@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Espejo Binocular PRO - Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #0f172a; --primary: #f8fafc; 
+            --anag-rojo: #ff0000; --anag-verde: #00ff00;
+        }
+        
+        body { 
+            margin: 0; font-family: 'Montserrat'; background: var(--bg); color: var(--primary); 
+            overflow: hidden; display: flex; flex-direction: column; height: 100vh;
+        }
+
+        .header { 
+            height: 80px; background: #1e293b; display: flex; 
+            justify-content: space-between; align-items: center; padding: 0 25px; border-bottom: 4px solid #334155;
+        }
+
+        .stat b { display: block; color: #38bdf8; font-size: 0.7rem; text-transform: uppercase; }
+        .stat span { font-size: 1.5rem; font-weight: 900; }
+
+        #game-container { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly; }
+
+        .item-maestro {
+            color: var(--anag-rojo); width: 90px; height: 90px;
+            display: flex; align-items: center; justify-content: center;
+            border: 4px solid var(--anag-rojo); border-radius: 20px;
+            font-size: 60px; font-weight: 900; text-shadow: 0 0 10px var(--anag-rojo);
+        }
+
+        .opciones-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 90%; max-width: 400px; }
+
+        .btn-opcion {
+            background: transparent; border: 4px solid var(--anag-verde);
+            color: var(--anag-verde); border-radius: 25px; padding: 30px;
+            font-size: 60px; font-weight: 900; text-shadow: 0 0 10px var(--anag-verde);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        .overlay { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .btn-start { background: #10b981; color: white; padding: 20px 40px; border-radius: 15px; font-weight: 900; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div id="screen-start" class="overlay">
+    <div>
+        <h1 style="color:var(--anag-rojo)">ESPEJO <span style="color:var(--anag-verde)">BINOCULAR</span></h1>
+        <p>USA GAFAS ROJO/VERDE. DISTANCIA: 40 CM.</p>
+        <button class="btn-start" onclick="iniciar()">EMPEZAR</button>
+    </div>
+</div>
+
+<div class="header">
+    <div class="stat"><b>Nivel</b><span id="txt-nivel">1</span></div>
+    <div class="stat"><b>Vidas</b><span id="txt-vidas">❤️❤️❤️</span></div>
+</div>
+
+<div id="game-container">
+    <div id="secuencia-container" style="display:flex; gap:15px;"></div>
+    <div class="opciones-grid" id="opciones"></div>
+</div>
+
+<script>
+    let nivel = 1, vidas = 3, indiceProgreso = 0;
+    let secuenciaActual = [];
+    const figuras = ["L", "F", "E", "P", "7"];
+    const rots = [0, 90, 180, 270];
+
+    function iniciar() {
+        document.getElementById('screen-start').style.display = 'none';
+        generarNivel();
+    }
+
+    function generarNivel() {
+        indiceProgreso = 0;
+        const container = document.getElementById('secuencia-container');
+        container.innerHTML = "";
+        let largo = Math.min(4, 1 + Math.floor((nivel - 1) / 3));
+        secuenciaActual = [];
+        
+        for(let i=0; i<largo; i++) {
+            let f = figuras[Math.floor(Math.random() * figuras.length)];
+            let r = rots[Math.floor(Math.random() * rots.length)];
+            secuenciaActual.push({ fig: f, rot: r });
+            let div = document.createElement('div');
+            div.className = 'item-maestro';
+            div.id = 'm-' + i;
+            div.innerHTML = `<span style="transform: rotate(${r}deg)">${f}</span>`;
+            container.appendChild(div);
+        }
+        actualizarFoco();
+        generarOpciones();
+    }
+
+    function actualizarFoco() {
+        secuenciaActual.forEach((_, i) => {
+            const el = document.getElementById('m-' + i);
+            el.style.opacity = (i === indiceProgreso) ? "1" : "0.2";
+        });
+    }
+
+    function generarOpciones() {
+        const grid = document.getElementById('opciones');
+        grid.innerHTML = "";
+        const actual = secuenciaActual[indiceProgreso];
+        let opts = [{ fig: actual.fig, rot: actual.rot, correct: true }];
+        
+        while(opts.length < 4) {
+            let rR = rots[Math.floor(Math.random() * rots.length)];
+            let fR = figuras[Math.floor(Math.random() * figuras.length)];
+            if (!(fR === actual.fig && rR === actual.rot)) {
+                opts.push({ fig: fR, rot: rR, correct: false });
+            }
+        }
+
+        opts.sort(() => Math.random() - 0.5).forEach(opt => {
+            const btn = document.createElement('div');
+            btn.className = 'btn-opcion';
+            btn.innerHTML = `<span style="transform: rotate(${opt.rot}deg) scaleX(-1)">${opt.fig}</span>`;
+            btn.onclick = () => {
+                if(opt.correct) {
+                    indiceProgreso++;
+                    if(indiceProgreso >= secuenciaActual.length) {
+                        nivel++;
+                        document.getElementById('txt-nivel').innerText = nivel;
+                        generarNivel();
+                    } else {
+                        actualizarFoco();
+                        generarOpciones();
+                    }
+                } else {
+                    vidas--;
+                    document.getElementById('txt-vidas').innerText = "❤️".repeat(vidas);
+                    if(vidas <= 0) location.reload();
+                }
+            };
+            grid.appendChild(btn);
+        });
+    }
+</script>
+</body>
+</html>
