@@ -8,12 +8,13 @@
     <style>
         :root {
             --bg: #0f172a;
-            /* Colores ajustados para filtrado anaglifo real */
-            --rojo-base: #7f1d1d; /* Rojo oscuro para la caja */
-            --rojo-figura: rgba(0, 0, 0, 0.3); /* Figura interna oscurecida */
-            --verde-base: #166534; /* Verde oscuro para la caja */
-            --verde-figura: rgba(0, 0, 0, 0.3); 
+            /* Tus códigos exactos */
+            --rojo-fondo: #80322a;
+            --rojo-figura: #69302a;
+            --verde-fondo: #69913d;
+            --verde-figura: #6c7b5a;
             --ui-blue: #38bdf8;
+            --ui-green: #10b981;
         }
 
         body {
@@ -22,64 +23,78 @@
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- INTERFAZ --- */
+        /* --- UI HEADER (Estilo Pro) --- */
         .header-ui {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 20px; background: #1e293b; border-bottom: 2px solid #10b981;
+            padding: 15px 30px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
         }
 
-        .btn-salir {
-            background: #334155; border: none; color: white;
-            padding: 5px 15px; border-radius: 5px; cursor: pointer;
-            text-transform: uppercase; font-weight: 900; font-size: 0.7rem;
+        .btn-salir-game {
+            background: #334155; border: 2px solid var(--ui-blue); color: white;
+            padding: 8px 18px; border-radius: 10px; cursor: pointer;
+            font-weight: 900; font-size: 0.8rem; text-transform: uppercase;
         }
 
-        .stats { display: flex; gap: 20px; font-weight: 900; font-size: 0.9rem; }
-        .stat-val { color: var(--ui-blue); }
+        .stats-group { display: flex; gap: 40px; }
+        .stat-box { text-align: center; }
+        .stat-label { font-size: 0.65rem; color: var(--ui-blue); display: block; margin-bottom: 2px; }
+        .stat-num { font-size: 1.2rem; font-weight: 900; }
+        .vidas-icon { color: #ef4444; font-size: 1.4rem; letter-spacing: 3px; }
 
-        /* --- MENÚ --- */
+        /* --- MENÚ DE ENTRADA --- */
         #menu-inicio {
-            position: fixed; inset: 0; background: var(--bg);
+            position: fixed; inset: 0; background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100; text-align: center;
+            z-index: 100;
         }
 
-        .titulo { font-size: 2rem; margin-bottom: 20px; font-weight: 900; }
-        .titulo span:first-child { color: #ef4444; }
-        .titulo span:last-child { color: #22c55e; }
+        .logo-game { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .logo-game span:first-child { color: var(--rojo-fondo); }
+        .logo-game span:last-child { color: var(--verde-fondo); }
 
-        .btn-modo {
-            background: #1e293b; border: 2px solid white; color: white;
-            padding: 15px 30px; border-radius: 10px; margin: 10px;
-            cursor: pointer; font-weight: 700; width: 250px;
+        .btn-play {
+            background: none; border: 2px solid white; color: white;
+            padding: 18px 40px; border-radius: 50px; margin: 12px;
+            cursor: pointer; font-weight: 900; font-size: 1.1rem; width: 280px;
+            transition: all 0.3s;
         }
+        .btn-play:hover { background: white; color: var(--bg); transform: scale(1.05); }
 
-        /* --- JUEGO --- */
+        /* --- ESCENARIO DE JUEGO --- */
         #game-area {
             flex-grow: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 30px;
+            align-items: center; justify-content: space-evenly; padding: 20px;
         }
 
-        .instruccion { color: #fbbf24; font-weight: 900; letter-spacing: 1px; }
+        .instruction-tag { 
+            background: #fbbf24; color: #000; padding: 5px 20px; 
+            border-radius: 20px; font-weight: 900; font-size: 0.9rem;
+        }
 
-        .caja {
-            width: 90px; height: 90px; border-radius: 15px;
+        /* Figuras GRANDES */
+        .caja-grande {
+            width: 140px; height: 140px; border-radius: 25px;
             display: flex; align-items: center; justify-content: center;
-            position: relative; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
 
-        /* La figura interna tiene baja opacidad para el efecto de filtrado */
-        .figura-interna {
-            font-size: 3rem;
-            opacity: 0.4; 
-            color: black; /* El negro sobre el color base ayuda al filtrado anaglifo */
+        .caja-opcion {
+            width: 120px; height: 120px; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s;
         }
+        .caja-opcion:active { transform: scale(0.9); }
 
-        .rojo { background-color: var(--rojo-base); }
-        .verde { background-color: var(--verde-base); }
+        .figura-simbolo { font-size: 5rem; } /* Símbolo gigante para ocupar el espacio */
 
-        .grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+        /* Colores exactos del usuario */
+        .bg-rojo { background-color: #80322a; }
+        .fg-rojo { color: #69302a; }
+        .bg-verde { background-color: #69913d; }
+        .fg-verde { color: #6c7b5a; }
+
+        .grid-opciones {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;
         }
 
     </style>
@@ -87,72 +102,77 @@
 <body>
 
     <div id="menu-inicio">
-        <h1 class="titulo"><span>ESPEJO</span> <span>BINOCULAR</span></h1>
-        <p>USA GAFAS ROJO/VERDE. DISTANCIA: 40 CM.</p>
-        <button class="btn-modo" onclick="iniciar('libre')">MODO LIBRE</button>
-        <button class="btn-modo" onclick="iniciar('tiempo')">CONTRARELOJ (60S)</button>
-        <a href="index.html" style="color: gray; margin-top: 20px; text-decoration: none;">VOLVER AL PORTAL</a>
+        <div class="logo-game"><span>ESPEJO</span> <span>BINOCULAR</span></div>
+        <p style="letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 30px;">USA GAFAS ROJO/VERDE | 40 CM</p>
+        <button class="btn-play" onclick="empezar('libre')">MODO LIBRE</button>
+        <button class="btn-play" onclick="empezar('timer')">CONTRARELOJ (60S)</button>
+        <a href="index.html" style="margin-top: 30px; color: #64748b; text-decoration: none; font-weight: 700;">SALIR AL PORTAL</a>
     </div>
 
     <div class="header-ui">
-        <button onclick="location.reload()" class="btn-salir">← SALIR</button>
-        <div class="stats">
-            <span>NIVEL: <span id="l-nivel" class="stat-val">1</span></span>
-            <span>TIEMPO: <span id="l-tiempo" class="stat-val">00:00</span></span>
-            <span>ACIERTOS: <span id="l-puntos" class="stat-val">0</span></span>
+        <button onclick="location.reload()" class="btn-salir-game">← SALIR</button>
+        <div class="stats-group">
+            <div class="stat-box"><span class="stat-label">NIVEL</span><span class="stat-num" id="ui-nivel">1</span></div>
+            <div class="stat-box"><span class="stat-label">TIEMPO</span><span class="stat-num" id="ui-tiempo">00:00</span></div>
+            <div class="stat-box"><span class="stat-label">VIDAS</span><span class="vidas-icon" id="ui-vidas">♥♥♥</span></div>
+            <div class="stat-box"><span class="stat-label">ACIERTOS</span><span class="stat-num" id="ui-puntos">0</span></div>
         </div>
     </div>
 
     <div id="game-area">
-        <div class="instruccion">BUSCA ESTO:</div>
-        <div id="objetivo" class="caja rojo">
-            <span class="figura-interna">▲</span>
+        <div class="instruction-tag">BUSCA ESTA FIGURA:</div>
+        
+        <div id="target-box" class="caja-grande bg-rojo">
+            <span class="figura-simbolo fg-rojo">▲</span>
         </div>
 
-        <div class="grid" id="opciones">
-            <!-- Dinámico -->
+        <div class="grid-opciones" id="opciones-container">
+            <!-- Se llena con JS -->
         </div>
     </div>
 
     <script>
-        let puntos = 0;
+        let aciertos = 0;
+        let vidas = 3;
         let nivel = 1;
-        let seg = 0;
-        let modoActual = '';
-        const figuras = ['▲', '■', '●', '★', '♥'];
+        let tiempo = 0;
+        let modo = '';
+        const figuras = ['▲', '■', '●', '★', '✖'];
 
-        function iniciar(m) {
-            modoActual = m;
+        function empezar(m) {
+            modo = m;
             document.getElementById('menu-inicio').style.display = 'none';
-            if(m === 'tiempo') seg = 60;
-            setInterval(tick, 1000);
+            if(m === 'timer') tiempo = 60;
+            setInterval(reloj, 1000);
             nuevoNivel();
         }
 
-        function tick() {
-            if(modoActual === 'tiempo') {
-                seg--;
-                if(seg <= 0) { alert("Fin del tiempo!"); location.reload(); }
+        function reloj() {
+            if(modo === 'timer') {
+                tiempo--;
+                if(tiempo <= 0) fin("¡TIEMPO AGOTADO!");
             } else {
-                seg++;
+                tiempo++;
             }
-            let min = Math.floor(Math.abs(seg)/60);
-            let s = Math.abs(seg)%60;
-            document.getElementById('l-tiempo').innerText = `${min}:${s < 10 ? '0'+s : s}`;
+            let min = Math.floor(Math.abs(tiempo)/60);
+            let seg = Math.abs(tiempo)%60;
+            document.getElementById('ui-tiempo').innerText = `${min}:${seg < 10 ? '0'+seg : seg}`;
         }
 
         function nuevoNivel() {
-            const container = document.getElementById('opciones');
+            const container = document.getElementById('opciones-container');
             container.innerHTML = '';
             
-            const figCorrecta = figuras[Math.floor(Math.random()*figuras.length)];
-            const colorGuia = Math.random() > 0.5 ? 'rojo' : 'verde';
+            const correcta = figuras[Math.floor(Math.random()*figuras.length)];
+            const esRojoGuia = Math.random() > 0.5;
             
-            const obj = document.getElementById('objetivo');
-            obj.className = `caja ${colorGuia}`;
-            obj.innerHTML = `<span class="figura-interna">${figCorrecta}</span>`;
+            // Configurar Objetivo
+            const target = document.getElementById('target-box');
+            target.className = `caja-grande ${esRojoGuia ? 'bg-rojo' : 'bg-verde'}`;
+            target.innerHTML = `<span class="figura-simbolo ${esRojoGuia ? 'fg-rojo' : 'fg-verde'}">${correcta}</span>`;
 
-            let opciones = [figCorrecta];
+            // Crear Opciones (Color opuesto para integración)
+            let opciones = [correcta];
             while(opciones.length < 4) {
                 let f = figuras[Math.floor(Math.random()*figuras.length)];
                 if(!opciones.includes(f)) opciones.push(f);
@@ -160,21 +180,37 @@
             opciones.sort(() => Math.random() - 0.5);
 
             opciones.forEach(f => {
-                const colorOpcion = colorGuia === 'rojo' ? 'verde' : 'rojo';
                 const div = document.createElement('div');
-                div.className = `caja ${colorOpcion}`;
-                div.innerHTML = `<span class="figura-interna">${f}</span>`;
+                const colorOpcion = !esRojoGuia ? 'rojo' : 'verde';
+                div.className = `caja-opcion bg-${colorOpcion}`;
+                div.innerHTML = `<span class="figura-simbolo fg-${colorOpcion}">${f}</span>`;
                 div.onclick = () => {
-                    if(f === figCorrecta) {
-                        puntos++;
-                        if(puntos % 5 === 0) nivel++;
-                        document.getElementById('l-puntos').innerText = puntos;
-                        document.getElementById('l-nivel').innerText = nivel;
+                    if(f === correcta) {
+                        aciertos++;
+                        if(aciertos % 5 === 0) nivel++;
+                        actualizarUI();
                         nuevoNivel();
+                    } else {
+                        vidas--;
+                        actualizarUI();
+                        if(vidas <= 0) fin("TE HAS QUEDADO SIN VIDAS");
+                        document.body.style.backgroundColor = "#450a0a";
+                        setTimeout(() => document.body.style.backgroundColor = "var(--bg)", 150);
                     }
                 };
                 container.appendChild(div);
             });
+        }
+
+        function actualizarUI() {
+            document.getElementById('ui-puntos').innerText = aciertos;
+            document.getElementById('ui-nivel').innerText = nivel;
+            document.getElementById('ui-vidas').innerText = "♥".repeat(vidas);
+        }
+
+        function fin(msg) {
+            alert(`${msg}\nAciertos: ${aciertos} | Nivel: ${nivel}`);
+            location.reload();
         }
     </script>
 </body>
