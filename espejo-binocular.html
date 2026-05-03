@@ -3,235 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Binocular PRO - Centro Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Espejo Binocular PRO - Full Screen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --rojo-fondo: #80322a; --rojo-figura: #69302a;
-            --verde-fondo: #69913d; --verde-figura: #6c7b5a;
-            --ui-green: #10b981; --ui-blue: #38bdf8;
+            --bg: #0b0f1a;
+            --rojo-fondo: #802d25; --rojo-fig: #5c1f19;
+            --verde-fondo: #4a6b2a; --verde-fig: #354a1e;
+            --ui-accent: #10b981;
         }
 
-        body {
-            margin: 0; font-family: 'Montserrat', sans-serif;
-            background-color: var(--bg); color: white;
-            height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+        body, html { 
+            margin: 0; padding: 0; overflow: hidden; 
+            background: var(--bg); font-family: 'Montserrat', sans-serif;
+            height: 100%; width: 100%;
         }
 
-        /* --- INTRO PROFESIONAL --- */
-        #menu-inicio {
-            position: fixed; inset: 0; background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
-        }
-
-        .card-intro {
-            background: rgba(30, 41, 59, 0.8); padding: 30px; border-radius: 20px;
-            border: 2px solid var(--ui-green); text-align: center; max-width: 400px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 20px;
-        }
-
-        .btn-play {
-            background: var(--ui-green); border: none; color: white;
-            padding: 15px 40px; border-radius: 50px; cursor: pointer;
-            font-weight: 900; font-size: 1.1rem; width: 280px; margin: 10px 0;
-            transition: 0.3s;
-        }
-        .btn-play.alt { background: transparent; border: 2px solid white; }
-        .btn-play:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-        /* --- HEADER --- */
-        .header-ui {
+        /* UI SUPERPUESTA */
+        .overlay-ui {
+            position: absolute; top: 10px; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 25px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
+            pointer-events: none; z-index: 10; padding: 0 20px; box-sizing: border-box;
         }
 
-        .stats { display: flex; gap: 25px; }
-        .stat-item { text-align: center; }
-        .stat-label { font-size: 0.6rem; color: var(--ui-blue); font-weight: 900; display: block; }
-        .stat-num { font-size: 1.1rem; font-weight: 900; }
-
-        /* --- ÁREA DE JUEGO (Estilo Canva) --- */
-        #game-area {
-            flex-grow: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 10px;
+        .search-container {
+            background: rgba(251, 191, 36, 0.95);
+            color: black; padding: 8px 25px; border-radius: 12px;
+            display: flex; align-items: center; gap: 15px; pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        .target-display {
-            background: #fbbf24; color: black; padding: 10px 30px;
-            border-radius: 10px; font-weight: 900; margin-bottom: 15px;
-            display: flex; align-items: center; gap: 15px;
+        .stats-pill {
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(5px);
+            padding: 8px 20px; border-radius: 30px; border: 1px solid var(--ui-accent);
+            display: flex; gap: 15px; color: white; font-size: 0.9rem;
         }
 
-        .caja-guia {
-            width: 60px; height: 60px; border-radius: 10px;
+        /* GRILLA TOTAL */
+        #game-grid {
+            display: grid; width: 100vw; height: 100vh;
+            gap: 4px; padding: 4px; box-sizing: border-box;
+            background: #ca8a04; /* Color de fondo similar a Canva */
+        }
+
+        .cell {
             display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.1s; border-radius: 2px;
+            position: relative; overflow: hidden;
         }
 
-        /* Cuadrícula de alta densidad */
-        .grid-canva {
-            display: grid; 
-            grid-template-columns: repeat(10, 1fr); 
-            gap: 5px;
-            background: #d97706; /* Color ámbar de fondo como la plantilla */
-            padding: 10px; border-radius: 10px;
-            max-width: 95vw; max-height: 70vh;
+        .cell:active { transform: scale(0.95); }
+
+        .fig { font-size: 2.2rem; font-weight: 900; user-select: none; }
+
+        /* Estilos Binoculares */
+        .red-mode { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
+        .green-mode { background-color: var(--verde-fondo); color: var(--verde-fig); }
+
+        /* Animación Secuencia */
+        @keyframes highlight {
+            0% { filter: brightness(1); transform: scale(1); }
+            50% { filter: brightness(2.5); transform: scale(1.15); box-shadow: inset 0 0 20px white; }
+            100% { filter: brightness(1); transform: scale(1); }
         }
+        .active-seq { animation: highlight 0.8s ease; z-index: 5; }
 
-        .celda {
-            width: 45px; height: 45px; border-radius: 4px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.1s; position: relative;
+        #msg-secuencia {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 3rem; color: white; text-shadow: 0 0 20px black;
+            pointer-events: none; opacity: 0; transition: 0.5s; z-index: 100;
         }
-        .celda:active { transform: scale(0.9); }
-
-        .fig-text { font-size: 1.8rem; line-height: 1; pointer-events: none; }
-
-        .bg-r { background-color: var(--rojo-fondo); } .fg-r { color: var(--rojo-figura); }
-        .bg-v { background-color: var(--verde-fondo); } .fg-v { color: var(--verde-figura); }
-
-        /* Slider */
-        .slider-wrap { margin: 15px 0; width: 100%; }
-        input[type=range] { width: 100%; accent-color: var(--ui-green); }
 
     </style>
 </head>
 <body>
 
-    <div id="menu-inicio">
-        <h1 style="font-size: 2.5rem; margin-bottom: 20px;">ESPEJO <span style="color:var(--ui-green)">BINOCULAR</span></h1>
-        <div class="card-intro">
-            <p>🕶️ <b>Gafas Rojo/Verde</b></p>
-            <p>📏 <b>Distancia: 40 cm</b></p>
-            <p>Identifica la figura objetivo dentro de la cuadrícula de alta densidad para fortalecer la fusión.</p>
-            
-            <div id="config-timer" style="display:none;">
-                <div class="slider-wrap">
-                    <label style="font-size: 0.8rem;">TIEMPO: <span id="val-t">30</span>s</label>
-                    <input type="range" id="input-t" min="5" max="60" value="30" oninput="document.getElementById('val-t').innerText=this.value">
-                </div>
-            </div>
-        </div>
-        <button class="btn-play" id="btn-main" onclick="activarTimer()">MODO CONTRARELOJ</button>
-        <button class="btn-play alt" onclick="iniciar('libre')">MODO LIBRE</button>
-        <a href="index.html" style="color: #64748b; text-decoration: none; font-size: 0.8rem; margin-top: 15px;">SALIR AL PORTAL</a>
-    </div>
+    <div id="msg-secuencia">¡RECUERDA EL ORDEN!</div>
 
-    <div class="header-ui">
-        <button onclick="location.reload()" style="background:#ef4444; border:none; color:white; padding:5px 15px; border-radius:5px; font-weight:900; cursor:pointer;">SALIR</button>
-        <div class="stats">
-            <div class="stat-item"><span class="stat-label">NIVEL</span><span class="stat-num" id="u-nvl">1</span></div>
-            <div class="stat-item"><span class="stat-label">TIEMPO</span><span class="stat-num" id="u-time">00:00</span></div>
-            <div class="stat-item"><span class="stat-label">VIDAS</span><span class="stat-num" id="u-vds" style="color:#f43f5e">♥♥♥</span></div>
-            <div class="stat-item"><span class="stat-label">PUNTOS</span><span class="stat-num" id="u-pts">0</span></div>
+    <div class="overlay-ui">
+        <div class="search-container">
+            <span style="font-size: 0.8rem; font-weight: 900;">BUSCAR:</span>
+            <div id="target-display" style="font-size: 2rem; font-weight: 900;">-</div>
+        </div>
+
+        <div class="stats-pill">
+            <span>NVL: <b id="nvl">1</b></span>
+            <span>PTS: <b id="pts">0</b></span>
+            <span style="color: #f43f5e;">VIDAS: <b id="vds">♥♥♥</b></span>
         </div>
     </div>
 
-    <div id="game-area">
-        <div class="target-display">
-            BUSCAR: 
-            <div id="target-box" class="caja-guia bg-r"></div>
-        </div>
-        <div id="grid-main" class="grid-canva"></div>
-    </div>
+    <div id="game-grid"></div>
 
     <script>
-        let pts = 0, vds = 3, nvl = 1, t = 0, modo = '', intv;
-        // Base de datos expandida para evitar errores en nivel 9+
-        const figuras = ['▲','■','●','★','✖','♦','♣','♠','♥','A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8','9','?','!','@','#'];
+        const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦','@','#','&','?'];
+        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, isLocked = false;
+        const grid = document.getElementById('game-grid');
 
-        function activarTimer() {
-            const box = document.getElementById('config-timer');
-            const btn = document.getElementById('btn-main');
-            if(box.style.display === 'none') {
-                box.style.display = 'block';
-                btn.innerText = "¡COMENZAR!";
-            } else {
-                iniciar('timer');
-            }
-        }
+        function setupGrid() {
+            // Ajuste automático de cuadrícula según tamaño de pantalla
+            const cols = 12; 
+            const rows = Math.floor(window.innerHeight / (window.innerWidth / cols));
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
-        function iniciar(m) {
-            modo = m;
-            document.getElementById('menu-inicio').style.display = 'none';
-            if(m === 'timer') t = parseInt(document.getElementById('input-t').value);
-            intv = setInterval(tick, 1000);
-            generar();
-        }
-
-        function tick() {
-            if(modo === 'timer') { t--; if(t <= 0) fin("¡TIEMPO AGOTADO!"); }
-            else t++;
-            let min = Math.floor(Math.abs(t)/60), seg = Math.abs(t)%60;
-            document.getElementById('u-time').innerText = `${min}:${seg<10?'0':''}${seg}`;
-        }
-
-        function generar() {
-            const grid = document.getElementById('grid-main');
             grid.innerHTML = '';
+            const totalCells = cols * rows;
+            const cells = [];
+            const isRedTarget = Math.random() > 0.5;
+
+            // Determinar si es nivel de secuencia
+            const sequenceLength = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
+            targetSeq = [];
+
+            // Generar contenido
+            for (let i = 0; i < totalCells; i++) {
+                const cell = document.createElement('div');
+                const fig = symbols[Math.floor(Math.random() * symbols.length)];
+                const colorMode = isRedTarget ? 'green-mode' : 'red-mode';
+                
+                cell.className = `cell ${colorMode}`;
+                cell.innerHTML = `<span class="fig">${fig}</span>`;
+                cell.dataset.index = i;
+                cell.dataset.fig = fig;
+
+                cell.onclick = () => handleInput(cell);
+                grid.appendChild(cell);
+                cells.push(cell);
+            }
+
+            // Seleccionar objetivos
+            const availableCells = [...cells];
+            for(let i=0; i<sequenceLength; i++) {
+                const idx = Math.floor(Math.random() * availableCells.length);
+                targetSeq.push(availableCells.splice(idx, 1)[0]);
+            }
+
+            if (sequenceLength > 1) {
+                runSequenceAnimation();
+            } else {
+                showTarget(targetSeq[0].dataset.fig, isRedTarget);
+            }
+        }
+
+        function showTarget(fig, isRed) {
+            const display = document.getElementById('target-display');
+            display.innerText = fig;
+            display.style.color = isRed ? 'var(--rojo-fondo)' : 'var(--verde-fondo)';
+        }
+
+        async function runSequenceAnimation() {
+            isLocked = true;
+            document.getElementById('msg-secuencia').style.opacity = 1;
+            document.getElementById('target-display').innerText = "?";
             
-            // Dificultad: Cuadrícula crece con el nivel
-            let filas = nvl < 5 ? 5 : (nvl < 10 ? 8 : 10);
-            let columnas = 10;
-            grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
+            await new Promise(r => setTimeout(r, 1500));
+            document.getElementById('msg-secuencia').style.opacity = 0;
 
-            const totalCeldas = filas * columnas;
-            const correcta = figuras[Math.floor(Math.random() * figuras.length)];
-            const esRojoTarget = Math.random() > 0.5;
+            for (let cell of targetSeq) {
+                cell.classList.add('active-seq');
+                await new Promise(r => setTimeout(r, 800));
+                cell.classList.remove('active-seq');
+                await new Promise(r => setTimeout(r, 200));
+            }
+            isLocked = false;
+        }
 
-            // Mostrar objetivo arriba
-            const targetBox = document.getElementById('target-box');
-            targetBox.className = `caja-guia ${esRojoTarget ? 'bg-r' : 'bg-v'}`;
-            targetBox.innerHTML = `<span class="fig-text ${esRojoTarget ? 'fg-r' : 'fg-v'}">${correcta}</span>`;
+        function handleInput(cell) {
+            if(isLocked) return;
 
-            // Llenar cuadrícula
-            for(let i=0; i < totalCeldas; i++) {
-                const celda = document.createElement('div');
-                const esLaCorrecta = (i === Math.floor(Math.random() * totalCeldas));
+            if (cell === targetSeq[userPos]) {
+                cell.style.filter = "brightness(0.5)";
+                userPos++;
                 
-                // Color opuesto al target para integración
-                const colorCelda = !esRojoTarget ? 'r' : 'v';
-                celda.className = `celda bg-${colorCelda}`;
-                
-                let figCelda;
-                if(i === 0) { // Garantizar que al menos una sea la correcta
-                     figCelda = correcta;
-                } else {
-                    figCelda = figuras[Math.floor(Math.random() * figuras.length)];
-                    // Evitar que salgan más figuras iguales a la correcta para mayor dificultad
-                    if(figCelda === correcta) figCelda = figuras[(figuras.indexOf(correcta)+1) % figuras.length];
+                if (userPos === targetSeq.length) {
+                    pts += targetSeq.length;
+                    if(pts >= nvl * 5) nvl++;
+                    updateUI();
+                    userPos = 0;
+                    setupGrid();
                 }
-
-                celda.innerHTML = `<span class="fig-text fg-${colorCelda}">${figCelda}</span>`;
-                
-                celda.onclick = () => {
-                    if(figCelda === correcta) {
-                        pts++; if(pts % 3 === 0) nvl++;
-                        document.getElementById('u-pts').innerText = pts;
-                        document.getElementById('u-nvl').innerText = nvl;
-                        generar();
-                    } else {
-                        vds--;
-                        document.getElementById('u-vds').innerText = "♥".repeat(vds);
-                        if(vds <= 0) fin("TE HAS QUEDADO SIN VIDAS");
-                        document.body.style.background = "#450a0a";
-                        setTimeout(() => document.body.style.background = "var(--bg)", 150);
-                    }
-                };
-                grid.appendChild(celda);
-            }
-            
-            // Barajar celdas para que la correcta no sea siempre la primera
-            for (let i = grid.children.length; i >= 0; i--) {
-                grid.appendChild(grid.children[Math.random() * i | 0]);
+            } else {
+                vds--;
+                updateUI();
+                if(vds <= 0) {
+                    alert("Entrenamiento finalizado. Puntos: " + pts);
+                    location.reload();
+                }
+                // Feedback error
+                document.body.style.background = "red";
+                setTimeout(() => document.body.style.background = "var(--bg)", 100);
             }
         }
 
-        function fin(m) {
-            clearInterval(intv);
-            alert(`${m}\nPUNTOS: ${pts}\nNIVEL: ${nvl}`);
-            location.reload();
+        function updateUI() {
+            document.getElementById('nvl').innerText = nvl;
+            document.getElementById('pts').innerText = pts;
+            document.getElementById('vds').innerText = "♥".repeat(vds);
         }
+
+        window.onresize = setupGrid;
+        setupGrid();
     </script>
 </body>
 </html>
