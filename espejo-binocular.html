@@ -3,87 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Binocular PRO - Full Screen</title>
+    <title>Espejo Binocular PRO - Full Screen Intercalado</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0b0f1a;
-            --rojo-fondo: #802d25; --rojo-fig: #5c1f19;
-            --verde-fondo: #4a6b2a; --verde-fig: #354a1e;
+            /* Colores originales recuperados */
+            --rojo-fondo: #80322a; --rojo-fig: #69302a;
+            --verde-fondo: #69913d; --verde-fig: #6c7b5a;
             --ui-accent: #10b981;
         }
 
         body, html { 
             margin: 0; padding: 0; overflow: hidden; 
-            background: var(--bg); font-family: 'Montserrat', sans-serif;
+            background: #ca8a04; /* Fondo ámbar de la plantilla de Canva */
+            font-family: 'Montserrat', sans-serif;
             height: 100%; width: 100%;
         }
 
-        /* UI SUPERPUESTA */
+        /* UI SUPERPUESTA - Estilo imagen 1 */
         .overlay-ui {
             position: absolute; top: 10px; width: 100%;
             display: flex; justify-content: space-between; align-items: center;
-            pointer-events: none; z-index: 10; padding: 0 20px; box-sizing: border-box;
+            pointer-events: none; z-index: 100; padding: 0 20px; box-sizing: border-box;
         }
 
         .search-container {
-            background: rgba(251, 191, 36, 0.95);
-            color: black; padding: 8px 25px; border-radius: 12px;
-            display: flex; align-items: center; gap: 15px; pointer-events: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            background: #fbbf24; color: black; padding: 5px 20px; border-radius: 8px;
+            display: flex; align-items: center; gap: 10px; pointer-events: auto;
+            border: 2px solid #000;
         }
 
         .stats-pill {
-            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(5px);
-            padding: 8px 20px; border-radius: 30px; border: 1px solid var(--ui-accent);
-            display: flex; gap: 15px; color: white; font-size: 0.9rem;
+            background: rgba(15, 23, 42, 0.9); padding: 5px 15px; border-radius: 20px;
+            border: 2px solid var(--ui-accent); display: flex; gap: 15px; color: white;
+            font-size: 0.8rem; pointer-events: auto;
         }
 
-        /* GRILLA TOTAL */
+        /* GRILLA TOTAL - Estilo imagen 2 (Intercalada) */
         #game-grid {
             display: grid; width: 100vw; height: 100vh;
-            gap: 4px; padding: 4px; box-sizing: border-box;
-            background: #ca8a04; /* Color de fondo similar a Canva */
+            gap: 2px; padding: 2px; box-sizing: border-box;
         }
 
         .cell {
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.1s; border-radius: 2px;
-            position: relative; overflow: hidden;
+            cursor: pointer; transition: 0.1s; border-radius: 0px;
         }
 
-        .cell:active { transform: scale(0.95); }
+        .fig { font-size: 2rem; font-weight: 900; user-select: none; }
 
-        .fig { font-size: 2.2rem; font-weight: 900; user-select: none; }
-
-        /* Estilos Binoculares */
-        .red-mode { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
-        .green-mode { background-color: var(--verde-fondo); color: var(--verde-fig); }
+        /* Clases de color intercaladas */
+        .c-rojo { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
+        .c-verde { background-color: var(--verde-fondo); color: var(--verde-fig); }
 
         /* Animación Secuencia */
-        @keyframes highlight {
-            0% { filter: brightness(1); transform: scale(1); }
-            50% { filter: brightness(2.5); transform: scale(1.15); box-shadow: inset 0 0 20px white; }
-            100% { filter: brightness(1); transform: scale(1); }
+        @keyframes flash {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(3) contrast(1.5); outline: 4px solid white; }
         }
-        .active-seq { animation: highlight 0.8s ease; z-index: 5; }
+        .active-seq { animation: flash 0.6s ease; z-index: 50; }
 
-        #msg-secuencia {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            font-size: 3rem; color: white; text-shadow: 0 0 20px black;
-            pointer-events: none; opacity: 0; transition: 0.5s; z-index: 100;
+        #msg-top {
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            background: white; color: black; padding: 5px 20px; border-radius: 5px;
+            font-weight: 900; opacity: 0; transition: 0.3s; z-index: 90;
         }
-
     </style>
 </head>
 <body>
 
-    <div id="msg-secuencia">¡RECUERDA EL ORDEN!</div>
+    <div id="msg-top">¡OBSERVA LA SECUENCIA!</div>
 
     <div class="overlay-ui">
         <div class="search-container">
-            <span style="font-size: 0.8rem; font-weight: 900;">BUSCAR:</span>
-            <div id="target-display" style="font-size: 2rem; font-weight: 900;">-</div>
+            <span style="font-size: 0.7rem; font-weight: 900;">BUSCAR:</span>
+            <div id="target-display" style="font-size: 1.8rem; font-weight: 900;">-</div>
         </div>
 
         <div class="stats-pill">
@@ -96,73 +91,69 @@
     <div id="game-grid"></div>
 
     <script>
-        const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦','@','#','&','?'];
+        const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦'];
         let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, isLocked = false;
         const grid = document.getElementById('game-grid');
 
         function setupGrid() {
-            // Ajuste automático de cuadrícula según tamaño de pantalla
-            const cols = 12; 
+            const cols = 15; // Más columnas para mayor densidad como en la imagen 2
             const rows = Math.floor(window.innerHeight / (window.innerWidth / cols));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
 
             grid.innerHTML = '';
             const totalCells = cols * rows;
             const cells = [];
-            const isRedTarget = Math.random() > 0.5;
 
-            // Determinar si es nivel de secuencia
-            const sequenceLength = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
-            targetSeq = [];
-
-            // Generar contenido
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
                 const fig = symbols[Math.floor(Math.random() * symbols.length)];
-                const colorMode = isRedTarget ? 'green-mode' : 'red-mode';
                 
-                cell.className = `cell ${colorMode}`;
+                // Lógica de intercalado (Tablero de ajedrez)
+                const isEvenRow = Math.floor(i / cols) % 2 === 0;
+                const isEvenCol = i % cols === 0;
+                const isRed = isEvenRow ? (i % 2 === 0) : (i % 2 !== 0);
+                
+                cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
                 cell.innerHTML = `<span class="fig">${fig}</span>`;
-                cell.dataset.index = i;
                 cell.dataset.fig = fig;
+                cell.dataset.color = isRed ? 'red' : 'green';
 
                 cell.onclick = () => handleInput(cell);
                 grid.appendChild(cell);
                 cells.push(cell);
             }
 
-            // Seleccionar objetivos
-            const availableCells = [...cells];
-            for(let i=0; i<sequenceLength; i++) {
-                const idx = Math.floor(Math.random() * availableCells.length);
-                targetSeq.push(availableCells.splice(idx, 1)[0]);
+            // Selección de objetivos
+            const seqSize = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
+            targetSeq = [];
+            const tempCells = [...cells];
+            for(let i=0; i<seqSize; i++) {
+                targetSeq.push(tempCells.splice(Math.floor(Math.random()*tempCells.length), 1)[0]);
             }
 
-            if (sequenceLength > 1) {
-                runSequenceAnimation();
-            } else {
-                showTarget(targetSeq[0].dataset.fig, isRedTarget);
-            }
+            if(seqSize > 1) startSequence();
+            else updateTargetUI(targetSeq[0]);
         }
 
-        function showTarget(fig, isRed) {
+        function updateTargetUI(cell) {
             const display = document.getElementById('target-display');
-            display.innerText = fig;
-            display.style.color = isRed ? 'var(--rojo-fondo)' : 'var(--verde-fondo)';
+            display.innerText = cell.dataset.fig;
+            // El color del texto del objetivo es el opuesto al fondo de su celda para resaltar
+            display.style.color = cell.dataset.color === 'red' ? 'var(--rojo-fig)' : 'var(--verde-fig)';
         }
 
-        async function runSequenceAnimation() {
+        async function startSequence() {
             isLocked = true;
-            document.getElementById('msg-secuencia').style.opacity = 1;
+            const msg = document.getElementById('msg-top');
+            msg.style.opacity = 1;
             document.getElementById('target-display').innerText = "?";
             
-            await new Promise(r => setTimeout(r, 1500));
-            document.getElementById('msg-secuencia').style.opacity = 0;
+            await new Promise(r => setTimeout(r, 1000));
+            msg.style.opacity = 0;
 
             for (let cell of targetSeq) {
                 cell.classList.add('active-seq');
-                await new Promise(r => setTimeout(r, 800));
+                await new Promise(r => setTimeout(r, 700));
                 cell.classList.remove('active-seq');
                 await new Promise(r => setTimeout(r, 200));
             }
@@ -173,26 +164,21 @@
             if(isLocked) return;
 
             if (cell === targetSeq[userPos]) {
-                cell.style.filter = "brightness(0.5)";
+                cell.style.opacity = "0.3";
                 userPos++;
-                
                 if (userPos === targetSeq.length) {
                     pts += targetSeq.length;
-                    if(pts >= nvl * 5) nvl++;
-                    updateUI();
+                    if(pts >= nvl * 4) nvl++;
                     userPos = 0;
+                    updateUI();
                     setupGrid();
                 }
             } else {
                 vds--;
                 updateUI();
-                if(vds <= 0) {
-                    alert("Entrenamiento finalizado. Puntos: " + pts);
-                    location.reload();
-                }
-                // Feedback error
-                document.body.style.background = "red";
-                setTimeout(() => document.body.style.background = "var(--bg)", 100);
+                if(vds <= 0) { alert("Sesión terminada. Puntos: " + pts); location.reload(); }
+                document.body.style.filter = "invert(1)";
+                setTimeout(() => document.body.style.filter = "none", 150);
             }
         }
 
