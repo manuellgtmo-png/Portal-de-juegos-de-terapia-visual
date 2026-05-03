@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Binocular - Perceptum</title>
+    <title>Espejo Binocular PRO - Centro Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f172a;
             --rojo-fondo: #80322a; --rojo-figura: #69302a;
             --verde-fondo: #69913d; --verde-figura: #6c7b5a;
-            --ui-blue: #38bdf8; --ui-green: #10b981;
+            --ui-green: #10b981; --ui-blue: #38bdf8;
         }
 
         body {
@@ -19,194 +19,217 @@
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- UI HEADER --- */
-        .header-ui {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 25px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
-        }
-
-        .btn-salir-game {
-            background: #ef4444; border: none; color: white; padding: 8px 15px;
-            border-radius: 6px; cursor: pointer; font-weight: 900; font-size: 0.75rem;
-            transition: 0.3s;
-        }
-        .btn-salir-game:hover { background: #b91c1c; transform: scale(1.05); }
-
-        .stats-group { display: flex; gap: 30px; }
-        .stat-box { text-align: center; }
-        .stat-label { font-size: 0.6rem; color: var(--ui-blue); font-weight: 900; text-transform: uppercase; }
-        .stat-num { font-size: 1.1rem; font-weight: 900; display: block; }
-        .vidas-color { color: #f43f5e; }
-
-        /* --- INTRO Y MENÚ --- */
+        /* --- INTRO PROFESIONAL --- */
         #menu-inicio {
             position: fixed; inset: 0; background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
             display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
         }
 
-        .logo-main { font-size: 3rem; font-weight: 900; margin-bottom: 5px; }
-        .logo-main .r { color: var(--rojo-fondo); } .logo-main .v { color: var(--verde-fondo); }
-
-        .instructions-card {
-            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px;
-            margin-bottom: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
+        .card-intro {
+            background: rgba(30, 41, 59, 0.8); padding: 30px; border-radius: 20px;
+            border: 2px solid var(--ui-green); text-align: center; max-width: 400px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); margin-bottom: 20px;
         }
 
-        .slider-container { margin: 20px 0; width: 280px; text-align: center; }
-        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--ui-green); }
-
-        .btn-play-big {
+        .btn-play {
             background: var(--ui-green); border: none; color: white;
             padding: 15px 40px; border-radius: 50px; cursor: pointer;
-            font-weight: 900; font-size: 1.2rem; transition: 0.3s; width: 280px; margin: 5px;
+            font-weight: 900; font-size: 1.1rem; width: 280px; margin: 10px 0;
+            transition: 0.3s;
         }
-        .btn-play-big.alt { background: transparent; border: 2px solid white; }
-        .btn-play-big:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .btn-play.alt { background: transparent; border: 2px solid white; }
+        .btn-play:hover { transform: scale(1.05); filter: brightness(1.1); }
 
-        /* --- GAMEPLAY --- */
-        #game-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
-
-        .target-tag { 
-            background: #fbbf24; color: black; padding: 4px 15px; border-radius: 5px;
-            font-weight: 900; font-size: 0.8rem; margin-bottom: 10px;
+        /* --- HEADER --- */
+        .header-ui {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 25px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
         }
 
-        .caja-base {
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3); line-height: 0;
-        }
-        .caja-main { width: 130px; height: 130px; }
-        .caja-opt { width: 100px; height: 100px; cursor: pointer; transition: 0.2s; }
-        .caja-opt:hover { transform: scale(1.05); }
+        .stats { display: flex; gap: 25px; }
+        .stat-item { text-align: center; }
+        .stat-label { font-size: 0.6rem; color: var(--ui-blue); font-weight: 900; display: block; }
+        .stat-num { font-size: 1.1rem; font-weight: 900; }
 
-        .fig-icon { font-size: 4rem; pointer-events: none; }
-        .grid-dynamic { display: grid; gap: 20px; justify-items: center; }
+        /* --- ÁREA DE JUEGO (Estilo Canva) --- */
+        #game-area {
+            flex-grow: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 10px;
+        }
+
+        .target-display {
+            background: #fbbf24; color: black; padding: 10px 30px;
+            border-radius: 10px; font-weight: 900; margin-bottom: 15px;
+            display: flex; align-items: center; gap: 15px;
+        }
+
+        .caja-guia {
+            width: 60px; height: 60px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Cuadrícula de alta densidad */
+        .grid-canva {
+            display: grid; 
+            grid-template-columns: repeat(10, 1fr); 
+            gap: 5px;
+            background: #d97706; /* Color ámbar de fondo como la plantilla */
+            padding: 10px; border-radius: 10px;
+            max-width: 95vw; max-height: 70vh;
+        }
+
+        .celda {
+            width: 45px; height: 45px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.1s; position: relative;
+        }
+        .celda:active { transform: scale(0.9); }
+
+        .fig-text { font-size: 1.8rem; line-height: 1; pointer-events: none; }
 
         .bg-r { background-color: var(--rojo-fondo); } .fg-r { color: var(--rojo-figura); }
         .bg-v { background-color: var(--verde-fondo); } .fg-v { color: var(--verde-figura); }
 
-        /* Animación para niveles altos */
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .anim-float { animation: float 3s ease-in-out infinite; }
+        /* Slider */
+        .slider-wrap { margin: 15px 0; width: 100%; }
+        input[type=range] { width: 100%; accent-color: var(--ui-green); }
 
     </style>
 </head>
 <body>
 
     <div id="menu-inicio">
-        <div class="logo-main"><span class="r">ESPEJO</span> <span class="v">BINOCULAR</span></div>
-        <div class="instructions-card">
-            <p>🕶️ Usa gafas <b>Rojo/Verde</b></p>
-            <p>📏 Distancia: <b>40 cm</b></p>
-            <p>🎯 Busca la figura que falta para completar la pareja.</p>
+        <h1 style="font-size: 2.5rem; margin-bottom: 20px;">ESPEJO <span style="color:var(--ui-green)">BINOCULAR</span></h1>
+        <div class="card-intro">
+            <p>🕶️ <b>Gafas Rojo/Verde</b></p>
+            <p>📏 <b>Distancia: 40 cm</b></p>
+            <p>Identifica la figura objetivo dentro de la cuadrícula de alta densidad para fortalecer la fusión.</p>
+            
+            <div id="config-timer" style="display:none;">
+                <div class="slider-wrap">
+                    <label style="font-size: 0.8rem;">TIEMPO: <span id="val-t">30</span>s</label>
+                    <input type="range" id="input-t" min="5" max="60" value="30" oninput="document.getElementById('val-t').innerText=this.value">
+                </div>
+            </div>
         </div>
-
-        <div class="slider-container" id="slider-box" style="display:none;">
-            <label class="stat-label">TIEMPO: <span id="time-display">30</span>s</label><br>
-            <input type="range" id="time-slider" min="5" max="60" value="30" oninput="updateTimeVal(this.value)">
-        </div>
-
-        <button class="btn-play-big" onclick="setupTimer()">MODO CONTRARELOJ</button>
-        <button class="btn-play-big alt" onclick="start('libre')">MODO LIBRE</button>
-        <a href="index.html" style="margin-top:20px; color: #64748b; text-decoration:none; font-size:0.9rem;">← VOLVER AL PORTAL</a>
+        <button class="btn-play" id="btn-main" onclick="activarTimer()">MODO CONTRARELOJ</button>
+        <button class="btn-play alt" onclick="iniciar('libre')">MODO LIBRE</button>
+        <a href="index.html" style="color: #64748b; text-decoration: none; font-size: 0.8rem; margin-top: 15px;">SALIR AL PORTAL</a>
     </div>
 
     <div class="header-ui">
-        <button onclick="location.reload()" class="btn-salir-game">SALIR</button>
-        <div class="stats-group">
-            <div class="stat-box"><span class="stat-label">Nivel</span><span class="stat-num" id="u-nivel">1</span></div>
-            <div class="stat-box"><span class="stat-label">Tiempo</span><span class="stat-num" id="u-tiempo">00:00</span></div>
-            <div class="stat-box"><span class="stat-label">Vidas</span><span class="stat-num vidas-color" id="u-vidas">♥♥♥</span></div>
-            <div class="stat-box"><span class="stat-label">Aciertos</span><span class="stat-num" id="u-puntos">0</span></div>
+        <button onclick="location.reload()" style="background:#ef4444; border:none; color:white; padding:5px 15px; border-radius:5px; font-weight:900; cursor:pointer;">SALIR</button>
+        <div class="stats">
+            <div class="stat-item"><span class="stat-label">NIVEL</span><span class="stat-num" id="u-nvl">1</span></div>
+            <div class="stat-item"><span class="stat-label">TIEMPO</span><span class="stat-num" id="u-time">00:00</span></div>
+            <div class="stat-item"><span class="stat-label">VIDAS</span><span class="stat-num" id="u-vds" style="color:#f43f5e">♥♥♥</span></div>
+            <div class="stat-item"><span class="stat-label">PUNTOS</span><span class="stat-num" id="u-pts">0</span></div>
         </div>
     </div>
 
     <div id="game-area">
-        <div class="target-tag">BUSCA ESTA FIGURA:</div>
-        <div id="target" class="caja-base caja-main bg-r"></div>
-        <div id="grid" class="grid-dynamic"></div>
+        <div class="target-display">
+            BUSCAR: 
+            <div id="target-box" class="caja-guia bg-r"></div>
+        </div>
+        <div id="grid-main" class="grid-canva"></div>
     </div>
 
     <script>
-        let pts = 0, vds = 3, nvl = 1, t = 0, m = '', loop;
-        const figs = ['▲', '■', '●', '★', '✖', '♦', '♣'];
+        let pts = 0, vds = 3, nvl = 1, t = 0, modo = '', intv;
+        // Base de datos expandida para evitar errores en nivel 9+
+        const figuras = ['▲','■','●','★','✖','♦','♣','♠','♥','A','B','C','D','E','F','G','H','1','2','3','4','5','6','7','8','9','?','!','@','#'];
 
-        function updateTimeVal(v) { document.getElementById('time-display').innerText = v; t = parseInt(v); }
-
-        function setupTimer() {
-            document.getElementById('slider-box').style.display = 'block';
-            const btn = document.querySelector('.btn-play-big');
-            btn.innerText = "¡EMPEZAR AHORA!";
-            btn.onclick = () => start('timer');
+        function activarTimer() {
+            const box = document.getElementById('config-timer');
+            const btn = document.getElementById('btn-main');
+            if(box.style.display === 'none') {
+                box.style.display = 'block';
+                btn.innerText = "¡COMENZAR!";
+            } else {
+                iniciar('timer');
+            }
         }
 
-        function start(modo) {
-            m = modo;
+        function iniciar(m) {
+            modo = m;
             document.getElementById('menu-inicio').style.display = 'none';
-            if(m === 'libre') t = 0;
-            else if(t === 0) t = 30; // Default si no movió slider
-            loop = setInterval(tick, 1000);
-            draw();
+            if(m === 'timer') t = parseInt(document.getElementById('input-t').value);
+            intv = setInterval(tick, 1000);
+            generar();
         }
 
         function tick() {
-            if(m === 'timer') { t--; if(t <= 0) end("TIEMPO AGOTADO"); }
+            if(modo === 'timer') { t--; if(t <= 0) fin("¡TIEMPO AGOTADO!"); }
             else t++;
             let min = Math.floor(Math.abs(t)/60), seg = Math.abs(t)%60;
-            document.getElementById('u-tiempo').innerText = `${min}:${seg<10?'0':''}${seg}`;
+            document.getElementById('u-time').innerText = `${min}:${seg<10?'0':''}${seg}`;
         }
 
-        function draw() {
-            const grid = document.getElementById('grid');
+        function generar() {
+            const grid = document.getElementById('grid-main');
             grid.innerHTML = '';
             
-            // Dificultad por nivel
-            let cant = nvl < 4 ? 4 : (nvl < 7 ? 6 : 8);
-            grid.style.gridTemplateColumns = `repeat(${cant > 4 ? 3 : 2}, 1fr)`;
+            // Dificultad: Cuadrícula crece con el nivel
+            let filas = nvl < 5 ? 5 : (nvl < 10 ? 8 : 10);
+            let columnas = 10;
+            grid.style.gridTemplateColumns = `repeat(${columnas}, 1fr)`;
 
-            const correct = figs[Math.floor(Math.random()*figs.length)];
-            const isRed = Math.random() > 0.5;
-            
-            const target = document.getElementById('target');
-            target.className = `caja-base caja-main ${isRed?'bg-r':'bg-v'}`;
-            target.innerHTML = `<span class="fig-icon ${isRed?'fg-r':'fg-v'}">${correct}</span>`;
+            const totalCeldas = filas * columnas;
+            const correcta = figuras[Math.floor(Math.random() * figuras.length)];
+            const esRojoTarget = Math.random() > 0.5;
 
-            let opts = [correct];
-            while(opts.length < cant) {
-                let f = figs[Math.floor(Math.random()*figs.length)];
-                if(!opts.includes(f)) opts.push(f);
-            }
-            opts.sort(() => Math.random() - 0.5);
+            // Mostrar objetivo arriba
+            const targetBox = document.getElementById('target-box');
+            targetBox.className = `caja-guia ${esRojoTarget ? 'bg-r' : 'bg-v'}`;
+            targetBox.innerHTML = `<span class="fig-text ${esRojoTarget ? 'fg-r' : 'fg-v'}">${correcta}</span>`;
 
-            opts.forEach(f => {
-                const div = document.createElement('div');
-                const col = !isRed ? 'r' : 'v';
-                div.className = `caja-base caja-opt bg-${col} ${nvl >= 7 ? 'anim-float' : ''}`;
-                div.innerHTML = `<span class="fig-icon fg-${col}">${f}</span>`;
-                div.onclick = () => {
-                    if(f === correct) {
-                        pts++; if(pts%5===0) nvl++;
-                        updateUI(); draw();
+            // Llenar cuadrícula
+            for(let i=0; i < totalCeldas; i++) {
+                const celda = document.createElement('div');
+                const esLaCorrecta = (i === Math.floor(Math.random() * totalCeldas));
+                
+                // Color opuesto al target para integración
+                const colorCelda = !esRojoTarget ? 'r' : 'v';
+                celda.className = `celda bg-${colorCelda}`;
+                
+                let figCelda;
+                if(i === 0) { // Garantizar que al menos una sea la correcta
+                     figCelda = correcta;
+                } else {
+                    figCelda = figuras[Math.floor(Math.random() * figuras.length)];
+                    // Evitar que salgan más figuras iguales a la correcta para mayor dificultad
+                    if(figCelda === correcta) figCelda = figuras[(figuras.indexOf(correcta)+1) % figuras.length];
+                }
+
+                celda.innerHTML = `<span class="fig-text fg-${colorCelda}">${figCelda}</span>`;
+                
+                celda.onclick = () => {
+                    if(figCelda === correcta) {
+                        pts++; if(pts % 3 === 0) nvl++;
+                        document.getElementById('u-pts').innerText = pts;
+                        document.getElementById('u-nvl').innerText = nvl;
+                        generar();
                     } else {
-                        vds--; updateUI();
-                        if(vds<=0) end("SIN VIDAS");
+                        vds--;
+                        document.getElementById('u-vds').innerText = "♥".repeat(vds);
+                        if(vds <= 0) fin("TE HAS QUEDADO SIN VIDAS");
                         document.body.style.background = "#450a0a";
                         setTimeout(() => document.body.style.background = "var(--bg)", 150);
                     }
                 };
-                grid.appendChild(div);
-            });
+                grid.appendChild(celda);
+            }
+            
+            // Barajar celdas para que la correcta no sea siempre la primera
+            for (let i = grid.children.length; i >= 0; i--) {
+                grid.appendChild(grid.children[Math.random() * i | 0]);
+            }
         }
 
-        function updateUI() {
-            document.getElementById('u-puntos').innerText = pts;
-            document.getElementById('u-nivel').innerText = nvl;
-            document.getElementById('u-vidas').innerText = "♥".repeat(vds);
-        }
-
-        function end(txt) {
-            clearInterval(loop);
-            alert(`${txt}\nAciertos: ${pts} | Nivel: ${nvl}`);
+        function fin(m) {
+            clearInterval(intv);
+            alert(`${m}\nPUNTOS: ${pts}\nNIVEL: ${nvl}`);
             location.reload();
         }
     </script>
