@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Binocular PRO - Perceptum</title>
+    <title>Espejo Binocular - Perceptum</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0f172a;
-            /* Tus códigos exactos */
-            --rojo-fondo: #80322a;
-            --rojo-figura: #69302a;
-            --verde-fondo: #69913d;
-            --verde-figura: #6c7b5a;
-            --ui-blue: #38bdf8;
-            --ui-green: #10b981;
+            --rojo-fondo: #80322a; --rojo-figura: #69302a;
+            --verde-fondo: #69913d; --verde-figura: #6c7b5a;
+            --ui-blue: #38bdf8; --ui-green: #10b981;
         }
 
         body {
@@ -23,193 +19,194 @@
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- UI HEADER (Estilo Pro) --- */
+        /* --- UI HEADER --- */
         .header-ui {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 15px 30px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
+            padding: 10px 25px; background: #1e293b; border-bottom: 3px solid var(--ui-green);
         }
 
         .btn-salir-game {
-            background: #334155; border: 2px solid var(--ui-blue); color: white;
-            padding: 8px 18px; border-radius: 10px; cursor: pointer;
-            font-weight: 900; font-size: 0.8rem; text-transform: uppercase;
+            background: #ef4444; border: none; color: white; padding: 8px 15px;
+            border-radius: 6px; cursor: pointer; font-weight: 900; font-size: 0.75rem;
+            transition: 0.3s;
         }
+        .btn-salir-game:hover { background: #b91c1c; transform: scale(1.05); }
 
-        .stats-group { display: flex; gap: 40px; }
+        .stats-group { display: flex; gap: 30px; }
         .stat-box { text-align: center; }
-        .stat-label { font-size: 0.65rem; color: var(--ui-blue); display: block; margin-bottom: 2px; }
-        .stat-num { font-size: 1.2rem; font-weight: 900; }
-        .vidas-icon { color: #ef4444; font-size: 1.4rem; letter-spacing: 3px; }
+        .stat-label { font-size: 0.6rem; color: var(--ui-blue); font-weight: 900; text-transform: uppercase; }
+        .stat-num { font-size: 1.1rem; font-weight: 900; display: block; }
+        .vidas-color { color: #f43f5e; }
 
-        /* --- MENÚ DE ENTRADA --- */
+        /* --- INTRO Y MENÚ --- */
         #menu-inicio {
             position: fixed; inset: 0; background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 100;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
         }
 
-        .logo-game { font-size: 3.5rem; font-weight: 900; margin-bottom: 10px; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .logo-game span:first-child { color: var(--rojo-fondo); }
-        .logo-game span:last-child { color: var(--verde-fondo); }
+        .logo-main { font-size: 3rem; font-weight: 900; margin-bottom: 5px; }
+        .logo-main .r { color: var(--rojo-fondo); } .logo-main .v { color: var(--verde-fondo); }
 
-        .btn-play {
-            background: none; border: 2px solid white; color: white;
-            padding: 18px 40px; border-radius: 50px; margin: 12px;
-            cursor: pointer; font-weight: 900; font-size: 1.1rem; width: 280px;
-            transition: all 0.3s;
-        }
-        .btn-play:hover { background: white; color: var(--bg); transform: scale(1.05); }
-
-        /* --- ESCENARIO DE JUEGO --- */
-        #game-area {
-            flex-grow: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: space-evenly; padding: 20px;
+        .instructions-card {
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px;
+            margin-bottom: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .instruction-tag { 
-            background: #fbbf24; color: #000; padding: 5px 20px; 
-            border-radius: 20px; font-weight: 900; font-size: 0.9rem;
+        .slider-container { margin: 20px 0; width: 280px; text-align: center; }
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--ui-green); }
+
+        .btn-play-big {
+            background: var(--ui-green); border: none; color: white;
+            padding: 15px 40px; border-radius: 50px; cursor: pointer;
+            font-weight: 900; font-size: 1.2rem; transition: 0.3s; width: 280px; margin: 5px;
+        }
+        .btn-play-big.alt { background: transparent; border: 2px solid white; }
+        .btn-play-big:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+
+        /* --- GAMEPLAY --- */
+        #game-area { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+
+        .target-tag { 
+            background: #fbbf24; color: black; padding: 4px 15px; border-radius: 5px;
+            font-weight: 900; font-size: 0.8rem; margin-bottom: 10px;
         }
 
-        /* Figuras GRANDES */
-        .caja-grande {
-            width: 140px; height: 140px; border-radius: 25px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        .caja-base {
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3); line-height: 0;
         }
+        .caja-main { width: 130px; height: 130px; }
+        .caja-opt { width: 100px; height: 100px; cursor: pointer; transition: 0.2s; }
+        .caja-opt:hover { transform: scale(1.05); }
 
-        .caja-opcion {
-            width: 120px; height: 120px; border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.2s;
-        }
-        .caja-opcion:active { transform: scale(0.9); }
+        .fig-icon { font-size: 4rem; pointer-events: none; }
+        .grid-dynamic { display: grid; gap: 20px; justify-items: center; }
 
-        .figura-simbolo { font-size: 5rem; } /* Símbolo gigante para ocupar el espacio */
+        .bg-r { background-color: var(--rojo-fondo); } .fg-r { color: var(--rojo-figura); }
+        .bg-v { background-color: var(--verde-fondo); } .fg-v { color: var(--verde-figura); }
 
-        /* Colores exactos del usuario */
-        .bg-rojo { background-color: #80322a; }
-        .fg-rojo { color: #69302a; }
-        .bg-verde { background-color: #69913d; }
-        .fg-verde { color: #6c7b5a; }
-
-        .grid-opciones {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;
-        }
+        /* Animación para niveles altos */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .anim-float { animation: float 3s ease-in-out infinite; }
 
     </style>
 </head>
 <body>
 
     <div id="menu-inicio">
-        <div class="logo-game"><span>ESPEJO</span> <span>BINOCULAR</span></div>
-        <p style="letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 30px;">USA GAFAS ROJO/VERDE | 40 CM</p>
-        <button class="btn-play" onclick="empezar('libre')">MODO LIBRE</button>
-        <button class="btn-play" onclick="empezar('timer')">CONTRARELOJ (60S)</button>
-        <a href="index.html" style="margin-top: 30px; color: #64748b; text-decoration: none; font-weight: 700;">SALIR AL PORTAL</a>
+        <div class="logo-main"><span class="r">ESPEJO</span> <span class="v">BINOCULAR</span></div>
+        <div class="instructions-card">
+            <p>🕶️ Usa gafas <b>Rojo/Verde</b></p>
+            <p>📏 Distancia: <b>40 cm</b></p>
+            <p>🎯 Busca la figura que falta para completar la pareja.</p>
+        </div>
+
+        <div class="slider-container" id="slider-box" style="display:none;">
+            <label class="stat-label">TIEMPO: <span id="time-display">30</span>s</label><br>
+            <input type="range" id="time-slider" min="5" max="60" value="30" oninput="updateTimeVal(this.value)">
+        </div>
+
+        <button class="btn-play-big" onclick="setupTimer()">MODO CONTRARELOJ</button>
+        <button class="btn-play-big alt" onclick="start('libre')">MODO LIBRE</button>
+        <a href="index.html" style="margin-top:20px; color: #64748b; text-decoration:none; font-size:0.9rem;">← VOLVER AL PORTAL</a>
     </div>
 
     <div class="header-ui">
-        <button onclick="location.reload()" class="btn-salir-game">← SALIR</button>
+        <button onclick="location.reload()" class="btn-salir-game">SALIR</button>
         <div class="stats-group">
-            <div class="stat-box"><span class="stat-label">NIVEL</span><span class="stat-num" id="ui-nivel">1</span></div>
-            <div class="stat-box"><span class="stat-label">TIEMPO</span><span class="stat-num" id="ui-tiempo">00:00</span></div>
-            <div class="stat-box"><span class="stat-label">VIDAS</span><span class="vidas-icon" id="ui-vidas">♥♥♥</span></div>
-            <div class="stat-box"><span class="stat-label">ACIERTOS</span><span class="stat-num" id="ui-puntos">0</span></div>
+            <div class="stat-box"><span class="stat-label">Nivel</span><span class="stat-num" id="u-nivel">1</span></div>
+            <div class="stat-box"><span class="stat-label">Tiempo</span><span class="stat-num" id="u-tiempo">00:00</span></div>
+            <div class="stat-box"><span class="stat-label">Vidas</span><span class="stat-num vidas-color" id="u-vidas">♥♥♥</span></div>
+            <div class="stat-box"><span class="stat-label">Aciertos</span><span class="stat-num" id="u-puntos">0</span></div>
         </div>
     </div>
 
     <div id="game-area">
-        <div class="instruction-tag">BUSCA ESTA FIGURA:</div>
-        
-        <div id="target-box" class="caja-grande bg-rojo">
-            <span class="figura-simbolo fg-rojo">▲</span>
-        </div>
-
-        <div class="grid-opciones" id="opciones-container">
-            <!-- Se llena con JS -->
-        </div>
+        <div class="target-tag">BUSCA ESTA FIGURA:</div>
+        <div id="target" class="caja-base caja-main bg-r"></div>
+        <div id="grid" class="grid-dynamic"></div>
     </div>
 
     <script>
-        let aciertos = 0;
-        let vidas = 3;
-        let nivel = 1;
-        let tiempo = 0;
-        let modo = '';
-        const figuras = ['▲', '■', '●', '★', '✖'];
+        let pts = 0, vds = 3, nvl = 1, t = 0, m = '', loop;
+        const figs = ['▲', '■', '●', '★', '✖', '♦', '♣'];
 
-        function empezar(m) {
-            modo = m;
+        function updateTimeVal(v) { document.getElementById('time-display').innerText = v; t = parseInt(v); }
+
+        function setupTimer() {
+            document.getElementById('slider-box').style.display = 'block';
+            const btn = document.querySelector('.btn-play-big');
+            btn.innerText = "¡EMPEZAR AHORA!";
+            btn.onclick = () => start('timer');
+        }
+
+        function start(modo) {
+            m = modo;
             document.getElementById('menu-inicio').style.display = 'none';
-            if(m === 'timer') tiempo = 60;
-            setInterval(reloj, 1000);
-            nuevoNivel();
+            if(m === 'libre') t = 0;
+            else if(t === 0) t = 30; // Default si no movió slider
+            loop = setInterval(tick, 1000);
+            draw();
         }
 
-        function reloj() {
-            if(modo === 'timer') {
-                tiempo--;
-                if(tiempo <= 0) fin("¡TIEMPO AGOTADO!");
-            } else {
-                tiempo++;
-            }
-            let min = Math.floor(Math.abs(tiempo)/60);
-            let seg = Math.abs(tiempo)%60;
-            document.getElementById('ui-tiempo').innerText = `${min}:${seg < 10 ? '0'+seg : seg}`;
+        function tick() {
+            if(m === 'timer') { t--; if(t <= 0) end("TIEMPO AGOTADO"); }
+            else t++;
+            let min = Math.floor(Math.abs(t)/60), seg = Math.abs(t)%60;
+            document.getElementById('u-tiempo').innerText = `${min}:${seg<10?'0':''}${seg}`;
         }
 
-        function nuevoNivel() {
-            const container = document.getElementById('opciones-container');
-            container.innerHTML = '';
+        function draw() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
             
-            const correcta = figuras[Math.floor(Math.random()*figuras.length)];
-            const esRojoGuia = Math.random() > 0.5;
-            
-            // Configurar Objetivo
-            const target = document.getElementById('target-box');
-            target.className = `caja-grande ${esRojoGuia ? 'bg-rojo' : 'bg-verde'}`;
-            target.innerHTML = `<span class="figura-simbolo ${esRojoGuia ? 'fg-rojo' : 'fg-verde'}">${correcta}</span>`;
+            // Dificultad por nivel
+            let cant = nvl < 4 ? 4 : (nvl < 7 ? 6 : 8);
+            grid.style.gridTemplateColumns = `repeat(${cant > 4 ? 3 : 2}, 1fr)`;
 
-            // Crear Opciones (Color opuesto para integración)
-            let opciones = [correcta];
-            while(opciones.length < 4) {
-                let f = figuras[Math.floor(Math.random()*figuras.length)];
-                if(!opciones.includes(f)) opciones.push(f);
+            const correct = figs[Math.floor(Math.random()*figs.length)];
+            const isRed = Math.random() > 0.5;
+            
+            const target = document.getElementById('target');
+            target.className = `caja-base caja-main ${isRed?'bg-r':'bg-v'}`;
+            target.innerHTML = `<span class="fig-icon ${isRed?'fg-r':'fg-v'}">${correct}</span>`;
+
+            let opts = [correct];
+            while(opts.length < cant) {
+                let f = figs[Math.floor(Math.random()*figs.length)];
+                if(!opts.includes(f)) opts.push(f);
             }
-            opciones.sort(() => Math.random() - 0.5);
+            opts.sort(() => Math.random() - 0.5);
 
-            opciones.forEach(f => {
+            opts.forEach(f => {
                 const div = document.createElement('div');
-                const colorOpcion = !esRojoGuia ? 'rojo' : 'verde';
-                div.className = `caja-opcion bg-${colorOpcion}`;
-                div.innerHTML = `<span class="figura-simbolo fg-${colorOpcion}">${f}</span>`;
+                const col = !isRed ? 'r' : 'v';
+                div.className = `caja-base caja-opt bg-${col} ${nvl >= 7 ? 'anim-float' : ''}`;
+                div.innerHTML = `<span class="fig-icon fg-${col}">${f}</span>`;
                 div.onclick = () => {
-                    if(f === correcta) {
-                        aciertos++;
-                        if(aciertos % 5 === 0) nivel++;
-                        actualizarUI();
-                        nuevoNivel();
+                    if(f === correct) {
+                        pts++; if(pts%5===0) nvl++;
+                        updateUI(); draw();
                     } else {
-                        vidas--;
-                        actualizarUI();
-                        if(vidas <= 0) fin("TE HAS QUEDADO SIN VIDAS");
-                        document.body.style.backgroundColor = "#450a0a";
-                        setTimeout(() => document.body.style.backgroundColor = "var(--bg)", 150);
+                        vds--; updateUI();
+                        if(vds<=0) end("SIN VIDAS");
+                        document.body.style.background = "#450a0a";
+                        setTimeout(() => document.body.style.background = "var(--bg)", 150);
                     }
                 };
-                container.appendChild(div);
+                grid.appendChild(div);
             });
         }
 
-        function actualizarUI() {
-            document.getElementById('ui-puntos').innerText = aciertos;
-            document.getElementById('ui-nivel').innerText = nivel;
-            document.getElementById('ui-vidas').innerText = "♥".repeat(vidas);
+        function updateUI() {
+            document.getElementById('u-puntos').innerText = pts;
+            document.getElementById('u-nivel').innerText = nvl;
+            document.getElementById('u-vidas').innerText = "♥".repeat(vds);
         }
 
-        function fin(msg) {
-            alert(`${msg}\nAciertos: ${aciertos} | Nivel: ${nivel}`);
+        function end(txt) {
+            clearInterval(loop);
+            alert(`${txt}\nAciertos: ${pts} | Nivel: ${nvl}`);
             location.reload();
         }
     </script>
