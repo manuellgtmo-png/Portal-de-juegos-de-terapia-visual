@@ -3,88 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Espejo Binocular PRO - Full Screen Intercalado</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <title>Espejo Binocular PRO | Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0b0f1a;
-            /* Colores originales recuperados */
             --rojo-fondo: #80322a; --rojo-fig: #69302a;
             --verde-fondo: #69913d; --verde-fig: #6c7b5a;
-            --ui-accent: #10b981;
+            --accent: #fbbf24;
         }
 
         body, html { 
             margin: 0; padding: 0; overflow: hidden; 
-            background: #ca8a04; /* Fondo ámbar de la plantilla de Canva */
-            font-family: 'Montserrat', sans-serif;
-            height: 100%; width: 100%;
+            background: var(--bg); font-family: 'Montserrat', sans-serif;
+            height: 100vh; width: 100vw;
         }
 
-        /* UI SUPERPUESTA - Estilo imagen 1 */
-        .overlay-ui {
-            position: absolute; top: 10px; width: 100%;
+        /* Pantalla de Introducción */
+        #intro-screen, #end-screen {
+            position: fixed; inset: 0; background: rgba(11, 15, 26, 0.95);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; color: white; text-align: center;
+        }
+
+        .btn-start {
+            background: var(--accent); color: black; border: none;
+            padding: 15px 40px; font-size: 1.2rem; font-weight: 900;
+            border-radius: 50px; cursor: pointer; margin: 10px; transition: 0.2s;
+        }
+
+        .btn-start:hover { transform: scale(1.05); }
+
+        /* UI de Juego */
+        .header-ui {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
             display: flex; justify-content: space-between; align-items: center;
-            pointer-events: none; z-index: 100; padding: 0 20px; box-sizing: border-box;
+            padding: 0 20px; box-sizing: border-box; z-index: 500; pointer-events: none;
         }
 
-        .search-container {
-            background: #fbbf24; color: black; padding: 5px 20px; border-radius: 8px;
-            display: flex; align-items: center; gap: 10px; pointer-events: auto;
-            border: 2px solid #000;
+        .btn-exit {
+            background: #ef4444; color: white; border: none; padding: 8px 20px;
+            border-radius: 5px; font-weight: 900; cursor: pointer; pointer-events: auto;
         }
 
-        .stats-pill {
-            background: rgba(15, 23, 42, 0.9); padding: 5px 15px; border-radius: 20px;
-            border: 2px solid var(--ui-accent); display: flex; gap: 15px; color: white;
-            font-size: 0.8rem; pointer-events: auto;
+        .search-box {
+            background: var(--accent); color: black; padding: 5px 15px;
+            border-radius: 8px; border: 2px solid black; display: flex; align-items: center; gap: 10px;
         }
 
-        /* GRILLA TOTAL - Estilo imagen 2 (Intercalada) */
+        .stats {
+            background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 20px;
+            color: white; font-size: 0.9rem; border: 1px solid var(--accent);
+        }
+
+        /* Grilla Intercalada */
         #game-grid {
             display: grid; width: 100vw; height: 100vh;
-            gap: 2px; padding: 2px; box-sizing: border-box;
+            gap: 2px; padding: 0; box-sizing: border-box;
+            background: #ca8a04;
         }
 
         .cell {
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.1s; border-radius: 0px;
+            cursor: pointer; position: relative;
         }
 
-        .fig { font-size: 2rem; font-weight: 900; user-select: none; }
+        .fig { font-size: 2.2rem; font-weight: 900; user-select: none; pointer-events: none; }
 
-        /* Clases de color intercaladas */
         .c-rojo { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
         .c-verde { background-color: var(--verde-fondo); color: var(--verde-fig); }
 
-        /* Animación Secuencia */
-        @keyframes flash {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(3) contrast(1.5); outline: 4px solid white; }
-        }
-        .active-seq { animation: flash 0.6s ease; z-index: 50; }
-
-        #msg-top {
-            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-            background: white; color: black; padding: 5px 20px; border-radius: 5px;
-            font-weight: 900; opacity: 0; transition: 0.3s; z-index: 90;
-        }
+        .active-seq { animation: pulse 0.6s ease; }
+        @keyframes pulse { 0% { filter: brightness(1); } 50% { filter: brightness(4); } }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="msg-top">¡OBSERVA LA SECUENCIA!</div>
+    <!-- Pantalla Inicial -->
+    <div id="intro-screen">
+        <h1 style="color: var(--accent)">ESPEJO BINOCULAR PRO</h1>
+        <p>Selecciona el modo de entrenamiento:</p>
+        <button class="btn-start" onclick="startGame('libre')">MODO LIBRE</button>
+        <button class="btn-start" onclick="startGame('tiempo')">CONTRARELOJ</button>
+    </div>
 
-    <div class="overlay-ui">
-        <div class="search-container">
-            <span style="font-size: 0.7rem; font-weight: 900;">BUSCAR:</span>
+    <!-- Pantalla Final -->
+    <div id="end-screen" class="hidden">
+        <h2 id="end-title">SESIÓN COMPLETADA</h2>
+        <p id="end-stats"></p>
+        <button class="btn-start" onclick="location.reload()">REINTENTAR</button>
+    </div>
+
+    <!-- Interfaz Superior -->
+    <div class="header-ui">
+        <button class="btn-exit" onclick="location.reload()">SALIR</button>
+        
+        <div class="search-box">
+            <span style="font-size: 0.7rem">BUSCAR:</span>
             <div id="target-display" style="font-size: 1.8rem; font-weight: 900;">-</div>
         </div>
 
-        <div class="stats-pill">
-            <span>NVL: <b id="nvl">1</b></span>
-            <span>PTS: <b id="pts">0</b></span>
-            <span style="color: #f43f5e;">VIDAS: <b id="vds">♥♥♥</b></span>
+        <div class="stats">
+            NVL: <span id="nvl">1</span> | PTS: <span id="pts">0</span> | <span id="vds" style="color:#ef4444">♥♥♥</span>
         </div>
     </div>
 
@@ -92,93 +114,104 @@
 
     <script>
         const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦'];
-        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, isLocked = false;
-        const grid = document.getElementById('game-grid');
+        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, isLocked = false, mode = 'libre';
+        
+        // Audio Context para sonidos sin archivos externos
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = type; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function startGame(selectedMode) {
+            mode = selectedMode;
+            document.getElementById('intro-screen').classList.add('hidden');
+            setupGrid();
+        }
 
         function setupGrid() {
-            const cols = 15; // Más columnas para mayor densidad como en la imagen 2
+            const grid = document.getElementById('game-grid');
+            const cols = 14; 
             const rows = Math.floor(window.innerHeight / (window.innerWidth / cols));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
             grid.innerHTML = '';
+
             const totalCells = cols * rows;
-            const cells = [];
+            const allCells = [];
 
             for (let i = 0; i < totalCells; i++) {
                 const cell = document.createElement('div');
                 const fig = symbols[Math.floor(Math.random() * symbols.length)];
-                
-                // Lógica de intercalado (Tablero de ajedrez)
                 const isEvenRow = Math.floor(i / cols) % 2 === 0;
-                const isEvenCol = i % cols === 0;
                 const isRed = isEvenRow ? (i % 2 === 0) : (i % 2 !== 0);
-                
+
                 cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
                 cell.innerHTML = `<span class="fig">${fig}</span>`;
                 cell.dataset.fig = fig;
-                cell.dataset.color = isRed ? 'red' : 'green';
-
+                
                 cell.onclick = () => handleInput(cell);
                 grid.appendChild(cell);
-                cells.push(cell);
+                allCells.push(cell);
             }
 
-            // Selección de objetivos
-            const seqSize = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
+            // Lógica de Secuencia (Nivel 3+)
+            const seqLen = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
             targetSeq = [];
-            const tempCells = [...cells];
-            for(let i=0; i<seqSize; i++) {
-                targetSeq.push(tempCells.splice(Math.floor(Math.random()*tempCells.length), 1)[0]);
+            const temp = [...allCells];
+            for(let i=0; i<seqLen; i++) {
+                targetSeq.push(temp.splice(Math.floor(Math.random()*temp.length), 1)[0]);
             }
 
-            if(seqSize > 1) startSequence();
+            if(seqLen > 1) runSequence();
             else updateTargetUI(targetSeq[0]);
+        }
+
+        async function runSequence() {
+            isLocked = true;
+            document.getElementById('target-display').innerText = "...";
+            await new Promise(r => setTimeout(r, 1000));
+            for(let cell of targetSeq) {
+                cell.classList.add('active-seq');
+                playSound(880, 'sine');
+                await new Promise(r => setTimeout(r, 600));
+                cell.classList.remove('active-seq');
+                await new Promise(r => setTimeout(r, 200));
+            }
+            document.getElementById('target-display').innerText = "?";
+            isLocked = false;
         }
 
         function updateTargetUI(cell) {
             const display = document.getElementById('target-display');
             display.innerText = cell.dataset.fig;
-            // El color del texto del objetivo es el opuesto al fondo de su celda para resaltar
-            display.style.color = cell.dataset.color === 'red' ? 'var(--rojo-fig)' : 'var(--verde-fig)';
-        }
-
-        async function startSequence() {
-            isLocked = true;
-            const msg = document.getElementById('msg-top');
-            msg.style.opacity = 1;
-            document.getElementById('target-display').innerText = "?";
-            
-            await new Promise(r => setTimeout(r, 1000));
-            msg.style.opacity = 0;
-
-            for (let cell of targetSeq) {
-                cell.classList.add('active-seq');
-                await new Promise(r => setTimeout(r, 700));
-                cell.classList.remove('active-seq');
-                await new Promise(r => setTimeout(r, 200));
-            }
-            isLocked = false;
+            display.style.color = cell.classList.contains('c-rojo') ? 'var(--rojo-fig)' : 'var(--verde-fig)';
         }
 
         function handleInput(cell) {
             if(isLocked) return;
 
             if (cell === targetSeq[userPos]) {
-                cell.style.opacity = "0.3";
+                playSound(1200, 'sine');
+                cell.style.visibility = "hidden";
                 userPos++;
+
                 if (userPos === targetSeq.length) {
                     pts += targetSeq.length;
-                    if(pts >= nvl * 4) nvl++;
+                    if(pts % 5 === 0) nvl++;
                     userPos = 0;
                     updateUI();
-                    setupGrid();
+                    setTimeout(setupGrid, 300);
                 }
             } else {
+                playSound(200, 'square');
                 vds--;
                 updateUI();
-                if(vds <= 0) { alert("Sesión terminada. Puntos: " + pts); location.reload(); }
-                document.body.style.filter = "invert(1)";
-                setTimeout(() => document.body.style.filter = "none", 150);
+                if(vds <= 0) endGame();
             }
         }
 
@@ -188,8 +221,12 @@
             document.getElementById('vds').innerText = "♥".repeat(vds);
         }
 
-        window.onresize = setupGrid;
-        setupGrid();
+        function endGame() {
+            document.getElementById('end-screen').classList.remove('hidden');
+            document.getElementById('end-stats').innerText = `Nivel alcanzado: ${nvl} | Puntos totales: ${pts}`;
+        }
+
+        window.onresize = () => { if(!document.getElementById('intro-screen').classList.contains('hidden')) return; setupGrid(); };
     </script>
 </body>
 </html>
