@@ -64,7 +64,7 @@
         }
 
         .cell { display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .fig { font-size: 2.2rem; font-weight: 900; pointer-events: none; }
+        .fig { font-weight: 900; pointer-events: none; }
         .c-rojo { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
         .c-verde { background-color: var(--verde-fondo); color: var(--verde-fig); }
         
@@ -90,7 +90,6 @@
             Utilice sus filtros anaglifos. Debe encontrar y tocar <strong>todas</strong> las figuras indicadas en el recuadro superior para avanzar.</p>
         </div>
 
-        <!-- Ajustes Contrareloj -->
         <div id="setup-contrareloj" class="hidden">
             <div class="slider-container">
                 <label>Tiempo de juego: <b id="val-tiempo">30</b>s</label>
@@ -176,7 +175,11 @@
             isPaused = false;
             document.getElementById('next-lvl-btn').classList.add('hidden');
             const grid = document.getElementById('game-grid');
-            const cols = 14;
+            
+            // DIFICULTAD DINÁMICA: Aumenta columnas según nivel
+            let cols = 10 + (Math.floor((nvl-1)/3) * 2); 
+            if(cols > 22) cols = 22; // Límite máximo de densidad
+
             const rows = Math.floor(grid.clientHeight / (grid.clientWidth / cols));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             grid.innerHTML = '';
@@ -184,15 +187,21 @@
             currentTargetFig = symbols[Math.floor(Math.random()*symbols.length)];
             targetsRemaining = 0;
 
+            // Determinar tamaño de fuente basado en densidad para que no se desborden
+            const fontSize = cols > 18 ? '1.5rem' : (cols > 14 ? '1.8rem' : '2.2rem');
+
             for (let i = 0; i < cols * rows; i++) {
                 const cell = document.createElement('div');
                 const isRed = (Math.floor(i / cols) + i) % 2 === 0;
+                
                 let fig = symbols[Math.floor(Math.random()*symbols.length)];
+                
+                // LÓGICA DE APARICIÓN: 8% de probabilidad de ser el objetivo
                 if(Math.random() < 0.08) fig = currentTargetFig;
                 if(fig === currentTargetFig) targetsRemaining++;
 
                 cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
-                cell.innerHTML = `<span class="fig">${fig}</span>`;
+                cell.innerHTML = `<span class="fig" style="font-size: ${fontSize}">${fig}</span>`;
                 cell.dataset.fig = fig;
                 cell.onclick = () => checkCell(cell);
                 grid.appendChild(cell);
@@ -214,6 +223,7 @@
                         isPaused = true;
                         clearInterval(timer);
                         pts++;
+                        // Sube de nivel cada 3 puntos para cambiar la dificultad
                         if(pts % 3 === 0) nvl++;
                         updateUI();
                         document.getElementById('next-lvl-btn').classList.remove('hidden');
