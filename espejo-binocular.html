@@ -19,7 +19,7 @@
             height: 100vh; width: 100vw; color: white;
         }
 
-        /* --- PANTALLA INICIAL REFORMADA --- */
+        /* --- PANTALLAS --- */
         .overlay-screen {
             position: fixed; inset: 0; background: var(--bg);
             z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -27,21 +27,22 @@
         }
 
         .instrucciones {
-            max-width: 600px; background: rgba(255,255,255,0.05); padding: 20px;
-            border-radius: 15px; margin-bottom: 30px; border: 1px solid #333;
+            max-width: 600px; background: rgba(255,255,255,0.05); padding: 25px;
+            border-radius: 15px; margin-bottom: 20px; border: 1px solid #333;
         }
 
         .slider-container {
-            margin: 20px 0; background: #1e293b; padding: 15px; border-radius: 10px; width: 300px;
+            margin: 15px 0; background: #1e293b; padding: 15px; border-radius: 10px; width: 320px;
         }
 
         input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
 
         .btn-menu {
             background: var(--accent); color: black; border: none; padding: 15px 40px;
-            font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 10px;
-            min-width: 250px;
+            font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 8px;
+            min-width: 260px; transition: 0.2s;
         }
+        .btn-menu:hover { transform: scale(1.05); }
 
         /* --- UI JUEGO --- */
         .top-bar {
@@ -69,11 +70,18 @@
         
         .hidden { display: none !important; }
         .found { visibility: hidden; }
+
+        #next-lvl-btn {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 1500; background: var(--accent); color: black; padding: 20px 50px;
+            font-size: 1.5rem; border-radius: 15px; border: 5px solid black; font-weight: 900;
+            cursor: pointer; box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Introducción con Instrucciones y Slider -->
+    <!-- Pantalla Inicial / Instrucciones -->
     <div id="intro" class="overlay-screen">
         <h1 style="color: var(--accent); margin-bottom: 10px;">ESPEJO BINOCULAR PRO</h1>
         
@@ -82,6 +90,7 @@
             Utilice sus filtros anaglifos. Debe encontrar y tocar <strong>todas</strong> las figuras indicadas en el recuadro superior para avanzar.</p>
         </div>
 
+        <!-- Ajustes Contrareloj -->
         <div id="setup-contrareloj" class="hidden">
             <div class="slider-container">
                 <label>Tiempo de juego: <b id="val-tiempo">30</b>s</label>
@@ -89,19 +98,39 @@
             </div>
         </div>
 
-        <button class="btn-menu" id="btn-libre" onclick="start('libre')">MODO LIBRE</button>
-        <button class="btn-menu" id="btn-prep-time" onclick="showTimeSetup()">CONTRARELOJ</button>
-        <button class="btn-menu hidden" id="btn-start-time" onclick="start('tiempo')">¡INICIAR AHORA!</button>
-        <button class="btn-menu" style="background:#444; color:white;" onclick="window.location.href='index.html'">VOLVER AL MENÚ</button>
+        <div id="main-menu-btns">
+            <button class="btn-menu" onclick="showTimeSetup(false)">MODO LIBRE</button>
+            <button class="btn-menu" onclick="showTimeSetup(true)">CONTRARELOJ</button>
+        </div>
+
+        <div id="start-btns" class="hidden">
+            <button class="btn-menu" onclick="start()">¡INICIAR SESIÓN!</button>
+            <button class="btn-menu" style="background:#444; color:white;" onclick="resetToModes()">VOLVER ATRÁS</button>
+        </div>
+        
+        <button class="btn-menu" style="background:#222; color:#666; font-size: 0.8rem;" onclick="window.location.href='index.html'">SALIR AL PORTAL</button>
     </div>
 
+    <!-- Pantalla Game Over -->
+    <div id="game-over" class="overlay-screen hidden">
+        <h1 style="color: #ef4444;">SESIÓN FINALIZADA</h1>
+        <div class="instrucciones">
+            <h2 id="final-pts">PUNTOS: 0</h2>
+            <h3 id="final-nvl">NIVEL: 1</h3>
+        </div>
+        <button class="btn-menu" onclick="location.reload()">REINTENTAR</button>
+        <button class="btn-menu" style="background:#444; color:white;" onclick="window.location.href='index.html'">SALIR</button>
+    </div>
+
+    <button id="next-lvl-btn" class="hidden" onclick="render()">SIGUIENTE NIVEL</button>
+
     <div class="top-bar">
-        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:10px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
+        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:10px 20px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
         <div class="search-target">
             <small style="display:block; font-size:0.6rem; font-weight:900;">BUSCAR TODAS:</small>
             <span id="target-fig" style="font-size:2rem; font-weight:900;">-</span>
         </div>
-        <div style="background:#1e293b; padding:10px; border-radius:15px; font-size:0.8rem; border:1px solid var(--accent);">
+        <div style="background:#1e293b; padding:10px; border-radius:15px; font-size:0.8rem; border:1px solid var(--accent); min-width: 150px; text-align: center;">
             NVL: <b id="nvl">1</b> | PTS: <b id="pts">0</b> | <span id="vds" style="color:#f87171">♥♥♥</span>
         </div>
     </div>
@@ -113,6 +142,7 @@
         let nvl=1, pts=0, vds=3, mode='libre', timeTotal=30, timeLeft=30, timer;
         let currentTargetFig = '';
         let targetsRemaining = 0;
+        let isPaused = false;
 
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         function play(f, t) {
@@ -122,15 +152,20 @@
             o.start(); o.stop(ctx.currentTime+0.2);
         }
 
-        function showTimeSetup() {
-            document.getElementById('setup-contrareloj').classList.remove('hidden');
-            document.getElementById('btn-libre').classList.add('hidden');
-            document.getElementById('btn-prep-time').classList.add('hidden');
-            document.getElementById('btn-start-time').classList.remove('hidden');
+        function showTimeSetup(isTime) {
+            mode = isTime ? 'tiempo' : 'libre';
+            document.getElementById('main-menu-btns').classList.add('hidden');
+            document.getElementById('start-btns').classList.remove('hidden');
+            if(isTime) document.getElementById('setup-contrareloj').classList.remove('hidden');
         }
 
-        function start(m) {
-            mode = m;
+        function resetToModes() {
+            document.getElementById('main-menu-btns').classList.remove('hidden');
+            document.getElementById('start-btns').classList.add('hidden');
+            document.getElementById('setup-contrareloj').classList.add('hidden');
+        }
+
+        function start() {
             timeTotal = parseInt(document.querySelector('input[type=range]').value);
             document.getElementById('intro').classList.add('hidden');
             if(mode === 'libre') document.querySelector('.timer-line').classList.add('hidden');
@@ -138,24 +173,22 @@
         }
 
         function render() {
+            isPaused = false;
+            document.getElementById('next-lvl-btn').classList.add('hidden');
             const grid = document.getElementById('game-grid');
             const cols = 14;
             const rows = Math.floor(grid.clientHeight / (grid.clientWidth / cols));
             grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
             grid.innerHTML = '';
 
-            // Elegir figura objetivo primero
             currentTargetFig = symbols[Math.floor(Math.random()*symbols.length)];
             targetsRemaining = 0;
 
             for (let i = 0; i < cols * rows; i++) {
                 const cell = document.createElement('div');
                 const isRed = (Math.floor(i / cols) + i) % 2 === 0;
-                
-                // Probabilidad de que aparezca la figura objetivo (mínimo 2-4 veces)
                 let fig = symbols[Math.floor(Math.random()*symbols.length)];
                 if(Math.random() < 0.08) fig = currentTargetFig;
-                
                 if(fig === currentTargetFig) targetsRemaining++;
 
                 cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
@@ -165,26 +198,25 @@
                 grid.appendChild(cell);
             }
 
-            // Asegurar que al menos haya una
             if(targetsRemaining === 0) render(); 
-
-            const disp = document.getElementById('target-fig');
-            disp.innerText = currentTargetFig;
-            
+            document.getElementById('target-fig').innerText = currentTargetFig;
             if(mode === 'tiempo') resetClock();
         }
 
         function checkCell(cell) {
+            if (isPaused) return;
             if (cell.dataset.fig === currentTargetFig) {
                 if(!cell.classList.contains('found')) {
                     play(1000, 'sine');
                     cell.classList.add('found');
                     targetsRemaining--;
                     if(targetsRemaining <= 0) {
+                        isPaused = true;
+                        clearInterval(timer);
                         pts++;
                         if(pts % 3 === 0) nvl++;
                         updateUI();
-                        setTimeout(render, 200);
+                        document.getElementById('next-lvl-btn').classList.remove('hidden');
                     }
                 }
             } else {
@@ -199,6 +231,7 @@
             clearInterval(timer);
             timeLeft = timeTotal;
             timer = setInterval(() => {
+                if(isPaused) return;
                 timeLeft -= 0.1;
                 document.getElementById('timer-fill').style.width = (timeLeft/timeTotal*100) + "%";
                 if(timeLeft <= 0) end();
@@ -213,8 +246,9 @@
 
         function end() {
             clearInterval(timer);
-            alert(`SESIÓN FINALIZADA\nPuntos: ${pts}\nNivel: ${nvl}`);
-            location.reload();
+            document.getElementById('final-pts').innerText = `PUNTOS: ${pts}`;
+            document.getElementById('final-nvl').innerText = `NIVEL: ${nvl}`;
+            document.getElementById('game-over').classList.remove('hidden');
         }
     </script>
 </body>
