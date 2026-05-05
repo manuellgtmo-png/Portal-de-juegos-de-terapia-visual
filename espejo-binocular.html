@@ -19,225 +19,203 @@
             height: 100vh; width: 100vw; color: white;
         }
 
-        /* --- INTERFAZ SUPERIOR (ESTÁTICA, NO TAPA NADA) --- */
-        .top-bar {
-            height: 80px; background: var(--bg);
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; border-bottom: 2px solid #333;
+        /* --- PANTALLA INICIAL REFORMADA --- */
+        .overlay-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px; text-align: center;
         }
 
-        .btn-salir {
-            background: #ef4444; color: white; border: none; padding: 10px 20px;
-            font-weight: 900; border-radius: 5px; cursor: pointer; text-transform: uppercase;
+        .instrucciones {
+            max-width: 600px; background: rgba(255,255,255,0.05); padding: 20px;
+            border-radius: 15px; margin-bottom: 30px; border: 1px solid #333;
+        }
+
+        .slider-container {
+            margin: 20px 0; background: #1e293b; padding: 15px; border-radius: 10px; width: 300px;
+        }
+
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+
+        .btn-menu {
+            background: var(--accent); color: black; border: none; padding: 15px 40px;
+            font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 10px;
+            min-width: 250px;
+        }
+
+        /* --- UI JUEGO --- */
+        .top-bar {
+            height: 90px; background: var(--bg); display: flex; 
+            justify-content: space-between; align-items: center; padding: 0 20px;
         }
 
         .search-target {
             background: var(--accent); color: black; padding: 5px 25px;
-            border-radius: 10px; border: 3px solid #000; text-align: center;
+            border-radius: 10px; border: 3px solid #000;
         }
 
-        .stats-box {
-            background: #1e293b; border: 1px solid var(--accent);
-            padding: 8px 15px; border-radius: 30px; display: flex; gap: 15px; font-size: 0.8rem;
-        }
+        .timer-line { width: 100%; height: 6px; background: #222; }
+        #timer-fill { width: 100%; height: 100%; background: var(--accent); }
 
-        /* --- BARRA DE TIEMPO --- */
-        .timer-container {
-            width: 100%; height: 8px; background: #222; position: relative;
-        }
-        #timer-bar {
-            width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear;
-        }
-
-        /* --- ÁREA DE JUEGO (RESERVADA) --- */
-        #game-container {
-            height: calc(100vh - 88px); /* Resta la barra superior y la de tiempo */
-            width: 100vw; background: #ca8a04;
+        #game-grid {
+            height: calc(100vh - 96px); width: 100vw; background: #ca8a04;
             display: grid; gap: 2px; padding: 2px; box-sizing: border-box;
         }
 
-        .cell {
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative; transition: transform 0.1s;
-        }
-        .cell:active { transform: scale(0.95); }
-
-        .fig { font-size: 2.2rem; font-weight: 900; user-select: none; pointer-events: none; }
-
+        .cell { display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .fig { font-size: 2.2rem; font-weight: 900; pointer-events: none; }
         .c-rojo { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
         .c-verde { background-color: var(--verde-fondo); color: var(--verde-fig); }
-
-        /* --- PANTALLAS --- */
-        .overlay-screen {
-            position: fixed; inset: 0; background: var(--bg);
-            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        .btn-menu {
-            background: var(--accent); color: black; border: none; padding: 15px 40px;
-            font-size: 1.2rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 10px;
-        }
-
+        
         .hidden { display: none !important; }
-
-        @keyframes pulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(4); } }
-        .seq-active { animation: pulse 0.6s ease; }
+        .found { visibility: hidden; }
     </style>
 </head>
 <body>
 
-    <!-- Introducción Original -->
+    <!-- Introducción con Instrucciones y Slider -->
     <div id="intro" class="overlay-screen">
-        <h1 style="color: var(--accent); font-size: 2.5rem;">ESPEJO BINOCULAR PRO</h1>
-        <p>Selecciona modalidad de trabajo:</p>
-        <button class="btn-menu" onclick="init('libre')">MODO LIBRE</button>
-        <button class="btn-menu" onclick="init('tiempo')">CONTRARELOJ</button>
-        <button class="btn-menu" style="background: #666; color: white;" onclick="window.location.href='index.html'">VOLVER AL MENÚ</button>
-    </div>
-
-    <!-- UI Superior -->
-    <div class="top-bar">
-        <button class="btn-salir" onclick="location.reload()">SALIR</button>
+        <h1 style="color: var(--accent); margin-bottom: 10px;">ESPEJO BINOCULAR PRO</h1>
         
+        <div class="instrucciones">
+            <p><strong>INSTRUCCIONES:</strong> Realice la tarea a una distancia de <strong>40 cm</strong>. 
+            Utilice sus filtros anaglifos. Debe encontrar y tocar <strong>todas</strong> las figuras indicadas en el recuadro superior para avanzar.</p>
+        </div>
+
+        <div id="setup-contrareloj" class="hidden">
+            <div class="slider-container">
+                <label>Tiempo de juego: <b id="val-tiempo">30</b>s</label>
+                <input type="range" min="5" max="60" value="30" oninput="document.getElementById('val-tiempo').innerText=this.value">
+            </div>
+        </div>
+
+        <button class="btn-menu" id="btn-libre" onclick="start('libre')">MODO LIBRE</button>
+        <button class="btn-menu" id="btn-prep-time" onclick="showTimeSetup()">CONTRARELOJ</button>
+        <button class="btn-menu hidden" id="btn-start-time" onclick="start('tiempo')">¡INICIAR AHORA!</button>
+        <button class="btn-menu" style="background:#444; color:white;" onclick="window.location.href='index.html'">VOLVER AL MENÚ</button>
+    </div>
+
+    <div class="top-bar">
+        <button onclick="location.reload()" style="background:#ef4444; color:white; border:none; padding:10px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
         <div class="search-target">
-            <small style="display:block; font-size: 0.6rem; font-weight: 900;">BUSCAR:</small>
-            <span id="target-val" style="font-size: 1.8rem; font-weight: 900;">-</span>
+            <small style="display:block; font-size:0.6rem; font-weight:900;">BUSCAR TODAS:</small>
+            <span id="target-fig" style="font-size:2rem; font-weight:900;">-</span>
         </div>
-
-        <div class="stats-box">
-            <span>NVL: <b id="nvl-txt">1</b></span>
-            <span>PTS: <b id="pts-txt">0</b></span>
-            <span style="color: #f87171;">VIDAS: <b id="vds-txt">♥♥♥</b></span>
+        <div style="background:#1e293b; padding:10px; border-radius:15px; font-size:0.8rem; border:1px solid var(--accent);">
+            NVL: <b id="nvl">1</b> | PTS: <b id="pts">0</b> | <span id="vds" style="color:#f87171">♥♥♥</span>
         </div>
     </div>
-    
-    <div class="timer-container" id="t-cont">
-        <div id="timer-bar"></div>
-    </div>
-
-    <div id="game-container"></div>
+    <div class="timer-line"><div id="timer-fill"></div></div>
+    <div id="game-grid"></div>
 
     <script>
         const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦'];
-        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, mode = 'libre', isLocked = false;
-        let timeLeft = 100, timerInt;
+        let nvl=1, pts=0, vds=3, mode='libre', timeTotal=30, timeLeft=30, timer;
+        let currentTargetFig = '';
+        let targetsRemaining = 0;
 
-        const audio = new (window.AudioContext || window.webkitAudioContext)();
-        function beep(f, t) {
-            const o = audio.createOscillator(); const g = audio.createGain();
-            o.connect(g); g.connect(audio.destination); o.type = t; o.frequency.value = f;
-            g.gain.setValueAtTime(0.1, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.2);
-            o.start(); o.stop(audio.currentTime + 0.2);
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        function play(f, t) {
+            const o=ctx.createOscillator(), g=ctx.createGain();
+            o.connect(g); g.connect(ctx.destination); o.type=t; o.frequency.value=f;
+            g.gain.setValueAtTime(0.1, ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime+0.2);
+            o.start(); o.stop(ctx.currentTime+0.2);
         }
 
-        function init(m) {
+        function showTimeSetup() {
+            document.getElementById('setup-contrareloj').classList.remove('hidden');
+            document.getElementById('btn-libre').classList.add('hidden');
+            document.getElementById('btn-prep-time').classList.add('hidden');
+            document.getElementById('btn-start-time').classList.remove('hidden');
+        }
+
+        function start(m) {
             mode = m;
+            timeTotal = parseInt(document.querySelector('input[type=range]').value);
             document.getElementById('intro').classList.add('hidden');
-            if(mode === 'libre') document.getElementById('t-cont').classList.add('hidden');
+            if(mode === 'libre') document.querySelector('.timer-line').classList.add('hidden');
             render();
         }
 
         function render() {
-            const container = document.getElementById('game-container');
+            const grid = document.getElementById('game-grid');
             const cols = 14;
-            const rows = Math.floor(container.clientHeight / (container.clientWidth / cols));
-            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            container.innerHTML = '';
+            const rows = Math.floor(grid.clientHeight / (grid.clientWidth / cols));
+            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            grid.innerHTML = '';
 
-            const cells = [];
+            // Elegir figura objetivo primero
+            currentTargetFig = symbols[Math.floor(Math.random()*symbols.length)];
+            targetsRemaining = 0;
+
             for (let i = 0; i < cols * rows; i++) {
                 const cell = document.createElement('div');
-                const fig = symbols[Math.floor(Math.random() * symbols.length)];
                 const isRed = (Math.floor(i / cols) + i) % 2 === 0;
+                
+                // Probabilidad de que aparezca la figura objetivo (mínimo 2-4 veces)
+                let fig = symbols[Math.floor(Math.random()*symbols.length)];
+                if(Math.random() < 0.08) fig = currentTargetFig;
+                
+                if(fig === currentTargetFig) targetsRemaining++;
 
                 cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
                 cell.innerHTML = `<span class="fig">${fig}</span>`;
                 cell.dataset.fig = fig;
-                cell.onclick = (e) => { e.stopPropagation(); check(cell); };
-                
-                container.appendChild(cell);
-                cells.push(cell);
+                cell.onclick = () => checkCell(cell);
+                grid.appendChild(cell);
             }
 
-            // Selección de objetivos
-            const count = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
-            targetSeq = [];
-            const copy = [...cells];
-            for(let i=0; i<count; i++) {
-                targetSeq.push(copy.splice(Math.floor(Math.random()*copy.length), 1)[0]);
-            }
+            // Asegurar que al menos haya una
+            if(targetsRemaining === 0) render(); 
 
-            if(count > 1) playSeq();
-            else setTarget(targetSeq[0]);
-
-            if(mode === 'tiempo') resetTimer();
+            const disp = document.getElementById('target-fig');
+            disp.innerText = currentTargetFig;
+            
+            if(mode === 'tiempo') resetClock();
         }
 
-        async function playSeq() {
-            isLocked = true;
-            document.getElementById('target-val').innerText = "?";
-            await new Promise(r => setTimeout(r, 800));
-            for(let c of targetSeq) {
-                c.classList.add('seq-active');
-                beep(800, 'sine');
-                await new Promise(r => setTimeout(r, 600));
-                c.classList.remove('seq-active');
-                await new Promise(r => setTimeout(r, 200));
-            }
-            isLocked = false;
-        }
-
-        function setTarget(c) {
-            const display = document.getElementById('target-val');
-            display.innerText = c.dataset.fig;
-            display.style.color = c.classList.contains('c-rojo') ? 'var(--rojo-fig)' : 'var(--verde-fig)';
-        }
-
-        function check(cell) {
-            if(isLocked) return;
-
-            if (cell === targetSeq[userPos]) {
-                beep(1200, 'sine');
-                cell.style.visibility = "hidden";
-                userPos++;
-                if (userPos === targetSeq.length) {
-                    pts += targetSeq.length;
-                    if(pts % 5 === 0) nvl++;
-                    userPos = 0;
-                    updateUI();
-                    setTimeout(render, 200);
+        function checkCell(cell) {
+            if (cell.dataset.fig === currentTargetFig) {
+                if(!cell.classList.contains('found')) {
+                    play(1000, 'sine');
+                    cell.classList.add('found');
+                    targetsRemaining--;
+                    if(targetsRemaining <= 0) {
+                        pts++;
+                        if(pts % 3 === 0) nvl++;
+                        updateUI();
+                        setTimeout(render, 200);
+                    }
                 }
             } else {
-                beep(200, 'square');
+                play(200, 'square');
                 vds--;
                 updateUI();
-                if(vds <= 0) over();
+                if(vds <= 0) end();
             }
         }
 
-        function resetTimer() {
-            clearInterval(timerInt);
-            timeLeft = 100;
-            timerInt = setInterval(() => {
-                timeLeft -= 0.5;
-                document.getElementById('timer-bar').style.width = timeLeft + "%";
-                if(timeLeft <= 0) over();
+        function resetClock() {
+            clearInterval(timer);
+            timeLeft = timeTotal;
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById('timer-fill').style.width = (timeLeft/timeTotal*100) + "%";
+                if(timeLeft <= 0) end();
             }, 100);
         }
 
         function updateUI() {
-            document.getElementById('nvl-txt').innerText = nvl;
-            document.getElementById('pts-txt').innerText = pts;
-            document.getElementById('vds-txt').innerText = "♥".repeat(vds);
+            document.getElementById('nvl').innerText = nvl;
+            document.getElementById('pts').innerText = pts;
+            document.getElementById('vds').innerText = "♥".repeat(vds);
         }
 
-        function over() {
-            clearInterval(timerInt);
-            alert(`FIN DE SESIÓN\nPuntos: ${pts}\nNivel: ${nvl}`);
+        function end() {
+            clearInterval(timer);
+            alert(`SESIÓN FINALIZADA\nPuntos: ${pts}\nNivel: ${nvl}`);
             location.reload();
         }
-
-        window.onresize = () => { if(document.getElementById('intro').classList.contains('hidden')) render(); };
     </script>
 </body>
 </html>
