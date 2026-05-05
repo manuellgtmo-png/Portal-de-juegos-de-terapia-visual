@@ -16,217 +16,228 @@
         body, html { 
             margin: 0; padding: 0; overflow: hidden; 
             background: var(--bg); font-family: 'Montserrat', sans-serif;
-            height: 100vh; width: 100vw;
+            height: 100vh; width: 100vw; color: white;
         }
 
-        /* Pantalla de Introducción */
-        #intro-screen, #end-screen {
-            position: fixed; inset: 0; background: rgba(11, 15, 26, 0.95);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            z-index: 1000; color: white; text-align: center;
-        }
-
-        .btn-start {
-            background: var(--accent); color: black; border: none;
-            padding: 15px 40px; font-size: 1.2rem; font-weight: 900;
-            border-radius: 50px; cursor: pointer; margin: 10px; transition: 0.2s;
-        }
-
-        .btn-start:hover { transform: scale(1.05); }
-
-        /* UI de Juego */
-        .header-ui {
-            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+        /* --- INTERFAZ SUPERIOR (ESTÁTICA, NO TAPA NADA) --- */
+        .top-bar {
+            height: 80px; background: var(--bg);
             display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; box-sizing: border-box; z-index: 500; pointer-events: none;
+            padding: 0 20px; border-bottom: 2px solid #333;
         }
 
-        .btn-exit {
-            background: #ef4444; color: white; border: none; padding: 8px 20px;
-            border-radius: 5px; font-weight: 900; cursor: pointer; pointer-events: auto;
+        .btn-salir {
+            background: #ef4444; color: white; border: none; padding: 10px 20px;
+            font-weight: 900; border-radius: 5px; cursor: pointer; text-transform: uppercase;
         }
 
-        .search-box {
-            background: var(--accent); color: black; padding: 5px 15px;
-            border-radius: 8px; border: 2px solid black; display: flex; align-items: center; gap: 10px;
+        .search-target {
+            background: var(--accent); color: black; padding: 5px 25px;
+            border-radius: 10px; border: 3px solid #000; text-align: center;
         }
 
-        .stats {
-            background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 20px;
-            color: white; font-size: 0.9rem; border: 1px solid var(--accent);
+        .stats-box {
+            background: #1e293b; border: 1px solid var(--accent);
+            padding: 8px 15px; border-radius: 30px; display: flex; gap: 15px; font-size: 0.8rem;
         }
 
-        /* Grilla Intercalada */
-        #game-grid {
-            display: grid; width: 100vw; height: 100vh;
-            gap: 2px; padding: 0; box-sizing: border-box;
-            background: #ca8a04;
+        /* --- BARRA DE TIEMPO --- */
+        .timer-container {
+            width: 100%; height: 8px; background: #222; position: relative;
+        }
+        #timer-bar {
+            width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear;
+        }
+
+        /* --- ÁREA DE JUEGO (RESERVADA) --- */
+        #game-container {
+            height: calc(100vh - 88px); /* Resta la barra superior y la de tiempo */
+            width: 100vw; background: #ca8a04;
+            display: grid; gap: 2px; padding: 2px; box-sizing: border-box;
         }
 
         .cell {
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; position: relative;
+            cursor: pointer; position: relative; transition: transform 0.1s;
         }
+        .cell:active { transform: scale(0.95); }
 
         .fig { font-size: 2.2rem; font-weight: 900; user-select: none; pointer-events: none; }
 
         .c-rojo { background-color: var(--rojo-fondo); color: var(--rojo-fig); }
         .c-verde { background-color: var(--verde-fondo); color: var(--verde-fig); }
 
-        .active-seq { animation: pulse 0.6s ease; }
-        @keyframes pulse { 0% { filter: brightness(1); } 50% { filter: brightness(4); } }
-        
+        /* --- PANTALLAS --- */
+        .overlay-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .btn-menu {
+            background: var(--accent); color: black; border: none; padding: 15px 40px;
+            font-size: 1.2rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 10px;
+        }
+
         .hidden { display: none !important; }
+
+        @keyframes pulse { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(4); } }
+        .seq-active { animation: pulse 0.6s ease; }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla Inicial -->
-    <div id="intro-screen">
-        <h1 style="color: var(--accent)">ESPEJO BINOCULAR PRO</h1>
-        <p>Selecciona el modo de entrenamiento:</p>
-        <button class="btn-start" onclick="startGame('libre')">MODO LIBRE</button>
-        <button class="btn-start" onclick="startGame('tiempo')">CONTRARELOJ</button>
+    <!-- Introducción Original -->
+    <div id="intro" class="overlay-screen">
+        <h1 style="color: var(--accent); font-size: 2.5rem;">ESPEJO BINOCULAR PRO</h1>
+        <p>Selecciona modalidad de trabajo:</p>
+        <button class="btn-menu" onclick="init('libre')">MODO LIBRE</button>
+        <button class="btn-menu" onclick="init('tiempo')">CONTRARELOJ</button>
+        <button class="btn-menu" style="background: #666; color: white;" onclick="window.location.href='index.html'">VOLVER AL MENÚ</button>
     </div>
 
-    <!-- Pantalla Final -->
-    <div id="end-screen" class="hidden">
-        <h2 id="end-title">SESIÓN COMPLETADA</h2>
-        <p id="end-stats"></p>
-        <button class="btn-start" onclick="location.reload()">REINTENTAR</button>
-    </div>
-
-    <!-- Interfaz Superior -->
-    <div class="header-ui">
-        <button class="btn-exit" onclick="location.reload()">SALIR</button>
+    <!-- UI Superior -->
+    <div class="top-bar">
+        <button class="btn-salir" onclick="location.reload()">SALIR</button>
         
-        <div class="search-box">
-            <span style="font-size: 0.7rem">BUSCAR:</span>
-            <div id="target-display" style="font-size: 1.8rem; font-weight: 900;">-</div>
+        <div class="search-target">
+            <small style="display:block; font-size: 0.6rem; font-weight: 900;">BUSCAR:</small>
+            <span id="target-val" style="font-size: 1.8rem; font-weight: 900;">-</span>
         </div>
 
-        <div class="stats">
-            NVL: <span id="nvl">1</span> | PTS: <span id="pts">0</span> | <span id="vds" style="color:#ef4444">♥♥♥</span>
+        <div class="stats-box">
+            <span>NVL: <b id="nvl-txt">1</b></span>
+            <span>PTS: <b id="pts-txt">0</b></span>
+            <span style="color: #f87171;">VIDAS: <b id="vds-txt">♥♥♥</b></span>
         </div>
     </div>
+    
+    <div class="timer-container" id="t-cont">
+        <div id="timer-bar"></div>
+    </div>
 
-    <div id="game-grid"></div>
+    <div id="game-container"></div>
 
     <script>
         const symbols = ['Σ','Ω','Ψ','Φ','Θ','Δ','Ξ','Π','A','B','C','D','E','F','G','H','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z','1','2','3','4','5','6','7','8','9','★','◆','●','▲','■','✖','♣','♠','♥','♦'];
-        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, isLocked = false, mode = 'libre';
-        
-        // Audio Context para sonidos sin archivos externos
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        function playSound(freq, type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = type; osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+        let nvl = 1, pts = 0, vds = 3, targetSeq = [], userPos = 0, mode = 'libre', isLocked = false;
+        let timeLeft = 100, timerInt;
+
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, t) {
+            const o = audio.createOscillator(); const g = audio.createGain();
+            o.connect(g); g.connect(audio.destination); o.type = t; o.frequency.value = f;
+            g.gain.setValueAtTime(0.1, audio.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audio.currentTime + 0.2);
+            o.start(); o.stop(audio.currentTime + 0.2);
         }
 
-        function startGame(selectedMode) {
-            mode = selectedMode;
-            document.getElementById('intro-screen').classList.add('hidden');
-            setupGrid();
+        function init(m) {
+            mode = m;
+            document.getElementById('intro').classList.add('hidden');
+            if(mode === 'libre') document.getElementById('t-cont').classList.add('hidden');
+            render();
         }
 
-        function setupGrid() {
-            const grid = document.getElementById('game-grid');
-            const cols = 14; 
-            const rows = Math.floor(window.innerHeight / (window.innerWidth / cols));
-            grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            grid.innerHTML = '';
+        function render() {
+            const container = document.getElementById('game-container');
+            const cols = 14;
+            const rows = Math.floor(container.clientHeight / (container.clientWidth / cols));
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            container.innerHTML = '';
 
-            const totalCells = cols * rows;
-            const allCells = [];
-
-            for (let i = 0; i < totalCells; i++) {
+            const cells = [];
+            for (let i = 0; i < cols * rows; i++) {
                 const cell = document.createElement('div');
                 const fig = symbols[Math.floor(Math.random() * symbols.length)];
-                const isEvenRow = Math.floor(i / cols) % 2 === 0;
-                const isRed = isEvenRow ? (i % 2 === 0) : (i % 2 !== 0);
+                const isRed = (Math.floor(i / cols) + i) % 2 === 0;
 
                 cell.className = `cell ${isRed ? 'c-rojo' : 'c-verde'}`;
                 cell.innerHTML = `<span class="fig">${fig}</span>`;
                 cell.dataset.fig = fig;
+                cell.onclick = (e) => { e.stopPropagation(); check(cell); };
                 
-                cell.onclick = () => handleInput(cell);
-                grid.appendChild(cell);
-                allCells.push(cell);
+                container.appendChild(cell);
+                cells.push(cell);
             }
 
-            // Lógica de Secuencia (Nivel 3+)
-            const seqLen = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
+            // Selección de objetivos
+            const count = nvl >= 3 ? Math.min(nvl - 1, 5) : 1;
             targetSeq = [];
-            const temp = [...allCells];
-            for(let i=0; i<seqLen; i++) {
-                targetSeq.push(temp.splice(Math.floor(Math.random()*temp.length), 1)[0]);
+            const copy = [...cells];
+            for(let i=0; i<count; i++) {
+                targetSeq.push(copy.splice(Math.floor(Math.random()*copy.length), 1)[0]);
             }
 
-            if(seqLen > 1) runSequence();
-            else updateTargetUI(targetSeq[0]);
+            if(count > 1) playSeq();
+            else setTarget(targetSeq[0]);
+
+            if(mode === 'tiempo') resetTimer();
         }
 
-        async function runSequence() {
+        async function playSeq() {
             isLocked = true;
-            document.getElementById('target-display').innerText = "...";
-            await new Promise(r => setTimeout(r, 1000));
-            for(let cell of targetSeq) {
-                cell.classList.add('active-seq');
-                playSound(880, 'sine');
+            document.getElementById('target-val').innerText = "?";
+            await new Promise(r => setTimeout(r, 800));
+            for(let c of targetSeq) {
+                c.classList.add('seq-active');
+                beep(800, 'sine');
                 await new Promise(r => setTimeout(r, 600));
-                cell.classList.remove('active-seq');
+                c.classList.remove('seq-active');
                 await new Promise(r => setTimeout(r, 200));
             }
-            document.getElementById('target-display').innerText = "?";
             isLocked = false;
         }
 
-        function updateTargetUI(cell) {
-            const display = document.getElementById('target-display');
-            display.innerText = cell.dataset.fig;
-            display.style.color = cell.classList.contains('c-rojo') ? 'var(--rojo-fig)' : 'var(--verde-fig)';
+        function setTarget(c) {
+            const display = document.getElementById('target-val');
+            display.innerText = c.dataset.fig;
+            display.style.color = c.classList.contains('c-rojo') ? 'var(--rojo-fig)' : 'var(--verde-fig)';
         }
 
-        function handleInput(cell) {
+        function check(cell) {
             if(isLocked) return;
 
             if (cell === targetSeq[userPos]) {
-                playSound(1200, 'sine');
+                beep(1200, 'sine');
                 cell.style.visibility = "hidden";
                 userPos++;
-
                 if (userPos === targetSeq.length) {
                     pts += targetSeq.length;
                     if(pts % 5 === 0) nvl++;
                     userPos = 0;
                     updateUI();
-                    setTimeout(setupGrid, 300);
+                    setTimeout(render, 200);
                 }
             } else {
-                playSound(200, 'square');
+                beep(200, 'square');
                 vds--;
                 updateUI();
-                if(vds <= 0) endGame();
+                if(vds <= 0) over();
             }
         }
 
+        function resetTimer() {
+            clearInterval(timerInt);
+            timeLeft = 100;
+            timerInt = setInterval(() => {
+                timeLeft -= 0.5;
+                document.getElementById('timer-bar').style.width = timeLeft + "%";
+                if(timeLeft <= 0) over();
+            }, 100);
+        }
+
         function updateUI() {
-            document.getElementById('nvl').innerText = nvl;
-            document.getElementById('pts').innerText = pts;
-            document.getElementById('vds').innerText = "♥".repeat(vds);
+            document.getElementById('nvl-txt').innerText = nvl;
+            document.getElementById('pts-txt').innerText = pts;
+            document.getElementById('vds-txt').innerText = "♥".repeat(vds);
         }
 
-        function endGame() {
-            document.getElementById('end-screen').classList.remove('hidden');
-            document.getElementById('end-stats').innerText = `Nivel alcanzado: ${nvl} | Puntos totales: ${pts}`;
+        function over() {
+            clearInterval(timerInt);
+            alert(`FIN DE SESIÓN\nPuntos: ${pts}\nNivel: ${nvl}`);
+            location.reload();
         }
 
-        window.onresize = () => { if(!document.getElementById('intro-screen').classList.contains('hidden')) return; setupGrid(); };
+        window.onresize = () => { if(document.getElementById('intro').classList.contains('hidden')) render(); };
     </script>
 </body>
 </html>
