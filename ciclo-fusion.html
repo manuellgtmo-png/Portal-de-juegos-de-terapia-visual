@@ -60,7 +60,7 @@
 
         .stat-box {
             background:#1e293b; padding:10px 15px; border-radius:15px; font-size:0.85rem; 
-            border:1px solid var(--accent); min-width: 140px; text-align: center;
+            border:1px solid var(--accent); min-width: 110px; text-align: center;
         }
 
         .vidas-container { font-size: 1.4rem; color: #ef4444; letter-spacing: 2px; }
@@ -68,14 +68,15 @@
         /* --- ÁREA DE ESTIMULACIÓN DINÁMICA --- */
         #fusion-area {
             height: calc(100vh - 90px); width: 100vw; position: relative;
-            cursor: pointer; transition: background-color 0.05s;
+            transition: background-color 0.05s;
             background-color: var(--rojo-fondo); overflow: hidden;
         }
 
         #stimulus {
             font-size: 7.5rem; font-weight: 900; position: absolute;
-            transform: translate(-50%, -50%); transition: color 0.05s;
-            padding: 20px; line-height: 1; pointer-events: none;
+            transform: translate(-50%, -50%); transition: color 0.05s, font-size 0.2s;
+            padding: 35px; line-height: 1; cursor: pointer;
+            border-radius: 50%; /* Zona de toque ampliada circular */
         }
 
         .hidden { display: none !important; }
@@ -84,11 +85,11 @@
 <body>
 
     <div id="intro" class="overlay-screen">
-        <h1 style="color: var(--accent); margin-bottom: 10px; font-weight: 900; letter-spacing: 1px;">CICLO FUSIÓN BINOCULAR</h1>
+        <h1 style="color: var(--accent); margin-bottom: 10px; font-weight: 900; letter-spacing: 1px;">CICLO FUSIÓN INFINITO</h1>
         
         <div class="instrucciones">
-            <p><strong>PROTOCOLO CLÍNICO:</strong> Paciente a <strong>40 cm</strong> con gafas anaglifas (Rojo/Verde).</p>
-            <p>El estímulo cambiará de forma y **cambiará de posición aleatoriamente** por la pantalla. Presione la pantalla o use la barra espaciadora **antes de que se agote el tiempo de reacción** solo cuando el símbolo cambie.</p>
+            <p><strong>PROTOCOLO VISOMOTOR:</strong> Paciente a <strong>40 cm</strong> con gafas anaglifas.</p>
+            <p>El estímulo cambia de forma y posición. El paciente debe **TOCAR DIRECTAMENTE LA FIGURA** (o presionar espacio) únicamente cuando cambie. ¡Cada 5 aciertos sube el nivel, reduciendo el tamaño y el tiempo límite!</p>
         </div>
 
         <div class="control-panel">
@@ -97,8 +98,8 @@
                 <input type="range" id="param-hz" min="0.5" max="4.0" step="0.1" value="2.0" oninput="document.getElementById('hz-val').innerText=parseFloat(this.value).toFixed(1)">
             </div>
             <div class="control-group">
-                <label>Tiempo de Reacción (Límite): <span id="time-val" style="color:var(--accent);">1.5</span> seg</label>
-                <input type="range" id="param-reaction" min="0.6" max="3.0" step="0.1" value="1.5" oninput="document.getElementById('time-val').innerText=parseFloat(this.value).toFixed(1)">
+                <label>Tiempo Inicial de Reacción: <span id="time-val" style="color:var(--accent);">1.8</span> seg</label>
+                <input type="range" id="param-reaction" min="0.8" max="3.0" step="0.1" value="1.8" oninput="document.getElementById('time-val').innerText=parseFloat(this.value).toFixed(1)">
             </div>
         </div>
 
@@ -107,10 +108,10 @@
     </div>
 
     <div id="game-over" class="overlay-screen hidden">
-        <h1 id="end-title" style="color: var(--accent); font-weight: 900;">ENTRENAMIENTO FINALIZADO</h1>
+        <h1 style="color: #ef4444; font-weight: 900;">FIN DE LA SESIÓN</h1>
         <div class="instrucciones">
-            <h2 id="final-pts" style="margin: 10px 0; color: #4ade80;">ACIERTOS: 0</h2>
-            <h2 id="final-err" style="margin: 10px 0; color: #f87171;">ERRORES: 0</h2>
+            <h2 id="final-level" style="margin: 5px 0; color: var(--accent);">NIVEL ALCANZADO: 1</h2>
+            <h2 id="final-pts" style="margin: 10px 0; color: #4ade80;">ACIERTOS TOTALES: 0</h2>
         </div>
         <button class="btn-menu" onclick="location.reload()">Reconfigurar</button>
         <button class="btn-menu" style="background:#222; color: white;" onclick="window.location.href='binocular-antisupresion.html'">Volver a Módulos</button>
@@ -119,21 +120,24 @@
     <div class="top-bar">
         <button onclick="window.location.href='binocular-antisupresion.html'" style="background:#ef4444; color:white; border:none; padding:10px 20px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
         
+        <div style="font-weight:900; color:var(--accent);">NIVEL: <span id="lvl-txt">1</span></div>
         <div class="vidas-container" id="vidas-box">❤️❤️❤️</div>
         
         <div class="stat-box">
-            ACIERTOS: <b id="score-txt" style="color:#4ade80; font-size:1.1rem;">0</b>
+            ACIERTOS: <b id="score-txt" style="color:#4ade80; font-size:1.05rem;">0</b>
         </div>
     </div>
 
-    <div id="fusion-area" onclick="handleInput()">
-        <div id="stimulus" style="top:50%; left:50%;">-</div>
+    <div id="fusion-area" onclick="handleBackgroundClick(event)">
+        <div id="stimulus" style="top:50%; left:50%;" onclick="handleStimulusClick(event)">-</div>
     </div>
 
     <script>
         const symbols = ['★','◆','●','▲','■','✖','♣','♠','♥','♦','Σ','Ω','Ψ','Φ','Θ','Ξ'];
         let frequency = 2.0;
-        let reactionTimeLimit = 1500; // ms
+        let baseReactionTime = 1800; 
+        let currentReactionTime = 1800;
+        let baseFontSize = 7.5; // rem
         
         let cycleInterval = null;
         let changeTimeout = null;
@@ -142,6 +146,7 @@
         let aciertos = 0;
         let errores = 0;
         let vidas = 3;
+        let nivel = 1;
         
         let isRedPhase = true;
         let targetChanged = false; 
@@ -157,11 +162,11 @@
 
         function startSession() {
             frequency = parseFloat(document.getElementById('param-hz').value);
-            reactionTimeLimit = parseFloat(document.getElementById('param-reaction').value) * 1000;
+            baseReactionTime = parseFloat(document.getElementById('param-reaction').value) * 1000;
+            currentReactionTime = baseReactionTime;
             
             document.getElementById('intro').classList.add('hidden');
             
-            // Spawn inicial seguro al centro
             currentSymbol = symbols[Math.floor(Math.random() * symbols.length)];
             document.getElementById('stimulus').innerText = currentSymbol;
             
@@ -175,7 +180,6 @@
         function toggleChromaticPhase() {
             const area = document.getElementById('fusion-area');
             const stim = document.getElementById('stimulus');
-            
             if (isRedPhase) {
                 area.style.backgroundColor = 'var(--rojo-fondo)';
                 stim.style.color = 'var(--rojo-fig)';
@@ -190,7 +194,6 @@
             const area = document.getElementById('fusion-area');
             const stim = document.getElementById('stimulus');
             
-            // Dejar márgenes de seguridad del 15% para que no se oculte tras las esquinas o barras
             const minX = area.clientWidth * 0.15;
             const maxX = area.clientWidth * 0.85;
             const minY = area.clientHeight * 0.15;
@@ -204,7 +207,6 @@
         }
 
         function planNextSymbolChange() {
-            // Intervalo de cambio cognitivo aleatorio continuo
             const nextTime = Math.random() * 2000 + 2500;
             
             changeTimeout = setTimeout(() => {
@@ -217,12 +219,9 @@
                 const stim = document.getElementById('stimulus');
                 stim.innerText = currentSymbol;
                 
-                // Mover el símbolo a una coordenada nueva con cada cambio de forma
                 repositionStimulus();
-                
                 targetChanged = true;
                 
-                // Aplicar de forma exacta la ventana de tiempo límite configurada por el profesional
                 responseTimeout = setTimeout(() => {
                     if (targetChanged) {
                         targetChanged = false;
@@ -230,31 +229,63 @@
                         playSound(150, 'square'); 
                         checkEndSession();
                     }
-                }, reactionTimeLimit);
+                }, currentReactionTime);
 
                 planNextSymbolChange();
             }, nextTime);
         }
 
         function handleKeyDown(e) {
-            if(e.code === 'Space') { e.preventDefault(); handleInput(); }
+            if(e.code === 'Space') { 
+                e.preventDefault(); 
+                processAction(true); // La barra espaciadora asume que acertó al blanco
+            }
         }
 
-        function handleInput() {
+        function handleStimulusClick(event) {
+            event.stopPropagation(); // Evita que el click pase al fondo
+            processAction(true);
+        }
+
+        function handleBackgroundClick(event) {
+            processAction(false); // Tocó el fondo (fallo de puntería o impulsividad)
+        }
+
+        function processAction(hitTarget) {
             if (!document.getElementById('intro').classList.contains('hidden')) return;
             if (!document.getElementById('game-over').classList.contains('hidden')) return;
 
-            if (targetChanged) {
+            if (targetChanged && hitTarget) {
+                // Correcto: Cambió la figura Y tocó la figura
                 clearTimeout(responseTimeout);
                 aciertos++;
                 playSound(900, 'sine');
                 targetChanged = false;
                 document.getElementById('score-txt').innerText = aciertos;
+                
+                // Lógica de dificultad por Niveles cada 5 aciertos
+                if (aciertos % 5 === 0) {
+                    subirNivel();
+                }
             } else {
+                // Error: Tocó fuera, o presionó cuando no había cambiado
                 descontarVida();
                 playSound(220, 'square');
             }
             checkEndSession();
+        }
+
+        function subirNivel() {
+            nivel++;
+            document.getElementById('lvl-txt').innerText = nivel;
+            playSound(1300, 'sine'); // Sonido especial de nivel completado
+            
+            // 1. Reducir tiempo de reacción un 12% por nivel (mínimo 500ms)
+            currentReactionTime = Math.max(500, currentReactionTime * 0.88);
+            
+            // 2. Reducir tamaño de la figura un 10% por nivel (mínimo 3.5rem)
+            const nuevoTamano = Math.max(3.5, baseFontSize - ((nivel - 1) * 0.6));
+            document.getElementById('stimulus').style.fontSize = `${nuevoTamano}rem`;
         }
 
         function descontarVida() {
@@ -268,25 +299,15 @@
 
         function checkEndSession() {
             if (vidas <= 0) {
-                document.getElementById('end-title').innerText = "SESIÓN TERMINADA (SIN VIDAS)";
-                document.getElementById('end-title').style.color = "#ef4444";
-                endGame();
-            } else if (aciertos >= 20) { 
-                document.getElementById('end-title').innerText = "¡ENTRENAMIENTO COMPLETADO!";
-                document.getElementById('end-title').style.color = "#4ade80";
-                endGame();
+                clearInterval(cycleInterval);
+                clearTimeout(changeTimeout);
+                clearTimeout(responseTimeout);
+                window.removeEventListener('keydown', handleKeyDown);
+                
+                document.getElementById('final-level').innerText = `NIVEL ALCANZADO: ${nivel}`;
+                document.getElementById('final-pts').innerText = `ACIERTOS TOTALES: ${aciertos}`;
+                document.getElementById('game-over').classList.remove('hidden');
             }
-        }
-
-        function endGame() {
-            clearInterval(cycleInterval);
-            clearTimeout(changeTimeout);
-            clearTimeout(responseTimeout);
-            window.removeEventListener('keydown', handleKeyDown);
-            
-            document.getElementById('final-pts').innerText = `ACIERTOS: ${aciertos}`;
-            document.getElementById('final-err').innerText = `ERRORES: ${errores}`;
-            document.getElementById('game-over').classList.remove('hidden');
         }
     </script>
 </body>
