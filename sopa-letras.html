@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sopa de Letras Binocular | Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --panel: #1e293b;
+            --accent: #fbbf24;
+            
+            /* CÓDIGOS DE CANVA ESTABLECIDOS */
+            --canva-bg-rojo: #80322a;
+            --canva-txt-rojo: #69302a;
+            --canva-bg-verde: #69913d;
+            --canva-txt-verde: #6c7b5a;
+        }
+
+        body, html {
+            margin: 0; padding: 0; overflow: hidden;
+            background: var(--bg); font-family: 'Montserrat', sans-serif;
+            height: 100vh; width: 100vw; color: white;
+            user-select: none; -webkit-user-select: none;
+        }
+
+        /* --- PANTALLAS DE INTERFAZ --- */
+        .overlay-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
+        }
+
+        .instrucciones {
+            max-width: 600px; background: rgba(255,255,255,0.05); padding: 20px;
+            border-radius: 15px; margin-bottom: 20px; border: 1px solid #333;
+            line-height: 1.6; font-size: 0.9rem;
+        }
+
+        .control-panel {
+            background: #1e293b; padding: 20px; border-radius: 12px; width: 360px; 
+            margin-bottom: 20px; border: 1px solid #475569; box-sizing: border-box;
+        }
+
+        .mode-selector {
+            display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;
+        }
+
+        .btn-mode {
+            flex: 1; background: #334155; border: 2px solid transparent; color: white;
+            padding: 10px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-mode.active {
+            background: var(--accent); color: black; border-color: var(--accent);
+        }
+
+        input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
+
+        .btn-menu {
+            background: var(--accent); color: black; border: none; padding: 15px 40px;
+            font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 8px;
+            min-width: 260px; transition: 0.2s; text-transform: uppercase;
+        }
+        .btn-menu:hover { transform: scale(1.05); }
+
+        /* --- BARRA SUPERIOR --- */
+        .top-bar {
+            height: 80px; background: var(--bg); display: flex;
+            justify-content: space-between; align-items: center; padding: 0 20px;
+            border-bottom: 2px solid #222; box-sizing: border-box;
+        }
+
+        #timer-txt { font-size: 1.5rem; font-weight: 900; color: #f87171; min-width: 100px; text-align: center; }
+        #timer-txt.bonus { color: #4ade80; transform: scale(1.2); transition: 0.1s; }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .main-container {
+            display: flex; height: calc(100vh - 80px); width: 100vw;
+            box-sizing: border-box; padding: 15px; gap: 15px;
+        }
+
+        .word-panel {
+            width: 240px; background: var(--panel); border-radius: 15px;
+            padding: 15px; box-sizing: border-box; border: 1px solid #334155;
+            display: flex; flex-direction: column;
+        }
+
+        .word-panel h3 { margin: 0 0 10px 0; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid #334155; padding-bottom: 8px; }
+        .word-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
+        
+        .word-item {
+            padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03);
+            border-radius: 6px; font-weight: 700; text-transform: uppercase;
+            font-size: 0.85rem; letter-spacing: 1px;
+        }
+        .word-item.found { text-decoration: line-through; background: #16a34a !important; color: white; opacity: 0.5; }
+
+        .grid-container {
+            flex-grow: 1; background: #070a12; border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 10px; border: 1px solid #1e293b;
+        }
+
+        #word-grid { display: grid; gap: 4px; background: #070a12; padding: 8px; border-radius: 12px; }
+
+        /* CELDA ANAGLIFA CALIBRADA */
+        .grid-cell {
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1.6rem; border-radius: 6px; cursor: pointer;
+            width: 46px; height: 46px; border: 1px solid rgba(0,0,0,0.15);
+            transition: transform 0.1s;
+        }
+        
+        /* Estados de Selección Visual */
+        .grid-cell.selected { transform: scale(0.9); box-shadow: inset 0 0 0 4px var(--accent) !important; }
+        .grid-cell.confirmed { filter: grayscale(0.8); opacity: 0.4; cursor: default; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="intro" class="overlay-screen">
+        <h1 style="color: var(--accent); margin-bottom: 10px; font-weight: 900;">SOPA DE LETRAS BINOCULAR</h1>
+        <div class="instrucciones">
+            <p><strong>PROTOCOLO ANTISUPRESIÓN:</strong> Paciente a <strong>40 cm</strong> con filtros Rojo/Verde.</p>
+            <p>Cada celda contiene el color de fondo y el símbolo de contraste calibrados de Canva. El cerebro debe fusionar activamente los estímulos de ambos canales para descifrar las palabras ocultas.</p>
+        </div>
+        
+        <div class="control-panel">
+            <label style="display:block; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; font-size:0.8rem; color:#94a3b8;">Modo de Trabajo</label>
+            <div class="mode-selector">
+                <button type="button" id="mode-time" class="btn-mode active" onclick="setMode('time')">CONTRARRELOJ</button>
+                <button type="button" id="mode-free" class="btn-mode" onclick="setMode('free')">MODO LIBRE</button>
+            </div>
+
+            <div id="time-slider-box">
+                <label style="display:block; margin-bottom: 10px; font-weight: 700;">Tiempo Inicial: <span id="time-val" style="color:var(--accent);">60</span> seg</label>
+                <input type="range" id="param-time" min="0" max="120" step="5" value="60" oninput="document.getElementById('time-val').innerText=this.value">
+                <div style="display:flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-top: 5px;">
+                    <span>0s</span><span>60s</span><span>120s</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-menu" onclick="startGame()">Comenzar Terapia</button>
+        <button class="btn-menu" style="background:#222; color:#777; font-size:0.85rem;" onclick="window.location.href='binocular-antisupresion.html'">Volver</button>
+    </div>
+
+    <div id="game-over" class="overlay-screen hidden">
+        <h1 style="color: #ef4444; font-weight: 900;" id="game-over-title">TIEMPO AGOTADO</h1>
+        <div class="instrucciones">
+            <h2 style="margin: 5px 0; color: var(--accent);">NIVEL ALCANZADO: <span id="final-lvl">1</span></h2>
+            <h2 style="margin: 10px 0; color: #4ade80;">PALABRAS FUSIONADAS: <span id="final-pts">0</span></h2>
+        </div>
+        <button class="btn-menu" onclick="location.reload()">Reiniciar</button>
+        <button class="btn-menu" style="background:#222; color:white;" onclick="window.location.href='binocular-antisupresion.html'">Salir al Portal</button>
+    </div>
+
+    <div class="top-bar">
+        <button onclick="window.location.href='binocular-antisupresion.html'" style="background:#ef4444; color:white; border:none; padding:10px 20px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
+        <div style="font-weight:900; color:var(--accent);">NIVEL: <span id="lvl-txt">1</span></div>
+        <div id="timer-txt">MODO LIBRE</div>
+        <div style="background:#1e293b; padding:8px 12px; border-radius:10px; font-size:0.8rem; border:1px solid var(--accent);">TOT: <b id="score-txt" style="color:#4ade80;">0</b></div>
+    </div>
+
+    <div class="main-container">
+        <div class="word-panel">
+            <h3>BUSCAR</h3>
+            <ul class="word-list" id="list-container"></ul>
+        </div>
+        <div class="grid-container">
+            <div id="word-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const wordPool = ['OJO', 'VISTA', 'FUSION', 'AMBLIO', 'OPTICA', 'TERAPIA', 'VISION', 'EJERCICIO', 'FOVEA', 'ESTEREO', 'FILTRO', 'BINOCULAR', 'CORTEZA', 'RETINA', 'MASCARA', 'SUPRESION', 'SACADICO', 'RITMO'];
+        const gridSize = 10;
+        let selectedWords = [];
+        let gridMatrix = [];
+        let selectedCells = [];
+        
+        let gameMode = 'time'; // 'time' o 'free'
+        let totalWordsFound = 0;
+        let levelWordsFound = 0;
+        let nivel = 1;
+        let timeLeft = 60;
+        let countdownTimer = null;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type) {
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination); o.type = type; o.frequency.value = freq;
+            g.gain.setValueAtTime(0.04, audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            o.start(); o.stop(audioCtx.currentTime + 0.12);
+        }
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.getElementById('mode-time').classList.toggle('active', mode === 'time');
+            document.getElementById('mode-free').classList.toggle('active', mode === 'free');
+            document.getElementById('time-slider-box').style.display = (mode === 'time') ? 'block' : 'none';
+        }
+
+        function startGame() {
+            document.getElementById('intro').classList.add('hidden');
+            
+            if(gameMode === 'time') {
+                timeLeft = parseInt(document.getElementById('param-time').value);
+                if(timeLeft === 0) timeLeft = 1; 
+                updateTimerUI();
+                countdownTimer = setInterval(() => {
+                    timeLeft--;
+                    updateTimerUI();
+                    if(timeLeft <= 0) endGame();
+                }, 1000);
+            } else {
+                document.getElementById('timer-txt').innerText = "MODO LIBRE";
+                document.getElementById('timer-txt').style.color = "var(--accent)";
+            }
+
+            generateNewGrid();
+        }
+
+        function updateTimerUI() {
+            document.getElementById('timer-txt').innerText = timeLeft + "s";
+        }
+
+        function generateNewGrid() {
+            levelWordsFound = 0;
+            selectedCells = [];
+            document.getElementById('lvl-txt').innerText = nivel;
+            
+            let poolCopy = [...wordPool];
+            selectedWords = [];
+            for(let i=0; i<4; i++) {
+                let idx = Math.floor(Math.random() * poolCopy.length);
+                selectedWords.push(poolCopy.splice(idx, 1)[0]);
+            }
+
+            const listContainer = document.getElementById('list-container');
+            listContainer.innerHTML = '';
+            selectedWords.forEach(w => { listContainer.innerHTML += `<li class="word-item" id="w-${w}">${w}</li>`; });
+
+            gridMatrix = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+
+            selectedWords.forEach(word => {
+                let placed = false;
+                let attempts = 0;
+                while(!placed && attempts < 100) {
+                    let isVertical = Math.random() > 0.5;
+                    let r = Math.floor(Math.random() * gridSize);
+                    let c = Math.floor(Math.random() * gridSize);
+                    if (isVertical && r + word.length <= gridSize) {
+                        let fits = true;
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c] !== '') fits = false;
+                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c] = word[i]; placed = true; }
+                    } else if (!isVertical && c + word.length <= gridSize) {
+                        let fits = true;
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r][c+i] !== '') fits = false;
+                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r][c+i] = word[i]; placed = true; }
+                    }
+                    attempts++;
+                }
+            });
+
+            const gridElement = document.getElementById('word-grid');
+            gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            gridElement.innerHTML = '';
+            const alpha = 'ABCDEFGHIJKLMOPQRSTUVWXYZ';
+
+            for(let r=0; r<gridSize; r++) {
+                for(let c=0; c<gridSize; c++) {
+                    if(gridMatrix[r][c] === '') gridMatrix[r][c] = alpha[Math.floor(Math.random() * alpha.length)];
+                    
+                    // SELECCIÓN EQUITATIVA DEL CANAL ANAGLIFO (FONDO + FIGURA CALIBRADOS DE CANVA)
+                    const esRojo = Math.random() > 0.5;
+                    const bgCol = esRojo ? 'var(--canva-bg-rojo)' : 'var(--canva-bg-verde)';
+                    const txtCol = esRojo ? 'var(--canva-txt-rojo)' : 'var(--canva-txt-verde)';
+
+                    const cell = document.createElement('div');
+                    cell.classList.add('grid-cell');
+                    cell.style.backgroundColor = bgCol;
+                    cell.style.color = txtCol;
+                    cell.innerText = gridMatrix[r][c];
+                    
+                    cell.addEventListener('click', () => toggleCellSelect(cell));
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function toggleCellSelect(cell) {
+            if(cell.classList.contains('confirmed')) return;
+            
+            if(cell.classList.contains('selected')) {
+                cell.classList.remove('selected');
+                selectedCells = selectedCells.filter(c => c !== cell);
+            } else {
+                cell.classList.add('selected');
+                selectedCells.push(cell);
+                playSound(440, 'sine');
+            }
+            checkSelectedSequence();
+        }
+
+        function checkSelectedSequence() {
+            if(selectedCells.length === 0) return;
+            let str = selectedCells.map(c => c.innerText).join('');
+            let rev = str.split('').reverse().join('');
+
+            selectedWords.forEach(word => {
+                if((str === word || rev === word) && !document.getElementById(`w-${word}`).classList.contains('found')) {
+                    document.getElementById(`w-${word}`).classList.add('found');
+                    selectedCells.forEach(c => { 
+                        c.classList.remove('selected'); 
+                        c.classList.add('confirmed'); 
+                    });
+                    selectedCells = [];
+                    
+                    totalWordsFound++; 
+                    levelWordsFound++;
+                    document.getElementById('score-txt').innerText = totalWordsFound;
+                    
+                    if(gameMode === 'time') {
+                        timeLeft += 5; 
+                        triggerBonus();
+                    }
+                    
+                    playSound(880, 'sine');
+
+                    if(levelWordsFound === selectedWords.length) { 
+                        nivel++; 
+                        playSound(1200, 'sine'); 
+                        setTimeout(generateNewGrid, 600); 
+                    }
+                }
+            });
+        }
+
+        function triggerBonus() {
+            const el = document.getElementById('timer-txt');
+            el.classList.add('bonus');
+            setTimeout(() => el.classList.remove('bonus'), 500);
+        }
+
+        function endGame() {
+            if(countdownTimer) clearInterval(countdownTimer);
+            document.getElementById('game-over-title').innerText = "FIN DE LA SESIÓN";
+            document.getElementById('final-lvl').innerText = nivel;
+            document.getElementById('final-pts').innerText = totalWordsFound;
+            document.getElementById('game-over').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
