@@ -10,8 +10,6 @@
             --bg: #0b0f1a;
             --panel: #1e293b;
             --accent: #fbbf24;
-            
-            /* CÓDIGOS DE CANVA ESTABLECIDOS */
             --canva-bg-rojo: #80322a;
             --canva-txt-rojo: #69302a;
             --canva-bg-verde: #69913d;
@@ -25,7 +23,6 @@
             user-select: none; -webkit-user-select: none;
         }
 
-        /* --- PANTALLAS DE INTERFAZ --- */
         .overlay-screen {
             position: fixed; inset: 0; background: var(--bg);
             z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -33,147 +30,125 @@
         }
 
         .instrucciones {
-            max-width: 600px; background: rgba(255,255,255,0.05); padding: 20px;
-            border-radius: 15px; margin-bottom: 20px; border: 1px solid #333;
-            line-height: 1.6; font-size: 0.9rem;
+            max-width: 650px; background: rgba(255,255,255,0.05); padding: 25px;
+            border-radius: 20px; margin-bottom: 25px; border: 1px solid #333;
+            line-height: 1.6; font-size: 1rem;
         }
+
+        .instrucciones h3 { color: var(--accent); margin-top: 0; text-transform: uppercase; }
 
         .control-panel {
-            background: #1e293b; padding: 20px; border-radius: 12px; width: 360px; 
-            margin-bottom: 20px; border: 1px solid #475569; box-sizing: border-box;
+            background: #1e293b; padding: 20px; border-radius: 15px; width: 380px; 
+            margin-bottom: 20px; border: 1px solid #475569;
         }
 
-        .mode-selector {
-            display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;
-        }
-
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 15px; }
         .btn-mode {
             flex: 1; background: #334155; border: 2px solid transparent; color: white;
-            padding: 10px; font-weight: 700; border-radius: 8px; cursor: pointer; transition: 0.2s;
+            padding: 12px; font-weight: 700; border-radius: 10px; cursor: pointer;
         }
-        .btn-mode.active {
-            background: var(--accent); color: black; border-color: var(--accent);
-        }
+        .btn-mode.active { background: var(--accent); color: black; }
 
         input[type=range] { width: 100%; cursor: pointer; accent-color: var(--accent); }
 
         .btn-menu {
-            background: var(--accent); color: black; border: none; padding: 15px 40px;
-            font-size: 1.1rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 8px;
-            min-width: 260px; transition: 0.2s; text-transform: uppercase;
+            background: var(--accent); color: black; border: none; padding: 18px 45px;
+            font-size: 1.2rem; font-weight: 900; border-radius: 50px; cursor: pointer; margin: 8px;
+            min-width: 280px; transition: 0.2s; text-transform: uppercase;
         }
         .btn-menu:hover { transform: scale(1.05); }
 
-        /* --- BARRA SUPERIOR --- */
         .top-bar {
             height: 80px; background: var(--bg); display: flex;
-            justify-content: space-between; align-items: center; padding: 0 20px;
-            border-bottom: 2px solid #222; box-sizing: border-box;
+            justify-content: space-between; align-items: center; padding: 0 25px;
+            border-bottom: 2px solid #222;
         }
 
-        #timer-txt { font-size: 1.5rem; font-weight: 900; color: #f87171; min-width: 100px; text-align: center; }
+        #timer-txt { font-size: 1.6rem; font-weight: 900; color: #f87171; min-width: 120px; text-align: center; }
         #timer-txt.bonus { color: #4ade80; transform: scale(1.2); transition: 0.1s; }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        .main-container {
-            display: flex; height: calc(100vh - 80px); width: 100vw;
-            box-sizing: border-box; padding: 15px; gap: 15px;
-        }
+        .main-container { display: flex; height: calc(100vh - 80px); padding: 15px; gap: 15px; }
 
         .word-panel {
-            width: 240px; background: var(--panel); border-radius: 15px;
-            padding: 15px; box-sizing: border-box; border: 1px solid #334155;
-            display: flex; flex-direction: column;
+            width: 260px; background: var(--panel); border-radius: 20px;
+            padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column;
         }
 
-        .word-panel h3 { margin: 0 0 10px 0; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid #334155; padding-bottom: 8px; }
-        .word-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex-grow: 1; }
-        
+        .word-panel h3 { color: var(--accent); border-bottom: 1px solid #334155; padding-bottom: 10px; margin: 0 0 15px 0; }
+        .word-list { list-style: none; padding: 0; flex-grow: 1; overflow-y: auto; }
         .word-item {
-            padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03);
-            border-radius: 6px; font-weight: 700; text-transform: uppercase;
-            font-size: 0.85rem; letter-spacing: 1px;
+            padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.03);
+            border-radius: 8px; font-weight: 700; text-transform: uppercase; font-size: 0.9rem;
         }
-        .word-item.found { text-decoration: line-through; background: #16a34a !important; color: white; opacity: 0.5; }
+        .word-item.found { text-decoration: line-through; background: #16a34a !important; opacity: 0.5; }
 
         .grid-container {
-            flex-grow: 1; background: #070a12; border-radius: 15px;
-            display: flex; align-items: center; justify-content: center;
-            padding: 10px; border: 1px solid #1e293b;
+            flex-grow: 1; background: #070a12; border-radius: 20px;
+            display: flex; align-items: center; justify-content: center; border: 1px solid #1e293b;
         }
 
-        #word-grid { display: grid; gap: 4px; background: #070a12; padding: 8px; border-radius: 12px; }
+        #word-grid { display: grid; gap: 5px; background: #070a12; padding: 10px; border-radius: 15px; }
 
-        /* CELDA ANAGLIFA CALIBRADA */
         .grid-cell {
             display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 1.6rem; border-radius: 6px; cursor: pointer;
-            width: 46px; height: 46px; border: 1px solid rgba(0,0,0,0.15);
-            transition: transform 0.1s, box-shadow 0.2s;
-            box-sizing: border-box;
+            font-weight: 900; font-size: 1.6rem; border-radius: 8px; cursor: pointer;
+            width: 48px; height: 48px; border: 1px solid rgba(0,0,0,0.1);
+            transition: transform 0.1s; box-sizing: border-box;
         }
         
-        /* Estados de Selección Visual */
         .grid-cell.selected { transform: scale(0.9); box-shadow: inset 0 0 0 4px var(--accent) !important; }
-        
-        /* Solución al cruce: Resaltado perimetral grueso sin alterar el fondo de Canva */
-        .grid-cell.confirmed { 
-            box-shadow: inset 0 0 0 4px #2563eb !important; 
-            transform: scale(0.95);
-        }
-        
+        .grid-cell.confirmed { box-shadow: inset 0 0 0 5px #2563eb !important; transform: scale(0.95); }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="intro" class="overlay-screen">
-        <h1 style="color: var(--accent); margin-bottom: 10px; font-weight: 900;">SOPA DE LETRAS BINOCULAR</h1>
+        <h1 style="color: var(--accent); margin-bottom: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">Sopa de Letras Binocular</h1>
+        
         <div class="instrucciones">
-            <p><strong>PROTOCOLO ANTISUPRESIÓN:</strong> Paciente a <strong>40 cm</strong> con filtros Rojo/Verde.</p>
-            <p>Cada celda contiene el color de fondo y el símbolo de contraste calibrados de Canva. Al subir de nivel aumenta la extensión de los estímulos y se activan ejes diagonales complejos.</p>
+            <h3>Instrucciones de Terapia</h3>
+            <p>1. Colóquese sus <strong>gafas Rojo/Verde</strong> y sitúese a <strong>40 cm</strong> de la pantalla.</p>
+            <p>2. Busque las palabras del listado lateral. Toque cada letra para seleccionarla. Si se equivoca, vuelva a tocarla para desmarcar.</p>
+            <p>3. En <strong>Modo Contrarreloj</strong>, cada palabra encontrada le otorga <strong>+5 segundos</strong> extra. Al subir de nivel, las palabras aparecerán en direcciones diagonales aumentando el reto visual.</p>
         </div>
         
         <div class="control-panel">
-            <label style="display:block; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; font-size:0.8rem; color:#94a3b8;">Modo de Trabajo</label>
             <div class="mode-selector">
                 <button type="button" id="mode-time" class="btn-mode active" onclick="setMode('time')">CONTRARRELOJ</button>
                 <button type="button" id="mode-free" class="btn-mode" onclick="setMode('free')">MODO LIBRE</button>
             </div>
 
             <div id="time-slider-box">
-                <label style="display:block; margin-bottom: 10px; font-weight: 700;">Tiempo Inicial: <span id="time-val" style="color:var(--accent);">60</span> seg</label>
-                <input type="range" id="param-time" min="0" max="120" step="5" value="60" oninput="document.getElementById('time-val').innerText=this.value">
-                <div style="display:flex; justify-content: space-between; font-size: 0.7rem; color: #64748b; margin-top: 5px;">
-                    <span>0s</span><span>60s</span><span>120s</span>
-                </div>
+                <label style="display:block; margin-bottom: 10px; font-weight: 700;">Tiempo inicial: <span id="time-val" style="color:var(--accent);">60</span> seg</label>
+                <input type="range" id="param-time" min="10" max="120" step="5" value="60" oninput="document.getElementById('time-val').innerText=this.value">
             </div>
         </div>
 
-        <button class="btn-menu" onclick="startGame()">Comenzar Terapia</button>
-        <button class="btn-menu" style="background:#222; color:#777; font-size:0.85rem;" onclick="window.location.href='binocular-antisupresion.html'">Volver</button>
+        <button class="btn-menu" onclick="startGame()">Iniciar Entrenamiento</button>
+        <button class="btn-menu" style="background:#222; color:#777; font-size:0.85rem;" onclick="window.location.href='binocular-antisupresion.html'">Volver al Menú</button>
     </div>
 
     <div id="game-over" class="overlay-screen hidden">
-        <h1 style="color: #ef4444; font-weight: 900;" id="game-over-title">TIEMPO AGOTADO</h1>
+        <h1 style="color: #ef4444; font-weight: 900; font-size: 3rem;">SESIÓN FINALIZADA</h1>
         <div class="instrucciones">
-            <h2 style="margin: 5px 0; color: var(--accent);">NIVEL ALCANZADO: <span id="final-lvl">1</span></h2>
-            <h2 style="margin: 10px 0; color: #4ade80;">PALABRAS FUSIONADAS: <span id="final-pts">0</span></h2>
+            <h2 style="margin: 5px 0; color: var(--accent);">NIVEL MÁXIMO: <span id="final-lvl">1</span></h2>
+            <h2 style="margin: 10px 0; color: #4ade80;">PALABRAS LOGRADAS: <span id="final-pts">0</span></h2>
         </div>
-        <button class="btn-menu" onclick="location.reload()">Reiniciar</button>
+        <button class="btn-menu" onclick="location.reload()">Reiniciar Nivel</button>
         <button class="btn-menu" style="background:#222; color:white;" onclick="window.location.href='binocular-antisupresion.html'">Salir al Portal</button>
     </div>
 
     <div class="top-bar">
-        <button onclick="window.location.href='binocular-antisupresion.html'" style="background:#ef4444; color:white; border:none; padding:10px 20px; font-weight:900; border-radius:5px; cursor:pointer;">SALIR</button>
-        <div style="font-weight:900; color:var(--accent);">NIVEL: <span id="lvl-txt">1</span></div>
+        <button onclick="window.location.href='binocular-antisupresion.html'" style="background:#ef4444; color:white; border:none; padding:10px 20px; font-weight:900; border-radius:8px; cursor:pointer;">SALIR</button>
+        <div style="font-weight:900; color:var(--accent); letter-spacing: 1px;">NIVEL: <span id="lvl-txt">1</span></div>
         <div id="timer-txt">MODO LIBRE</div>
-        <div style="background:#1e293b; padding:8px 12px; border-radius:10px; font-size:0.8rem; border:1px solid var(--accent);">TOT: <b id="score-txt" style="color:#4ade80;">0</b></div>
+        <div style="background:#1e293b; padding:10px 20px; border-radius:12px; font-size:0.9rem; border:1px solid var(--accent); font-weight: 900;">LOGROS: <span id="score-txt" style="color:#4ade80;">0</span></div>
     </div>
 
     <div class="main-container">
         <div class="word-panel">
-            <h3>BUSCAR</h3>
+            <h3>PALABRAS</h3>
             <ul class="word-list" id="list-container"></ul>
         </div>
         <div class="grid-container">
@@ -182,7 +157,6 @@
     </div>
 
     <script>
-        // Distribución de palabras segmentada por complejidad clínica
         const poolEasy = ['OJO', 'VISTA', 'FOVEA', 'RITMO', 'FILTRO', 'RETINA', 'LUPA', 'EJE', 'CONO'];
         const poolMedium = ['FUSION', 'AMBLIO', 'OPTICA', 'TERAPIA', 'VISION', 'MASCARA', 'BINO', 'TEST', 'FOCO'];
         const poolHard = ['AMBLIOPIA', 'BINOCULAR', 'SUPRESION', 'SACADICO', 'ESTEREOPSIS', 'CONVERGENCIA', 'DIVERGENCIA', 'PERCEPTUM'];
@@ -211,14 +185,13 @@
             gameMode = mode;
             document.getElementById('mode-time').classList.toggle('active', mode === 'time');
             document.getElementById('mode-free').classList.toggle('active', mode === 'free');
-            document.getElementById('time-slider-box').style.display = (mode === 'time') ? 'block' : 'none';
+            document.getElementById('time-slider-box').style.visibility = (mode === 'time') ? 'visible' : 'hidden';
         }
 
         function startGame() {
             document.getElementById('intro').classList.add('hidden');
             if(gameMode === 'time') {
                 timeLeft = parseInt(document.getElementById('param-time').value);
-                if(timeLeft === 0) timeLeft = 1; 
                 updateTimerUI();
                 countdownTimer = setInterval(() => {
                     timeLeft--;
@@ -227,33 +200,20 @@
                 }, 1000);
             } else {
                 document.getElementById('timer-txt').innerText = "MODO LIBRE";
-                document.getElementById('timer-txt').style.color = "var(--accent)";
             }
             generateNewGrid();
         }
 
-        function updateTimerUI() {
-            document.getElementById('timer-txt').innerText = timeLeft + "s";
-        }
+        function updateTimerUI() { document.getElementById('timer-txt').innerText = timeLeft + "s"; }
 
         function generateNewGrid() {
             levelWordsFound = 0;
             selectedCells = [];
             document.getElementById('lvl-txt').innerText = nivel;
             
-            // Selección adaptativa según nivel alcanzado
-            let currentPool = [];
-            if (nivel <= 2) {
-                currentPool = [...poolEasy];
-            } else if (nivel <= 4) {
-                currentPool = [...poolEasy, ...poolMedium];
-            } else {
-                currentPool = [...poolMedium, ...poolHard];
-            }
-
+            let currentPool = (nivel <= 2) ? [...poolEasy] : (nivel <= 4) ? [...poolEasy, ...poolMedium] : [...poolMedium, ...poolHard];
             selectedWords = [];
             for(let i=0; i<4; i++) {
-                if(currentPool.length === 0) break;
                 let idx = Math.floor(Math.random() * currentPool.length);
                 selectedWords.push(currentPool.splice(idx, 1)[0]);
             }
@@ -263,36 +223,26 @@
             selectedWords.forEach(w => { listContainer.innerHTML += `<li class="word-item" id="w-${w}">${w}</li>`; });
 
             gridMatrix = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
-
-            // Direcciones permitidas adaptativas (Nivel 1-2: H/V | Nivel 3+: Añade Diagonales)
-            let allowedDirs = ['H', 'V'];
-            if (nivel >= 3) {
-                allowedDirs.push('D1', 'D2'); // D1: abajo-derecha, D2: abajo-izquierda
-            }
+            let allowedDirs = (nivel >= 3) ? ['H', 'V', 'D1', 'D2'] : ['H', 'V'];
 
             selectedWords.forEach(word => {
                 let placed = false;
                 let attempts = 0;
                 while(!placed && attempts < 150) {
                     let dir = allowedDirs[Math.floor(Math.random() * allowedDirs.length)];
-                    let r = Math.floor(Math.random() * gridSize);
-                    let c = Math.floor(Math.random() * gridSize);
-
+                    let r = Math.floor(Math.random() * gridSize), c = Math.floor(Math.random() * gridSize);
                     let fits = true;
                     if (dir === 'H' && c + word.length <= gridSize) {
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r][c+i] !== '' && gridMatrix[r][c+i] !== word[i]) fits = false;
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r][c+i] !== '') fits = false;
                         if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r][c+i] = word[i]; placed = true; }
-                    } 
-                    else if (dir === 'V' && r + word.length <= gridSize) {
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c] !== '' && gridMatrix[r+i][c] !== word[i]) fits = false;
+                    } else if (dir === 'V' && r + word.length <= gridSize) {
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c] !== '') fits = false;
                         if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c] = word[i]; placed = true; }
-                    }
-                    else if (dir === 'D1' && r + word.length <= gridSize && c + word.length <= gridSize) { // Diagonal Abajo-Derecha
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c+i] !== '' && gridMatrix[r+i][c+i] !== word[i]) fits = false;
+                    } else if (dir === 'D1' && r + word.length <= gridSize && c + word.length <= gridSize) {
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c+i] !== '') fits = false;
                         if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c+i] = word[i]; placed = true; }
-                    }
-                    else if (dir === 'D2' && r + word.length <= gridSize && c - word.length >= -1) { // Diagonal Abajo-Izquierda
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c-i] !== '' && gridMatrix[r+i][c-i] !== word[i]) fits = false;
+                    } else if (dir === 'D2' && r + word.length <= gridSize && c - word.length >= -1) {
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c-i] !== '') fits = false;
                         if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c-i] = word[i]; placed = true; }
                     }
                     attempts++;
@@ -307,21 +257,12 @@
             for(let r=0; r<gridSize; r++) {
                 for(let c=0; c<gridSize; c++) {
                     if(gridMatrix[r][c] === '') gridMatrix[r][c] = alpha[Math.floor(Math.random() * alpha.length)];
-                    
                     const esRojo = Math.random() > 0.5;
-                    const bgCol = esRojo ? 'var(--canva-bg-rojo)' : 'var(--canva-bg-verde)';
-                    const txtCol = esRojo ? 'var(--canva-txt-rojo)' : 'var(--canva-txt-verde)';
-
                     const cell = document.createElement('div');
                     cell.classList.add('grid-cell');
-                    cell.style.backgroundColor = bgCol;
-                    cell.style.color = txtCol;
+                    cell.style.backgroundColor = esRojo ? 'var(--canva-bg-rojo)' : 'var(--canva-bg-verde)';
+                    cell.style.color = esRojo ? 'var(--canva-txt-rojo)' : 'var(--canva-txt-verde)';
                     cell.innerText = gridMatrix[r][c];
-                    
-                    // Guardamos coordenadas para verificar secuencias correctas
-                    cell.dataset.row = r;
-                    cell.dataset.col = c;
-                    
                     cell.addEventListener('click', () => toggleCellSelect(cell));
                     gridElement.appendChild(cell);
                 }
@@ -341,35 +282,18 @@
         }
 
         function checkSelectedSequence() {
-            if(selectedCells.length === 0) return;
             let str = selectedCells.map(c => c.innerText).join('');
             let rev = str.split('').reverse().join('');
-
             selectedWords.forEach(word => {
                 if((str === word || rev === word) && !document.getElementById(`w-${word}`).classList.contains('found')) {
                     document.getElementById(`w-${word}`).classList.add('found');
-                    selectedCells.forEach(c => { 
-                        c.classList.remove('selected'); 
-                        c.classList.add('confirmed'); // Aplica contorno azul conservando fondo
-                    });
+                    selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('confirmed'); });
                     selectedCells = [];
-                    
-                    totalWordsFound++; 
-                    levelWordsFound++;
+                    totalWordsFound++; levelWordsFound++;
                     document.getElementById('score-txt').innerText = totalWordsFound;
-                    
-                    if(gameMode === 'time') {
-                        timeLeft += 5; 
-                        triggerBonus();
-                    }
-                    
+                    if(gameMode === 'time') { timeLeft += 5; triggerBonus(); }
                     playSound(880, 'sine');
-
-                    if(levelWordsFound === selectedWords.length) { 
-                        nivel++; 
-                        playSound(1200, 'sine'); 
-                        setTimeout(generateNewGrid, 600); 
-                    }
+                    if(levelWordsFound === selectedWords.length) { nivel++; setTimeout(generateNewGrid, 600); }
                 }
             });
         }
@@ -382,7 +306,6 @@
 
         function endGame() {
             if(countdownTimer) clearInterval(countdownTimer);
-            document.getElementById('game-over-title').innerText = "FIN DE LA SESIÓN";
             document.getElementById('final-lvl').innerText = nivel;
             document.getElementById('final-pts').innerText = totalWordsFound;
             document.getElementById('game-over').classList.remove('hidden');
