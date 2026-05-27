@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sopa de Letras Binocular | Centro Perceptum</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0b0f1a;
@@ -21,6 +21,7 @@
             background: var(--bg); font-family: 'Montserrat', sans-serif;
             height: 100vh; width: 100vw; color: white;
             user-select: none; -webkit-user-select: none;
+            touch-action: none; /* Evita que la pantalla rebote al arrastrar el dedo */
         }
 
         .overlay-screen {
@@ -94,6 +95,7 @@
             font-weight: 900; font-size: 1.6rem; border-radius: 8px; cursor: pointer;
             width: 48px; height: 48px; border: 1px solid rgba(0,0,0,0.1);
             transition: transform 0.1s; box-sizing: border-box;
+            touch-action: none; /* Crucial para interceptar arrastres sin mover la página */
         }
         
         .grid-cell.selected { transform: scale(0.9); box-shadow: inset 0 0 0 4px var(--accent) !important; }
@@ -109,8 +111,8 @@
         <div class="instrucciones">
             <h3>Instrucciones de Terapia</h3>
             <p>1. Colóquese sus <strong>gafas Rojo/Verde</strong> y sitúese a <strong>40 cm</strong> de la pantalla.</p>
-            <p>2. Busque las palabras del listado lateral. Toque cada letra para seleccionarla. Si se equivoca, vuelva a tocarla para desmarcar.</p>
-            <p>3. En <strong>Modo Contrarreloj</strong>, cada palabra encontrada le otorga <strong>+5 segundos</strong> extra. Al subir de nivel, las palabras aparecerán en direcciones diagonales aumentando el reto visual.</p>
+            <p>2. Encuentre las palabras de la lista. Puede seleccionarlas **letra por letra** o simplemente **arrastrar el dedo sin soltar** trazando la palabra directamente en la pantalla.</p>
+            <p>3. En Modo Contrarreloj, cada hallazgo otorga <strong>+5 segundos</strong> extra. A mayor nivel, aparecerán ejes diagonales cruzados complejos.</p>
         </div>
         
         <div class="control-panel">
@@ -173,6 +175,8 @@
         let timeLeft = 60;
         let countdownTimer = null;
 
+        let isDragging = false; // Flag para rastrear el arrastre
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(freq, type) {
             const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
@@ -201,6 +205,15 @@
             } else {
                 document.getElementById('timer-txt').innerText = "MODO LIBRE";
             }
+
+            // Detectar cuando se suelta el dedo/mouse en cualquier parte de la pantalla
+            window.addEventListener('pointerup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    checkSelectedSequence(true); // Forzar chequeo y limpiar si no es correcta
+                }
+            });
+
             generateNewGrid();
         }
 
@@ -214,6 +227,7 @@
             let currentPool = (nivel <= 2) ? [...poolEasy] : (nivel <= 4) ? [...poolEasy, ...poolMedium] : [...poolMedium, ...poolHard];
             selectedWords = [];
             for(let i=0; i<4; i++) {
+                if(currentPool.length === 0) break;
                 let idx = Math.floor(Math.random() * currentPool.length);
                 selectedWords.push(currentPool.splice(idx, 1)[0]);
             }
@@ -263,39 +277,76 @@
                     cell.style.backgroundColor = esRojo ? 'var(--canva-bg-rojo)' : 'var(--canva-bg-verde)';
                     cell.style.color = esRojo ? 'var(--canva-txt-rojo)' : 'var(--canva-txt-verde)';
                     cell.innerText = gridMatrix[r][c];
-                    cell.addEventListener('click', () => toggleCellSelect(cell));
+
+                    // EVENTOS HÍBRIDOS (TOUCH + MOUSE)
+                    cell.addEventListener('pointerdown', (e) => {
+                        e.preventDefault();
+                        isDragging = true;
+                        handleCellInteraction(cell);
+                    });
+
+                    cell.addEventListener('pointerenter', () => {
+                        if (isDragging) {
+                            handleCellInteraction(cell);
+                        }
+                    });
+
                     gridElement.appendChild(cell);
                 }
             }
         }
 
-        function toggleCellSelect(cell) {
-            if(cell.classList.contains('selected')) {
-                cell.classList.remove('selected');
-                selectedCells = selectedCells.filter(c => c !== cell);
+        function handleCellInteraction(cell) {
+            if (cell.classList.contains('confirmed')) return;
+
+            if (cell.classList.contains('selected')) {
+                // Si la toca letra por letra y ya estaba seleccionada, la desmarca
+                if (!isDragging) {
+                    cell.classList.remove('selected');
+                    selectedCells = selectedCells.filter(c => c !== cell);
+                }
             } else {
                 cell.classList.add('selected');
                 selectedCells.push(cell);
                 playSound(440, 'sine');
             }
-            checkSelectedSequence();
+            checkSelectedSequence(false); // Verifica en tiempo real mientras arrastra
         }
 
-        function checkSelectedSequence() {
+        function checkSelectedSequence(clearOnFailure) {
+            if (selectedCells.length === 0) return;
             let str = selectedCells.map(c => c.innerText).join('');
             let rev = str.split('').reverse().join('');
+            let foundMatch = false;
+
             selectedWords.forEach(word => {
-                if((str === word || rev === word) && !document.getElementById(`w-${word}`).classList.contains('found')) {
+                if ((str === word || rev === word) && !document.getElementById(`w-${word}`).classList.contains('found')) {
                     document.getElementById(`w-${word}`).classList.add('found');
-                    selectedCells.forEach(c => { c.classList.remove('selected'); c.classList.add('confirmed'); });
+                    selectedCells.forEach(c => { 
+                        c.classList.remove('selected'); 
+                        c.classList.add('confirmed'); 
+                    });
                     selectedCells = [];
-                    totalWordsFound++; levelWordsFound++;
+                    totalWordsFound++; 
+                    levelWordsFound++;
+                    foundMatch = true;
+                    
                     document.getElementById('score-txt').innerText = totalWordsFound;
                     if(gameMode === 'time') { timeLeft += 5; triggerBonus(); }
                     playSound(880, 'sine');
-                    if(levelWordsFound === selectedWords.length) { nivel++; setTimeout(generateNewGrid, 600); }
+                    
+                    if(levelWordsFound === selectedWords.length) { 
+                        nivel++; 
+                        setTimeout(generateNewGrid, 600); 
+                    }
                 }
             });
+
+            // Si levantó el dedo y no se formó ninguna palabra válida, limpia la selección
+            if (clearOnFailure && !foundMatch) {
+                selectedCells.forEach(c => c.classList.remove('selected'));
+                selectedCells = [];
+            }
         }
 
         function triggerBonus() {
