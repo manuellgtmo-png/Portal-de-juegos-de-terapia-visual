@@ -109,12 +109,18 @@
             display: flex; align-items: center; justify-content: center;
             font-weight: 900; font-size: 1.6rem; border-radius: 6px; cursor: pointer;
             width: 46px; height: 46px; border: 1px solid rgba(0,0,0,0.15);
-            transition: transform 0.1s;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-sizing: border-box;
         }
         
         /* Estados de Selección Visual */
         .grid-cell.selected { transform: scale(0.9); box-shadow: inset 0 0 0 4px var(--accent) !important; }
-        .grid-cell.confirmed { filter: grayscale(0.8); opacity: 0.4; cursor: default; }
+        
+        /* Solución al cruce: Resaltado perimetral grueso sin alterar el fondo de Canva */
+        .grid-cell.confirmed { 
+            box-shadow: inset 0 0 0 4px #2563eb !important; 
+            transform: scale(0.95);
+        }
         
         .hidden { display: none !important; }
     </style>
@@ -125,7 +131,7 @@
         <h1 style="color: var(--accent); margin-bottom: 10px; font-weight: 900;">SOPA DE LETRAS BINOCULAR</h1>
         <div class="instrucciones">
             <p><strong>PROTOCOLO ANTISUPRESIÓN:</strong> Paciente a <strong>40 cm</strong> con filtros Rojo/Verde.</p>
-            <p>Cada celda contiene el color de fondo y el símbolo de contraste calibrados de Canva. El cerebro debe fusionar activamente los estímulos de ambos canales para descifrar las palabras ocultas.</p>
+            <p>Cada celda contiene el color de fondo y el símbolo de contraste calibrados de Canva. Al subir de nivel aumenta la extensión de los estímulos y se activan ejes diagonales complejos.</p>
         </div>
         
         <div class="control-panel">
@@ -176,13 +182,17 @@
     </div>
 
     <script>
-        const wordPool = ['OJO', 'VISTA', 'FUSION', 'AMBLIO', 'OPTICA', 'TERAPIA', 'VISION', 'EJERCICIO', 'FOVEA', 'ESTEREO', 'FILTRO', 'BINOCULAR', 'CORTEZA', 'RETINA', 'MASCARA', 'SUPRESION', 'SACADICO', 'RITMO'];
+        // Distribución de palabras segmentada por complejidad clínica
+        const poolEasy = ['OJO', 'VISTA', 'FOVEA', 'RITMO', 'FILTRO', 'RETINA', 'LUPA', 'EJE', 'CONO'];
+        const poolMedium = ['FUSION', 'AMBLIO', 'OPTICA', 'TERAPIA', 'VISION', 'MASCARA', 'BINO', 'TEST', 'FOCO'];
+        const poolHard = ['AMBLIOPIA', 'BINOCULAR', 'SUPRESION', 'SACADICO', 'ESTEREOPSIS', 'CONVERGENCIA', 'DIVERGENCIA', 'PERCEPTUM'];
+        
         const gridSize = 10;
         let selectedWords = [];
         let gridMatrix = [];
         let selectedCells = [];
         
-        let gameMode = 'time'; // 'time' o 'free'
+        let gameMode = 'time'; 
         let totalWordsFound = 0;
         let levelWordsFound = 0;
         let nivel = 1;
@@ -206,7 +216,6 @@
 
         function startGame() {
             document.getElementById('intro').classList.add('hidden');
-            
             if(gameMode === 'time') {
                 timeLeft = parseInt(document.getElementById('param-time').value);
                 if(timeLeft === 0) timeLeft = 1; 
@@ -220,7 +229,6 @@
                 document.getElementById('timer-txt').innerText = "MODO LIBRE";
                 document.getElementById('timer-txt').style.color = "var(--accent)";
             }
-
             generateNewGrid();
         }
 
@@ -233,11 +241,21 @@
             selectedCells = [];
             document.getElementById('lvl-txt').innerText = nivel;
             
-            let poolCopy = [...wordPool];
+            // Selección adaptativa según nivel alcanzado
+            let currentPool = [];
+            if (nivel <= 2) {
+                currentPool = [...poolEasy];
+            } else if (nivel <= 4) {
+                currentPool = [...poolEasy, ...poolMedium];
+            } else {
+                currentPool = [...poolMedium, ...poolHard];
+            }
+
             selectedWords = [];
             for(let i=0; i<4; i++) {
-                let idx = Math.floor(Math.random() * poolCopy.length);
-                selectedWords.push(poolCopy.splice(idx, 1)[0]);
+                if(currentPool.length === 0) break;
+                let idx = Math.floor(Math.random() * currentPool.length);
+                selectedWords.push(currentPool.splice(idx, 1)[0]);
             }
 
             const listContainer = document.getElementById('list-container');
@@ -246,21 +264,36 @@
 
             gridMatrix = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
 
+            // Direcciones permitidas adaptativas (Nivel 1-2: H/V | Nivel 3+: Añade Diagonales)
+            let allowedDirs = ['H', 'V'];
+            if (nivel >= 3) {
+                allowedDirs.push('D1', 'D2'); // D1: abajo-derecha, D2: abajo-izquierda
+            }
+
             selectedWords.forEach(word => {
                 let placed = false;
                 let attempts = 0;
-                while(!placed && attempts < 100) {
-                    let isVertical = Math.random() > 0.5;
+                while(!placed && attempts < 150) {
+                    let dir = allowedDirs[Math.floor(Math.random() * allowedDirs.length)];
                     let r = Math.floor(Math.random() * gridSize);
                     let c = Math.floor(Math.random() * gridSize);
-                    if (isVertical && r + word.length <= gridSize) {
-                        let fits = true;
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c] !== '') fits = false;
-                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c] = word[i]; placed = true; }
-                    } else if (!isVertical && c + word.length <= gridSize) {
-                        let fits = true;
-                        for(let i=0; i<word.length; i++) if(gridMatrix[r][c+i] !== '') fits = false;
+
+                    let fits = true;
+                    if (dir === 'H' && c + word.length <= gridSize) {
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r][c+i] !== '' && gridMatrix[r][c+i] !== word[i]) fits = false;
                         if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r][c+i] = word[i]; placed = true; }
+                    } 
+                    else if (dir === 'V' && r + word.length <= gridSize) {
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c] !== '' && gridMatrix[r+i][c] !== word[i]) fits = false;
+                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c] = word[i]; placed = true; }
+                    }
+                    else if (dir === 'D1' && r + word.length <= gridSize && c + word.length <= gridSize) { // Diagonal Abajo-Derecha
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c+i] !== '' && gridMatrix[r+i][c+i] !== word[i]) fits = false;
+                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c+i] = word[i]; placed = true; }
+                    }
+                    else if (dir === 'D2' && r + word.length <= gridSize && c - word.length >= -1) { // Diagonal Abajo-Izquierda
+                        for(let i=0; i<word.length; i++) if(gridMatrix[r+i][c-i] !== '' && gridMatrix[r+i][c-i] !== word[i]) fits = false;
+                        if(fits) { for(let i=0; i<word.length; i++) gridMatrix[r+i][c-i] = word[i]; placed = true; }
                     }
                     attempts++;
                 }
@@ -275,7 +308,6 @@
                 for(let c=0; c<gridSize; c++) {
                     if(gridMatrix[r][c] === '') gridMatrix[r][c] = alpha[Math.floor(Math.random() * alpha.length)];
                     
-                    // SELECCIÓN EQUITATIVA DEL CANAL ANAGLIFO (FONDO + FIGURA CALIBRADOS DE CANVA)
                     const esRojo = Math.random() > 0.5;
                     const bgCol = esRojo ? 'var(--canva-bg-rojo)' : 'var(--canva-bg-verde)';
                     const txtCol = esRojo ? 'var(--canva-txt-rojo)' : 'var(--canva-txt-verde)';
@@ -286,6 +318,10 @@
                     cell.style.color = txtCol;
                     cell.innerText = gridMatrix[r][c];
                     
+                    // Guardamos coordenadas para verificar secuencias correctas
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
                     cell.addEventListener('click', () => toggleCellSelect(cell));
                     gridElement.appendChild(cell);
                 }
@@ -293,8 +329,6 @@
         }
 
         function toggleCellSelect(cell) {
-            if(cell.classList.contains('confirmed')) return;
-            
             if(cell.classList.contains('selected')) {
                 cell.classList.remove('selected');
                 selectedCells = selectedCells.filter(c => c !== cell);
@@ -316,7 +350,7 @@
                     document.getElementById(`w-${word}`).classList.add('found');
                     selectedCells.forEach(c => { 
                         c.classList.remove('selected'); 
-                        c.classList.add('confirmed'); 
+                        c.classList.add('confirmed'); // Aplica contorno azul conservando fondo
                     });
                     selectedCells = [];
                     
