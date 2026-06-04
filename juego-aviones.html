@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Integración de Aviones | Centro Perceptum</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-neutral: #05070f;
+            /* Tus códigos de color exactos */
+            --canva-rojo: #80322a;     /* Fondo Rojo */
+            --figura-roja: #69302a;    /* Figura Roja */
+            --canva-verde: #69913d;    /* Fondo Verde */
+            --figura-verde: #6c7b5a;   /* Figura Verde */
+            --accent: #fbbf24;
+        }
+        body, html {
+            margin: 0; padding: 0; overflow: hidden; background: var(--bg-neutral);
+            font-family: 'Montserrat', sans-serif; color: white; height: 100vh; width: 100vw;
+            user-select: none; -webkit-user-select: none;
+        }
+        
+        .status-bar {
+            height: 60px; background: #0f172a; display: flex;
+            justify-content: space-between; align-items: center; padding: 0 25px;
+            border-bottom: 2px solid #1e293b; box-sizing: border-box;
+        }
+        .btn-portal {
+            background: #ef4444; color: white; border: none; padding: 8px 16px;
+            font-weight: 900; border-radius: 20px; cursor: pointer; text-decoration: none; font-size: 0.8rem;
+        }
+
+        #game-stage {
+            width: 100vw; height: calc(100vh - 60px); position: relative;
+            background: var(--bg-neutral); overflow: hidden;
+        }
+
+        /* Contenedor del avión camuflado */
+        .plane-box {
+            position: absolute; width: 90px; height: 90px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.1s linear;
+        }
+        
+        /* Aplicación estricta de tus códigos de color */
+        .plane-box.canal-rojo { background-color: var(--canva-rojo); }
+        .plane-box.canal-rojo svg { fill: var(--figura-roja); }
+
+        .plane-box.canal-verde { background-color: var(--canva-verde); }
+        .plane-box.canal-verde svg { fill: var(--figura-verde); }
+        
+        /* Indicador de inicio de ronda */
+        .target-indicator {
+            outline: 5px dashed var(--accent);
+            outline-offset: 4px;
+        }
+        
+        #instruction-overlay {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            font-size: 1.2rem; font-weight: 700; color: #f1f5f9; z-index: 10;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9); pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar">
+        <a href="index.html" class="btn-portal">← VOLVER</a>
+        <div style="font-weight:900; color:var(--accent); font-size:0.9rem; letter-spacing:1px;">INTEGRACIÓN BINOCULAR: AVIONES</div>
+        <div style="font-size:0.85rem; font-weight:700;">NIVEL: <span id="lbl-nivel" style="color:var(--accent);">1</span> | VIDAS: <span id="lbl-vidas" style="color:#ef4444;">♥♥♥</span></div>
+    </div>
+
+    <div id="game-stage">
+        <div id="instruction-overlay">Fija la mirada a 40 cm. Buscando objetivo...</div>
+    </div>
+
+    <script>
+        const stage = document.getElementById('game-stage');
+        let level = 1;
+        let lives = 3;
+        let planes = [];
+        let targetPlane = null;
+        let isMoving = false;
+        let animationFrameId = null;
+        let colorIntervalId = null;
+
+        // Gráfico vectorial limpio del avión
+        const planeSVG = `
+            <svg viewBox="0 0 24 24" width="65" height="65">
+                <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+            </svg>
+        `;
+
+        function initLevel() {
+            stage.innerHTML = '<div id="instruction-overlay">¡Atento al avión marcado!</div>';
+            planes = [];
+            isMoving = false;
+            cancelAnimationFrame(animationFrameId);
+            clearInterval(colorIntervalId);
+
+            let totalPlanes = 4 + Math.min(level, 4); 
+            let speedMultiplier = 1.8 + (level * 0.4);
+
+            for (let i = 0; i < totalPlanes; i++) {
+                let box = document.createElement('div');
+                let tipoCanal = (i % 2 === 0) ? 'canal-rojo' : 'canal-verde';
+                box.className = `plane-box ${tipoCanal}`;
+                box.innerHTML = planeSVG;
+                
+                let x = Math.random() * (window.innerWidth - 110) + 10;
+                let y = Math.random() * (stage.offsetHeight - 110) + 10;
+                
+                box.style.left = x + 'px';
+                box.style.top = y + 'px';
+                
+                let planeObj = {
+                    element: box,
+                    x: x,
+                    y: y,
+                    dx: (Math.random() - 0.5) * speedMultiplier,
+                    dy: (Math.random() - 0.5) * speedMultiplier,
+                    isTarget: i === 0 
+                };
+                
+                box.onclick = () => selectPlane(planeObj);
+                stage.appendChild(box);
+                planes.push(planeObj);
+            }
+
+            targetPlane = planes[0];
+            targetPlane.element.classList.add('target-indicator');
+
+            // 2.5 segundos para fijar fijación a 40 cm
+            setTimeout(() => {
+                targetPlane.element.classList.remove('target-indicator');
+                document.getElementById('instruction-overlay').innerText = "¡Síguelo con ambos ojos abiertos!";
+                isMoving = true;
+                startColorFlashing();
+                animatePlanes();
+                
+                // 10 segundos de rastreo dinámico por nivel
+                setTimeout(() => {
+                    isMoving = false;
+                    clearInterval(colorIntervalId);
+                    document.getElementById('instruction-overlay').innerText = "¿Cuál era tu avión? Tócalo en la pantalla";
+                }, 10000);
+
+            }, 2500);
+        }
+
+        // Alternancia intermitente de canales para romper la supresión en el box
+        function startColorFlashing() {
+            colorIntervalId = setInterval(() => {
+                if (targetPlane) {
+                    if (targetPlane.element.classList.contains('canal-rojo')) {
+                        targetPlane.element.classList.remove('canal-rojo');
+                        targetPlane.element.classList.add('canal-verde');
+                    } else {
+                        targetPlane.element.classList.remove('canal-verde');
+                        targetPlane.element.classList.add('canal-rojo');
+                    }
+                }
+            }, 900 - Math.min(level * 60, 500));
+        }
+
+        function animatePlanes() {
+            if (!isMoving) return;
+
+            planes.forEach(p => {
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x <= 0 || p.x >= window.innerWidth - 100) {
+                    p.dx *= -1;
+                    p.x = p.x <= 0 ? 1 : window.innerWidth - 101;
+                }
+                if (p.y <= 0 || p.y >= stage.offsetHeight - 100) {
+                    p.dy *= -1;
+                    p.y = p.y <= 0 ? 1 : stage.offsetHeight - 101;
+                }
+
+                p.element.style.left = p.x + 'px';
+                p.element.style.top = p.y + 'px';
+            });
+
+            animationFrameId = requestAnimationFrame(animatePlanes);
+        }
+
+        function selectPlane(clickedPlane) {
+            if (isMoving) return;
+
+            if (clickedPlane.isTarget) {
+                alert("¡Excelente! Rastreo exitoso.");
+                level++;
+                document.getElementById('lbl-nivel').innerText = level;
+                initLevel();
+            } else {
+                lives--;
+                updateLivesDisplay();
+                if (lives <= 0) {
+                    alert("Fin de la prueba. Registra el nivel alcanzado.");
+                    level = 1;
+                    lives = 3;
+                    document.getElementById('lbl-nivel').innerText = level;
+                    updateLivesDisplay();
+                } else {
+                    alert("¡Se perdió el rastro! Inténtalo de nuevo.");
+                }
+                initLevel();
+            }
+        }
+
+        function updateLivesDisplay() {
+            let heartString = "";
+            for(let i=0; i<lives; i++) heartString += "♥";
+            document.getElementById('lbl-vidas').innerText = heartString;
+        }
+
+        initLevel();
+    </script>
+</body>
+</html>
